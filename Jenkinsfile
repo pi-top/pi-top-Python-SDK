@@ -1,3 +1,3 @@
-@Library("devops-jenkins-shared-library@master") _
+@Library("devops-jenkins-shared-library@feature/decoupleRepoNameFromPkgId") _
 
 buildOSPackage([pythonComponents: [[:]]])
