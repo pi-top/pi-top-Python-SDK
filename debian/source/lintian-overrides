@@ -1,0 +1,4 @@
+python3-pt-pma source: source-is-missing docs/build/html/_static/js/*
+python3-pt-pma source: source-is-missing docs/build/html/_static/*
+python3-pt-pma source: source-package-encodes-python-version
+python3-pt-pma source: odd-historical-debian-changelog-version 1.7.0-1 (for native)

@@ -1,0 +1,136 @@
+from unittest import TestCase
+from sys import modules
+from unittest.mock import Mock
+from math import pi
+
+modules["gpiozero"] = Mock()
+modules["gpiozero.exc"] = Mock()
+modules["cv2"] = Mock()
+modules["numpy"] = Mock()
+modules["smbus2"] = Mock()
+modules["ptcommon.smbus_device"] = Mock()
+modules["ptcommon.logger"] = Mock()
+modules["ptcommon.singleton"] = Mock()
+modules["ptpma.ultrasonic_sensor"] = Mock()
+from ptpma.encoder_motor import PMAEncoderMotor
+from ptpma.parameters import BrakingType, ForwardDirection, Direction
+
+
+class PMAEncoderMotorTestCase(TestCase):
+    def test_internal_attributes_on_instance(self):
+        """Default values of attributes are set when creating object"""
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        self.assertEquals(wheel.wheel_diameter, 0.064)
+        self.assertEquals(round(wheel._wheel_circumference, 3), 0.201)
+        self.assertEquals(wheel.forward_direction, ForwardDirection.CLOCKWISE)
+
+    def test_max_speed(self):
+        """Max speed calculation based on max rpm"""
+        PMAEncoderMotor.max_rpm = Mock()
+        PMAEncoderMotor.max_rpm = 142
+        PMAEncoderMotor._wheel_circumference = 0.064
+
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        self.assertEquals(round(wheel.max_speed, 3), 0.476)
+
+    def test_forward_uses_correct_direction(self):
+        """Forward method uses correct direction when calling set_target_speed"""
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        mock_set_target_speed = wheel.set_target_speed = Mock()
+        wheel.forward(1)
+        mock_set_target_speed.assert_called_once_with(1, Direction.FORWARD, 0.0)
+
+    def test_backward_uses_correct_direction(self):
+        """Backward method uses correct direction when calling set_target_speed"""
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        mock_set_target_speed = wheel.set_target_speed = Mock()
+        wheel.backward(1)
+        mock_set_target_speed.assert_called_once_with(1, Direction.BACK, 0.0)
+
+    def test_wheel_diameter_change_updates_wheel_circumference(self):
+        """Updating wheel diameter changes wheel circumference"""
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        initial_circumference = wheel._wheel_circumference
+
+        new_diameter = 0.5
+        wheel.wheel_diameter = new_diameter
+        self.assertNotEqual(wheel._wheel_circumference, initial_circumference)
+        self.assertEquals(wheel._wheel_circumference, new_diameter*pi)
+
+    def test_wheel_diameter_cant_be_zero_or_negative(self):
+        """Wheel diameter must be higher than zero"""
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        for invalid_diameter in (-10, 0):
+            with self.assertRaises(ValueError):
+                wheel.wheel_diameter = invalid_diameter
+
+    def test_set_target_speed_calls_set_target_rpm_with_correct_params(self):
+        """set_target_speed calls set_target_rpm with correct params"""
+        set_target_rpm_mock = PMAEncoderMotor.set_target_rpm = Mock()
+
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        speed_test_data = [
+            (0.1, Direction.FORWARD, 1),
+            (0.1, Direction.BACK, -50.3),
+            (-0.33, Direction.FORWARD, 0),
+            (0, Direction.BACK, 55),
+        ]
+
+        for speed, direction, distance in speed_test_data:
+            target_speed_in_rpm = speed * 60.0 / wheel._wheel_circumference
+            target_motor_rotations = distance / wheel._wheel_circumference
+
+            wheel.set_target_speed(speed, direction, distance)
+            set_target_rpm_mock.assert_called_with(target_speed_in_rpm, direction, target_motor_rotations)
+
+    def test_set_target_speed_fails_when_requesting_an_out_of_range_speed(self):
+        """set_target_speed fails if requesting a value out of range"""
+        set_target_rpm_mock = PMAEncoderMotor.set_target_rpm = Mock()
+
+        wheel = PMAEncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST)
+
+        speed_test_data = [
+            (1, Direction.FORWARD, 1),
+            (1, Direction.BACK, -50.3),
+            (-33, Direction.FORWARD, 0),
+            (10, Direction.BACK, 55),
+        ]
+
+        for speed, direction, distance in speed_test_data:
+            target_speed_in_rpm = speed * 60.0 / wheel._wheel_circumference
+            target_motor_rotations = distance / wheel._wheel_circumference
+
+            with self.assertRaises(ValueError):
+                wheel.set_target_speed(speed, direction, distance)
+                set_target_rpm_mock.assert_called_with(target_speed_in_rpm, direction, target_motor_rotations)

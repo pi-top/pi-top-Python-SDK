@@ -1,0 +1,9 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pi-top
+Source: https://pi-top.com
+Upstream-Contact: deb-maintainers@pi-top.com
+
+Files: *
+Copyright: Copyright 2018 CEED ltd.
+License: Apache-2.0
+ `/usr/share/common-licenses/Apache-2.0'.

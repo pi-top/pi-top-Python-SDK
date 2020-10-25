@@ -1,0 +1,42 @@
+Source: pi-top-maker-architecture
+Section: python
+Priority: optional
+Maintainer: pi-top <deb-maintainers@pi-top.com>
+Build-Depends:
+ debhelper-compat (= 12),
+ dh-sequence-python3,
+Standards-Version: 4.5.0
+Homepage: https://pi-top.com
+
+Package: pt-pma
+Architecture: any
+Depends:
+ ${misc:Depends},
+ libmraa-dev,
+ libmraa1,
+ python3-pt-pma,
+Description: pi-top Maker Architecture Support
+ A dependency package to install all required components for
+ pi-top Maker Architecture Support
+
+Package: python3-pt-pma
+Architecture: any
+Depends: ${misc:Depends},
+ ${python3:Depends},
+# To use GPIO & components
+ python3-gpiozero,
+# To perform operations with images
+ python3-imageio,
+# Camera uses numpy arrays for image data
+ python3-numpy,
+# Manage camera images
+ python3-pillow,
+# Common functions
+ python3-pt-common,
+# Camera communication
+ python3-pyv4l2camera,
+Suggests:
+ python3-opencv,
+Description: pi-top [4] PMA Library (Python 3.x)
+ A library to interacting with the pi-top [4]'s
+ Maker Architecture (PMA)
