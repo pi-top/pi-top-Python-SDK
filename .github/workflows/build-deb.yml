@@ -8,7 +8,7 @@ jobs:
   # when a job name is not provided
   build-deb:
     # Name the Job
-    name: Lint code base
+    name: Build Debian Package
     # Set the type of machine to run on
     runs-on: ubuntu-20.04
 
