@@ -36,7 +36,7 @@ Suggests:
 Description: pi-top [4]'s Maker Architecture (PMA) Python library
  This is the Python library part of the package.
 
-Package: pt-pma-doc
+Package: python3-pt-pma-doc
 Architecture: all
 Section: doc
 Depends:
