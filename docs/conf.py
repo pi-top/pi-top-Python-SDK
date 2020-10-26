@@ -10,12 +10,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import setup as _setup
 import os
 import sys
 HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.join(HERE, '..')
 sys.path.insert(0, PARENT)
+import setup as _setup  # noqa
 
 # -- Project information -----------------------------------------------------
 
