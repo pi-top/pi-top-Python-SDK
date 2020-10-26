@@ -93,5 +93,5 @@ html_theme_options = {
 html_static_path = ['_static']
 
 # Custom stuff for project
-autodoc_mock_imports = ['smbus2', 'ptcommon', 'cv2', 'numpy', 'imageio', 'PyV4L2Camera', 'PIL']
+autodoc_mock_imports = ['gpiozero', 'smbus2', 'ptcommon', 'cv2', 'numpy', 'imageio', 'PyV4L2Camera', 'PIL']
 exclude_patterns = ['_build']
