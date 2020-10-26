@@ -66,7 +66,6 @@ __requires__ = [
     "ptcommon",
     # Camera communication
     "PyV4L2Camera",
-
 ]
 
 __extra_requires__ = {

@@ -1,4 +1,4 @@
-Source: ptpma
+Source: pi-top-maker-architecture
 Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
@@ -12,21 +12,21 @@ Build-Depends:
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
-#Package: ptpma
-#Architecture: any
-#Depends:
-# ${misc:Depends},
-# ${python3:Depends},
-# python3-opencv,
-# python3-ptpma,
-## Suggests:
-## # https://github.com/pi-top/pi-top-4-.NET-Core-API
-##  dotnet-pi-top,
-#Description: pi-top [4]'s Maker Architecture (PMA)
-# This is the top-level dummy package which will install all of the required
-# components for full pi-top Maker Architecture Support.
+Package: pt-pma
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+ python3-opencv,
+ python3-pt-pma,
+# Suggests:
+# # https://github.com/pi-top/pi-top-4-.NET-Core-API
+#  dotnet-pi-top,
+Description: pi-top [4]'s Maker Architecture (PMA)
+ This is the top-level dummy package which will install all of the required
+ components for full pi-top Maker Architecture Support.
 
-Package: python3-ptpma
+Package: python3-pt-pma
 Architecture: any
 Depends:
  ${misc:Depends},
@@ -36,7 +36,7 @@ Suggests:
 Description: pi-top [4]'s Maker Architecture (PMA) Python library
  This is the Python library part of the package.
 
-Package: python3-ptpma-doc
+Package: pt-pma-doc
 Architecture: all
 Section: doc
 Depends:

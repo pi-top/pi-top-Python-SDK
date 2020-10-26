@@ -106,5 +106,4 @@ html_static_path = ['_static']
 
 # Custom stuff for project
 autodoc_mock_imports = ['smbus2', 'ptcommon', 'cv2', 'numpy', 'imageio', 'PyV4L2Camera', 'PIL']
-exclude_patterns = ['_build', 'source/ptpma.rst',
-                    'source/ptpma.components.rst']
+exclude_patterns = ['_build']
