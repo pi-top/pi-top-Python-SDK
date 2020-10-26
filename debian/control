@@ -3,13 +3,10 @@ Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
-# debhelper-compat (= 12),
- debhelper-compat (= 13),
+ debhelper-compat (= 12),
  dh-sequence-python3,
  dh-sequence-sphinxdoc,
- python3-all,
  python3-setuptools,
- python3-sphinx,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
