@@ -54,8 +54,19 @@ __keywords__ = [
 ]
 
 __requires__ = [
-    'colorzero',
-    'gpiozero'
+    # To use GPIO & components
+    'gpiozero',
+    # To perform operations with images
+    "imageio",
+    # Camera uses numpy arrays for image data
+    "numpy",
+    # Manage camera images
+    "Pillow",
+    # Common functions
+    "ptcommon",
+    # Camera communication
+    "PyV4L2Camera",
+
 ]
 
 __extra_requires__ = {

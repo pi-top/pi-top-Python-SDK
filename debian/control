@@ -33,18 +33,6 @@ Architecture: any
 Depends:
  ${misc:Depends},
  ${python3:Depends},
-# To use GPIO & components
- python3-gpiozero,
-# To perform operations with images
- python3-imageio,
-# Camera uses numpy arrays for image data
- python3-numpy,
-# Manage camera images
- python3-pillow,
-# Common functions
- python3-pt-common,
-# Camera communication
- python3-pyv4l2camera,
 Suggests:
  python3-opencv,
 Description: pi-top [4]'s Maker Architecture (PMA) Python library.
