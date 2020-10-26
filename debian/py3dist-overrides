@@ -1,0 +1,4 @@
+pyv4l2camera python3-pyv4l2camera
+gpiozero python3-gpiozero
+imageio python3-imageio
+ptcommon python3-pt-common
