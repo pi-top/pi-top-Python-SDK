@@ -13,7 +13,8 @@
 import os
 import sys
 HERE = os.path.abspath(os.path.dirname(__file__))
-PARENT = os.path.join(HERE, '..')
+PARENT = os.path.dirname(HERE)
+
 sys.path.insert(0, PARENT)
 import setup as _setup  # noqa
 
@@ -34,10 +35,12 @@ master_doc = 'index'
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
 
 # Extension options
+# TODO v2 of sphinx-common: `None` -> `True`
+# see https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options
 autodoc_default_options = {
-    'members': True,
+    'members': None,
     'member-order': 'bysource',
-    'undoc-members': True
+    'undoc-members': None
 }
 
 autodoc_warningiserror = True
@@ -59,7 +62,6 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'imageio': ('https://imageio.readthedocs.io/en/stable/', None),
     'Pillow': ('https://pillow.readthedocs.io/en/stable/', None)
-
 }
 
 # -- Options for HTML output -------------------------------------------------
