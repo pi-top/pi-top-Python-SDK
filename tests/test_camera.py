@@ -1,3 +1,8 @@
+from threading import Thread
+from ptpma.camera_core.capture_actions import StoreFrame
+from ptpma.camera_core import FrameHandler, CaptureActions
+from ptpma.camera_core import UsbCamera, FileSystemCamera, CameraTypes
+from ptpma import PMACamera
 from unittest import TestCase, skip
 from sys import modules
 from unittest.mock import Mock, patch
@@ -16,11 +21,6 @@ modules["numpy"] = Mock()
 modules["smbus2"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
 
-from ptpma import PMACamera
-from ptpma.camera_core import UsbCamera, FileSystemCamera, CameraTypes
-from ptpma.camera_core import FrameHandler, CaptureActions
-from ptpma.camera_core.capture_actions import StoreFrame
-from threading import Thread
 
 UsbCamera.Camera = Mock()
 

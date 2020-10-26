@@ -1,3 +1,11 @@
+from ptpma.common.servo_motor_registers import (
+    ServoControlRegisters,
+    ServoRegisterTypes,
+    ServoControlModes,
+    ServoMotorS1,
+    ServoMotorSetup)
+from ptpma.servo_controller import ServoController, ServoHardwareSpecs, interp, split_into_bytes
+from ptcommon.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock, patch
@@ -12,15 +20,6 @@ modules["ptcommon.smbus_device"] = Mock()
 modules["ptcommon.logger"] = Mock()
 modules["ptcommon.singleton"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
-
-from ptcommon.bitwise_ops import join_bytes
-from ptpma.servo_controller import ServoController, ServoHardwareSpecs, interp, split_into_bytes
-from ptpma.common.servo_motor_registers import (
-    ServoControlRegisters,
-    ServoRegisterTypes,
-    ServoControlModes,
-    ServoMotorS1,
-    ServoMotorSetup)
 
 
 class ServoControllerTestCase(TestCase):

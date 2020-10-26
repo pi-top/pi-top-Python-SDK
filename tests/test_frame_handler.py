@@ -1,3 +1,4 @@
+from ptpma.camera_core import FrameHandler, CaptureActions
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock, patch
@@ -9,8 +10,6 @@ modules["cv2"] = Mock()
 modules["numpy"] = Mock()
 modules["smbus2"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
-
-from ptpma.camera_core import FrameHandler, CaptureActions
 
 
 class FrameHandlerTestCase(TestCase):

@@ -1,3 +1,13 @@
+from ptpma.parameters import BrakingType
+from ptpma.common.encoder_motor_registers import (
+    MotorControlRegisters,
+    MotorRegisterTypes,
+    MotorControlModes,
+    EncoderMotorM1)
+from ptpma.encoder_motor import PMAEncoderMotor
+from ptpma.encoder_motor_controller import (
+    EncoderMotorController, PlateInterface, split_into_bytes)
+from ptcommon.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock, patch
@@ -12,17 +22,6 @@ modules["ptcommon.smbus_device"] = Mock()
 modules["ptcommon.logger"] = Mock()
 modules["ptcommon.singleton"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
-
-from ptcommon.bitwise_ops import join_bytes
-from ptpma.encoder_motor_controller import (
-    EncoderMotorController, PlateInterface, split_into_bytes)
-from ptpma.encoder_motor import PMAEncoderMotor
-from ptpma.common.encoder_motor_registers import (
-    MotorControlRegisters,
-    MotorRegisterTypes,
-    MotorControlModes,
-    EncoderMotorM1)
-from ptpma.parameters import BrakingType
 
 
 class EncoderMotorControllerTestCase(TestCase):

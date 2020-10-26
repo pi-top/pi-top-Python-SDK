@@ -1,3 +1,5 @@
+from ptpma.parameters import BrakingType, ForwardDirection, Direction
+from ptpma.encoder_motor import PMAEncoderMotor
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock
@@ -12,8 +14,6 @@ modules["ptcommon.smbus_device"] = Mock()
 modules["ptcommon.logger"] = Mock()
 modules["ptcommon.singleton"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
-from ptpma.encoder_motor import PMAEncoderMotor
-from ptpma.parameters import BrakingType, ForwardDirection, Direction
 
 
 class PMAEncoderMotorTestCase(TestCase):
