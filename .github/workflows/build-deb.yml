@@ -1,25 +1,18 @@
 name: Build-Deb
 
-# Run this workflow every time a new commit pushed to your repository
+# Run this workflow every time a new commit pushed to repository
 on: push
 
 jobs:
-  # Set the job key. The key is displayed as the job name
-  # when a job name is not provided
   build-deb:
-    # Name the Job
     name: Build Debian Package
-    # Set the type of machine to run on
     runs-on: ubuntu-20.04
 
     steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Builds Debian package
-      - name: Build Debian package
-        uses: pi-top/action-debian-package@feature/buildAmd64
-        # with:
-        #   source_directory: lolcat # optional, relative to workspace directory
-        #   artifacts_directory: output # optional, relative to workspace directory
+      - name: Build 32-bit Debian package
+        uses: pi-top/action-debian-package@v2
+        with:
+            target_architecture: "armhf"
