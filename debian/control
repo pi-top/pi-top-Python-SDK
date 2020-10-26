@@ -23,7 +23,7 @@ Depends:
 # Suggests:
 # # https://github.com/pi-top/pi-top-4-.NET-Core-API
 #  dotnet-pi-top,
-Description: pi-top [4]'s Maker Architecture (PMA) Python library.
+Description: pi-top [4]'s Maker Architecture (PMA)
  This is the top-level dummy package which will install all of the required
  components for full pi-top Maker Architecture Support.
 
@@ -34,7 +34,7 @@ Depends:
  ${python3:Depends},
 Suggests:
  python3-opencv,
-Description: pi-top [4]'s Maker Architecture (PMA) Python library.
+Description: pi-top [4]'s Maker Architecture (PMA) Python library
  This is the Python library part of the package.
 
 Package: python3-pt-pma-doc
@@ -45,5 +45,5 @@ Depends:
  ${sphinxdoc:Depends},
 Built-Using:
  ${sphinxdoc:Built-Using},
-Description: pi-top [4]'s Maker Architecture (PMA) Python library.
+Description: pi-top [4]'s Maker Architecture (PMA) Python library documentation
  This is the documentation for the package.
