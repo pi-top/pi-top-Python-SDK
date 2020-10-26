@@ -20,7 +20,7 @@ try:
 except ImportError:
     pass
 
-with open(os.path.abspath('../debian/changelog')) as f:
+with open(os.path.abspath('debian/changelog')) as f:
     first_line = f.readline()
 
 __project__ = first_line.split(" ")[0]
