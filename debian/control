@@ -17,8 +17,7 @@ Package: pt-pma
 Architecture: any
 Depends:
  ${misc:Depends},
- libmraa-dev,
- libmraa1,
+ ${python3:Depends},
  python3-opencv,
  python3-pt-pma,
 # Suggests:

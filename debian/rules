@@ -2,7 +2,7 @@
 # -*- makefile -*-
 
 export PYBUILD_NAME=pt-pma
-export PYBUILD_SYSTEM=distutils
+# export PYBUILD_SYSTEM=distutils
 
 %:
 	dh $@ --buildsystem=pybuild
@@ -14,6 +14,3 @@ override_dh_auto_build:
 	dh_auto_build
 	PYTHONPATH=. sphinx-build -N -bhtml docs/ build/html
 	PYTHONPATH=. sphinx-build -N -bman docs/ build/man
-
-override_dh_auto_clean:
-	dh_auto_clean
