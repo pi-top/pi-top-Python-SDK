@@ -19,7 +19,7 @@ jobs:
 
       # Builds Debian package
       - name: Build Debian package
-        uses: pi-top/action-debian-package@master
+        uses: pi-top/action-debian-package@feature/buildAmd64
         # with:
         #   source_directory: lolcat # optional, relative to workspace directory
         #   artifacts_directory: output # optional, relative to workspace directory
