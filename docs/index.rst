@@ -2,7 +2,7 @@
 pi-top Maker Architecture (PMA) Components Reference
 =====================================================
 
-.. image:: foundation_kit.png
+.. image:: _static/foundation_kit.png
     :target: https://knowledgebase.pi-top.com/knowledge/foundation-kit
     :alt: Foundation Kit
 

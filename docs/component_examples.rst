@@ -5,49 +5,49 @@ Component Examples
 Button
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmabutton.py
+.. literalinclude:: ../ptpma/examples/pmabutton.py
 
 Light Sensor
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmalightsensor.py
+.. literalinclude:: ../ptpma/examples/pmalightsensor.py
 
 Sound Sensor
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmasoundsensor.py
+.. literalinclude:: ../ptpma/examples/pmasoundsensor.py
 
 Potentiometer
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmapotentiometer.py
+.. literalinclude:: ../ptpma/examples/pmapotentiometer.py
 
 Ultrasonic Sensor
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmaultrasonicsensor.py
+.. literalinclude:: ../ptpma/examples/pmaultrasonicsensor.py
 
 Buzzer
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmabuzzer.py
+.. literalinclude:: ../ptpma/examples/pmabuzzer.py
 
 LED
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmaled.py
+.. literalinclude:: ../ptpma/examples/pmaled.py
 
 Encoder Motor
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmaencodermotor.py
+.. literalinclude:: ../ptpma/examples/pmaencodermotor.py
 
 Servo Motor
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmaservomotor.py
+.. literalinclude:: ../ptpma/examples/pmaservomotor.py
 
 Camera (capture video)
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmacamera_capture_video.py
+.. literalinclude:: ../ptpma/examples/pmacamera_capture_video.py

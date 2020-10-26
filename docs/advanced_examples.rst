@@ -5,10 +5,10 @@ Advanced Examples
 Motion Detector
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmacamera_motion_detector.py
+.. literalinclude:: ../ptpma/examples/pmacamera_motion_detector.py
 
 
 Rover
 -------------------------------
 
-.. literalinclude:: ../../src/examples/pmamotorencoder_rover.py
+.. literalinclude:: ../ptpma/examples/pmaencodermotor_rover.py

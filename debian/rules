@@ -1,3 +1,19 @@
 #!/usr/bin/make -f
+# -*- makefile -*-
+
+export PYBUILD_NAME=pt-pma
+export PYBUILD_SYSTEM=distutils
+
 %:
-	dh $@
+	dh $@ --buildsystem=pybuild
+
+override_dh_auto_test:
+	# Don't run the tests!
+
+override_dh_auto_build:
+	dh_auto_build
+	PYTHONPATH=. sphinx-build -N -bhtml docs/ build/html
+	PYTHONPATH=. sphinx-build -N -bman docs/ build/man
+
+override_dh_auto_clean:
+	dh_auto_clean

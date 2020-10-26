@@ -1,4 +1,4 @@
-pi-top-maker-architecture (2.1.0) buster; urgency=medium
+pt-pma (2.1.0) buster; urgency=medium
 
   * Fix logic to use servo zero point to set target angle
   * Remove unnecessary check to set servo zero point

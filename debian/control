@@ -1,10 +1,15 @@
-Source: pi-top-maker-architecture
+Source: pt-pma
 Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
- debhelper-compat (= 12),
+# debhelper-compat (= 12),
+ debhelper-compat (= 13),
  dh-sequence-python3,
+ dh-sequence-sphinxdoc,
+ python3-all,
+ python3-setuptools,
+ python3-sphinx,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
@@ -14,14 +19,19 @@ Depends:
  ${misc:Depends},
  libmraa-dev,
  libmraa1,
+ python3-opencv,
  python3-pt-pma,
-Description: pi-top Maker Architecture Support
- A dependency package to install all required components for
- pi-top Maker Architecture Support
+# Suggests:
+# # https://github.com/pi-top/pi-top-4-.NET-Core-API
+#  dotnet-pi-top,
+Description: pi-top [4]'s Maker Architecture (PMA) Python library.
+ This is the top-level dummy package which will install all of the required
+ components for full pi-top Maker Architecture Support.
 
 Package: python3-pt-pma
 Architecture: any
-Depends: ${misc:Depends},
+Depends:
+ ${misc:Depends},
  ${python3:Depends},
 # To use GPIO & components
  python3-gpiozero,
@@ -37,6 +47,16 @@ Depends: ${misc:Depends},
  python3-pyv4l2camera,
 Suggests:
  python3-opencv,
-Description: pi-top [4] PMA Library (Python 3.x)
- A library to interacting with the pi-top [4]'s
- Maker Architecture (PMA)
+Description: pi-top [4]'s Maker Architecture (PMA) Python library.
+ This is the Python library part of the package.
+
+Package: python3-pt-pma-doc
+Architecture: all
+Section: doc
+Depends:
+ ${misc:Depends},
+ ${sphinxdoc:Depends},
+Built-Using:
+ ${sphinxdoc:Built-Using},
+Description: pi-top [4]'s Maker Architecture (PMA) Python library.
+ This is the documentation for the package.

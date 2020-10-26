@@ -1,0 +1,9 @@
+Document: python3-pt-pma
+Title: pi-top Maker Architecture Reference
+Author: Mike Roberts <mike@pi-top.com>
+Abstract: Documentation for the pi-top Maker Architecture (PMA) API
+Section: Programming/Python
+
+Format: HTML
+Index: /usr/share/doc/python3-pt-pma/html/index.html
+Files: /usr/share/doc/python3-pt-pma/html/*

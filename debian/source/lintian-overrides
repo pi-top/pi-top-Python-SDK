@@ -1,2 +1,2 @@
-pi-top-maker-architecture source: source-is-missing docs/build/html/_static/*
-pi-top-maker-architecture source: odd-historical-debian-changelog-version 1.7.0-1 (for native)
+pt-pma source: source-is-missing docs/build/html/_static/*
+pt-pma source: odd-historical-debian-changelog-version 1.7.0-1 (for native)
