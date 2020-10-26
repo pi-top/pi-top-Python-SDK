@@ -6,12 +6,12 @@ pi-top Maker Architecture
     :target: https://badge.fury.io/gh/pi-top%2Fpi-top-Maker-Architecture
     :alt: Source code on GitHub
 
-.. image:: https://badge.fury.io/py/pt-pma.svg
-    :target: https://badge.fury.io/py/pt-pma
+.. image:: https://badge.fury.io/py/ptpma.svg
+    :target: https://badge.fury.io/py/ptpma
     :alt: Latest Version
 
-.. image:: https://travis-ci.org/pi-top/pt-pma.svg?branch=master
-    :target: https://travis-ci.org/pi-top/pt-pma
+.. image:: https://travis-ci.org/pi-top/ptpma.svg?branch=master
+    :target: https://travis-ci.org/pi-top/ptpma
     :alt: Build Tests
 
 .. image:: https://img.shields.io/codecov/c/github/pi-top/pi-top-Maker-Architecture/master.svg?maxAge=2592000
@@ -34,7 +34,7 @@ some more complex things like sensors, analogue-to-digital converters, full
 colour LEDs, robotics kits and more. See the `Recipes`_ chapter of the
 documentation for ideas on how to get started.
 
-.. _Recipes: https://pt-pma.readthedocs.io/en/stable/recipes.html
+.. _Recipes: https://ptpma.readthedocs.io/en/stable/recipes.html
 
 Installation
 ============
@@ -44,17 +44,17 @@ The pi-top Maker Architecture API is installed by default in the pi-topOS deskto
 including for PCs using remote GPIO, see the `Installing`_ chapter.
 
 .. pi-top.com: https://www.pi-top.com/products/os/
-.. _Installing: https://pt-pma.readthedocs.io/en/stable/installing.html
+.. _Installing: https://ptpma.readthedocs.io/en/stable/installing.html
 
 Documentation
 =============
 
-Comprehensive documentation is available at https://pt-pma.readthedocs.io/.
+Comprehensive documentation is available at https://ptpma.readthedocs.io/.
 Please refer to the `Contributing`_ and `Development`_ chapters in the
 documentation for information on contributing to the project.
 
-.. _Contributing: https://pt-pma.readthedocs.io/en/stable/contributing.html
-.. _Development: https://pt-pma.readthedocs.io/en/stable/development.html
+.. _Contributing: https://ptpma.readthedocs.io/en/stable/contributing.html
+.. _Development: https://ptpma.readthedocs.io/en/stable/development.html
 
 Contributors
 ============

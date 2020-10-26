@@ -23,7 +23,7 @@ try:
 except ImportError:
     pass
 
-__project__ = 'pt-pma'
+__project__ = 'ptpma'
 __version__ = '2.1.0'
 __author__ = 'Mike Roberts'
 __author_email__ = 'mike@pi-top.com'

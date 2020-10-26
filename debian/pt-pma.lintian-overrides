@@ -1,5 +1,0 @@
-pt-pma: desktop-command-not-in-package usr/share/applications/python3-pt-pma-docs.desktop x-www-browser
-pt-pma: desktop-entry-invalid-category PiTopFourDocs usr/share/applications/python3-pt-pma-docs.desktop
-pt-pma: desktop-entry-lacks-main-category usr/share/applications/python3-pt-pma-docs.desktop
-pt-pma: desktop-entry-lacks-keywords-entry usr/share/applications/python3-pt-pma-docs.desktop
-pt-pma: extra-license-file usr/share/doc/pt-pma/LICENSE.gz
