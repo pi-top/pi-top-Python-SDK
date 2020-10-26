@@ -1,4 +1,14 @@
-pi-top-maker-architecture (2.1.0) buster; urgency=medium
+pi-top-maker-architecture (3.0.0) buster; urgency=medium
+
+  * Update source name to pi-top-maker-architecture
+  * Refactor files
+  * Use pybuild/distutils to create package
+  * Separate docs into 'python3-pt-pma-docs' package
+  * Move .desktop file to 'pt-pma'
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 26 Oct 2020 15:34:01 +0000
+
+python3-pt-pma (2.1.0) buster; urgency=medium
 
   * Fix logic to use servo zero point to set target angle
   * Remove unnecessary check to set servo zero point
