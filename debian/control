@@ -6,6 +6,7 @@ Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
  dh-sequence-sphinxdoc,
+ python3-all,
  python3-setuptools,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
