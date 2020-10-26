@@ -6,24 +6,25 @@ Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
  dh-sequence-sphinxdoc,
+# Required by pybuild
  python3-all,
  python3-setuptools,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
-Package: ptpma
-Architecture: any
-Depends:
- ${misc:Depends},
- ${python3:Depends},
- python3-opencv,
- python3-ptpma,
-# Suggests:
-# # https://github.com/pi-top/pi-top-4-.NET-Core-API
-#  dotnet-pi-top,
-Description: pi-top [4]'s Maker Architecture (PMA)
- This is the top-level dummy package which will install all of the required
- components for full pi-top Maker Architecture Support.
+#Package: ptpma
+#Architecture: any
+#Depends:
+# ${misc:Depends},
+# ${python3:Depends},
+# python3-opencv,
+# python3-ptpma,
+## Suggests:
+## # https://github.com/pi-top/pi-top-4-.NET-Core-API
+##  dotnet-pi-top,
+#Description: pi-top [4]'s Maker Architecture (PMA)
+# This is the top-level dummy package which will install all of the required
+# components for full pi-top Maker Architecture Support.
 
 Package: python3-ptpma
 Architecture: any
