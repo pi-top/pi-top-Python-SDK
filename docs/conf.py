@@ -13,7 +13,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 
 # -- Project information -----------------------------------------------------
@@ -73,31 +72,23 @@ intersphinx_mapping = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme_options = {}
-if on_rtd:
-    html_theme = 'sphinx_rtd_theme'
-    #html_theme_options = {}
-    #html_sidebars = {}
+html_theme = 'sphinx_rtd_theme'
+#html_sidebars = {}
 
-    html_theme_options = {
-        'canonical_url': '',
-        'logo_only': False,
-        'display_version': True,
-        'prev_next_buttons_location': 'bottom',
-        'style_external_links': False,
-        'style_nav_header_background': "#20b6aa",
-        # Toc options
-        'collapse_navigation': False,
-        'sticky_navigation': True,
-        'navigation_depth': 4,
-        'includehidden': False,
-        'titles_only': False
-    }
-
-else:
-    html_theme = 'default'
-    #html_theme_options = {}
-    #html_sidebars = {}
+html_theme_options = {
+    'canonical_url': '',
+    'logo_only': False,
+    'display_version': True,
+    'prev_next_buttons_location': 'bottom',
+    'style_external_links': False,
+    'style_nav_header_background': "#20b6aa",
+    # Toc options
+    'collapse_navigation': False,
+    'sticky_navigation': True,
+    'navigation_depth': 4,
+    'includehidden': False,
+    'titles_only': False
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
