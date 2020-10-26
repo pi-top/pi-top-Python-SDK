@@ -10,6 +10,8 @@ Build-Depends:
  python3-all,
  python3-setuptools,
  python3-sphinx-rtd-theme,
+# GPIO Zero is required for importing the libraries in the docs
+ python3-gpiozero,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
