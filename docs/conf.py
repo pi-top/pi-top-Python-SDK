@@ -10,24 +10,19 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import setup as _setup
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
+HERE = os.path.abspath(os.path.dirname(__file__))
+PARENT = os.path.join(HERE, '..')
+sys.path.insert(0, PARENT)
 
 # -- Project information -----------------------------------------------------
 
-project = 'pi-top Maker Architecture (PMA) Components'
+project = _setup.__project__
+author = _setup.__author__
+release = _setup.__version__
 copyright = 'pi-top 2020'
-author = 'pi-top'
-
-# The full version, including alpha/beta/rc tags
-with open(os.path.abspath('../debian/changelog')) as f:
-    first_line = f.readline()
-
-release = first_line.split(" ")[1].replace("(", "").replace(")", "")
-
-assert release != ""
 
 # -- General configuration ---------------------------------------------------
 

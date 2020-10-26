@@ -6,10 +6,7 @@ import sys
 import errno
 from setuptools import setup, find_packages
 
-if sys.version_info[0] == 2:
-    if not sys.version_info >= (2, 7):
-        raise ValueError('This package requires Python 2.7 or above')
-elif sys.version_info[0] == 3:
+if sys.version_info[0] == 3:
     if not sys.version_info >= (3, 2):
         raise ValueError('This package requires Python 3.2 or above')
 else:
@@ -23,10 +20,19 @@ try:
 except ImportError:
     pass
 
-__project__ = 'ptpma'
-__version__ = '2.1.0'
-__author__ = 'Mike Roberts'
-__author_email__ = 'mike@pi-top.com'
+with open(os.path.abspath('../debian/changelog')) as f:
+    first_line = f.readline()
+
+__project__ = first_line.split(" ")[0]
+__version__ = first_line.split(" ")[1].replace("(", "").replace(")", "")
+project = 'pi-top Maker Architecture (PMA) Components'
+# TODO: get from trailer line in changelog?
+__author__ = 'pi-top'
+__author_email__ = 'deb-maintainers@pi-top.com'
+
+assert __project__ != ""
+assert __version__ != ""
+
 __url__ = 'https://github.com/pi-top/pi-top-Maker-Architecture'
 __platforms__ = 'ALL'
 
@@ -86,26 +92,7 @@ elif sys.version_info[:2] == (3, 3):
 elif sys.version_info[:2] == (3, 4):
     __extra_requires__['test'][0] = 'pytest<5.0dev'
 
-__entry_points__ = {
-    #     'gpiozero_pin_factories': [
-    #         'pigpio  = gpiozero.pins.pigpio:PiGPIOFactory',
-    #         'rpigpio = gpiozero.pins.rpigpio:RPiGPIOFactory',
-    #         'rpio    = gpiozero.pins.rpio:RPIOFactory',
-    #         'native  = gpiozero.pins.native:NativeFactory',
-    #         'mock    = gpiozero.pins.mock:MockFactory',
-    #         # Backwards compatible names
-    #         'PiGPIOPin  = gpiozero.pins.pigpio:PiGPIOFactory',
-    #         'RPiGPIOPin = gpiozero.pins.rpigpio:RPiGPIOFactory',
-    #         'RPIOPin    = gpiozero.pins.rpio:RPIOFactory',
-    #         'NativePin  = gpiozero.pins.native:NativeFactory',
-    #     ],
-    #     'gpiozero_mock_pin_classes': [
-    #         'mockpin          = gpiozero.pins.mock:MockPin',
-    #         'mockpwmpin       = gpiozero.pins.mock:MockPWMPin',
-    #         'mockchargingpin  = gpiozero.pins.mock:MockChargingPin',
-    #         'mocktriggerpin   = gpiozero.pins.mock:MockTriggerPin',
-    #     ]
-}
+__entry_points__ = {}
 
 
 def main():
