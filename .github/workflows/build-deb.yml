@@ -19,7 +19,7 @@ jobs:
 
       # Builds Debian package
       - name: Build Debian package
-        uses: dawidd6/action-debian-package@v1.0.1
+        uses: pi-top/action-debian-package@v1.0.1
         # with:
         #   source_directory: lolcat # optional, relative to workspace directory
         #   artifacts_directory: output # optional, relative to workspace directory
