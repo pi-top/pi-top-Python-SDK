@@ -3,12 +3,12 @@
 export PYBUILD_NAME=pt-pma
 
 %:
-	dh $@ --buildsystem=pybuild
+	dh $@ --with=sphinxdoc --buildsystem=pybuild
 
 override_dh_auto_test:
 	# Don't run the tests!
 
 override_dh_auto_build:
 	dh_auto_build
-	PYTHONPATH=. sphinx-build -N -bhtml docs/ build/html
-	# PYTHONPATH=. sphinx-build -N -bman  docs/ build/man
+	PYTHONPATH=. sphinx-build -v -bhtml docs/ build/html
+	# PYTHONPATH=. sphinx-build -v -bman  docs/ build/man

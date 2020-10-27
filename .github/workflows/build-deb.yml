@@ -1,0 +1,18 @@
+name: Build-Deb
+
+# Run this workflow every time a new commit pushed to repository
+on: push
+
+jobs:
+  build-deb:
+    name: Build Debian Package
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build 32-bit Debian package
+        uses: pi-top/action-debian-package@v2
+        with:
+            target_architecture: "armhf"
