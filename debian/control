@@ -23,7 +23,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
  python3-opencv,
- python3-pt-pma,
+ python3-pt-pma (= ${source:Version}),
+Recommends:
+ python3-pt-pma-doc (= ${source:Version}),
 # Suggests:
 # # https://github.com/pi-top/pi-top-4-.NET-Core-API
 #  dotnet-pi-top,
@@ -37,6 +39,7 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Suggests:
+ python3-pt-pma-doc (= ${source:Version}),
  python3-opencv,
 Description: pi-top [4]'s Maker Architecture (PMA) Python library
  This is the Python library part of the package.
