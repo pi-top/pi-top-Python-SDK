@@ -4,7 +4,6 @@ from time import sleep
 from ptcommon.smbus_device import SMBusDevice
 from ptcommon.logger import PTLogger
 from ptcommon.singleton import Singleton
-from .ptlsm9ds1 import lsm9ds1
 from .common.plate_registers import PlateRegisters
 
 
@@ -13,12 +12,9 @@ class PlateInterface:
 
     def __init__(self):
 
-        self._device_imu = None
         self._device_mcu = None
         self._mcu_connected = False
-        self._imu_connected = False
         self._mcu_thread_lock = Lock()
-        self._imu_thread_lock = Lock()
         self._heartbeat_thread = None
 
     def __del__(self):
@@ -30,13 +26,6 @@ class PlateInterface:
 
         # Return the SMBusDevice instance
         return self._device_mcu
-
-    def get_device_imu(self):
-
-        self._connect_imu()
-
-        # Return the lsm9ds1 instance
-        return self._device_imu
 
     def _connect_mcu(self):
 
@@ -60,22 +49,6 @@ class PlateInterface:
             except Exception as e:
                 self._disconnect_mcu()
                 raise IOError("Unable to connect to plate (over I2C). " + str(e)) from None
-
-    def _connect_imu(self):
-
-        with self._imu_thread_lock:
-
-            if self._imu_connected:
-                PTLogger.debug("Already connected to IMU")
-                return
-
-            try:
-                self._device_imu = lsm9ds1()
-
-                self._imu_connected = True
-
-            except Exception as e:
-                raise IOError("Unable to connect to IMU. " + str(e)) from None
 
     def _disconnect_mcu(self):
 

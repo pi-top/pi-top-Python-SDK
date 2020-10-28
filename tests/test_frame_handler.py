@@ -8,7 +8,6 @@ modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()
 modules["numpy"] = Mock()
-modules["smbus2"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
 
 

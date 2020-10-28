@@ -18,7 +18,6 @@ modules["PyV4L2Camera.camera"] = Mock()
 modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["numpy"] = Mock()
-modules["smbus2"] = Mock()
 modules["ptpma.ultrasonic_sensor"] = Mock()
 
 
