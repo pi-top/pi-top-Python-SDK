@@ -4,6 +4,6 @@ Source: https://pi-top.com
 Upstream-Contact: deb-maintainers@pi-top.com
 
 Files: *
-Copyright: Copyright 2018 CEED ltd.
+Copyright: Copyright 2020 CEED ltd.
 License: Apache-2.0
  `/usr/share/common-licenses/Apache-2.0'.

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=pi-top Python API
+Comment=Link to pi-top Python API documentation
+TryExec=/usr/bin/x-www-browser
+Exec=x-www-browser file:///usr/share/doc/python3-pitop/html/index.html
+Icon=dictionary
+Terminal=false
+Categories=PiTopFourDocs;

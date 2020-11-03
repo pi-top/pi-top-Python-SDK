@@ -10,44 +10,44 @@ These components are considered inputs due to their ability to produce a value.
 Analogue Components (A Port)
 =================================================
 
-PMALightSensor
+LightSensor
 -------------------------------
 
-.. autoclass:: ptpma.PMALightSensor
+.. autoclass:: pitop.pma.LightSensor
 
-PMAPotentiometer
+Potentiometer
 -------------------------------
 
-.. autoclass:: ptpma.PMAPotentiometer
+.. autoclass:: pitop.pma.Potentiometer
 
-PMASoundSensor
+SoundSensor
 -------------------------------
 
-.. autoclass:: ptpma.PMASoundSensor
+.. autoclass:: pitop.pma.SoundSensor
 
 
 Digital Components (D Port)
 =================================================
 
-PMAButton
+Button
 -------------------------------
 
-.. autoclass:: ptpma.PMAButton
+.. autoclass:: pitop.pma.Button
    :inherited-members: gpiozero.Button
    :exclude-members: pin_factory
 
-PMAUltrasonicSensor
+UltrasonicSensor
 -------------------------------
 
-.. autoclass:: ptpma.PMAUltrasonicSensor
+.. autoclass:: pitop.pma.UltrasonicSensor
     :exclude-members: ECHO_LOCK
 
 
 USB Components (USB Port)
 =================================================
 
-PMACamera
+Camera
 -------------------------------
 
-.. autoclass:: ptpma.PMACamera(camera_device_id=0)
+.. autoclass:: pitop.pma.Camera(camera_device_id=0)
     :exclude-members: __init__, from_file_system, from_usb

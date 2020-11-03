@@ -9,14 +9,14 @@ Motor Parameters
 BrakingType
 -------------------------------
 
-.. autoclass:: ptpma.parameters.BrakingType
+.. autoclass:: pitop.pma.parameters.BrakingType
 
 ForwardDirection
 -------------------------------
 
-.. autoclass:: ptpma.parameters.ForwardDirection
+.. autoclass:: pitop.pma.parameters.ForwardDirection
 
 Direction
 -------------------------------
 
-.. autoclass:: ptpma.parameters.Direction
+.. autoclass:: pitop.pma.parameters.Direction

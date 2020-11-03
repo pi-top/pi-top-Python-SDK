@@ -1,4 +1,4 @@
-from ptpma.camera_core import FrameHandler, CaptureActions
+from pitop.pma.camera_core import FrameHandler, CaptureActions
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock, patch
@@ -8,7 +8,7 @@ modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()
 modules["numpy"] = Mock()
-modules["ptpma.ultrasonic_sensor"] = Mock()
+modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 
 class FrameHandlerTestCase(TestCase):

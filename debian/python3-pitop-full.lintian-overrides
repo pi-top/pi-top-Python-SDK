@@ -1,0 +1,5 @@
+python3-pitop-full: desktop-command-not-in-package usr/share/applications/python3-pitop-docs.desktop x-www-browser
+python3-pitop-full: desktop-entry-invalid-category PiTopFourDocs usr/share/applications/python3-pitop-docs.desktop
+python3-pitop-full: desktop-entry-lacks-main-category usr/share/applications/python3-pitop-docs.desktop
+python3-pitop-full: desktop-entry-lacks-keywords-entry usr/share/applications/python3-pitop-docs.desktop
+python3-pitop-full: extra-license-file usr/share/doc/python3-pitop-full/LICENSE.gz
