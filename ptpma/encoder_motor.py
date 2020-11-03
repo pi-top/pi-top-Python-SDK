@@ -44,7 +44,7 @@ class PMAEncoderMotor:
     """
 
     MMK_STANDARD_GEAR_RATIO = 41.8
-    MAX_DC_MOTOR_RPM = 6000
+    MAX_DC_MOTOR_RPM = 4800
     _wheel_diameter = 0.075
 
     def __init__(self, port_name, forward_direction, braking_type=BrakingType.COAST, wheel_diameter=0.064):
