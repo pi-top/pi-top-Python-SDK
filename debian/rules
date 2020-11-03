@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-export PYBUILD_NAME=pt-pma
+export PYBUILD_NAME=pitop
 
 %:
 	dh $@ --with=sphinxdoc --buildsystem=pybuild

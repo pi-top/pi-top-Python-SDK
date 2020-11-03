@@ -1,5 +1,5 @@
 =====================================================
-pi-top Maker Architecture (PMA) Components Reference
+pi-top Python API Reference
 =====================================================
 
 .. image:: _static/foundation_kit.png
@@ -26,6 +26,8 @@ Table of Contents
 .. toctree::
     :maxdepth: 4
     :numbered:
+
+    ptoled
 
     input_components
     output_components

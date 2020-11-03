@@ -1,4 +1,4 @@
-Source: pi-top-maker-architecture
+Source: pitop
 Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
@@ -17,34 +17,50 @@ Build-Depends:
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
-Package: pt-pma
+Package: python3-pitop-full
 Architecture: any
 Depends:
  ${misc:Depends},
- ${python3:Depends},
  python3-opencv,
- python3-pt-pma (= ${binary:Version}),
+ python3-pitop (= ${binary:Version}),
 Recommends:
- python3-pt-pma-doc (= ${source:Version}),
+ python3-pitop-doc (= ${source:Version}),
 # Suggests:
 # # https://github.com/pi-top/pi-top-4-.NET-Core-API
 #  dotnet-pi-top,
-Description: pi-top [4]'s Maker Architecture (PMA)
- This is the top-level dummy package which will install all of the required
- components for full pi-top Maker Architecture Support.
+Description: pi-top Python 3 Library
+ General purpose Python library for controlling a pi-top.
+ .
+ This is a top-level dummy package which will install all of the required
+ components for full pi-top support.
 
-Package: python3-pt-pma
+Package: python3-pitop
 Architecture: any
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+ alsa-utils,
+ coreutils (>= 8),
+# Minimum essential OLED font
+ fonts-droid-fallback,
+ i2c-tools,
+# Required for hub communication; such as getting case button state
+ pt-device-manager,
+ raspi-config,
+Recommends:
+# Preferred OLED font
+ fonts-fs-me-pro,
+# Required for Luma emulator
+ python3-pygame,
 Suggests:
- python3-pt-pma-doc (= ${source:Version}),
- python3-opencv,
-Description: pi-top [4]'s Maker Architecture (PMA) Python library
- This is the Python library part of the package.
+ python3-pitop-doc (= ${source:Version}),
+ python3-pitop-full,
+Description: pi-top Python 3 Library
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
 
-Package: python3-pt-pma-doc
+Package: python3-pitop-doc
 Architecture: all
 Section: doc
 Depends:
@@ -52,5 +68,48 @@ Depends:
  ${sphinxdoc:Depends},
 Built-Using:
  ${sphinxdoc:Built-Using},
-Description: pi-top [4]'s Maker Architecture (PMA) Python library documentation
- This is the documentation for the package.
+Description: pi-top Python 3 Library
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the documentation part of the package.
+
+Package: python3-pt-buttons
+Architecture: armhf
+Depends: ${misc:Depends},
+ ${python3:Depends},
+ python3-pitop (= ${binary:Version}),
+Description: Deprecated pi-top [4] Buttons Library (Python 3.x)
+ A library to interacting with the pi-top [4]'s buttons
+ .
+ Note: this package is replaced by python3-pitop.
+
+Package: python3-pt-oled
+Architecture: any
+Depends: ${misc:Depends},
+ python3-pitop (= ${binary:Version}),
+Description: Deprecated pi-top OLED Library (Python 3.x)
+ A library to interacting with the pi-top [4]'s OLED screen
+ .
+ Note: this package is replaced by python3-pitop.
+
+Package: python3-pt-pma
+Architecture: any
+Depends:
+ ${misc:Depends},
+ python3-pitop (= ${binary:Version}),
+Description: Deprecated pi-top [4] PMA Library (Python 3.x)
+ A library to interacting with the pi-top [4]'s
+ Maker Architecture (PMA)
+ .
+ Note: this package is replaced by python3-pitop.
+
+Package: python3-pt-proto-plus
+Architecture: any
+Depends:
+ ${misc:Depends},
+ python3-pitop (= ${binary:Version}),
+Description: Deprecated pi-topPROTO+ Library (Python 3.x)
+ Python module to communicate with the pi-top
+ inventor's kit addon board.
+ .
+ Note: this package is replaced by python3-pitop.

@@ -1,4 +1,6 @@
-pyv4l2camera python3-pyv4l2camera
 gpiozero python3-gpiozero
 imageio python3-imageio
-ptcommon python3-pt-common
+isc_dhcp_leases python3-isc-dhcp-leases
+netifaces python3-netifaces
+pyv4l2camera python3-pyv4l2camera
+systemd python3-systemd

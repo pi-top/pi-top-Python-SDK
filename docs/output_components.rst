@@ -10,17 +10,17 @@ These components are considered outputs due to their ability to be controlled.
 Digital Components (D Port)
 =================================================
 
-PMABuzzer
+Buzzer
 -------------------------------
 
-.. autoclass:: ptpma.PMABuzzer
+.. autoclass:: pitop.pma.Buzzer
    :inherited-members: gpiozero.Buzzer
    :exclude-members: pin_factory
 
-PMALed
+LED
 -------------------------------
 
-.. autoclass:: ptpma.PMALed
+.. autoclass:: pitop.pma.LED
    :inherited-members: gpiozero.LED
    :exclude-members: pin_factory
 
@@ -28,17 +28,17 @@ PMALed
 Encoder Motor (M Port)
 =================================================
 
-PMAEncoderMotor
+EncoderMotor
 -------------------------------
 
-.. autoclass:: ptpma.PMAEncoderMotor
+.. autoclass:: pitop.pma.EncoderMotor
     :exclude-members: MMK_STANDARD_GEAR_RATIO, MAX_DC_MOTOR_RPM
 
 Servo Motor (S Port)
 =================================================
 
-PMAServoMotor
+ServoMotor
 -------------------------------
 
-.. autoclass:: ptpma.PMAServoMotor
+.. autoclass:: pitop.pma.ServoMotor
     :exclude-members: ANGLE_RANGE, SPEED_RANGE, MIN_PULSE_WIDTH_MICRO_S, MAX_PULSE_WIDTH_MICRO_S, REGISTER_MIN_PULSE_WIDTH, REGISTER_MAX_PULSE_WIDTH, REGISTER_PWM_FREQUENCY, PWM_FREQUENCY, PWM_PERIOD, DUTY_REGISTER_RANGE, SERVO_LOWER_DUTY, SERVO_UPPER_DUTY, RegisterTypes

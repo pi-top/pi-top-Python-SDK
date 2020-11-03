@@ -1,6 +1,7 @@
-pi-top-maker-architecture (3.0.0) buster; urgency=medium
+pitop (3.0.0) buster; urgency=medium
 
-  * Update source name to pi-top-maker-architecture
+  * Update source name to pitop
+  * Merge pitop.core
   * Refactor files
   * Use pybuild/distutils to create package
   * Separate docs into 'python3-pt-pma-docs' package
