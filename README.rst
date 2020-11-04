@@ -10,15 +10,6 @@ pi-top Python API
     :target: https://badge.fury.io/py/pitop
     :alt: Latest Version
 
-.. image:: https://travis-ci.org/pi-top/pitop.svg?branch=master
-    :target: https://travis-ci.org/pi-top/pitop
-    :alt: Build Tests
-
-.. image:: https://img.shields.io/codecov/c/github/pi-top/pitop/master.svg?maxAge=2592000
-    :target: https://codecov.io/github/pi-top/pitop
-    :alt: Code Coverage
-
-
 A simple interface to interact with pi-top components and add-ons.
 
 .. image:: docs/_static/pi_top_4.png
@@ -122,6 +113,18 @@ pitop.pulse
 
 Communicate with the pi-topPULSE addon board
 
+-------------
+Requirements
+-------------
+
+The following packages are required in your pi-top for this library to work.
+
+- `alsa-utils`: used for configuring the system audio; such as setting the correct audio card when connecting a pi-topSPEAKER.
+- `coreutils`: used to perform basic OS operations and commands; such as `ls` and `chmod`
+- `fonts-droid-fallback`: minimum essential font used by the OLED screen.
+- `i2c-tools`: communicate with pi-top I2C devices.
+- `pt-device-manager`: used for communication with pi-top's hub; such as getting battery state.
+- `raspi-config`: required to communicate and set parameters to the Raspberry Pi.
 
 -------------
 Installation
