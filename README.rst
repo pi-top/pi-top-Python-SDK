@@ -1,5 +1,5 @@
 =====================================================
-pi-top Maker Architecture
+pi-top Python API
 =====================================================
 
 .. image:: https://badge.fury.io/gh/pi-top%2Fpitop.svg
@@ -18,36 +18,120 @@ pi-top Maker Architecture
     :target: https://codecov.io/github/pi-top/pitop
     :alt: Code Coverage
 
-A simple interface to pi-top Maker Architecture components with pi-top [4].
 
+A simple interface to interact with pi-top [4] components and add-ons.
+
+.. image:: docs/_static/pi_top_4.png
+
+-----
 About
-=====
+-----
 
-Component interfaces are provided to allow a frictionless way to get started
-with physical computing.
+This library is installed as a python 3 module called `pitop`. It includes several
+modules that allow you to easily interact with pi-top [4] components.
 
-With very little code, you can quickly get going connecting your components
-together.
-
-The library includes interfaces to many simple everyday components, as well as
-some more complex things like sensors, analogue-to-digital converters, full
-colour LEDs, robotics kits and more. See the `Recipes`_ chapter of the
-documentation for ideas on how to get started.
+See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 
 .. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
 
-Installation
-============
+------------------------
+Submodules overview
+------------------------
 
-The pi-top Maker Architecture API is installed by default in the pi-topOS desktop image, available from
-pi-top.com_. To install on Raspbian Lite or other operating systems,
-including for PCs using remote GPIO, see the `Installing`_ chapter.
+The `pitop` module lets you interact with most of the hardware inside a pi-top [4]. 
+
+pitop.core
+========================
+
+Contains a collection of common classes and modules used by pi-top Python-based software.
+
+pitop.case_buttons
+========================
+
+Classes to interact with pi-top [4]'s case buttons.
+
+.. code-block:: python
+
+    from ptbuttons import PTUpButton, PTDownButton
+
+    up = PTUpButton()
+    down = PTDownButton()
+
+    def up_action():
+        print ("UP is pressed")
+
+    def down_action():
+        print ("DOWN is pressed")
+
+    up.when_pressed = up_action
+    down.when_pressed = down_action
+
+pitop.keyboard
+========================
+
+Provides the functionality to use key presses as buttons, as a drop-in replacement for a GPIO button.
+
+pitop.oled
+========================
+
+Module for interacting with the pi-top [4]'s OLED screen
+
+.. code-block:: python
+
+    from pitop.oled import PTOLEDDisplay
+    from time import sleep
+
+    oled_screen = PTOLEDDisplay()
+    oled_screen.draw_image_file("wave.png")
+    sleep(2)
+
+
+pitop.pma
+========================
+
+A library to interacting with the pi-top [4]'s Maker Architecture (PMA) components, such as
+LED's, buzzers and motors.
+
+.. code-block:: python
+
+    from pitop.pma import Button, LED
+    from time import sleep
+
+    button = Button("D1")
+    led = LED("D2")
+
+    # Connect button to LED
+    button.when_pressed = led.on
+    button.when_released = led.off
+
+    # Wait for Ctrl+C to exit
+    try:
+        while True:
+            sleep(1)
+    except KeyboardInterrupt:
+        pass
+
+
+pitop.protoplus
+========================
+
+pitop.pulse
+========================
+
+
+-------------
+Installation
+-------------
+
+The pi-top python API is installed by default in the pi-topOS desktop image, available from
+pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Installing`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
 .. _Installing: https://pitop.readthedocs.io/en/stable/installing.html
 
+-------------
 Documentation
-=============
+-------------
 
 Comprehensive documentation is available at https://pitop.readthedocs.io/.
 Please refer to the `Contributing`_ and `Development`_ chapters in the
@@ -56,8 +140,9 @@ documentation for information on contributing to the project.
 .. _Contributing: https://pitop.readthedocs.io/en/stable/contributing.html
 .. _Development: https://pitop.readthedocs.io/en/stable/development.html
 
+-------------
 Contributors
-============
+-------------
 
 See the `contributors page`_ on GitHub for more info.
 
