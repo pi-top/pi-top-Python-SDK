@@ -9,10 +9,24 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build 32-bit Debian package
-        uses: pi-top/action-debian-package@v2
+      - name: Build 32-bit and 64-bit Debian packages
+        uses: pi-top/action-debian-package@v3
         with:
-            target_architecture: "armhf"
+            source_directory: "./"
+            artifacts_directory: "./artifacts"
+            target_architectures: "armhf,arm64"
+            dpkg_buildpackage_opts: "--no-sign, -d"
+            lintian_opts: "--no-tag-display-limit --display-info --show-overrides"
+            get_dev_packages_from_backports: "1"
+
+      - name: Upload Debian package artifacts
+        uses: 'actions/upload-artifact@v2'
+        with:
+            name: "$GITHUB_REPOSITORY_NAME"
+            path: "${{ github.workspace }}/artifacts"
