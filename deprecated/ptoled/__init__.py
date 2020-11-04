@@ -1,4 +1,5 @@
 from pitop.oled import (
+    PTOLEDDisplay,
     canvas,
     device_helper,
     display,
