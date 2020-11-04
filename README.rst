@@ -1,6 +1,6 @@
-========
+=====================================================
 pi-top Maker Architecture
-========
+=====================================================
 
 .. image:: https://badge.fury.io/gh/pi-top%2Fpitop.svg
     :target: https://badge.fury.io/gh/pi-top%2Fpitop
