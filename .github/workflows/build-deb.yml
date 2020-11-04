@@ -28,5 +28,5 @@ jobs:
       - name: Upload Debian package artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-${{ env.GITHUB_SHA_SHORT }}"
             path: "${{ github.workspace }}/artifacts"
