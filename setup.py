@@ -82,7 +82,6 @@ __requires__ = [
     "luma.oled",
     "luma-core",
     "monotonic",
-    "pil",
     # Communication with the device manager
     "zmq",
     # Keyboard
