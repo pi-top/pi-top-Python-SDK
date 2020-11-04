@@ -20,18 +20,23 @@ try:
 except ImportError:
     pass
 
-with open(os.path.join(HERE, "debian/changelog")) as f:
-    first_line = f.readline()
+with open("debian/rules") as search:
+    for line in search:
+        if "export PYBUILD_NAME=" in line:
+            __project__ = line.split("=")[1]
+            break
 
-__project__ = first_line.split(" ")[0]
-__version__ = first_line.split(" ")[1].replace("(", "").replace(")", "")
+assert __project__ != ""
+
+with open(os.path.join(HERE, "debian/changelog")) as f:
+    first_line_changelog = f.readline()
+
+__version__ = first_line_changelog.split(" ")[1].replace("(", "").replace(")", "")
+assert __version__ != ""
 project = "pi-top Maker Architecture (PMA) Components"
 # TODO: get from trailer line in changelog?
 __author__ = "pi-top"
 __author_email__ = "deb-maintainers@pi-top.com"
-
-assert __project__ != ""
-assert __version__ != ""
 
 __url__ = "https://github.com/pi-top/pitop"
 __platforms__ = "ALL"
