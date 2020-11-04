@@ -10,7 +10,7 @@ on:
 jobs:
   deploy:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout code
@@ -27,8 +27,17 @@ jobs:
         pip install setuptools wheel twine
 
     - name: Build
+      # Create source distribution (sdist) and wheel (bdist_wheel)
+      # By default, both will be placed in dist/ under the current directory
       run: |
         python setup.py sdist bdist_wheel
+
+    - name: Upload Python distribution artifacts
+      uses: 'actions/upload-artifact@v2'
+      with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+          path: "${{ github.workspace }}/dist"
+
 
     - name: Publish
       env:
