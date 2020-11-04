@@ -83,6 +83,7 @@ Description: Deprecated pi-top [4] Buttons Library (Python 3.x)
 Package: python3-pt-oled
 Architecture: any
 Depends: ${misc:Depends},
+ ${python3:Depends},
  python3-pitop (= ${binary:Version}),
 Description: Deprecated pi-top OLED Library (Python 3.x)
  A library to interacting with the pi-top [4]'s OLED screen
@@ -93,6 +94,7 @@ Package: python3-pt-pma
 Architecture: any
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  python3-pitop (= ${binary:Version}),
 Description: Deprecated pi-top [4] PMA Library (Python 3.x)
  A library to interacting with the pi-top [4]'s
@@ -104,6 +106,7 @@ Package: python3-pt-proto-plus
 Architecture: any
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  python3-pitop (= ${binary:Version}),
 Description: Deprecated pi-topPROTO+ Library (Python 3.x)
  Python module to communicate with the pi-top
