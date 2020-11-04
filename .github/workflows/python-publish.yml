@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
@@ -32,7 +32,7 @@ jobs:
           python setup.py sdist bdist_wheel
 
       - name: Upload Python distribution artifacts
-        uses: 'actions/upload-artifact@v2'
+        uses: "actions/upload-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "${{ github.workspace }}/dist"

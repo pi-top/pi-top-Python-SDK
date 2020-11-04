@@ -2,9 +2,9 @@ name: Build ARM Debian Packages
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ "master" ]
   push:
-    branches: [ $default-branch ]
+    branches: [ "master" ]
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
           _uses_pybuild: "1"
 
       - name: Upload Debian package artifacts
-        uses: 'actions/upload-artifact@v2'
+        uses: "actions/upload-artifact@v2"
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "${{ github.workspace }}/artifacts"
