@@ -1,11 +1,17 @@
 name: Build ARM Debian Packages
 
-# Run this workflow every time a new commit pushed to repository
-on: push
+# Run this workflow when:
+#   a pull request is made to master
+#   a commit is pushed to master
+on:
+  pull_request:
+    branches: [ $default-branch ]
+  push:
+    branches: [ $default-branch ]
 
 jobs:
-  build-deb:
-    name: Build ARM Debian Packages
+  build:
+
     runs-on: ubuntu-20.04
 
     steps:
