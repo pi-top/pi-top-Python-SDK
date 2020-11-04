@@ -20,7 +20,7 @@ try:
 except ImportError:
     pass
 
-with open("debian/rules") as search:
+with open(os.path.join(HERE, "debian/rules")) as search:
     for line in search:
         if "export PYBUILD_NAME=" in line:
             __project__ = line.split("=")[1]
