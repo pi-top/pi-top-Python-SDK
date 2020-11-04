@@ -1,3 +1,13 @@
+pitop (3.1.0) buster; urgency=medium
+
+  * Merge pitop.case_buttons
+  * Merge pitop.keyboard
+  * Merge pitop.oled
+  * Merge pitop.protoplus
+  * Merge pitop.pulse
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 04 Nov 2020 16:26:34 +0000
+
 pitop (3.0.0) buster; urgency=medium
 
   * Update source name to pitop
