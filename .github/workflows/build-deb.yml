@@ -1,8 +1,5 @@
 name: Build ARM Debian Packages
 
-# Run this workflow when:
-#   a pull request is made to master
-#   a commit is pushed to master
 on:
   pull_request:
     branches: [ $default-branch ]
@@ -24,16 +21,16 @@ jobs:
       - name: Build 32-bit and 64-bit Debian packages
         uses: pi-top/action-debian-package@v4
         with:
-            source_directory: "./"
-            artifacts_directory: "./artifacts"
-            target_architectures: "armhf,arm64"
-            dpkg_buildpackage_opts: "--no-sign --no-check-builddeps"
-            lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides"
-            get_dev_packages_from_backports: "1"
-            _uses_pybuild: "1"
+          source_directory: "./"
+          artifacts_directory: "./artifacts"
+          target_architectures: "armhf,arm64"
+          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps"
+          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides"
+          get_dev_packages_from_backports: "1"
+          _uses_pybuild: "1"
 
       - name: Upload Debian package artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-            path: "${{ github.workspace }}/artifacts"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          path: "${{ github.workspace }}/artifacts"
