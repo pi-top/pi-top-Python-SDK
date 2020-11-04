@@ -1,4 +1,4 @@
-name: Test Upload Python Package
+name: Upload Python Package to TestPyPI
 
 on:
   pull_request:
