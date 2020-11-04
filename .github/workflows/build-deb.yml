@@ -1,4 +1,4 @@
-name: Build-Deb
+name: Build Debian Package
 
 # Run this workflow every time a new commit pushed to repository
 on: push
@@ -24,9 +24,10 @@ jobs:
             dpkg_buildpackage_opts: "--no-sign -d"
             lintian_opts: "--no-tag-display-limit --display-info --show-overrides"
             get_dev_packages_from_backports: "1"
+            _uses_pybuild: "1"
 
       - name: Upload Debian package artifacts
         uses: 'actions/upload-artifact@v2'
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-${{ env.GITHUB_SHA_SHORT }}"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}"
             path: "${{ github.workspace }}/artifacts"
