@@ -1,4 +1,4 @@
-"pi-top [4]"s Maker Architecture(PMA)"
+"pi-top Python API"
 
 import io
 import os
