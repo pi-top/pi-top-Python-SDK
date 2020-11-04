@@ -66,7 +66,7 @@ __requires__ = [
     # For network interface checking
     "netifaces",
     # For journal logging
-    "systemd",
+    "python-systemd",
     # PMA
     # To use GPIO & components
     "gpiozero",
