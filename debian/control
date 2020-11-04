@@ -25,7 +25,7 @@ Depends:
  python3-pitop (= ${binary:Version}),
 Recommends:
  python3-pitop-doc (= ${source:Version}),
-Description: pi-top Python 3 Library
+Description: pi-top Python 3 Library - Complete
  General purpose Python library for controlling a pi-top.
  .
  This is a top-level dummy package which will install all of the required
@@ -52,7 +52,7 @@ Recommends:
 Suggests:
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
-Description: pi-top Python 3 Library
+Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
  This is the main Python library part of the package.
@@ -65,7 +65,7 @@ Depends:
  ${sphinxdoc:Depends},
 Built-Using:
  ${sphinxdoc:Built-Using},
-Description: pi-top Python 3 Library
+Description: pi-top Python 3 Library - Documentation
  General purpose Python library for controlling a pi-top.
  .
  This is the documentation part of the package.
