@@ -1,5 +1,8 @@
 from pitop.oled import (
     PTOLEDDisplay,
+    get_device_instance,
+    device_reserved,
+    reset_device_instance,
     canvas,
     device_helper,
     display,
