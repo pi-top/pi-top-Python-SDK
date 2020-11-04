@@ -19,7 +19,7 @@ pi-top Python API
     :alt: Code Coverage
 
 
-A simple interface to interact with pi-top [4] components and add-ons.
+A simple interface to interact with pi-top components and add-ons.
 
 .. image:: docs/_static/pi_top_4.png
 
@@ -28,7 +28,7 @@ About
 -----
 
 This library is installed as a python 3 module called `pitop`. It includes several
-modules that allow you to easily interact with pi-top [4] components.
+modules that allow you to easily interact with pi-top hardware.
 
 See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 
@@ -38,7 +38,7 @@ See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 Submodules overview
 ------------------------
 
-The `pitop` module lets you interact with most of the hardware inside a pi-top [4]. 
+The `pitop` module lets you interact with most of the hardware inside a pi-top. 
 
 pitop.core
 ========================
@@ -89,7 +89,7 @@ Module for interacting with the pi-top [4]'s OLED screen
 pitop.pma
 ========================
 
-A library to interacting with the pi-top [4]'s Maker Architecture (PMA) components, such as
+A module for interacting with the pi-top [4]'s Maker Architecture (PMA) components, such as
 LED's, buzzers and motors.
 
 .. code-block:: python
@@ -115,8 +115,12 @@ LED's, buzzers and motors.
 pitop.protoplus
 ========================
 
+
+
 pitop.pulse
 ========================
+
+Communicate with the pi-topPULSE addon board
 
 
 -------------
