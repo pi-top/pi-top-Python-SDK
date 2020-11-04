@@ -28,7 +28,7 @@ jobs:
             artifacts_directory: "./artifacts"
             target_architectures: "armhf,arm64"
             dpkg_buildpackage_opts: "--no-sign --no-check-builddeps"
-            lintian_opts: "--no-tag-display-limit --display-info --show-overrides"
+            lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides"
             get_dev_packages_from_backports: "1"
             _uses_pybuild: "1"
 
