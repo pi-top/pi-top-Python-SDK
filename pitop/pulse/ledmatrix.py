@@ -2,7 +2,7 @@
 # Copyright (C) 2017  CEED ltd.
 #
 
-from ptcommon.logger import PTLogger
+from pitop.core.logger import PTLogger
 from copy import deepcopy
 from math import ceil
 from math import radians

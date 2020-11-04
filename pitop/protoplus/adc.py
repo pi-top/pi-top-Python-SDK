@@ -1,4 +1,4 @@
-from ptcommon.i2c_device import I2CDevice
+from pitop.core.i2c_device import I2CDevice
 from time import sleep
 
 

@@ -2,8 +2,8 @@
 
 from sys import stderr
 import zmq
-from ptcommon.ptdm_message import Message
-from ptcommon.common_ids import DeviceID
+from pitop.core.ptdm_message import Message
+from pitop.core.common_ids import DeviceID
 
 
 # Error print function
