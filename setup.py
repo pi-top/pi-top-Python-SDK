@@ -23,7 +23,7 @@ except ImportError:
 with open(os.path.join(HERE, "debian/rules")) as search:
     for line in search:
         if "export PYBUILD_NAME=" in line:
-            __project__ = line.split("=")[1]
+            __project__ = line.split("=")[1].rstrip()
             break
 
 assert __project__ != ""
@@ -32,7 +32,7 @@ with open(os.path.join(HERE, "debian/changelog")) as f:
     first_line_changelog = f.readline()
 
 # Get first field; remove brackets
-__version__ = first_line_changelog.split(" ")[1].replace("(", "").replace(")", "")
+__version__ = first_line_changelog.split(" ")[1].replace("(", "").replace(")", "").rstrip()
 
 # Convert from gbp version format to PEP 440 local version format:
 # (replace '~' with '+')
