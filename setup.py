@@ -114,7 +114,7 @@ elif sys.version_info[:2] == (3, 4):
 
 __entry_points__ = {
     "console_scripts": [
-        "pt-oled=cli.pt-oled:main",
+        "pt-oled=cli.pt_oled:main",
     ]
 }
 
