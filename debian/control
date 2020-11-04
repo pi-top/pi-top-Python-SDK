@@ -25,9 +25,6 @@ Depends:
  python3-pitop (= ${binary:Version}),
 Recommends:
  python3-pitop-doc (= ${source:Version}),
-# Suggests:
-# # https://github.com/pi-top/pi-top-4-.NET-Core-API
-#  dotnet-pi-top,
 Description: pi-top Python 3 Library
  General purpose Python library for controlling a pi-top.
  .
