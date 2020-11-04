@@ -40,10 +40,10 @@ Installation
 ============
 
 The pi-top Maker Architecture API is installed by default in the pi-topOS desktop image, available from
-`pi-top.com`_. To install on Raspbian Lite or other operating systems,
+pi-top.com_. To install on Raspbian Lite or other operating systems,
 including for PCs using remote GPIO, see the `Installing`_ chapter.
 
-.. pi-top.com: https://www.pi-top.com/products/os/
+.. _pi-top.com: https://www.pi-top.com/products/os/
 .. _Installing: https://pitop.readthedocs.io/en/stable/installing.html
 
 Documentation
