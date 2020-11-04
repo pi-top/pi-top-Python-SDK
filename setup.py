@@ -124,6 +124,10 @@ elif sys.version_info[:2] == (3, 4):
 
 __entry_points__ = {
     "console_scripts": [
+        "pt-battery=cli.pt_battery:main",
+        "pt-brightness=cli.pt_brightness:main",
+        "pt-devices=cli.pt_devices:main",
+        "pt-host=cli.pt_host:main",
         "pt-oled=cli.pt_oled:main",
     ]
 }
