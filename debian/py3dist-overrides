@@ -7,5 +7,4 @@ pynput python3-pynput
 python_sonic python3-sonic
 python_systemd python3-systemd
 pyv4l2camera python3-pyv4l2camera
-systemd python3-systemd
 zmq python3-zmq
