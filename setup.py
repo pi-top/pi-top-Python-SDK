@@ -38,6 +38,11 @@ __version__ = first_line_changelog.split(" ")[1].replace("(", "").replace(")", "
 # (replace '~' with '+')
 # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
 __version__ = __version__.replace("~", "+")
+
+# Convert from Debian epoch version format to PEP 440 epoch version format:
+# (replace ':'' with '!')
+# See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
+__version__ = __version__.replace(":", "!")
 assert __version__ != ""
 project = "pi-top Maker Architecture (PMA) Components"
 # TODO: get from trailer line in changelog?
