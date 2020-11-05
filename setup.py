@@ -47,13 +47,14 @@ __author_email__ = "deb-maintainers@pi-top.com"
 __url__ = "https://github.com/pi-top/pitop"
 __platforms__ = "ALL"
 
+# https://pypi.org/classifiers/
 __classifiers__ = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Education",
     "Intended Audience :: Developers",
     "Topic :: Education",
     "Topic :: System :: Hardware",
-    "License :: OSI Approved :: BSD License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.2",
     "Programming Language :: Python :: 3.3",
