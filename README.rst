@@ -19,7 +19,7 @@ About
 -----
 
 This library is installed as a python 3 module called `pitop`. It includes several
-modules that allow you to easily interact with pi-top hardware.
+submodules that allow you to easily interact with most of the hardware inside a pi-top.
 
 See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 
@@ -28,8 +28,6 @@ See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 ------------------------
 Submodules overview
 ------------------------
-
-The `pitop` module lets you interact with most of the hardware inside a pi-top. 
 
 pitop.core
 ========================
@@ -43,7 +41,7 @@ Classes to interact with pi-top [4]'s case buttons.
 
 .. code-block:: python
 
-    from ptbuttons import PTUpButton, PTDownButton
+    from pitop.case_buttons import PTUpButton, PTDownButton
 
     up = PTUpButton()
     down = PTDownButton()
@@ -117,14 +115,22 @@ Communicate with the pi-topPULSE addon board
 Requirements
 -------------
 
-The following packages are required in your pi-top for this library to work.
-
-- `alsa-utils`: used for configuring the system audio; such as setting the correct audio card when connecting a pi-topSPEAKER.
-- `coreutils`: used to perform basic OS operations and commands; such as `ls` and `chmod`
-- `fonts-droid-fallback`: minimum essential font used by the OLED screen.
-- `i2c-tools`: communicate with pi-top I2C devices.
-- `pt-device-manager`: used for communication with pi-top's hub; such as getting battery state.
-- `raspi-config`: required to communicate and set parameters to the Raspberry Pi.
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+| Package Name              | Usage                                                                                                                 |
++===========================+=======================================================================================================================+
+| `alsa-utils`              | Used for configuring the system audio; such as setting the correct audio card when connecting a pi-topSPEAKER.        |
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `coreutils`               | Used to perform basic OS operations and commands; such as `ls` and `chmod`                                            |
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `fonts-droid-fallback`    | Minimum essential font used by the OLED screen.                                                                       |
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `i2c-tools`               | Communicate with pi-top I2C devices.                                                                                  |
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `pt-device-manager`       | Allows communication with pi-top's hub; such as getting battery state.                                                |
+|                           | This package installs a `systemd` service that needs to be running for this library to work properly                  |
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+| `raspi-config`            | Required to communicate and set parameters to the Raspberry Pi.                                                       |
++---------------------------+-----------------------------------------------------------------------------------------------------------------------+
 
 -------------
 Installation
