@@ -1,13 +1,14 @@
-from pynput.keyboard import Key, Listener
-from threading import Thread
 import atexit
 import sys
+
+from threading import Thread
+from pynput.keyboard import Listener
 
 
 class KeyPressListener:
     def __init__(self, key):
         """
-        This class is designed to simulate a button press similar to  the button in the gpiozero,
+        This class is designed to simulate a button press similar to the button in the gpiozero,
          but with a key press from your keyboard.
         """
         self.key = key
