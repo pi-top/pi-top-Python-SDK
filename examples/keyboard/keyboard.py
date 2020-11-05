@@ -1,4 +1,4 @@
-from pitop.keyboard.keylistener import KeyPressListener
+from pitop.keyboard import KeyPressListener
 from time import sleep
 
 
