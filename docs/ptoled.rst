@@ -21,7 +21,7 @@ until your program exits, at which point the system menu is automatically restor
 yourself with a method of being able to exit, it is recommended that you check for a press event on the
 'cancel' button:
 
-.. literalinclude:: ../../src/examples/exit_with_cancel_button.py
+.. literalinclude:: ../examples/oled/exit_with_cancel_button.py
 
 Whilst this snippet is provided for ease of use, it is strongly recommended that you look at the documentation for the pi-top [4] buttons for detailed instructions of its usage.
 
@@ -31,27 +31,27 @@ PTOLEDDisplay class
 
 **Example 1:** Hello, world!
 
-.. literalinclude:: ../../src/examples/hello_world.py
+.. literalinclude:: ../examples/oled/hello_world.py
 
 **Example 2:** Displaying an image
 
-.. literalinclude:: ../../src/examples/display_an_image.py
+.. literalinclude:: ../examples/oled/display_an_image.py
 
 **Example 3:** Displaying an animated image once
 
-.. literalinclude:: ../../src/examples/animated_image_once_simple_way.py
+.. literalinclude:: ../examples/oled/animated_image_once_simple_way.py
 
 **Example 4:** Displaying an animated image once through frame by frame
 
-.. literalinclude:: ../../src/examples/animated_image_once.py
+.. literalinclude:: ../examples/oled/animated_image_once.py
 
 **Example 5:** Displaying an animated image looping forever frame by frame
 
-.. literalinclude:: ../../src/examples/animated_image_loop.py
+.. literalinclude:: ../examples/oled/animated_image_loop.py
 
 **Example 6:** Displaying an animated image looping in background
 
-.. literalinclude:: ../../src/examples/animated_image_loop_in_background.py
+.. literalinclude:: ../examples/oled/animated_image_loop_in_background.py
 
 .. automodule:: pitop.oled
     :members:
@@ -63,19 +63,19 @@ Canvas class
 
 **Example 1:** Drawing with the canvas
 
-.. literalinclude:: ../../src/examples/drawing_with_canvas.py
+.. literalinclude:: ../examples/oled/drawing_with_canvas.py
 
 **Example 2:** Drawing a clock
 
-.. literalinclude:: ../../src/examples/clock.py
+.. literalinclude:: ../examples/oled/clock.py
 
 **Example 3:** A particle-based screensaver
 
-.. literalinclude:: ../../src/examples/particles.py
+.. literalinclude:: ../examples/oled/particles.py
 
 **Example 4:** Prim's algorithm
 
-.. literalinclude:: ../../src/examples/prims_algorithm.py
+.. literalinclude:: ../examples/oled/prims_algorithm.py
 
 
 .. automodule:: pitop.oled.canvas

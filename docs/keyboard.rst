@@ -17,9 +17,9 @@ KeyPressListener
 
 **Example Code:**
 
-.. literalinclude:: ../../src/example.py
+.. literalinclude:: ../examples/keyboard/keyboard.py
 
-.. autoclass:: ptkeyboard.keylistener.KeyPressListener
+.. autoclass:: pitop.keyboard.keylistener.KeyPressListener
 
 
 Special Key Names

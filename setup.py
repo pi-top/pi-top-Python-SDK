@@ -91,7 +91,7 @@ __requires__ = [
     "PyV4L2Camera",
     # OLED
     "luma.oled",
-    "luma-core",
+    "luma.core",
     "monotonic",
     # Communication with the device manager
     "zmq",

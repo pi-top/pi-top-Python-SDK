@@ -5,49 +5,49 @@ Component Examples
 Button
 -------------------------------
 
-.. literalinclude:: ../examples/button.py
+.. literalinclude:: ../examples/pma/button.py
 
 Light Sensor
 -------------------------------
 
-.. literalinclude:: ../examples/light_sensor.py
+.. literalinclude:: ../examples/pma/light_sensor.py
 
 Sound Sensor
 -------------------------------
 
-.. literalinclude:: ../examples/sound_sensor.py
+.. literalinclude:: ../examples/pma/sound_sensor.py
 
 Potentiometer
 -------------------------------
 
-.. literalinclude:: ../examples/potentiometer.py
+.. literalinclude:: ../examples/pma/potentiometer.py
 
 Ultrasonic Sensor
 -------------------------------
 
-.. literalinclude:: ../examples/ultrasonic_sensor.py
+.. literalinclude:: ../examples/pma/ultrasonic_sensor.py
 
 Buzzer
 -------------------------------
 
-.. literalinclude:: ../examples/buzzer.py
+.. literalinclude:: ../examples/pma/buzzer.py
 
 LED
 -------------------------------
 
-.. literalinclude:: ../examples/led.py
+.. literalinclude:: ../examples/pma/led.py
 
 Encoder Motor
 -------------------------------
 
-.. literalinclude:: ../examples/encoder_motor.py
+.. literalinclude:: ../examples/pma/encoder_motor.py
 
 Servo Motor
 -------------------------------
 
-.. literalinclude:: ../examples/servo_motor.py
+.. literalinclude:: ../examples/pma/servo_motor.py
 
 Camera (capture video)
 -------------------------------
 
-.. literalinclude:: ../examples/camera_capture_video.py
+.. literalinclude:: ../examples/pma/camera_capture_video.py

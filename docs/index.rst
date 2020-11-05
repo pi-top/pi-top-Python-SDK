@@ -28,6 +28,10 @@ Table of Contents
     :numbered:
 
     ptoled
+    keyboard
+    ptbuttons
+    pulse/eeprom
+    pulse/manual-configuration
 
     input_components
     output_components

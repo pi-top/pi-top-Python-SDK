@@ -1,4 +1,4 @@
-from ptbuttons import PTUpButton, PTDownButton, PTSelectButton, PTCancelButton
+from pitop.case_buttons import PTUpButton, PTDownButton, PTSelectButton, PTCancelButton
 from unittest.mock import MagicMock, patch
 from unittest import TestCase, main
 import sys

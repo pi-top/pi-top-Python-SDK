@@ -1,5 +1,5 @@
 from pitop.oled import PTOLEDDisplay
-from ptbuttons import PTCancelButton
+from pitop.case_buttons import PTCancelButton
 from time import sleep
 
 oled_screen = PTOLEDDisplay()

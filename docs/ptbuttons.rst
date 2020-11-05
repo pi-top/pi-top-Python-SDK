@@ -9,14 +9,14 @@ To get started, copy this code into your program and see what you can make using
 Note: when you write a program that interacts with the pi-top [4] buttons, you will not be able to use them to control the mini-screen system menu.
 
 
-.. literalinclude:: ../../src/examples/buttons_example.py
+.. literalinclude:: ../examples/case_buttons/buttons_example.py
 
 
 
 PTButton
 ====================
 
-.. autoclass:: ptbuttons.PTButton
+.. autoclass:: pitop.case_buttons.PTButton
     :members:
 
     .. automethod:: __init__
@@ -24,24 +24,24 @@ PTButton
 PTButtons
 ====================
 
-.. autoclass:: ptbuttons.PTButtons
+.. autoclass:: pitop.case_buttons.PTButtons
 
 PTUpButton
 ====================
 
-.. autofunction:: ptbuttons.PTUpButton
+.. autofunction:: pitop.case_buttons.PTUpButton
 
 PTDownButton
 ====================
 
-.. autofunction:: ptbuttons.PTDownButton
+.. autofunction:: pitop.case_buttons.PTDownButton
 
 PTSelectButton
 ====================
 
-.. autofunction:: ptbuttons.PTSelectButton
+.. autofunction:: pitop.case_buttons.PTSelectButton
 
 PTCancelButton
 ====================
 
-.. autofunction:: ptbuttons.PTCancelButton
+.. autofunction:: pitop.case_buttons.PTCancelButton
