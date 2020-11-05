@@ -8,5 +8,5 @@ pynput python3-pynput
 python_sonic python3-sonic
 python_systemd python3-systemd
 pyv4l2camera python3-pyv4l2camera
-systemd python3-systemd
+rpi.gpio python3-rpi.gpio
 zmq python3-zmq
