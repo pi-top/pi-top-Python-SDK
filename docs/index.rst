@@ -30,7 +30,7 @@ Table of Contents
     ptoled
     keyboard
     ptbuttons
-    pulse/eeprom
+    pulse/EEPROM
     pulse/manual-configuration
 
     input_components
