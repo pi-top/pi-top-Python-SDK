@@ -99,10 +99,11 @@ autodoc_mock_imports = [
     'imageio',
     'PyV4L2Camera',
     'PIL',
+    'pynput',
     # gpiozero dependencies
     'RPi',
     'RPIO',
-    'pigpio'
+    'pigpio',
 ]
 
 exclude_patterns = ['_build']
