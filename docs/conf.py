@@ -97,9 +97,13 @@ autodoc_mock_imports = [
     'cv2',
     'numpy',
     'imageio',
+    'isc_dhcp_leases',
+    'netifaces',
     'PyV4L2Camera',
     'PIL',
     'pynput',
+    'smbus2',
+    'zmq',
     # gpiozero dependencies
     'RPi',
     'RPIO',
