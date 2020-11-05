@@ -12,36 +12,7 @@ Note: when you write a program that interacts with the pi-top [4] buttons, you w
 .. literalinclude:: ../examples/case_buttons/buttons_example.py
 
 
-
-PTButton
-====================
-
-.. autoclass:: pitop.case_buttons.PTButton
+.. automodule:: pitop.case_buttons
     :members:
-
-    .. automethod:: __init__
-
-PTButtons
-====================
-
-.. autoclass:: pitop.case_buttons.PTButtons
-
-PTUpButton
-====================
-
-.. autofunction:: pitop.case_buttons.PTUpButton
-
-PTDownButton
-====================
-
-.. autofunction:: pitop.case_buttons.PTDownButton
-
-PTSelectButton
-====================
-
-.. autofunction:: pitop.case_buttons.PTSelectButton
-
-PTCancelButton
-====================
-
-.. autofunction:: pitop.case_buttons.PTCancelButton
+    :undoc-members:
+    :show-inheritance:
