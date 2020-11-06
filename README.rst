@@ -17,95 +17,38 @@ About
 This library is installed as a Python 3 module called `pitop`. It includes several
 submodules that allow you to easily interact with most of the hardware inside a pi-top.
 
+This repository also contains CLI utilities, to communicate with your pi-top using the terminal.
+
 See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 
 .. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
 
-------------------------
-Submodules overview
-------------------------
+-----------
+Usage
+-----------
 
-pitop.core
-========================
+You can easily connect different components of the system using the
+modules available in the library:
 
-Contains a collection of common classes and modules used by pi-top Python-based software.
+.. code-block: python
 
-pitop.case_buttons
-========================
-
-Classes to interact with pi-top [4]'s case buttons.
-
-.. code-block:: python
-
-    from pitop.case_buttons import PTUpButton, PTDownButton
-
-    up = PTUpButton()
-    down = PTDownButton()
-
-    def up_action():
-        print ("UP is pressed")
-
-    def down_action():
-        print ("DOWN is pressed")
-
-    up.when_pressed = up_action
-    down.when_pressed = down_action
-
-pitop.keyboard
-========================
-
-Provides the functionality to use key presses as buttons, as a drop-in replacement for a GPIO button.
-
-pitop.oled
-========================
-
-Module for interacting with the pi-top [4]'s OLED screen
-
-.. code-block:: python
-
+    from time import sleep
+    from pitop.pma import UltrasonicSensor
     from pitop.oled import PTOLEDDisplay
-    from time import sleep
 
-    oled_screen = PTOLEDDisplay()
-    oled_screen.draw_image_file("wave.png")
-    sleep(2)
+    oled = PTOLEDDisplay()
+    utrasonic = PMAUltrasonicSensor("D1")
 
-
-pitop.pma
-========================
-
-A module for interacting with the pi-top [4]'s Maker Architecture (PMA) components, such as
-LED's, buzzers and motors.
-
-.. code-block:: python
-
-    from pitop.pma import Button, LED
-    from time import sleep
-
-    button = Button("D1")
-    led = LED("D2")
-
-    # Connect button to LED
-    button.when_pressed = led.on
-    button.when_released = led.off
-
-    # Wait for Ctrl+C to exit
-    try:
-        while True:
-            sleep(1)
-    except KeyboardInterrupt:
-        pass
+    while True:
+        distance = utrasonic.distance
+        oled.draw_multiline_text(str(distance))
+        sleep(0.1)
 
 
-pitop.protoplus
-========================
+Same with the provided CLI utilities:
 
-
-
-pitop.pulse
-========================
-
-Communicate with the pi-topPULSE addon board
+... code-block: bash
+    pt-oled "Hey! I'm a $(pt-host)"
 
 -------------
 Requirements
