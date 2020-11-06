@@ -5,6 +5,7 @@ py-pitop (3.1.0) buster; urgency=medium
   * Merge pitop.oled
   * Merge pitop.protoplus
   * Merge pitop.pulse
+  * mispeled word
 
  -- Mike Roberts <mike@pi-top.com>  Wed, 04 Nov 2020 16:26:34 +0000
 
