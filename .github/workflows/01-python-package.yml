@@ -1,8 +1,18 @@
-name: Upload Python Package to PyPI
+name: python package
+
+# TODO: enable when Python tests are enabled
+# on:
+#   workflow_run:
+#     # Only run after a successful Python test
+#     workflows: ["python-test"]
 
 on:
   release:
     types: [created]
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
 
 
 
@@ -28,6 +38,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools wheel twine
 
+      # TODO: run Python tests
+
       - name: Build
         # Create source distribution (sdist) and wheel (bdist_wheel)
         # By default, both will be placed in dist/ under the current directory
@@ -39,11 +51,3 @@ jobs:
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "${{ github.workspace }}/dist"
-
-
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose dist/*

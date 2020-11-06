@@ -2,6 +2,9 @@
 pi-top Python SDK
 =====================================================
 
+.. ###################
+.. # VERSION NUMBERS #
+.. ###################
 .. image:: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK.svg
     :target: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK
     :alt: Source code version on GitHub
@@ -10,9 +13,27 @@ pi-top Python SDK
     :target: https://badge.fury.io/py/pitop
     :alt: Source code version on PyPi
 
+.. ############
+.. # STATUSES #
+.. ############
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge.svg
+    :target: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge
+    :alt: debian%20package
+
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge.svg
+    :target: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge
+    :alt: python%20package
+
 .. image:: https://readthedocs.com/projects/pi-top-ceed-ltd-pi-top-python-sdk/badge/?version=latest&token=36132502fcda73fc061b5bd1f9647eeb437e43189a2bead78ec0ffa7dd6b4f20
     :target: https://pi-top-ceed-ltd-pi-top-python-sdk.readthedocs-hosted.com/en/latest/?badge=latest
-    :alt: Documentation Status
+    :alt: Documentation
+
+.. ###########
+.. # QUALITY #
+.. ###########
+.. image:: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
+    :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
+    :alt: Coverage
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
