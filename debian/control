@@ -99,6 +99,7 @@ Package: python3-pt-pma
 Architecture: any
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  python3-pitop (= ${binary:Version}),
 Description: Deprecated pi-top [4] PMA Library (Python 3.x)
  A library to interacting with the pi-top [4]'s

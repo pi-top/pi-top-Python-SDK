@@ -5,7 +5,6 @@ py-pitop (1:0.1.0) buster; urgency=medium
   * Merge pitop.oled
   * Merge pitop.protoplus
   * Merge pitop.pulse
-  * mispeled word
   * Initial release of package
   * Use version epoch of 1 to smoothly move from deprecated packages
 
