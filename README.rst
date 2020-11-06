@@ -47,9 +47,9 @@ modules available in the library:
 
 Same with the provided CLI utilities:
 
-... code-block: bash
+::
 
-    pt-oled "Hey! I'm a $(pt-host)"
+    $ pt-oled "Hey! I'm a $(pt-host)"
 
 -------------
 Requirements
