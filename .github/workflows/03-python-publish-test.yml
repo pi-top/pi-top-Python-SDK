@@ -3,7 +3,7 @@ name: Upload Python Package to TestPyPI
 on:
   workflow_run:
     # Only run after a successful Python build
-    workflows: ["python-build"]
+    workflows: ["python package"]
     pull_request:
       branches: [ "master" ]
     push:

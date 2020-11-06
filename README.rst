@@ -2,11 +2,11 @@
 pi-top Python SDK
 =====================================================
 
-.. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge.svg
-    :alt: debian package
-
 .. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge.svg
     :alt: python package
+
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge.svg
+    :alt: debian package
 
 .. image:: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK.svg
     :target: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK
