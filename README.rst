@@ -30,7 +30,8 @@ Usage
 You can easily connect different components of the system using the
 modules available in the library:
 
-.. code-block: python
+
+.. code-block:: python
 
     from time import sleep
     from pitop.pma import UltrasonicSensor
@@ -47,7 +48,7 @@ modules available in the library:
 
 Same with the provided CLI utilities:
 
-::
+.. code-block:: bash
 
     $ pt-oled "Hey! I'm a $(pt-host)"
 
