@@ -1,5 +1,8 @@
 name: python package
 
+
+
+
 on:
   release:
     types: [created]
@@ -7,9 +10,6 @@ on:
     branches: [ "master" ]
   push:
     branches: [ "master" ]
-
-
-
 
 jobs:
   package:

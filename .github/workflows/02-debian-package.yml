@@ -1,9 +1,9 @@
 name: debian package
 
+# workflow_run:
+#   # Only run after a successful Python build
+#   workflows: ["python-build"]
 on:
-  # workflow_run:
-  #   # Only run after a successful Python build
-  #   workflows: ["python-build"]
   release:
     types: [created]
   pull_request:
