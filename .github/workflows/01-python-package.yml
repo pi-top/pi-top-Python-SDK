@@ -1,11 +1,5 @@
 name: python package
 
-# TODO: enable when Python tests are enabled
-# on:
-#   workflow_run:
-#     # Only run after a successful Python test
-#     workflows: ["python-test"]
-
 on:
   release:
     types: [created]
@@ -16,8 +10,9 @@ on:
 
 
 
+
 jobs:
-  deploy:
+  package:
 
     runs-on: ubuntu-20.04
 

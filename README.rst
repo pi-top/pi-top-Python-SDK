@@ -17,12 +17,10 @@ pi-top Python SDK
 .. # STATUSES #
 .. ############
 .. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge.svg
-    :target: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge
-    :alt: debian%20package
+    :alt: debian package
 
 .. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge.svg
-    :target: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge
-    :alt: python%20package
+    :alt: python package
 
 .. image:: https://readthedocs.com/projects/pi-top-ceed-ltd-pi-top-python-sdk/badge/?version=latest&token=36132502fcda73fc061b5bd1f9647eeb437e43189a2bead78ec0ffa7dd6b4f20
     :target: https://pi-top-ceed-ltd-pi-top-python-sdk.readthedocs-hosted.com/en/latest/?badge=latest
