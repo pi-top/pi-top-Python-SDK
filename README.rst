@@ -31,9 +31,10 @@ pi-top Python SDK
 .. ###########
 .. # QUALITY #
 .. ###########
-.. image:: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
-    :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
-    :alt: Coverage
+.. # TODO - add coverage report
+.. image: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
+..     :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
+..     :alt: Coverage
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
