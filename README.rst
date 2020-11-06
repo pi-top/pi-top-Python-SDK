@@ -17,16 +17,6 @@ About
 This library is installed as a Python 3 module called `pitop`. It includes several
 submodules that allow you to easily interact with most of the hardware inside a pi-top.
 
-This repository also contains CLI utilities, to communicate with your pi-top using the terminal.
-
-See the `Recipes`_ chapter of the documentation for ideas on how to get started.
-
-.. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
-
------------
-Usage
------------
-
 You can easily connect different components of the system using the
 modules available in the library:
 
@@ -46,11 +36,16 @@ modules available in the library:
         sleep(0.1)
 
 
-Same with the provided CLI utilities:
+This repository also contains CLI utilities, to communicate with your pi-top using the terminal.
 
 .. code-block:: bash
 
     $ pt-oled "Hey! I'm a $(pt-host)"
+
+
+See the `Recipes`_ chapter of the documentation for ideas on how to get started.
+
+.. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
 
 -------------
 Requirements
