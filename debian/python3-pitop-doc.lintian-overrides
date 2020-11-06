@@ -1,1 +1,1 @@
-python3-pitop-doc: embedded-javascript-library usr/share/doc/python3-pitop/html/_static/language_data.js
+python3-pitop-doc: embedded-javascript-library usr/share/doc/python3-pitop/html/_static/language_data.js please use sphinx
