@@ -1,16 +1,12 @@
 =====================================================
-pi-top Python API
+pi-top Python SDK
 =====================================================
 
 .. image:: https://badge.fury.io/gh/pi-top%2Fpitop.svg
     :target: https://badge.fury.io/gh/pi-top%2Fpitop
     :alt: Source code on GitHub
 
-.. image:: https://badge.fury.io/py/pitop.svg
-    :target: https://badge.fury.io/py/pitop
-    :alt: Latest Version
-
-A simple interface to interact with pi-top components and add-ons.
+A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
 .. image:: docs/_static/pi_top_4.png
 
@@ -18,7 +14,7 @@ A simple interface to interact with pi-top components and add-ons.
 About
 -----
 
-This library is installed as a python 3 module called `pitop`. It includes several
+This library is installed as a Python 3 module called `pitop`. It includes several
 submodules that allow you to easily interact with most of the hardware inside a pi-top.
 
 See the `Recipes`_ chapter of the documentation for ideas on how to get started.
@@ -141,7 +137,7 @@ The following packages are required in your device for this library to work.
 Installation
 -------------
 
-The pi-top python API is installed by default in the pi-topOS desktop image, available from
+The pi-top Python SDK is installed out of the box with pi-topOS, which is available from
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Installing`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
