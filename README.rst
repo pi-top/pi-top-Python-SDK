@@ -2,9 +2,13 @@
 pi-top Python SDK
 =====================================================
 
-.. image:: https://badge.fury.io/gh/pi-top%2Fpitop.svg
-    :target: https://badge.fury.io/gh/pi-top%2Fpitop
-    :alt: Source code on GitHub
+.. image:: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK.svg
+    :target: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK
+    :alt: Source code version on GitHub
+
+.. image:: https://badge.fury.io/py/pitop.svg
+    :target: https://badge.fury.io/py/pitop
+    :alt: Source code version on PyPi
 
 .. image:: https://readthedocs.com/projects/pi-top-ceed-ltd-pi-top-python-sdk/badge/?version=latest&token=36132502fcda73fc061b5bd1f9647eeb437e43189a2bead78ec0ffa7dd6b4f20
     :target: https://pi-top-ceed-ltd-pi-top-python-sdk.readthedocs-hosted.com/en/latest/?badge=latest
