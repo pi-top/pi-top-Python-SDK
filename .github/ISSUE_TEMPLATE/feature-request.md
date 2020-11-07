@@ -1,0 +1,19 @@
+---
+name: Feature Request
+labels: 'Type: Enhancement'
+about: Suggest an idea for this project.
+Support requests will be closed immediately.
+Check out [Things To Know Before Submitting A Feature Request](https://github.com/pi-top/pi-top-Python-API/wiki/Things-To-Know-Before-Submitting-A-Feature-Request) before filling this out.
+
+---
+
+## Things That I, The Bug Reporter, Have Done Before Submitting
+I have read [Things To Know Before Submitting A Feature Request](https://github.com/pi-top/pi-top-Python-API/wiki/Things-To-Know-Before-Submitting-A-Feature-Request) before filling this out.
+
+### Summary
+* Clear and concise description of the problem that this feature would solve. (For example: "I'm always frustrated when [...]")
+* Description of solution that you would like to see
+* Clear and concise description of any alternative solutions or features you've considered
+
+### Additional context
+Any other context or screenshots about the feature request here.

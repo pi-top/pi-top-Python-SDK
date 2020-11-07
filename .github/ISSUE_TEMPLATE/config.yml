@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Support via Knowledge Base
+    url: https://knowledgebase.pi-top.com/
+    about: Find answers to commonly asked questions.
+  - name: Support via Forum
+    url: https://forum.pi-top.com/c/pi-top-software
+    about: Discuss and search through support topics.
