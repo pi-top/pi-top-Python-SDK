@@ -98,7 +98,7 @@ jobs:
             path: "${{ github.workspace }}"
 
       - name: Build 32-bit and 64-bit Debian packages
-        uses: pi-top/action-debian-package@master
+        uses: pi-top/action-debian-package@feature/buildDepForAllArches
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
