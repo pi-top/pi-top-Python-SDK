@@ -27,6 +27,9 @@ jobs:
         run: |
           gbp dch --ignore-branch --auto --snapshot
 
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
       - name: Upload patched src as artifact
         uses: "actions/upload-artifact@v2"
         with:
