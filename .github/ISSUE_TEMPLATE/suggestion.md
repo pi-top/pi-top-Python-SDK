@@ -1,12 +1,12 @@
 ---
 name: Suggestion
 labels: 'Type: Enhancement'
-about: Suggest an idea for this project. Support requests will be closed immediately. Check out [the wiki](https://github.com/pi-top/pi-top-Python-SDK/wiki/) before filling this out.
+about: Suggest an idea for this project.
 
 ---
 
-## Things That I, The Bug Reporter, Have Done Before Submitting
-I have read [Things To Know Before Submitting A Suggestion](https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Suggestion) before filling this out.
+### Things That I, The Bug Reporter, Have Done Before Submitting
+- [ ] I have read [Things To Know Before Submitting A Suggestion](https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Suggestion) before filling this out.
 
 ### Summary
 * Clear and concise description of the problem that this suggestion or feature would solve. (For example: "I'm always frustrated when [...]")
