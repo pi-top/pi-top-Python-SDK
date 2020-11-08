@@ -1,0 +1,112 @@
+name: Build, Test and Publish
+
+on:
+  release:
+    types: [created]
+  pull_request:
+    branches: [ "master" ]
+  push:
+    branches: [ "master", "feature/testDownloadArtifacts" ]
+
+jobs:
+  python-package:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      # TODO: run Python tests
+
+      - name: Build
+        # Create source distribution (sdist) and wheel (bdist_wheel)
+        # By default, both will be placed in dist/ under the current directory
+        run: |
+          python setup.py sdist bdist_wheel
+
+      - name: Upload Python distribution artifacts
+        uses: "actions/upload-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "${{ github.workspace }}/dist"
+
+  debian-package:
+    needs: python-package
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build 32-bit and 64-bit Debian packages
+        uses: pi-top/action-debian-package@master
+        with:
+          source_directory: "./"
+          artifacts_directory: "./artifacts"
+          target_architectures: "armhf,arm64"
+          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
+          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
+          get_dev_packages_from_backports: "1"
+          _uses_pybuild: "1"
+
+      - name: Upload Debian package artifacts
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          path: "${{ github.workspace }}/artifacts"
+
+  debian-publish:
+    needs: debian-package
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Download Debian distribution artifacts
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+            path: "${{ github.workspace }}/dist"
+
+  python-publish:
+    needs: debian-package
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Download Python distribution artifacts
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "${{ github.workspace }}/dist"
+
+      - name: Publish to TestPyPI
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose --repository testpypi dist/*
+
+      - name: Publish to PyPI
+        if: github.event_name == 'release'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose dist/*
