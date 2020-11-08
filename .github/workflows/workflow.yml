@@ -21,6 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # TODO: RUN IN DEBIAN DOCKER CONTAINER
       - name: Patch changelog
         if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
@@ -106,7 +107,7 @@ jobs:
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
           get_dev_packages_from_backports: "0"
-          _uses_pybuild: "1"
+          _uses_pybuild: "0"
 
       - name: Upload Debian package artifacts
         uses: "actions/upload-artifact@v2"
