@@ -42,7 +42,7 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Download patched src
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
             path: "${{ github.workspace }}"
@@ -79,7 +79,7 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Download patched src
-        uses: "actions/upload-artifact@v2"
+        uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
             path: "${{ github.workspace }}"
