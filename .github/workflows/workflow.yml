@@ -25,7 +25,7 @@ jobs:
         if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
-          gbp dch --ignore-branch --auto --snapshot --distribution=stable
+          gbp dch --ignore-branch --auto --snapshot --distribution=stable --force-distribution
 
       - name: Show updated changelog
         if: github.event_name != 'release'
