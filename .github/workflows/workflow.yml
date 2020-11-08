@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         if: github.event_name != 'release'
         run: |
-          apt install -y git-buildpackage
+          sudo apt-get install -y git-buildpackage
 
       - name: Patch source version
         if: github.event_name != 'release'
