@@ -63,9 +63,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel
+          pip install setuptools wheel readme-renderer
 
-      # TODO: run Python tests
+      # TODO: run proper Python tests
+      - name: Test
+        # Create source distribution (sdist) and wheel (bdist_wheel)
+        # By default, both will be placed in dist/ under the current directory
+        run: |
+          python -m readme_renderer README.rst -o /tmp/README.html
 
       - name: Build
         # Create source distribution (sdist) and wheel (bdist_wheel)
