@@ -11,7 +11,7 @@ Check out [Things To Know Before Submitting A Bug Report](https://github.com/pi-
 I have read [Things To Know Before Submitting A Bug Report](https://github.com/pi-top/pi-top-Python-API/wiki/Things-To-Know-Before-Submitting-A-Bug-Report) before filling this out.
 
 ### Summary
-Concise summary of when and how the bug occurred.
+Concise summary of when and how the bug occurred, using code examples where relevant.
 
 ### Screenshot/Video Capture
 This may not be relevant, but should be provided where possible. Read [How To Get System Information](https://github.com/pi-top/pi-top-Python-API/wiki/How-To-Get-System-Information) for assistance with this.
@@ -25,13 +25,12 @@ Is it possible to reproduce the bug repeatably? What steps might someone trying 
 ### Environment
 Read [How To Get System Information](https://github.com/pi-top/pi-top-Python-API/wiki/How-To-Get-System-Information) for assistance with this.
 
-Operating system: e.g. Raspbian Buster
+Operating system:
 `pitop` version:
 `pt-device-manager` version:
-Python version: e.g. 3.7
-Pi model: e.g. Pi 4 Model B
-GPIO Zero version: e.g. 1.5.1
-Pin factory used: e.g. RPiGPIO
+Python version:
+Pi model:
+pi-top model:
 
 ### Logs
 Read [How To Get System Information](https://github.com/pi-top/pi-top-Python-API/wiki/How-To-Get-System-Information) for assistance with this. This is valuable to identify the root of the problem.
