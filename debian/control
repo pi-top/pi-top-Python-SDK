@@ -9,8 +9,6 @@ Build-Depends:
 # available for the build machine.
  libpython3-all-dev,
  libpython3-all-dbg,
- libpython-all-dev,
- libpython-all-dbg,
  python3-all-dev:any,
  python3-all-dbg:any,
  debhelper-compat (= 12),
