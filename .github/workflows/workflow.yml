@@ -23,8 +23,9 @@ jobs:
 
       - name: Patch source version
         if: github.event_name != 'release'
+        # '--ignore-branch' for testing on feature branch
         run: |
-          gbp dch
+          gbp dch --ignore-branch
 
       - name: Upload patched src as artifact
         uses: "actions/upload-artifact@v2"
