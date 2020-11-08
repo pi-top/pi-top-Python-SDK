@@ -43,3 +43,10 @@ jobs:
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "${{ github.workspace }}/dist"
+
+      # Testing
+      - name: Download Python distribution artifacts
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "${{ github.workspace }}/dist"
