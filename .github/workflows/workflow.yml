@@ -105,7 +105,7 @@ jobs:
           target_architectures: "armhf,arm64"
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
-          image_distribution: "stable"
+          distribution: "stable"
           get_dev_packages_from_backports: "0"
           _uses_pybuild: "0"
 
