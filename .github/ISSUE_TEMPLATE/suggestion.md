@@ -1,7 +1,7 @@
 ---
 name: Suggestion
 labels: 'Type: Enhancement'
-about: Suggest an idea for this project. Support requests will be closed immediately. Check out [Things To Know Before Submitting A Suggestion](https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Suggestion) before filling this out.
+about: Suggest an idea for this project. Support requests will be closed immediately. Check out [the wiki](https://github.com/pi-top/pi-top-Python-SDK/wiki/) before filling this out.
 
 ---
 
