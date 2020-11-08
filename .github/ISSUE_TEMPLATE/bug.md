@@ -1,9 +1,7 @@
 ---
 name: Bug Report
 labels: 'Type: Bug'
-about: Report a bug in the `pitop` Python library.
-Support requests will be closed immediately.
-Check out [Things To Know Before Submitting A Bug Report](https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Bug-Report) before filling this out.
+about: Report a bug in the `pitop` Python library. Support requests will be closed immediately. Check out [Things To Know Before Submitting A Bug Report](https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Bug-Report) before filling this out.
 
 ---
 
