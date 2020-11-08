@@ -2,18 +2,14 @@
 
 # on:
 #   workflow_run:
-#     # Only run after a successful Python build
-#     workflows: ["debian build"]
-#     release:
-#       types: [created]
-#     pull_request:
-#       branches: [ "master" ]
-#     push:
-#       branches: [ "master" ]
+#     # Only run after all packaging is successful
+#     workflows: ["debian package"]
+#     types:
+#       - completed
 
 
 # jobs:
-#   build:
+#   deploy:
 
 #     runs-on: ubuntu-20.04
 

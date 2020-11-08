@@ -1,8 +1,5 @@
 name: python package
 
-
-
-
 on:
   release:
     types: [created]

@@ -4,12 +4,9 @@ on:
   workflow_run:
     # Only run after a successful Python packaging
     workflows: ["python package"]
-    release:
-      types: [created]
-    pull_request:
-      branches: [ "master" ]
-    push:
-      branches: [ "master" ]
+    types:
+      - completed
+
 
 jobs:
   package:

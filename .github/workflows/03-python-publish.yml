@@ -2,17 +2,10 @@ name: Upload Python Package
 
 on:
   workflow_run:
-    # Only run after a successful Python build
-    workflows: ["python package"]
-    # TestPyPI
-    pull_request:
-      branches: [ "master" ]
-    push:
-      branches: [ "master" ]
-    # PyPI
-    release:
-      types:
-        - created
+    # Only run after all packaging is successful
+    workflows: ["debian package"]
+    types:
+      - completed
 
 
 jobs:
