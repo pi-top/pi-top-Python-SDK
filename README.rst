@@ -66,6 +66,12 @@ See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 .. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
 
 -------------
+Backwards Compatibility
+-------------
+
+When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
+
+-------------
 Requirements
 -------------
 
