@@ -1,14 +1,18 @@
-name: Upload Python Package to PyPI
+name: Upload Python Package
 
 on:
   workflow_run:
     # Only run after a successful Python build
-    workflows: ["python-build"]
+    workflows: ["python package"]
+    # TestPyPI
+    pull_request:
+      branches: [ "master" ]
+    push:
+      branches: [ "master" ]
+    # PyPI
     release:
       types:
         - created
-
-
 
 
 jobs:
@@ -26,7 +30,16 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "${{ github.workspace }}/dist"
 
+      - name: Publish to TestPyPI
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose --repository testpypi dist/*
+
       - name: Publish to PyPI
+        if: github.event_name == 'release'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
