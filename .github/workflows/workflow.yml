@@ -21,7 +21,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # TODO: RUN IN DEBIAN DOCKER CONTAINER
       - name: Patch changelog
         if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
@@ -138,13 +137,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
 
-      - name: Publish to TestPyPI
-        if: github.event_name == 'pull_request' || github.event_name == 'push'
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose --repository testpypi dist/*
+      # TODO: Only publish to TestPyPI for pre-releases (develop branch?)
+      # - name: Publish to TestPyPI
+      #   if: github.event_name == 'pull_request' || github.event_name == 'push'
+      #   env:
+      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      #   run: |
+      #     twine upload --verbose --repository testpypi dist/*
 
       - name: Publish to PyPI
         if: github.event_name == 'release'
@@ -167,4 +167,4 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
             path: "${{ github.workspace }}/dist"
 
-      # TODO: publish to aptly server
+      # TODO: publish to APT server
