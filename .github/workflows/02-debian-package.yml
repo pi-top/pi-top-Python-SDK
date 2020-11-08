@@ -1,13 +1,15 @@
-name: Build ARM Debian Packages
+name: debian package
 
 on:
-  pull_request:
-    branches: [ "master" ]
-  push:
-    branches: [ "master" ]
+  workflow_run:
+    # Only run after a successful Python packaging
+    workflows: ["python package"]
+    types:
+      - completed
+
 
 jobs:
-  build:
+  package:
 
     runs-on: ubuntu-20.04
 

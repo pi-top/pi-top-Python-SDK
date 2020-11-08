@@ -1,0 +1,40 @@
+name: Upload Python Package
+
+on:
+  workflow_run:
+    # Only run after all packaging is successful
+    workflows: ["debian package"]
+    types:
+      - completed
+
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Download Python distribution artifacts
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "${{ github.workspace }}/dist"
+
+      - name: Publish to TestPyPI
+        if: github.event_name == 'pull_request' || github.event_name == 'push'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose --repository testpypi dist/*
+
+      - name: Publish to PyPI
+        if: github.event_name == 'release'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose dist/*

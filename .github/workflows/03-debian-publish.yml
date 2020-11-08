@@ -1,0 +1,16 @@
+# name: debian publish
+
+# on:
+#   workflow_run:
+#     # Only run after all packaging is successful
+#     workflows: ["debian package"]
+#     types:
+#       - completed
+
+
+# jobs:
+#   deploy:
+
+#     runs-on: ubuntu-20.04
+
+#     steps:
