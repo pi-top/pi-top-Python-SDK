@@ -3,6 +3,18 @@ Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
+# https://wiki.debian.org/Python/MultiArch
+# The basic idea to cross-build packages is to have the libpythonX-dev
+# as build dependencies for the host/target, and the python interpreters
+# available for the build machine.
+ libpython3-all-dev,
+ libpython3-all-dbg,
+ libpython-all-dev,
+ libpython-all-dbg,
+ python3-all-dev:any,
+ python3-all-dbg:any,
+ python-all-dev:any,
+ python-all-dbg:any,
  debhelper-compat (= 12),
  dh-sequence-python3,
 # Required by pybuild
