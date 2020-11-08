@@ -9,14 +9,41 @@ on:
     branches: [ "master", "feature/testDownloadArtifacts" ]
 
 jobs:
+  patch-src:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        if: github.event_name != 'release'
+        run: |
+          apt install -y git-buildpackage
+
+      - name: Patch source version
+        if: github.event_name != 'release'
+        run: |
+          gbp dch
+
+      - name: Upload patched src as artifact
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
+          path: "${{ github.workspace }}"
+
+
   python-package:
+    needs: patch-src
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Download patched src
+        uses: "actions/upload-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
+            path: "${{ github.workspace }}"
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -43,14 +70,17 @@ jobs:
             path: "${{ github.workspace }}/dist"
 
   debian-package:
-    needs: python-package
+    needs: patch-src
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Download patched src
+        uses: "actions/upload-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
+            path: "${{ github.workspace }}"
 
       - name: Build 32-bit and 64-bit Debian packages
         uses: pi-top/action-debian-package@master
@@ -69,21 +99,8 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "${{ github.workspace }}/artifacts"
 
-  debian-publish:
-    needs: debian-package
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Download Debian distribution artifacts
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-            path: "${{ github.workspace }}/dist"
-
   python-publish:
-    needs: debian-package
+    needs: python-package
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -120,3 +137,18 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           twine upload --verbose dist/*
+
+  debian-publish:
+    needs: debian-package
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Download Debian distribution artifacts
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+            path: "${{ github.workspace }}/dist"
+
+      # TODO: publish to aptly server
