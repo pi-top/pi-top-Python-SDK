@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Support via Knowledge Base
+  - name: Need a place to start? Try the Knowledge Base!
     url: https://knowledgebase.pi-top.com/
     about: Find answers to commonly asked questions.
-  - name: Support via Forum
+  - name: Need to go a little deeper? Try the Forum!
     url: https://forum.pi-top.com/c/pi-top-software
     about: Discuss and search through support topics.
+  - name: Committed to creating a GitHub Issue? Read the Wiki!
+    url: https://github.com/pi-top/pi-top-Python-SDK/wiki/
+    about: Get information about how to create effective GitHub Issues.
