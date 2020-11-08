@@ -12,20 +12,20 @@ jobs:
   patch-src:
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Install dependencies
         if: github.event_name != 'release'
         run: |
           sudo apt-get update
           sudo apt-get install -y git-buildpackage
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Patch source version
         if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
-          gbp dch --ignore-branch
+          gbp dch --ignore-branch --auto --snapshot
 
       - name: Upload patched src as artifact
         uses: "actions/upload-artifact@v2"
