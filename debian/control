@@ -13,8 +13,6 @@ Build-Depends:
  libpython-all-dbg,
  python3-all-dev:any,
  python3-all-dbg:any,
- python-all-dev:any,
- python-all-dbg:any,
  debhelper-compat (= 12),
  dh-sequence-python3,
 # Required by pybuild
