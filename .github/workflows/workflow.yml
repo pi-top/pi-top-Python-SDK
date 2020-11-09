@@ -12,16 +12,15 @@ jobs:
   patch-src:
     runs-on: ubuntu-20.04
     steps:
-      - name: Install dependencies
-        if: github.event_name != 'release'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git-buildpackage
-
       - name: Checkout code
         uses: actions/checkout@v2
 
       # TODO: move to Debian Docker container
+      # - name: Install dependencies
+      #   if: github.event_name != 'release'
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y git-buildpackage
       # - name: Patch changelog
       #   if: github.event_name != 'release'
       #   # '--ignore-branch' for testing on feature branch
