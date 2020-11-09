@@ -1,4 +1,4 @@
-"pi-top Python API"
+"pi-top Python SDK"
 
 import io
 import os
@@ -43,6 +43,7 @@ for r in (
     # Hacky solution to deal with running 'gbp dch' on a Ubuntu machine
     # (--force-distribution does not appear to work)
     # e.g. '1:0.1.0ubuntu1~1.gbpfa58ce'
+    # TODO: remove
         ("ubuntu1", ""),
     # Convert from gbp version format to PEP 440 local version format:
     # (replace '~' with '+')
@@ -59,11 +60,11 @@ for r in (
 __version__ = python_version
 assert __version__ != ""
 
-project = "pi-top Maker Architecture (PMA) Components"
+project = "pi-top Python SDK"
 __author__ = "pi-top"
 __author_email__ = "deb-maintainers@pi-top.com"
 
-__url__ = "https://github.com/pi-top/pitop"
+__url__ = "https://github.com/pi-top/pi-top-Python-SDK"
 __platforms__ = "ALL"
 
 # https://pypi.org/classifiers/
