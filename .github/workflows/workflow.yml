@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "master" ]
   push:
-    branches: [ "master" ]
+    branches: [ "master", "workflow/*" ]
 
 jobs:
   patch-src:
@@ -57,10 +57,6 @@ jobs:
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
             path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
-
-      - name: Show changelog
-        run: |
-          cat debian/changelog
 
       - name: Set up Python
         uses: actions/setup-python@v2
