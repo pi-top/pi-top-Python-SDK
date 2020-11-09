@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ "master" ]
   push:
-    branches: [ "master", "feature/testDownloadArtifacts" ]
+    branches: [ "master" ]
 
 jobs:
   patch-src:
@@ -108,7 +108,7 @@ jobs:
             path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
       - name: Build 32-bit and 64-bit Debian packages
-        uses: pi-top/action-debian-package@feature/buildDepForAllArches
+        uses: pi-top/action-debian-package@master
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
@@ -121,7 +121,7 @@ jobs:
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
 
           # Used by pybuild for Python packages
-          additional_packages_arch_dep: "libpython3.7-minimal"
+          additional_target_arch_multiarch_packages: "libpython3.7-minimal"
 
       - name: Upload Debian package artifacts
         uses: "actions/upload-artifact@v2"

@@ -1,12 +1,4 @@
 #!/usr/bin/make -f
-# https://wiki.debian.org/Python/MultiArch
-# Make the build aware of the cross build
-include /usr/share/dpkg/architecture.mk
-ifneq ($(DEB_BUILD_MULTIARCH),$(DEB_HOST_MULTIARCH))
-  SET_CROSS_ENV = PYTHONPATH=/usr/lib/python$$pv/plat-$(DEB_HOST_MULTIARCH)
-
-  SET_CROSS_ENV += _PYTHON_HOST_PLATFORM=$(DEB_HOST_GNU_CPU)
-endif
 
 export PYBUILD_NAME=pitop
 
