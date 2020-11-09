@@ -1,5 +1,5 @@
 =====================================================
-pi-top Python API Reference
+pi-top Python SDK Reference
 =====================================================
 
 .. image:: _static/foundation_kit.png

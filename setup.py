@@ -1,4 +1,4 @@
-"pi-top Python API"
+"pi-top Python SDK"
 
 import io
 import os
@@ -28,28 +28,43 @@ with open(os.path.join(HERE, "debian/rules")) as search:
 
 assert __project__ != ""
 
+# Get first field of the changelog
 with open(os.path.join(HERE, "debian/changelog")) as f:
     first_line_changelog = f.readline()
 
-# Get first field; remove brackets
-__version__ = first_line_changelog.split(" ")[1].replace("(", "").replace(")", "").rstrip()
+# Get Debian version from first field; strip surrounding brackets
+debian_version = first_line_changelog.split(" ")[1].rstrip()[1:-1]
 
-# Convert from gbp version format to PEP 440 local version format:
-# (replace '~' with '+')
-# See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
-__version__ = __version__.replace("~", "+")
+# Convert Debian version to Python version
+python_version = debian_version
+for r in (
+        ("(", ""),
+        (")", ""),
+    # Hacky solution to deal with running 'gbp dch' on a Ubuntu machine
+    # (--force-distribution does not appear to work)
+    # e.g. '1:0.1.0ubuntu1~1.gbpfa58ce'
+    # TODO: remove
+        ("ubuntu1", ""),
+    # Convert from gbp version format to PEP 440 local version format:
+    # (replace '~' with '+')
+    # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
+        ("~", "+"),
 
-# Convert from Debian epoch version format to PEP 440 epoch version format:
-# (replace ':'' with '!')
-# See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
-__version__ = __version__.replace(":", "!")
+        # Convert from Debian epoch version format to PEP 440 epoch version format:
+        # (replace ':'' with '!')
+        # See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
+    (":", "!"),
+):
+    python_version = python_version.replace(*r)
+
+__version__ = python_version
 assert __version__ != ""
-project = "pi-top Maker Architecture (PMA) Components"
-# TODO: get from trailer line in changelog?
+
+project = "pi-top Python SDK"
 __author__ = "pi-top"
 __author_email__ = "deb-maintainers@pi-top.com"
 
-__url__ = "https://github.com/pi-top/pitop"
+__url__ = "https://github.com/pi-top/pi-top-Python-SDK"
 __platforms__ = "ALL"
 
 # https://pypi.org/classifiers/
