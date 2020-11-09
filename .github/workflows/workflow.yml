@@ -38,7 +38,7 @@ jobs:
       - name: Upload patched src as artifact
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
           path: "${{ github.workspace }}"
 
 
@@ -49,11 +49,14 @@ jobs:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-      - name: Download patched src
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download patched changelog
         uses: "actions/download-artifact@v2"
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
-            path: "${{ github.workspace }}"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
+            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -91,11 +94,14 @@ jobs:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-      - name: Download patched src
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download patched changelog
         uses: "actions/download-artifact@v2"
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-src"
-            path: "${{ github.workspace }}"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
+            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
       - name: Build 32-bit and 64-bit Debian packages
         uses: pi-top/action-debian-package@feature/buildDepForAllArches
@@ -116,7 +122,7 @@ jobs:
           path: "${{ github.workspace }}/artifacts"
 
   python-publish:
-    needs: python-package
+    needs: [ python-package, debian-package ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -156,7 +162,7 @@ jobs:
           twine upload --verbose dist/*
 
   debian-publish:
-    needs: debian-package
+    needs: [ python-package, debian-package ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
