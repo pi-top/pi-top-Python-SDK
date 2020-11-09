@@ -111,7 +111,7 @@ jobs:
           target_architectures: "armhf,arm64"
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
-          distribution: "stable-backports"
+          distribution: "buster-backports"
           _uses_pybuild: "0"
 
       - name: Upload Debian package artifacts
