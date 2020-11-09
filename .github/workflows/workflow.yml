@@ -58,6 +58,10 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
             path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
+      - name: Show changelog
+        run: |
+          cat debian/changelog
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -108,11 +112,16 @@ jobs:
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
-          target_architectures: "armhf,arm64"
-          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
-          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
+
           distribution: "buster-backports"
-          _uses_pybuild: "0"
+          target_architectures: "armhf,arm64"
+
+          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
+          # Package uses latest packaging syntax and Lintian opts/tags
+          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
+
+          # Used by pybuild for Python packages
+          additional_packages_arch_dep: "libpython3.7-minimal"
 
       - name: Upload Debian package artifacts
         uses: "actions/upload-artifact@v2"
