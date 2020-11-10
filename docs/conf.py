@@ -97,7 +97,7 @@ autodoc_mock_imports = [
     'cv2',
     'numpy',
     'imageio',
-    'pitop.utils'
+    'pitop.utils',
     'PyV4L2Camera',
     'PIL',
     'pynput',
