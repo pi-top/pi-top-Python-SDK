@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-pi-top Keyboard Input Library Reference
+pi-top Keyboard Input
 =======================================================================
 
 This library has been designed to allow a programmer to utilise keyboard input in the same way as
@@ -13,7 +13,7 @@ You can listen for any standard keyboard key input, for example by using ``a`` o
 for the A-key being pressed with or without shift.
 
 KeyPressListener
-=====================
+----------------------
 
 **Example Code:**
 

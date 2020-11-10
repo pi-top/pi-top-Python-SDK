@@ -1,5 +1,5 @@
-
-python3-pt-buttons Reference
+=============================
+pi-top [4] Case Buttons
 =============================
 
 This library allows you to interact with the function button on the pi-top [4]. You can write code to respond to these buttons being pressed and released. The following code example shows two different ways of doing this.

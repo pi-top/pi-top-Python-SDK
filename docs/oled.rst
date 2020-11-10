@@ -1,9 +1,10 @@
-.. pi-top [4] OLED Screen Programming Reference master file, created by
+.. pi-top [4] OLED Screen master file, created by
    sphinx-quickstart on Wed May  8 12:35:08 2019.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-pi-top [4] OLED Screen Programming Reference
+=======================================================================
+pi-top [4] OLED Screen
 =======================================================================
 
 This library contains information to allow a programmer to work with the mini-screen on the pi-top [4].
@@ -27,7 +28,7 @@ Whilst this snippet is provided for ease of use, it is strongly recommended that
 
 
 PTOLEDDisplay class
-=====================
+---------------------
 
 **Example 1:** Hello, world!
 
@@ -59,7 +60,7 @@ PTOLEDDisplay class
     :show-inheritance:
 
 Canvas class
-=====================
+---------------------
 
 **Example 1:** Drawing with the canvas
 
@@ -84,7 +85,7 @@ Canvas class
     :show-inheritance:
 
 OLEDImage class
-=====================
+---------------------
 
 .. automodule:: pitop.oled.oled_image
     :members:
