@@ -14,22 +14,17 @@ Please do not expect anything to be final, working or understandable until it ha
 Build Status: Latest
 --------------------
 
-.. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge.svg
-    :alt: python package
+.. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Build,%20Test%20and%20Publish
+   :alt: GitHub Workflow Status
 
-.. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/debian%20package/badge.svg
-    :alt: debian package
+.. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
+    :alt: GitHub release (latest by date)
 
-.. image:: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK.svg
-    :target: https://badge.fury.io/gh/pi-top%2Fpi-top-Python-SDK
-    :alt: Source code version on GitHub
-
-.. image:: https://badge.fury.io/py/pitop.svg
-    :target: https://badge.fury.io/py/pitop
-    :alt: Source code version on PyPi
+.. image:: https://img.shields.io/pypi/v/pitop
+   :alt: PyPI release
 
 .. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
-    :target: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/?badge=latest
+    :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
     :alt: Documentation Status
 
 .. # TODO - add coverage report
