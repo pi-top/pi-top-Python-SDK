@@ -1,19 +1,19 @@
-from pitop.core.common_ids import FirmwareDeviceID
-from pitop.core.firmware_device import FirmwareDevice
-from pitop.core.firmware_device import PTInvalidFirmwareDeviceException
+from pitop.utils.common_ids import FirmwareDeviceID
+from pitop.utils.firmware_device import FirmwareDevice
+from pitop.utils.firmware_device import PTInvalidFirmwareDeviceException
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock
 from parameterized import parameterized
 
-mock_logger = modules["pitop.core.logger"] = Mock()
-mock_i2c_device = modules["pitop.core.i2c_device"] = Mock()
+mock_logger = modules["pitop.utils.logger"] = Mock()
+mock_i2c_device = modules["pitop.utils.i2c_device"] = Mock()
 
 
 class FirmwareDeviceTestCase(TestCase):
     @classmethod
     def tearDownClass(cls):
-        del modules["pitop.core.i2c_device"]
+        del modules["pitop.utils.i2c_device"]
 
     def tearDown(self):
         mock_logger.reset_mock()

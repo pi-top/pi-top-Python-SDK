@@ -1,12 +1,12 @@
-from pitop.core.i2c_device import I2CDevice
+from pitop.utils.i2c_device import I2CDevice
 from unittest import TestCase, skip
 from sys import modules
 from unittest.mock import Mock
 from parameterized import parameterized
 
 mock_io = modules["io"] = Mock()
-mock_logger = modules["pitop.core.logger"] = Mock()
-mock_lock = modules["pitop.core.lock"] = Mock()
+mock_logger = modules["pitop.utils.logger"] = Mock()
+mock_lock = modules["pitop.utils.lock"] = Mock()
 mock_fcntl = modules["fcntl"] = Mock()
 mock_time = modules["time"] = Mock()
 
@@ -42,7 +42,7 @@ class I2CDeviceTestCase(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        del modules["pitop.core.lock"]
+        del modules["pitop.utils.lock"]
         del modules["fcntl"]
 
     def test_initialisation_creates_lock_file(self):
