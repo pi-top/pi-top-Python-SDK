@@ -1,6 +1,18 @@
-=====================================================
-pi-top Python SDK
-=====================================================
+===========================
+pi-top Python SDK (Preview)
+===========================
+
+---------------------------------
+This SDK is currently pre-release
+---------------------------------
+
+This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
+
+Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+
+--------------------
+Build Status: Latest
+--------------------
 
 .. image:: https://github.com/pi-top/pi-top-Python-SDK/workflows/python%20package/badge.svg
     :alt: python package
@@ -66,15 +78,15 @@ See the `Recipes`_ chapter of the documentation for ideas on how to get started.
 
 .. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
 
-------------------------
+-----------------------
 Backwards Compatibility
-------------------------
+-----------------------
 
 When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
 
--------------
+------------
 Requirements
--------------
+------------
 
 The following packages are required in your device for this library to work.
 
@@ -98,9 +110,9 @@ The following packages are required in your device for this library to work.
     | ``raspi-config``          | Required to communicate and set parameters to the Raspberry Pi.                                                       |
     +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
 
--------------
+------------
 Installation
--------------
+------------
 
 The pi-top Python SDK is installed out of the box with pi-topOS, which is available from
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Installing`_ chapter.
@@ -119,9 +131,9 @@ documentation for information on contributing to the project.
 .. _Contributing: https://pitop.readthedocs.io/en/stable/contributing.html
 .. _Development: https://pitop.readthedocs.io/en/stable/development.html
 
--------------
+------------
 Contributors
--------------
+------------
 
 See the `contributors page`_ on GitHub for more info.
 
