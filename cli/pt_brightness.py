@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import zmq
-from pitop.core.ptdm_message import Message
+from pitop.utils.ptdm_message import Message
 from argparse import ArgumentParser
 
 args = None

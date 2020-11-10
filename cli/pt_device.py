@@ -2,10 +2,10 @@
 
 import zmq
 from subprocess import getstatusoutput
-from pitop.core.firmware_device import FirmwareDevice
-from pitop.core.command_runner import run_command
-from pitop.core.ptdm_message import Message
-from pitop.core.common_ids import DeviceID
+from pitop.utils.firmware_device import FirmwareDevice
+from pitop.utils.command_runner import run_command
+from pitop.utils.ptdm_message import Message
+from pitop.utils.common_ids import DeviceID
 
 
 zmq_socket = None

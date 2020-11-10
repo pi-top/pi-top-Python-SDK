@@ -20,7 +20,7 @@ import subprocess
 import sys
 from ptpulse import ledmatrix
 import zmq
-from pitop.core.ptdm_message import Message
+from pitop.utils.ptdm_message import Message
 
 zmq_socket = None
 

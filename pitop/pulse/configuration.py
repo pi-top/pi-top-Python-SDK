@@ -4,15 +4,15 @@
 
 from math import pow
 from smbus import SMBus
-from pitop.core.logger import PTLogger
-from pitop.core.common_ids import DeviceID
-from pitop.core.current_session_info import get_user_using_first_display
-from pitop.core.sys_config import (
+from pitop.utils.logger import PTLogger
+from pitop.utils.common_ids import DeviceID
+from pitop.utils.current_session_info import get_user_using_first_display
+from pitop.utils.sys_config import (
     I2S,
     UART,
     HDMI
 )
-from pitop.core.sys_info import get_debian_version
+from pitop.utils.sys_info import get_debian_version
 
 _bus_id = 1
 _device_addr = 0x24

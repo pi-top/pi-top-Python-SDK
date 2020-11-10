@@ -1,6 +1,6 @@
 from .request_client import RequestClient
 
-from pitop.core.ptdm_message import Message
+from pitop.utils.ptdm_message import Message
 
 
 class PTOLEDManagerException(Exception):

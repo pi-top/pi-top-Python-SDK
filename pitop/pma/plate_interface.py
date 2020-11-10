@@ -1,9 +1,9 @@
 from threading import Lock, Thread
 from time import sleep
 
-from pitop.core.smbus_device import SMBusDevice
-from pitop.core.logger import PTLogger
-from pitop.core.singleton import Singleton
+from pitop.utils.smbus_device import SMBusDevice
+from pitop.utils.logger import PTLogger
+from pitop.utils.singleton import Singleton
 from .common.plate_registers import PlateRegisters
 
 

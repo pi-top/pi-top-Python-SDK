@@ -92,14 +92,14 @@ __keywords__ = [
 ]
 
 __requires__ = [
-    # CORE
-    # For reviewing DHCP leases
-    "isc_dhcp_leases",
-    # For network interface checking
-    "netifaces",
-    # For journal logging
-    "python-systemd",
-    # PMA
+    ####################################
+    # Utilities - functions, IDs, etc. #
+    ####################################
+    "pitop.utils",
+
+    #######
+    # PMA #
+    #######
     # To use GPIO & components
     "gpiozero",
     # To perform operations with images
@@ -110,19 +110,31 @@ __requires__ = [
     "Pillow",
     # Camera communication
     "PyV4L2Camera",
-    # OLED
+
+    ############
+    # Keyboard #
+    ############
+    "pynput",
+
+    ########
+    # OLED #
+    ########
     "luma.oled",
     "luma.core",
     "monotonic",
     # Communication with the device manager
     "zmq",
-    # Keyboard
-    "pynput",
-    # Pulse
-    "pyserial",
-    # Proto+
+
+    ##########
+    # Proto+ #
+    ##########
     "python-sonic",
-    "RPi.GPIO"
+    "RPi.GPIO",
+
+    #########
+    # Pulse #
+    #########
+    "pyserial",
 ]
 
 __extra_requires__ = {

@@ -116,7 +116,7 @@ Once you have installed the library, you can now initialise the device:
        print("Failed to enable pi-topPULSE")
 
 \*\* NOTE: the host device ID for your device can be found
-`here <https://github.com/pi-top/Device-Management/blob/master/library/pitop.core/common_ids.py>`__\ \*\*
+`here <https://github.com/pi-top/Device-Management/blob/master/library/pitop.utils/common_ids.py>`__\ \*\*
 
 Using pi-topPULSE in projects
 -----------------------------
