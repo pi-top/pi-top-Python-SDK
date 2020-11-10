@@ -1,4 +1,4 @@
-py-pitop (1:0.1.0pre-release) buster; urgency=medium
+py-pitop (1:0.1.0prerelease) buster; urgency=medium
 
   * Initial release of package
   * Use version epoch of 1 to smoothly move from deprecated packages
