@@ -1,13 +1,10 @@
 gpiozero python3-gpiozero
 imageio python3-imageio
-isc_dhcp_leases python3-isc-dhcp-leases
 luma.core python3-luma-core
 luma.oled python3-luma-oled
-netifaces python3-netifaces
 pitop.utils python3-pitop.utils
 pynput python3-pynput
 python_sonic python3-sonic
-python_systemd python3-systemd
 pyv4l2camera python3-pyv4l2camera
 rpi.gpio python3-rpi.gpio
 zmq python3-zmq
