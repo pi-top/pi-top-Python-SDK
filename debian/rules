@@ -10,5 +10,6 @@ override_dh_auto_test:
 
 override_dh_auto_build:
 	dh_auto_build
-	PYTHONPATH=. sphinx-build -v -bhtml docs/ build/html
+	# Fail on warnings; make verbose
+	PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
 	# PYTHONPATH=. sphinx-build -v -bman  docs/ build/man
