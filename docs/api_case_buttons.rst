@@ -1,5 +1,5 @@
 =============================
-pi-top [4] Case Buttons
+API - pi-top [4] Case Buttons
 =============================
 
 This module allows you to interact with the buttons on the front of a pi-top [4]. You can write code to respond to these buttons being pressed and released. The following code example shows two different ways of doing this.

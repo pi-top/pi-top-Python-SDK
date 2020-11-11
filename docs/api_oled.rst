@@ -1,6 +1,6 @@
-=======================================================================
-pi-top [4] OLED Screen
-=======================================================================
+============================
+API - pi-top [4] OLED Screen
+============================
 
 This module contains information to allow a programmer to work with the mini-screen on the pi-top [4].
 Below you will find a list of the different objects that can be created to do this along with their

@@ -1,6 +1,6 @@
-=======================================================================
-pi-top Keyboard Input Component
-=======================================================================
+=====================================
+API - pi-top Keyboard Input Component
+=====================================
 
 This module has been designed to allow a programmer to utilise keyboard input in the same way as
 they might use GPIO input (e.g. a button).

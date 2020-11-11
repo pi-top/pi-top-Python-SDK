@@ -27,6 +27,8 @@ Build Status: Latest
     :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
     :alt: Documentation Status
 
+
+
 .. # TODO - add coverage report
 .. image: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
 ..     :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK

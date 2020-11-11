@@ -22,10 +22,13 @@ Table of Contents
     :numbered:
 
     getting_started
+    cli_tools
     examples_basic
     examples_advanced
-    cli_tools
-    api/index
+    api_case_buttons
+    api_keyboard
+    api_oled
+    api_pulse
     more/index
 
 
