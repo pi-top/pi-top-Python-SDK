@@ -1,12 +1,18 @@
-=================================================
-Getting Started
-=================================================
+=================
+ Getting Started
+=================
 
-This SDK is pre-installed on pi-topOS, so you don't need to install it manually.
+--------------------
+ Installing the SDK
+--------------------
 
+pi-topOS
+========
+
+This SDK is pre-installed on pi-topOS, so you don't need to install it manually!
 
 Using PyPI
----------------------
+==========
 
 You can install the latest version of the SDK through PyPI in your pi-top with:
 
@@ -16,7 +22,7 @@ You can install the latest version of the SDK through PyPI in your pi-top with:
 
 
 Using apt
----------------------
+=========
 
 The latest version can also be installed through `apt`. In your pi-top, run:
 
@@ -33,11 +39,23 @@ add them by running:
     $ echo "deb http://apt.pi-top.com/pi-top-os/ sirius main contrib non-free" | sudo tee -a "/etc/apt/sources.list.d/pi-top.list"
 
 
-Building from Source
----------------------
+Building from source
+====================
 
 .. code-block:: sh
 
     $ git clone https://github.com/pi-top/pi-top-Python-SDK.git
     $ cd pi-top-Python-SDK
     $ pip3 install -e .
+
+------------------------------------------------
+ Checking that the SDK is installed and working
+------------------------------------------------
+
+Try and run the following:
+
+.. code-block:: sh
+
+    $ pt-host
+
+If this works, then you should be good to go! Go and check out the Examples section!

@@ -9,4 +9,3 @@ More Information
     more/contributing
     more/references
     more/license
-    more/release_notes
