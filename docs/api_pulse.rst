@@ -6,11 +6,12 @@ API - pi-topPULSE
 We recommend that you use pi-topOS or install the SDK via `apt`,
 to ensure that all of this is configured for you.
 
+------------------------------------------------------
 Manual Configuration
 ------------------------------------------------------
 
 Enabling I2C
-~~~~~~~~~~~~
+=============================================
 
 I2C is required to communicate with the function-enabling IC as part of
 initialisation.
@@ -19,7 +20,7 @@ The simplest way to do this is by running ``raspi-config``, selecting
 ``Interfacing Options`` → ``I2C`` → Select "Yes" to enabling I2C.
 
 Enabling UART/serial for LEDs and Microphone
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================================
 
 The included version of Pyserial on Raspbian on Python 3 does not
 support custom baud rates, which is required for LEDs to work. Run the
@@ -33,10 +34,10 @@ running ``raspi-config``, selecting ``Interfacing Options`` → ``Serial``
 "Yes" for enabling serial port hardware.
 
 Configuring Audio Output (Speaker)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================================
 
 Enabling HDMI to I2S on the pi-top v2
-'''''''''''''''''''''''''''''''''''''
+-------------------------------------------------------------
 
 The new pi-top has built-in HDMI-to-I2S audio conversion, which
 eliminates the need for reconfiguring the operating system to use I2S.
@@ -57,7 +58,7 @@ as follows:
    pt-hdmi-to-i2s disable
 
 Configuring I2S on the original pi-top (v1) and pi-topCEED
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+-------------------------------------------------------------
 
 I2S enabling/disabling and volume control configuration on the original
 pi-top (v1) and pi-topCEED form part of the `general pi-top device
@@ -81,6 +82,7 @@ connected, and with I2S enabled), followed by a reboot, using
    /usr/sbin/alsactl -f hifiberry-alsactl.restore restore
 
 
+-------------------------------------------------------------
 Using the software library to manually initialise pi-topPULSE
 -------------------------------------------------------------
 
@@ -103,6 +105,7 @@ Once you have installed the library, you can now initialise the device:
    else:
        print("Failed to enable pi-topPULSE")
 
+------------------------------------------------------
 EEPROM
 ------------------------------------------------------
 

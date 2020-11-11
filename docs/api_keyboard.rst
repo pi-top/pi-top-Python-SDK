@@ -10,6 +10,7 @@ for the A-key being pressed with or without shift.
 
 .. literalinclude:: ../examples/keyboard/keyboard.py
 
+----------------------
 KeyPressListener
 ----------------------
 
@@ -17,7 +18,7 @@ KeyPressListener
 
 
 Special Key Names
-#####################
+=====================
 
 You can listen for the following special keys by passing their names when creating an instance
 of KeyPressListener.

@@ -21,7 +21,7 @@ yourself with a method of being able to exit, it is recommended that you check f
 
 Whilst this snippet is provided for ease of use, it is strongly recommended that you look at the documentation for the pi-top [4] buttons for detailed instructions of its usage.
 
-
+---------------------
 PTOLEDDisplay class
 ---------------------
 
@@ -54,6 +54,7 @@ PTOLEDDisplay class
     :undoc-members:
     :show-inheritance:
 
+---------------------
 Canvas class
 ---------------------
 
@@ -79,6 +80,7 @@ Canvas class
     :undoc-members:
     :show-inheritance:
 
+---------------------
 OLEDImage class
 ---------------------
 

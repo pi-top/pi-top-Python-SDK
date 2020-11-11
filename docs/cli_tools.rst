@@ -2,6 +2,7 @@
  Command-Line Tools (CLI)
 ==========================
 
+--------------------
 pt-battery
 --------------------
 
@@ -10,7 +11,7 @@ If the pi-top device has an internal battery, it will report it's status.
 Running `pt-battery` on its own will report all the available information about the battery.
 
 Usage
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
@@ -49,9 +50,8 @@ Where:
     Report all the information available about the battery (charging state, capacity, time remaining
     and wattage)
 
-
 Example
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
@@ -63,6 +63,7 @@ Example
 
 
 
+--------------------
 pt-brightness
 --------------------
 
@@ -71,7 +72,7 @@ On pi-top devices with a screen, it allows to query and control its brightness.
 Running `pt-brightness` on its own will report back the current brightness value.
 
 Usage
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
@@ -106,7 +107,7 @@ Where:
 
 
 Example
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
@@ -119,14 +120,14 @@ Example
     pi@pi-top:~ $ pt-brightness
     11
 
-
+--------------------
 pt-device
 --------------------
 
 Finds useful information about the system and the attached devices that are being managed by `pt-device-manager`.
 
 Usage
-~~~~~~~~~~~
+===============
 
 This command doesn't receive arguments.
 
@@ -134,9 +135,8 @@ This command doesn't receive arguments.
 
     pt-devices
 
-
 Example
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
@@ -146,14 +146,14 @@ Example
         Host device is pi-top [4]
 
 
+--------------------
 pt-host
 --------------------
 
 Returns the pi-top host device name where the command is being run.
 
-
 Usage
-~~~~~~~~~~~
+===============
 
 This command doesn't receive arguments.
 
@@ -162,7 +162,7 @@ This command doesn't receive arguments.
     pt-host
 
 Example
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
@@ -177,14 +177,15 @@ Example
     pi-top [3]
 
 
+--------------------
 pt-oled
 --------------------
 
 Usage
-~~~~~~~~~~~
+===============
 
 Example
-~~~~~~~~~~~
+===============
 
 .. code-block:: bash
 
