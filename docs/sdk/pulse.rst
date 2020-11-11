@@ -94,18 +94,6 @@ connected, and with I2S enabled), followed by a reboot, using
 
    /usr/sbin/alsactl -f hifiberry-alsactl.restore restore
 
-Making the ``ptpulse`` Python library accessible
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The easiest way to get the pi-topPULSE library is to install the debian
-package directly:
-
-::
-
-   sudo apt install python3-pt-pulse
-
-You can also download the library files from this repository and use
-them locally.
 
 Using the software library to manually initialise pi-topPULSE
 -------------------------------------------------------------
@@ -128,12 +116,3 @@ Once you have installed the library, you can now initialise the device:
        print("Successfully enabled pi-topPULSE")
    else:
        print("Failed to enable pi-topPULSE")
-
-\*\* NOTE: the host device ID for your device can be found
-`here <https://github.com/pi-top/Device-Management/blob/master/library/pitop.utils/common_ids.py>`__\ \*\*
-
-Using pi-topPULSE in projects
------------------------------
-
-You are now ready to use the pi-topPULSE! Check out the examples to get some inspiration of how
-you can use it.

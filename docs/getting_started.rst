@@ -1,12 +1,14 @@
 =================================================
-Installing
+Getting Started
 =================================================
+
+This SDK is pre-installed on pi-topOS, so you don't need to install it manually.
 
 
 Using PyPI
-=====================
+---------------------
 
-You can install the latest version of the SDK through PyPI into your pi-top with:
+You can install the latest version of the SDK through PyPI in your pi-top with:
 
 .. code-block:: sh
 
@@ -14,7 +16,7 @@ You can install the latest version of the SDK through PyPI into your pi-top with
 
 
 Using apt
-=====================
+---------------------
 
 The latest version can also be installed through `apt`. In your pi-top, run:
 
@@ -32,7 +34,7 @@ add them by running:
 
 
 Building from Source
-=====================
+---------------------
 
 .. code-block:: sh
 

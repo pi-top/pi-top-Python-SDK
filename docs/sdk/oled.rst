@@ -1,13 +1,8 @@
-.. pi-top [4] OLED Screen master file, created by
-   sphinx-quickstart on Wed May  8 12:35:08 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 =======================================================================
 pi-top [4] OLED Screen
 =======================================================================
 
-This library contains information to allow a programmer to work with the mini-screen on the pi-top [4].
+This module contains information to allow a programmer to work with the mini-screen on the pi-top [4].
 Below you will find a list of the different objects that can be created to do this along with their
 descriptions, methods and examples of how to do this.
 
@@ -22,7 +17,7 @@ until your program exits, at which point the system menu is automatically restor
 yourself with a method of being able to exit, it is recommended that you check for a press event on the
 'cancel' button:
 
-.. literalinclude:: ../examples/oled/exit_with_cancel_button.py
+.. literalinclude:: ../../examples/oled/exit_with_cancel_button.py
 
 Whilst this snippet is provided for ease of use, it is strongly recommended that you look at the documentation for the pi-top [4] buttons for detailed instructions of its usage.
 
@@ -32,27 +27,27 @@ PTOLEDDisplay class
 
 **Example 1:** Hello, world!
 
-.. literalinclude:: ../examples/oled/hello_world.py
+.. literalinclude:: ../../examples/oled/hello_world.py
 
 **Example 2:** Displaying an image
 
-.. literalinclude:: ../examples/oled/display_an_image.py
+.. literalinclude:: ../../examples/oled/display_an_image.py
 
 **Example 3:** Displaying an animated image once
 
-.. literalinclude:: ../examples/oled/animated_image_once_simple_way.py
+.. literalinclude:: ../../examples/oled/animated_image_once_simple_way.py
 
 **Example 4:** Displaying an animated image once through frame by frame
 
-.. literalinclude:: ../examples/oled/animated_image_once.py
+.. literalinclude:: ../../examples/oled/animated_image_once.py
 
 **Example 5:** Displaying an animated image looping forever frame by frame
 
-.. literalinclude:: ../examples/oled/animated_image_loop.py
+.. literalinclude:: ../../examples/oled/animated_image_loop.py
 
 **Example 6:** Displaying an animated image looping in background
 
-.. literalinclude:: ../examples/oled/animated_image_loop_in_background.py
+.. literalinclude:: ../../examples/oled/animated_image_loop_in_background.py
 
 .. automodule:: pitop.oled
     :members:
@@ -64,19 +59,19 @@ Canvas class
 
 **Example 1:** Drawing with the canvas
 
-.. literalinclude:: ../examples/oled/drawing_with_canvas.py
+.. literalinclude:: ../../examples/oled/drawing_with_canvas.py
 
 **Example 2:** Drawing a clock
 
-.. literalinclude:: ../examples/oled/clock.py
+.. literalinclude:: ../../examples/oled/clock.py
 
 **Example 3:** A particle-based screensaver
 
-.. literalinclude:: ../examples/oled/particles.py
+.. literalinclude:: ../../examples/oled/particles.py
 
 **Example 4:** Prim's algorithm
 
-.. literalinclude:: ../examples/oled/prims_algorithm.py
+.. literalinclude:: ../../examples/oled/prims_algorithm.py
 
 
 .. automodule:: pitop.oled.canvas
