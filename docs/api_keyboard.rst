@@ -8,12 +8,10 @@ they might use GPIO input (e.g. a button).
 You can listen for any standard keyboard key input, for example by using ``a`` or ``A`` to listen
 for the A-key being pressed with or without shift.
 
+.. literalinclude:: ../examples/keyboard/keyboard.py
+
 KeyPressListener
 ----------------------
-
-**Example Code:**
-
-.. literalinclude:: ../examples/keyboard/keyboard.py
 
 .. autoclass:: pitop.keyboard.KeyPressListener
 
