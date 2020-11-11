@@ -111,7 +111,7 @@ settings file contains in this directory. Every pi-topPULSE is
 programmed with the following EEPROM configuration during factory
 production:
 
-.. literalinclude:: ./_static/pi-top_pulse_eeprom_settings.txt
+.. literalinclude:: ./_static/pulse_eeprom_settings.txt
 
 See the Raspberry Pi Foundation's `HAT Github
 repository <https://github.com/raspberrypi/hats>`__ for more
