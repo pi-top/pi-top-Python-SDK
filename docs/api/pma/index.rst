@@ -1,13 +1,10 @@
 =================================================
-Python SDK Reference
+pi-top Makers Architecture (PMA)
 =================================================
 
 .. toctree::
-    :maxdepth: 4
+    :maxdepth: 2
 
-    oled
-    keyboard
-    case_buttons
-    pulse
-    pma
+    input_components
+    output_components
     parameters

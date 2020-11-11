@@ -1,9 +1,12 @@
 =================================================
-pi-top Makers Architecture (PMA)
+Python API Reference
 =================================================
 
 .. toctree::
-    :maxdepth: 4
+    :maxdepth: 2
 
-    input_components
-    output_components
+    oled
+    keyboard
+    case_buttons
+    pulse/index
+    pma/index

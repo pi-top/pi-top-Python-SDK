@@ -1,5 +1,5 @@
 =====================================================
-pi-top Python SDK Reference
+pi-top Python SDK
 =====================================================
 
 .. image:: _static/foundation_kit.png
@@ -18,14 +18,15 @@ Table of Contents
 =================
 
 .. toctree::
-    :maxdepth: 4
+    :maxdepth: 2
     :numbered:
 
     getting_started
-    examples/index
-    sdk/sdk_reference
-    sdk/cli
-    others/index
+    examples_basic
+    examples_advanced
+    cli_tools
+    api/index
+    more/index
 
 
 Indices and tables

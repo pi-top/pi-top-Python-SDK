@@ -2,26 +2,12 @@
 pi-topPULSE
 ======================================================
 
-pi-topPULSE EEPROM
+**Note:** This information is provided for interest only.
+We recommend that you use pi-topOS or install the SDK via `apt`,
+to ensure that all of this is configured for you.
+
+Manual Configuration
 ------------------------------------------------------
-
-The pi-topPULSE contains an EEPROM which was programmed using the
-settings file contains in this directory. See the Raspberry Pi
-Foundation's `HAT Github
-repository <https://github.com/raspberrypi/hats>`__ for more
-information.
-
-
-Manually Configuring Raspbian for pi-topPULSE
-------------------------------------------------------
-
-**Note:** This document was moved here from the Github project wiki.
-**Note:** This is definitely the long way round to get the pi-topPULSE
-working, and is provided only for interest. If you are running pi-topOS,
-you do not need to worry about this - everything is already included! If
-you are running Raspbian, please consult the ``readme.md`` file
-`here <https://github.com/pi-top/pi-topPULSE/blob/master/README.md>`__
-for the simpler method of enabling the pulse.
 
 Enabling I2C
 ~~~~~~~~~~~~
@@ -116,3 +102,17 @@ Once you have installed the library, you can now initialise the device:
        print("Successfully enabled pi-topPULSE")
    else:
        print("Failed to enable pi-topPULSE")
+
+pi-topPULSE EEPROM
+------------------------------------------------------
+
+The pi-topPULSE contains an EEPROM which was programmed using the
+settings file contains in this directory. Every pi-topPULSE is
+programmed with the following EEPROM configuration during factory
+production:
+
+.. literalinclude:: ./pi-top_pulse_eeprom_settings.txt
+
+See the Raspberry Pi Foundation's `HAT Github
+repository <https://github.com/raspberrypi/hats>`__ for more
+information.

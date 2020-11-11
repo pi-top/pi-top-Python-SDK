@@ -1,10 +1,12 @@
 =====================================================
-Examples
+More Information
 =====================================================
 
 .. toctree::
-    :maxdepth: 4
+    :maxdepth: 2
 
-    component_examples
-    basic_examples
-    advanced_examples
+    faq
+    contributing
+    references
+    license
+    release_notes
