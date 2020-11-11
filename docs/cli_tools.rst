@@ -12,7 +12,7 @@ Running `pt-battery` on its own will report all the available information about 
 Usage
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     pt-battery [-h] [-s] [-c] [-t] [-w] [-v]
 
@@ -53,7 +53,7 @@ Where:
 Example
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     pi@pi-top:~ $ pt-battery
         Charging State: 0
@@ -73,7 +73,7 @@ Running `pt-brightness` on its own will report back the current brightness value
 Usage
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     pt-brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
                      [-d] [-l {0,1}] [-t TIMEOUT] [-v]
@@ -108,7 +108,7 @@ Where:
 Example
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     pi@pi-top:~ $ pt-brightness
     16
@@ -130,7 +130,7 @@ Usage
 
 This command doesn't receive arguments.
 
-.. code-block::
+.. code-block:: bash
 
     pt-devices
 
@@ -138,7 +138,7 @@ This command doesn't receive arguments.
 Example
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     pi@pi-top:~ $ pt-devices
         Devices and peripherals handled by pt-device-manager:
@@ -157,20 +157,20 @@ Usage
 
 This command doesn't receive arguments.
 
-.. code-block::
+.. code-block:: bash
 
     pt-host
 
 Example
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     # on a pi-top [4]
     pi@pi-top:~ $ pt-host
     pi-top [4]
 
-.. code-block::
+.. code-block:: bash
 
     # on a pi-top [3]
     pi@pi-top:~ $ pt-host
@@ -186,6 +186,6 @@ Usage
 Example
 ~~~~~~~~~~~
 
-.. code-block::
+.. code-block:: bash
 
     pt-oled
