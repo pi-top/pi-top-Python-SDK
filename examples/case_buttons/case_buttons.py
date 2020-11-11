@@ -1,9 +1,14 @@
-from pitop.case_buttons import PTUpButton, PTDownButton, PTSelectButton, PTCancelButton
+from pitop.case_buttons import (
+    UpButton,
+    DownButton,
+    SelectButton,
+    CancelButton,
+)
 
-up_button = PTUpButton()
-down_button = PTDownButton()
-select_button = PTSelectButton()
-cancel_button = PTCancelButton()
+up_button = UpButton()
+down_button = DownButton()
+select_button = SelectButton()
+cancel_button = CancelButton()
 
 
 def do_up_thing():

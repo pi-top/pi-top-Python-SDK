@@ -18,7 +18,9 @@ Note: epoch version
 I was using an older version of the Python libraries. How can I update to use this SDK?
 ---------------------------------------------------------------------------------------
 Note: .deprecated directory.
-PMA prefix is now dropped
+PMA: PMA prefix is now dropped
+Buttons: PT prefix is now dropped. 'Buttons' is now 'CaseButtons'
+
 Everything else should be updatable with a Find and Replace:
 
 ptbuttons -> pitop.case_buttons

@@ -5,7 +5,7 @@ from os import path, mkdir, getpid, chmod, remove
 from fcntl import flock, LOCK_UN, LOCK_EX
 
 
-class PTButton:
+class CaseButton:
     def __init__(self, button_type):
         #: Returns a string representing which button it is.
         self.type = button_type
@@ -18,7 +18,7 @@ class PTButton:
         )  #: If a method is assigned to this data member it will be invoked when the button is released.
 
 
-class PTButtons:
+class CaseButtons:
     """
     Instantiates a single instance for each of the four button types up, down,
     select and cancel.
@@ -31,10 +31,10 @@ class PTButtons:
     CANCEL = "CANCEL"
 
     def __init__(self):
-        self.up = PTButton(self.UP)
-        self.down = PTButton(self.DOWN)
-        self.select = PTButton(self.SELECT)
-        self.cancel = PTButton(self.CANCEL)
+        self.up = CaseButton(self.UP)
+        self.down = CaseButton(self.DOWN)
+        self.select = CaseButton(self.SELECT)
+        self.cancel = CaseButton(self.CANCEL)
         self._setup_request_client()
         atexit.register(self._clean_up)
         if path.exists("/tmp/button-locks") == False:
@@ -72,36 +72,36 @@ class PTButtons:
             remove(self.lock_path)
 
 
-buttons = PTButtons()
+buttons = CaseButtons()
 
 
-def PTUpButton():
+def UpButton():
     """
     :return: A button object for the up button.
-    :rtype: PTButton
+    :rtype: CaseButton
     """
     return buttons.up
 
 
-def PTDownButton():
+def DownButton():
     """
     :return: A button object for the down button.
-    :rtype: PTButton
+    :rtype: CaseButton
     """
     return buttons.down
 
 
-def PTSelectButton():
+def SelectButton():
     """
     :return: A button object for the select button.
-    :rtype: PTButton
+    :rtype: CaseButton
     """
     return buttons.select
 
 
-def PTCancelButton():
+def CancelButton():
     """
     :return: A button object for the cancel button.
-    :rtype: PTButton
+    :rtype: CaseButton
     """
     return buttons.cancel
