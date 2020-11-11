@@ -38,6 +38,43 @@ pi-top [4]: Loop a GIF on the OLED
 
 .. literalinclude:: ../examples/oled/animated_image_loop.py
 
+pi-top [4]: Displaying an GIF once
+----------------------------------------------
+
+.. literalinclude:: ../examples/oled/animated_image_once_simple_way.py
+
+pi-top [4]: Displaying an GIF once through frame by frame
+-----------------------------------------------------------------------
+
+.. literalinclude:: ../examples/oled/animated_image_once.py
+
+pi-top [4]: Displaying an GIF looping in background
+------------------------------------------------------------------
+
+.. literalinclude:: ../examples/oled/animated_image_loop_in_background.py
+
+pi-top [4]: Drawing shapes and displaying them on the OLED
+------------------------------------------------------------------
+
+.. literalinclude:: ../examples/oled/drawing_with_canvas.py
+
+pi-top [4]: Displaying a clock on the OLED
+------------------------------------------------------------------
+
+.. literalinclude:: ../examples/oled/clock.py
+
+pi-top [4]:  Display a particle-based screensaver in the OLED
+------------------------------------------------------------------
+
+.. literalinclude:: ../examples/oled/particles.py
+
+pi-top [4]:  Prim's algorithm
+------------------------------------------------------------------
+
+.. literalinclude:: ../examples/oled/prims_algorithm.py
+
+
+
 .. PMA COMPONENTS
 
 PMA: Using a Light Sensor

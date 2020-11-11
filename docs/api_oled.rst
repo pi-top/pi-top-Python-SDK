@@ -25,30 +25,6 @@ Whilst this snippet is provided for ease of use, it is strongly recommended that
 PTOLEDDisplay class
 ---------------------
 
-**Example 1:** Hello, world!
-
-.. literalinclude:: ../examples/oled/hello_world.py
-
-**Example 2:** Displaying an image
-
-.. literalinclude:: ../examples/oled/display_an_image.py
-
-**Example 3:** Displaying an animated image once
-
-.. literalinclude:: ../examples/oled/animated_image_once_simple_way.py
-
-**Example 4:** Displaying an animated image once through frame by frame
-
-.. literalinclude:: ../examples/oled/animated_image_once.py
-
-**Example 5:** Displaying an animated image looping forever frame by frame
-
-.. literalinclude:: ../examples/oled/animated_image_loop.py
-
-**Example 6:** Displaying an animated image looping in background
-
-.. literalinclude:: ../examples/oled/animated_image_loop_in_background.py
-
 .. automodule:: pitop.oled
     :members:
     :undoc-members:
@@ -57,23 +33,6 @@ PTOLEDDisplay class
 ---------------------
 Canvas class
 ---------------------
-
-**Example 1:** Drawing with the canvas
-
-.. literalinclude:: ../examples/oled/drawing_with_canvas.py
-
-**Example 2:** Drawing a clock
-
-.. literalinclude:: ../examples/oled/clock.py
-
-**Example 3:** A particle-based screensaver
-
-.. literalinclude:: ../examples/oled/particles.py
-
-**Example 4:** Prim's algorithm
-
-.. literalinclude:: ../examples/oled/prims_algorithm.py
-
 
 .. automodule:: pitop.oled.canvas
     :members:
