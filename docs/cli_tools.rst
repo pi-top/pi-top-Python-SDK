@@ -173,8 +173,15 @@ Example
 pt-oled
 --------------------
 
+Display text directly into pi-top [4]'s OLED screen.
+
 Usage
 ===============
+
+.. code-block:: bash
+
+    pt-oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
+
 
 Example
 ===============
@@ -182,3 +189,17 @@ Example
 .. code-block:: bash
 
     pt-oled
+
+Where:
+
+text
+    set the text to write to screen
+
+-h, --help
+    Show a help message and exits
+
+--timeout TIMEOUT
+    set the timeout in seconds
+
+--font-size FONT_SIZE
+    set the font size
