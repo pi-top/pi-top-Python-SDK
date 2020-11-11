@@ -1,29 +1,24 @@
-.. pi-top keyboard library Reference master file, created by
-   sphinx-quickstart on Wed May  8 12:35:08 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+=====================================
+API - pi-top Keyboard Input Component
+=====================================
 
-pi-top Keyboard Input Library Reference
-=======================================================================
-
-This library has been designed to allow a programmer to utilise keyboard input in the same way as
+This module has been designed to allow a programmer to utilise keyboard input in the same way as
 they might use GPIO input (e.g. a button).
 
 You can listen for any standard keyboard key input, for example by using ``a`` or ``A`` to listen
 for the A-key being pressed with or without shift.
 
-KeyPressListener
-=====================
-
-**Example Code:**
-
 .. literalinclude:: ../examples/keyboard/keyboard.py
+
+----------------------
+KeyPressListener
+----------------------
 
 .. autoclass:: pitop.keyboard.KeyPressListener
 
 
 Special Key Names
-#####################
+=====================
 
 You can listen for the following special keys by passing their names when creating an instance
 of KeyPressListener.

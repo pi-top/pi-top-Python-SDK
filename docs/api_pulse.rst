@@ -1,16 +1,17 @@
-Manually Configuring Raspbian for pi-topPULSE
----------------------------------------------
+======================================================
+API - pi-topPULSE
+======================================================
 
-**Note:** This document was moved here from the Github project wiki.
-**Note:** This is definitely the long way round to get the pi-topPULSE
-working, and is provided only for interest. If you are running pi-topOS,
-you do not need to worry about this - everything is already included! If
-you are running Raspbian, please consult the ``readme.md`` file
-`here <https://github.com/pi-top/pi-topPULSE/blob/master/README.md>`__
-for the simpler method of enabling the pulse.
+**Note:** This information is provided for interest only.
+We recommend that you use pi-topOS or install the SDK via `apt`,
+to ensure that all of this is configured for you.
+
+------------------------------------------------------
+Manual Configuration
+------------------------------------------------------
 
 Enabling I2C
-~~~~~~~~~~~~
+=============================================
 
 I2C is required to communicate with the function-enabling IC as part of
 initialisation.
@@ -19,7 +20,7 @@ The simplest way to do this is by running ``raspi-config``, selecting
 ``Interfacing Options`` → ``I2C`` → Select "Yes" to enabling I2C.
 
 Enabling UART/serial for LEDs and Microphone
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================================
 
 The included version of Pyserial on Raspbian on Python 3 does not
 support custom baud rates, which is required for LEDs to work. Run the
@@ -33,10 +34,10 @@ running ``raspi-config``, selecting ``Interfacing Options`` → ``Serial``
 "Yes" for enabling serial port hardware.
 
 Configuring Audio Output (Speaker)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=============================================
 
 Enabling HDMI to I2S on the pi-top v2
-'''''''''''''''''''''''''''''''''''''
+-------------------------------------------------------------
 
 The new pi-top has built-in HDMI-to-I2S audio conversion, which
 eliminates the need for reconfiguring the operating system to use I2S.
@@ -57,7 +58,7 @@ as follows:
    pt-hdmi-to-i2s disable
 
 Configuring I2S on the original pi-top (v1) and pi-topCEED
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+-------------------------------------------------------------
 
 I2S enabling/disabling and volume control configuration on the original
 pi-top (v1) and pi-topCEED form part of the `general pi-top device
@@ -80,19 +81,8 @@ connected, and with I2S enabled), followed by a reboot, using
 
    /usr/sbin/alsactl -f hifiberry-alsactl.restore restore
 
-Making the ``ptpulse`` Python library accessible
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The easiest way to get the pi-topPULSE library is to install the debian
-package directly:
-
-::
-
-   sudo apt install python3-pt-pulse
-
-You can also download the library files from this repository and use
-them locally.
-
+-------------------------------------------------------------
 Using the software library to manually initialise pi-topPULSE
 -------------------------------------------------------------
 
@@ -115,12 +105,17 @@ Once you have installed the library, you can now initialise the device:
    else:
        print("Failed to enable pi-topPULSE")
 
-\*\* NOTE: the host device ID for your device can be found
-`here <https://github.com/pi-top/Device-Management/blob/master/library/pitop.utils/common_ids.py>`__\ \*\*
+------------------------------------------------------
+EEPROM
+------------------------------------------------------
 
-Using pi-topPULSE in projects
------------------------------
+The pi-topPULSE contains an EEPROM which was programmed using the
+settings file contains in this directory. Every pi-topPULSE is
+programmed with the following EEPROM configuration during factory
+production:
 
-You are now ready to use the pi-topPULSE! Check out the
-`examples </examples@master>`__ folder to get some inspiration of how
-you can use it.
+.. literalinclude:: ./_static/pulse_eeprom_settings.txt
+
+See the Raspberry Pi Foundation's `HAT Github
+repository <https://github.com/raspberrypi/hats>`__ for more
+information.
