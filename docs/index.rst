@@ -29,6 +29,7 @@ Table of Contents
     api_keyboard
     api_oled
     api_pulse
+    api_pma
     more/index
 
 
