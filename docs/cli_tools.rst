@@ -14,7 +14,7 @@ Usage
 
 .. code-block::
 
-    $ pt-battery [-h] [-s] [-c] [-t] [-w] [-v]
+    pt-battery [-h] [-s] [-c] [-t] [-w] [-v]
 
 
 Where:
@@ -55,7 +55,7 @@ Example
 
 .. code-block::
 
-    $ pi@pi-top:~ $ pt-battery
+    pi@pi-top:~ $ pt-battery
         Charging State: 0
         Capacity: 42
         Time Remaining: 104
@@ -132,7 +132,7 @@ This command doesn't receive arguments.
 
 .. code-block::
 
-    $ pt-devices
+    pt-devices
 
 
 Example
@@ -159,7 +159,7 @@ This command doesn't receive arguments.
 
 .. code-block::
 
-    $ pt-host
+    pt-host
 
 Example
 ~~~~~~~~~~~
@@ -188,4 +188,4 @@ Example
 
 .. code-block::
 
-    $ pt-oled
+    pt-oled
