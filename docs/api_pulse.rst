@@ -103,7 +103,7 @@ Once you have installed the library, you can now initialise the device:
    else:
        print("Failed to enable pi-topPULSE")
 
-pi-topPULSE EEPROM
+EEPROM
 ------------------------------------------------------
 
 The pi-topPULSE contains an EEPROM which was programmed using the
@@ -111,7 +111,7 @@ settings file contains in this directory. Every pi-topPULSE is
 programmed with the following EEPROM configuration during factory
 production:
 
-.. literalinclude:: ./pi-top_pulse_eeprom_settings.txt
+.. literalinclude:: ./_static/pi-top_pulse_eeprom_settings.txt
 
 See the Raspberry Pi Foundation's `HAT Github
 repository <https://github.com/raspberrypi/hats>`__ for more

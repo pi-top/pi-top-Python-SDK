@@ -13,7 +13,7 @@ KeyPressListener
 
 **Example Code:**
 
-.. literalinclude:: ../../examples/keyboard/keyboard.py
+.. literalinclude:: ../examples/keyboard/keyboard.py
 
 .. autoclass:: pitop.keyboard.KeyPressListener
 

@@ -30,7 +30,7 @@ Table of Contents
     api_oled
     api_pulse
     api_pma
-    more/index
+    more
 
 
 Indices and tables
