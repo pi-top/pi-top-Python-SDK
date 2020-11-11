@@ -1,5 +1,5 @@
 =====================================================
-Examples - API, Advanced
+Examples - API: Advanced
 =====================================================
 
 Adding Motion Detection to a USB Camera
