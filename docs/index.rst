@@ -23,8 +23,9 @@ Table of Contents
 
     getting_started
     cli_tools
-    examples_basic
-    examples_advanced
+    examples_cli
+    examples_python_basic
+    examples_python_advanced
     api_case_buttons
     api_keyboard
     api_oled

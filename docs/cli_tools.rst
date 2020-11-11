@@ -61,8 +61,6 @@ Example
         Time Remaining: 104
         Wattage: -41
 
-
-
 --------------------
 pt-brightness
 --------------------
@@ -113,12 +111,6 @@ Example
 
     pi@pi-top:~ $ pt-brightness
     16
-    pi@pi-top:~ $ pt-brightness -b 10
-    pi@pi-top:~ $ pt-brightness
-    10
-    pi@pi-top:~ $ pt-brightness -i
-    pi@pi-top:~ $ pt-brightness
-    11
 
 --------------------
 pt-device

@@ -1,5 +1,5 @@
 =====================================================
-Advanced Examples
+Examples - Python, Advanced
 =====================================================
 
 Adding Motion Detection to a USB Camera
