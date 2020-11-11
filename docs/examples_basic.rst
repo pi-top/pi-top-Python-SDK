@@ -2,61 +2,99 @@
 Basic Examples
 =====================================================
 
+.. Generic examples
+
+pi-topPULSE: Using the LED matrix
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/led-demo.py
+
+pi-topPULSE: Using the microphone
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/mic-demo.py
+
+.. pi-top [4] Examples
+
+.. CASE BUTTONS
+
+pi-top [4]: Using the case buttons
+----------------------------------
+
+.. literalinclude:: ../examples/case_buttons/case_buttons.py
+
+pi-top [4]: Writing text to the OLED
+------------------------------------
+
+.. literalinclude:: ../examples/oled/hello_world.py
+
+pi-top [4]: Showing an image on the OLED
+----------------------------------------
+
+.. literalinclude:: ../examples/oled/display_an_image.py
+
+pi-top [4]: Loop a GIF on the OLED
+----------------------------------------
+
+.. literalinclude:: ../examples/oled/animated_image_loop.py
+
 .. PMA COMPONENTS
 
-Button
--------------------------------
-
-.. literalinclude:: ../examples/pma/button.py
-
-Light Sensor
--------------------------------
+PMA: Using a Light Sensor
+-------------------------
 
 .. literalinclude:: ../examples/pma/light_sensor.py
 
-Sound Sensor
--------------------------------
+PMA: Using a Sound Sensor
+-------------------------
 
 .. literalinclude:: ../examples/pma/sound_sensor.py
 
-Potentiometer
--------------------------------
+PMA: Using a Potentiometer
+--------------------------
 
 .. literalinclude:: ../examples/pma/potentiometer.py
 
-Ultrasonic Sensor
--------------------------------
+PMA: Using a Ultrasonic Sensor
+------------------------------
 
 .. literalinclude:: ../examples/pma/ultrasonic_sensor.py
 
-Buzzer
--------------------------------
+PMA: Using a Buzzer
+-------------------
 
 .. literalinclude:: ../examples/pma/buzzer.py
 
-LED
--------------------------------
+PMA: Using a LED
+----------------
 
 .. literalinclude:: ../examples/pma/led.py
 
-Encoder Motor
--------------------------------
+PMA: Using a Encoder Motor
+--------------------------
 
 .. literalinclude:: ../examples/pma/encoder_motor.py
 
-Servo Motor
--------------------------------
+PMA: Using a Servo Motor
+------------------------
 
 .. literalinclude:: ../examples/pma/servo_motor.py
 
-Camera (capture video)
--------------------------------
+PMA: Using a Camera (capture video)
+-----------------------------------
 
 .. literalinclude:: ../examples/pma/camera_capture_video.py
 
 .. COMBINING PMA COMPONENTS; SIMPLE EXAMPLES
 
-Button Controlling an LED
--------------------------------
+PMA: Using a Button to Control an LED
+-------------------------------------
+
+.. literalinclude:: ../examples/pma/button_led.py
+
+.. BONUS
+
+Bonus: Using a Keyboard as an Input Device
+------------------------------------------
 
 .. literalinclude:: ../examples/pma/button_led.py
