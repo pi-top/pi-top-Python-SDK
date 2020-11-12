@@ -88,8 +88,7 @@ class DeviceTypeClient():
             self._zmq_socket.close(0)
 
 
-if __name__ == "__main__":
-
+def main():
     client = DeviceTypeClient()
     client.get_host_device()
 
@@ -101,3 +100,7 @@ if __name__ == "__main__":
     print(client.device_id_str)
 
     exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    main()
