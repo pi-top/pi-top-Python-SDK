@@ -90,6 +90,9 @@ jobs:
   debian-package:
     needs: patch-src
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        target_arch: ["armhf", "arm64"]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
@@ -103,21 +106,18 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
             path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
-      - name: Build 32-bit and 64-bit Debian packages
-        uses: pi-top/action-debian-package@master
+      - name: Build Debian package
+        uses: pi-top/action-debian-package@v0.1.0
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
 
           distribution: "buster-backports"
-          target_architectures: "armhf,arm64"
+          target_architecture: ${{ matrix.target_arch }}
 
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
           # Package uses latest packaging syntax and Lintian opts/tags
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
-
-          # Used by pybuild for Python packages
-          additional_target_arch_multiarch_packages: "libpython3.7-minimal"
 
       - name: Upload Debian package artifacts
         uses: "actions/upload-artifact@v2"
