@@ -104,7 +104,7 @@ jobs:
             path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
       - name: Build 32-bit and 64-bit Debian packages
-        uses: pi-top/action-debian-package@master
+        uses: pi-top/action-debian-package@feature/qemuBuilds
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
