@@ -92,7 +92,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        target_arch: ["armhf", "arm64"]
+        # target_arch: ["armhf", "arm64"]
+        target_arch: ["armhf"]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
