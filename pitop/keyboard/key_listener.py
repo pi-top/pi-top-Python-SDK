@@ -1,7 +1,6 @@
 import atexit
 import sys
 from os import environ
-from threading import Thread
 
 from pitop.utils.current_session_info import get_first_display
 
