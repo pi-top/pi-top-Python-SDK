@@ -7,7 +7,7 @@ from pt_brightness import BrightnessCLI
 from pt_device import DeviceCLI
 from pt_host import HostCLI
 from pt_battery import BatteryCLI
-
+from pt_oled import OledCLI
 
 def parse_args():
     parser = ArgumentParser(prog='pt-config')
@@ -60,6 +60,24 @@ def parse_args():
     battery_parser.add_argument("-v", "--verbose",
                                 action="count")
 
+    oled_parser = subparsers.add_parser('oled',
+                                           help="pi-top OLED quick text")
+    oled_parser.add_argument("--timeout", "-t",
+        type=int,
+        help="set the timeout in seconds",
+        default=10,
+    )
+    oled_parser.add_argument("--font-size", "-s",
+        type=int,
+        help="set the font size",
+        default=20,
+    )
+
+    oled_parser.add_argument("text",
+        help="set the text to write to screen",
+    )
+
+
     return parser.parse_args()
 
 
@@ -69,6 +87,7 @@ def main():
         "device": DeviceCLI,
         "host": HostCLI,
         "battery": BatteryCLI,
+        "oled": OledCLI
     }
 
     args = parse_args()

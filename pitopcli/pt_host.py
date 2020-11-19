@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from sys import stderr
 from pitop.utils.ptdm_message import Message
 from pitop.utils.common_ids import DeviceID
 
