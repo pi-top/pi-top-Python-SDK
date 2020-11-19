@@ -6,6 +6,7 @@ from pt_socket import PTSocket
 from pt_brightness import BrightnessCLI
 from pt_device import DeviceCLI
 from pt_host import HostCLI
+from pt_battery import BatteryCLI
 
 
 def parse_args():
@@ -42,6 +43,23 @@ def parse_args():
     host_parser = subparsers.add_parser('host',
                                         help='Returns the name of the host pi-top device')
 
+    battery_parser = subparsers.add_parser('battery',
+                                           help='Get battery information from a pi-top.')
+    battery_parser.add_argument("-s", "--charging-state",
+                                help="Get charging state. -1 = No pi-top battery detected, 0 = Discharging, 1 = Charging, 2 = Full battery",
+                                action="store_true")
+    battery_parser.add_argument("-c", "--capacity",
+                                help="Get battery capacity percentage (%%)",
+                                action="store_true")
+    battery_parser.add_argument("-t", "--time-remaining",
+                                help="Get the time (in minutes) to full or time to empty based on the charging state",
+                                action="store_true")
+    battery_parser.add_argument("-w", "--wattage",
+                                help="Get the wattage (mAh) of the battery",
+                                action="store_true")
+    battery_parser.add_argument("-v", "--verbose",
+                                action="count")
+
     return parser.parse_args()
 
 
@@ -57,6 +75,9 @@ def main():
         b.run()
     elif args.subcommand == "host":
         b = HostCLI(ptsocket, args)
+        b.run()
+    elif args.subcommand == "battery":
+        b = BatteryCLI(ptsocket, args)
         b.run()
 
     ptsocket.cleanup()
