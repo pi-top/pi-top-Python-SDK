@@ -5,7 +5,7 @@ from sys import exit
 
 from pt_socket import PTSocket
 from pt_brightness import BrightnessCLI
-from pt_device import DeviceCLI
+from pt_devices import DeviceCLI
 from pt_host import HostCLI
 from pt_battery import BatteryCLI
 from pt_oled import OledCLI
