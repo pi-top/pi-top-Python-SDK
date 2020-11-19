@@ -20,7 +20,7 @@ def run(cli_cls):
     cli_cls.add_parser_arguments(parser)
     args = parser.parse_args()
 
-    try:    
+    try:
         ptsocket = PTSocket()
         cli_object = cli_cls(ptsocket, args)
         exit_code = cli_object.run()
@@ -31,4 +31,3 @@ def run(cli_cls):
         if hasattr(ptsocket, "cleanup"):
             ptsocket.cleanup()
     exit(exit_code)
-    

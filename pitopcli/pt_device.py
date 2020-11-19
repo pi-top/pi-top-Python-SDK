@@ -102,10 +102,11 @@ class DeviceCLI(CliBaseClass):
                     print(f"Connected device: {p_names[id]}")
             else:
                 print("Unable to get valid peripheral enabled.")
-   
+
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
         pass
+
 
 if __name__ == "__main__":
     from deprecated_cli_runner import run

@@ -17,7 +17,7 @@ class CliBaseClass(ABC):
     def run(self):
         """Executes the action performed by the CLI"""
         pass
-    
+
     @classmethod
     @abstractmethod
     def add_parser_arguments(cls, parser):
@@ -33,7 +33,7 @@ class CliBaseClass(ABC):
     def parser_help(self):
         """Help string to be displayed by ArgumentParser"""
         pass
-        
+
     @property
     @abstractproperty
     def cli_name(self):

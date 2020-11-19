@@ -22,15 +22,12 @@ class PTSocket:
 
         response_string = self._zmq_socket.recv_string()
         response_object = Message.from_string(response_string)
-        
+
         if verbose:
             msg = f"RESP:\t{response_object.message_friendly_string()}"
             print(msg)
         return response_object
 
-
     def cleanup(self):
         if self._zmq_socket is not None:
             self._zmq_socket.close(0)
-
-

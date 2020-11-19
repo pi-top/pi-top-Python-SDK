@@ -5,6 +5,7 @@ from pitop.utils.common_ids import DeviceID
 
 from pt_cli_base import CliBaseClass
 
+
 class HostCLI(CliBaseClass):
     parser_help = 'Returns the name of the host pi-top device'
     cli_name = 'host'
@@ -49,6 +50,7 @@ class HostCLI(CliBaseClass):
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
         pass
+
 
 if __name__ == "__main__":
     from deprecated_cli_runner import run

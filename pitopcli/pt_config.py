@@ -32,7 +32,7 @@ def parse_args():
                                        description='Set of valid subcommands to use to interface with your pi-top',
                                        help='valid subcommands',
                                        dest='subcommand')
-    
+
     for cli_name, cli_class in lookup_dict.items():
         class_parser = subparsers.add_parser(cli_name, help=cli_class.parser_help)
         cli_class.add_parser_arguments(class_parser)

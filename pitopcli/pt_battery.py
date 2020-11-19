@@ -68,19 +68,19 @@ class BatteryCLI(CliBaseClass):
     @classmethod
     def add_parser_arguments(cls, parser):
         parser.add_argument("-s", "--charging-state",
-                                    help="Get charging state. -1 = No pi-top battery detected, 0 = Discharging, 1 = Charging, 2 = Full battery",
-                                    action="store_true")
+                            help="Get charging state. -1 = No pi-top battery detected, 0 = Discharging, 1 = Charging, 2 = Full battery",
+                            action="store_true")
         parser.add_argument("-c", "--capacity",
-                                    help="Get battery capacity percentage (%%)",
-                                    action="store_true")
+                            help="Get battery capacity percentage (%%)",
+                            action="store_true")
         parser.add_argument("-t", "--time-remaining",
-                                    help="Get the time (in minutes) to full or time to empty based on the charging state",
-                                    action="store_true")
+                            help="Get the time (in minutes) to full or time to empty based on the charging state",
+                            action="store_true")
         parser.add_argument("-w", "--wattage",
-                                    help="Get the wattage (mAh) of the battery",
-                                    action="store_true")
+                            help="Get the wattage (mAh) of the battery",
+                            action="store_true")
         parser.add_argument("-v", "--verbose",
-                                    action="count")
+                            action="count")
 
 
 if __name__ == "__main__":

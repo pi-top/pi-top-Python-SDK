@@ -25,18 +25,19 @@ class OledCLI(CliBaseClass):
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
         parser.add_argument("--timeout", "-t",
-            type=int,
-            help="set the timeout in seconds",
-            default=10,
-        )
+                            type=int,
+                            help="set the timeout in seconds",
+                            default=10,
+                            )
         parser.add_argument("--font-size", "-s",
-            type=int,
-            help="set the font size",
-            default=20,
-        )
+                            type=int,
+                            help="set the font size",
+                            default=20,
+                            )
         parser.add_argument("text",
-            help="set the text to write to screen",
-        )
+                            help="set the text to write to screen",
+                            )
+
 
 if __name__ == "__main__":
     from deprecated_cli_runner import run

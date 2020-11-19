@@ -90,25 +90,24 @@ class BrightnessCLI(CliBaseClass):
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
         parser.add_argument("-b", "--brightness_value",
-                                   help="Set screen brightness level [1-10] on pi-topHUB, or [1-16] or pi-topHUB v2",
-                                   type=int,
-                                   choices=range(1, 17))
+                            help="Set screen brightness level [1-10] on pi-topHUB, or [1-16] or pi-topHUB v2",
+                            type=int,
+                            choices=range(1, 17))
         parser.add_argument("-i", "--increment_brightness",
-                                        help="Increment screen brightness level",
-                                        action="store_true")
+                            help="Increment screen brightness level",
+                            action="store_true")
         parser.add_argument("-d", "--decrement_brightness",
-                                        help="Decrement screen brightness level",
-                                        action="store_true")
+                            help="Decrement screen brightness level",
+                            action="store_true")
         parser.add_argument("-l", "--backlight",
-                                        help="Set the screen backlight state [0-1]",
-                                        type=int,
-                                        choices=range(2))
+                            help="Set the screen backlight state [0-1]",
+                            type=int,
+                            choices=range(2))
         parser.add_argument("-t", "--timeout",
-                                        help="Set the timeout before the screen blanks in seconds (0 to disable)",
-                                        type=int)
+                            help="Set the timeout before the screen blanks in seconds (0 to disable)",
+                            type=int)
         parser.add_argument("-v", "--verbose",
-                                        action="count")
-
+                            action="count")
 
 
 if __name__ == "__main__":
