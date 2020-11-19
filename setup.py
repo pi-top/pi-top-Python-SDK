@@ -162,6 +162,7 @@ __entry_points__ = {
         "pt-devices=pitopcli.pt_devices:main",
         "pt-host=pitopcli.pt_host:main",
         "pt-oled=pitopcli.pt_oled:main",
+        "pt-config=pitopcli.pt_config:main",
     ]
 }
 
