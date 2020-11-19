@@ -2,23 +2,29 @@
 
 from pitop.utils.ptdm_message import Message
 
+from pt_cli_base import CliBaseClass
 
-class BatteryCLI():
 
-    def __init__(self, pt_socket, args):
+class BatteryCLI(CliBaseClass):
+    parser_help = 'Get battery information from a pi-top.'
+    cli_name = "battery"
+
+    def __init__(self, pt_socket, args) -> None:
         self.args = args
         self.socket = pt_socket
         self.args_order = list()
 
-    def run(self):
+    def run(self) -> int:
         error = False
         try:
             message = self.socket.send_request(Message.from_parts(Message.REQ_GET_BATTERY_STATE).to_string())
             self.print_battery_state_message(message)
+            return 0
         except Exception as e:
             print(f"Error getting battery info: {e}")
+            return 1
 
-    def print_battery_state_message(self, message):
+    def print_battery_state_message(self, message) -> None:
         if self.args.charging_state:
             self.args_order.append('charging-state')
         if self.args.capacity:
@@ -58,3 +64,25 @@ class BatteryCLI():
                         print("Wattage: " + wattage)
             else:
                 raise Exception("Unable to get valid battery information.")
+
+    @classmethod
+    def add_parser_arguments(cls, parser):
+        parser.add_argument("-s", "--charging-state",
+                                    help="Get charging state. -1 = No pi-top battery detected, 0 = Discharging, 1 = Charging, 2 = Full battery",
+                                    action="store_true")
+        parser.add_argument("-c", "--capacity",
+                                    help="Get battery capacity percentage (%%)",
+                                    action="store_true")
+        parser.add_argument("-t", "--time-remaining",
+                                    help="Get the time (in minutes) to full or time to empty based on the charging state",
+                                    action="store_true")
+        parser.add_argument("-w", "--wattage",
+                                    help="Get the wattage (mAh) of the battery",
+                                    action="store_true")
+        parser.add_argument("-v", "--verbose",
+                                    action="count")
+
+
+if __name__ == "__main__":
+    from deprecated_cli_runner import run
+    run(BatteryCLI)

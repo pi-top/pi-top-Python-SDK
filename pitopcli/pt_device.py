@@ -7,13 +7,18 @@ from pitop.utils.command_runner import run_command
 from pitop.utils.ptdm_message import Message
 from pitop.utils.common_ids import DeviceID
 
+from pt_cli_base import CliBaseClass
 
-class DeviceCLI:
+
+class DeviceCLI(CliBaseClass):
+    parser_help = 'Get information about device and attached pi-top hardware'
+    cli_name = 'device'
+
     def __init__(self, pt_socket, args) -> None:
         self.args = args
         self.socket = pt_socket
 
-    def run(self):
+    def run(self) -> None:
         # Get host device and legacy peripheral devices from pt-device-manager
         try:
             message = self.socket.send_request(Message.REQ_GET_DEVICE_ID)
@@ -65,7 +70,7 @@ class DeviceCLI:
                 except:
                     pass
 
-    def print_device_id(self, message):
+    def print_device_id(self, message) -> None:
         if message.message_id() == Message.RSP_GET_DEVICE_ID:
             if message.validate_parameters([int]):
                 device_id = message.parameters()
@@ -82,7 +87,7 @@ class DeviceCLI:
             else:
                 print("Error: Unable to get valid device ID.")
 
-    def print_peripheral_enabled(self, message, id):
+    def print_peripheral_enabled(self, message, id) -> None:
         p_names = ['pi-topPULSE',
                    'pi-topSPEAKER-v1-left',
                    'pi-topSPEAKER-v1-mono',
@@ -97,3 +102,11 @@ class DeviceCLI:
                     print(f"Connected device: {p_names[id]}")
             else:
                 print("Unable to get valid peripheral enabled.")
+   
+    @classmethod
+    def add_parser_arguments(cls, parser) -> None:
+        pass
+
+if __name__ == "__main__":
+    from deprecated_cli_runner import run
+    run(DeviceCLI)
