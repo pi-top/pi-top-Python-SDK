@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from pt_socket import PTSocket
 from pt_brightness import BrightnessCLI
 from pt_device import DeviceCLI
+from pt_host import HostCLI
 
 
 def parse_args():
@@ -36,8 +37,10 @@ def parse_args():
     parser_brightness.add_argument("-v", "--verbose",
                                    action="count")
 
-    device = subparsers.add_parser('device',
-                                   help='Get information about device and attached pi-top hardware')
+    device_parser = subparsers.add_parser('device',
+                                          help='Get information about device and attached pi-top hardware')
+    host_parser = subparsers.add_parser('host',
+                                        help='Returns the name of the host pi-top device')
 
     return parser.parse_args()
 
@@ -51,6 +54,9 @@ def main():
         b.run()
     elif args.subcommand == "device":
         b = DeviceCLI(ptsocket, args)
+        b.run()
+    elif args.subcommand == "host":
+        b = HostCLI(ptsocket, args)
         b.run()
 
     ptsocket.cleanup()
