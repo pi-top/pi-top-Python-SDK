@@ -64,23 +64,26 @@ def parse_args():
 
 
 def main():
+    cli_lookup = {
+        "brightness": BrightnessCLI,
+        "device": DeviceCLI,
+        "host": HostCLI,
+        "battery": BatteryCLI,
+    }
+
     args = parse_args()
-    ptsocket = PTSocket()
-
-    if args.subcommand == "brightness":
-        b = BrightnessCLI(ptsocket, args)
-        b.run()
-    elif args.subcommand == "device":
-        b = DeviceCLI(ptsocket, args)
-        b.run()
-    elif args.subcommand == "host":
-        b = HostCLI(ptsocket, args)
-        b.run()
-    elif args.subcommand == "battery":
-        b = BatteryCLI(ptsocket, args)
-        b.run()
-
-    ptsocket.cleanup()
+    ptsocket = None
+    try:
+        ptsocket = PTSocket()
+        cls = cli_lookup.get(args.subcommand)
+        if cls:
+            obj = cls(ptsocket, args)
+            obj.run()
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        if hasattr(ptsocket, "cleanup"):
+            ptsocket.cleanup()
 
 
 if __name__ == "__main__":
