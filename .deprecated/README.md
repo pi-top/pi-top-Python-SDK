@@ -4,8 +4,8 @@ This directory allows for supporting the use of Python modules that have now bee
 
 | Deprecated Python Module | Deprecated Debian Package | Superceding Python Module | Superceding Debian Package |
 | ------------------------ | ------------------------- |----- -------------------- | -------------------------- |
-| `ptbuttons`              | `python3-pt-buttons`      | `pitop.case_buttons`      | `python3-pitop`            |
-| `ptoled`                 | `python3-pt-oled`         | `pitop.oled`              | `python3-pitop`            |
+| `ptbuttons`              | `python3-pt-buttons`      | `pitop.miniscreen.buttons`| `python3-pitop`            |
+| `ptoled`                 | `python3-pt-oled`         | `pitop.miniscreen.oled`   | `python3-pitop`            |
 | `ptpma`                  | `python3-pt-pma`          | `pitop.pma`               | `python3-pitop`            |
 | `ptprotoplus`            | `python3-pt-proto-plus`   | `pitop.protoplus`         | `python3-pitop`            |
 

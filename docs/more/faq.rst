@@ -28,8 +28,8 @@ Buttons: PT prefix is now dropped. 'Buttons' is now 'CaseButtons'
 
 Everything else should be updatable with a Find and Replace:
 
-ptbuttons -> pitop.case_buttons
-ptoled -> pitop.oled
+ptbuttons -> pitop.miniscreen.buttons
+ptoled -> pitop.miniscreen.oled
 ptpma -> pitop.pma
 ptpulse -> pitop.pulse
 ptprotoplus -> pitop.protoplus

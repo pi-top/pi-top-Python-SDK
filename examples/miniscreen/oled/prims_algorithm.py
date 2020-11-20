@@ -1,7 +1,7 @@
 # Example code using Prim's algorithm to draw a random maze
 # https://en.wikipedia.org/wiki/Maze_generation_algorithm
 
-from pitop.oled import PTOLEDDisplay
+from pitop.miniscreen.oled import PTOLEDDisplay
 from random import randint, random
 from time import sleep
 

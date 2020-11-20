@@ -23,7 +23,7 @@ modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
-from pitop.oled import PTOLEDDisplay, OLEDImage  # nopep8
+from pitop.miniscreen.oled import PTOLEDDisplay, OLEDImage  # nopep8
 
 
 class PTOLEDTestCase(TestCase):

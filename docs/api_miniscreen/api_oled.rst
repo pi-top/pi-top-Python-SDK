@@ -17,7 +17,7 @@ until your program exits, at which point the system menu is automatically restor
 yourself with a method of being able to exit, it is recommended that you check for a press event on the
 'cancel' button:
 
-.. literalinclude:: ../examples/oled/exit_with_cancel_button.py
+.. literalinclude:: ../../examples/miniscreen/oled/exit_with_cancel_button.py
 
 Whilst this snippet is provided for ease of use, it is strongly recommended that you look at the documentation for the pi-top [4] buttons for detailed instructions of its usage.
 
@@ -25,7 +25,7 @@ Whilst this snippet is provided for ease of use, it is strongly recommended that
 PTOLEDDisplay class
 ---------------------
 
-.. automodule:: pitop.oled
+.. automodule:: pitop.miniscreen.oled
     :members:
     :undoc-members:
     :show-inheritance:
@@ -34,7 +34,7 @@ PTOLEDDisplay class
 Canvas class
 ---------------------
 
-.. automodule:: pitop.oled.canvas
+.. automodule:: pitop.miniscreen.oled.canvas
     :members:
     :undoc-members:
     :show-inheritance:
@@ -43,7 +43,7 @@ Canvas class
 OLEDImage class
 ---------------------
 
-.. automodule:: pitop.oled.oled_image
+.. automodule:: pitop.miniscreen.oled.oled_image
     :members:
     :undoc-members:
     :show-inheritance:

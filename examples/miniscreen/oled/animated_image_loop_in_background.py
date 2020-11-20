@@ -1,4 +1,4 @@
-from pitop.oled import PTOLEDDisplay, OLEDImage
+from pitop.miniscreen.oled import PTOLEDDisplay, OLEDImage
 from time import sleep
 
 ptoled = PTOLEDDisplay()

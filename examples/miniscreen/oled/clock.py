@@ -1,6 +1,6 @@
 # Example code to draw an analog clock
 
-from pitop.oled import PTOLEDDisplay
+from pitop.miniscreen.oled import PTOLEDDisplay
 from datetime import datetime
 from time import sleep
 

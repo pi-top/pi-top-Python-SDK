@@ -1,6 +1,6 @@
 # Example code showing how to draw various shapes
 
-from pitop.oled import PTOLEDDisplay, OLEDImage
+from pitop.miniscreen.oled import PTOLEDDisplay, OLEDImage
 
 ptoled = PTOLEDDisplay()
 ptoled.set_max_fps(1)

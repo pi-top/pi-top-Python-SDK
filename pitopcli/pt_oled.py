@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from pitop.oled import PTOLEDDisplay
+from pitop.miniscreen.oled import PTOLEDDisplay
 
 from time import sleep
 from argparse import ArgumentParser
