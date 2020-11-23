@@ -35,6 +35,7 @@ ptpulse -> pitop.pulse
 ptprotoplus -> pitop.protoplus
 
 .. _faq-lost-oled-menu:
+
 ----------------------------------
 I lost my OLED menu - where is it?
 ----------------------------------
