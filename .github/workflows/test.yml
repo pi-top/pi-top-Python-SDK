@@ -63,6 +63,7 @@ jobs:
           source_directory: "./"
           artifacts_directory: "./artifacts"
 
+          docker_image: "pi-top:deb-build-docker"
           distribution: "buster-backports"
           target_architecture: "amd64"  # Use host architecture for testing build quality
 
