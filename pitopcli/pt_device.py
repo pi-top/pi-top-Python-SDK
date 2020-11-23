@@ -65,7 +65,7 @@ def main():
                     "_", " ").title().replace("Pt4", "pi-top [4]")
                 print(
                     f"Upgradable device connected: {human_readable_name} (v{fw_device.get_fw_version()})")
-            except:
+            except Exception:
                 pass
 
 

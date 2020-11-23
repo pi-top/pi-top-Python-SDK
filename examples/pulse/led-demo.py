@@ -28,7 +28,6 @@ SOFTWARE.
 
 import colorsys
 import math
-import time
 from ptpulse import ledmatrix
 
 s_width, s_height = ledmatrix.get_shape()
@@ -79,10 +78,10 @@ def checker(x, y, step):
 
     xo = abs(xs) - int(abs(xs))
     yo = abs(ys) - int(abs(ys))
-    l = 0 if (math.floor(xs) + math.floor(ys)
-              ) % 2 else 1 if xo > .1 and yo > .1 else .5
+    val = 0 if (math.floor(xs) + math.floor(ys)
+                ) % 2 else 1 if xo > .1 and yo > .1 else .5
 
-    r, g, b = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, l)
+    r, g, b = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, val)
 
     return (r * 255, g * 255, b * 255)
 
@@ -92,9 +91,6 @@ def checker(x, y, step):
 def blues_and_twos(x, y, step):
     x -= (s_width / 2)
     y -= (s_height / 2)
-
-    xs = (math.sin((x + step) / 10.0) / 2.0) + 1.0
-    ys = (math.cos((y + step) / 10.0) / 2.0) + 1.0
 
     scale = math.sin(step / 6.0) / 1.5
     r = math.sin((x * scale) / 1.0) + math.cos((y * scale) / 1.0)

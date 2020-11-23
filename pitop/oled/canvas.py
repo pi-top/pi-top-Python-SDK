@@ -446,12 +446,6 @@ class Canvas:
         :param int spacing: The number of pixels between lines
         :return: int
         """
-        if font is None:
-            if self._font_path is None:
-                raise Exception(
-                    "No font set - call set_font_path(font_path) before using text functions"
-                )
-            font = self._font
 
         return self.draw.multiline_textsize(
             text=text, font=self._check_for_and_get_font(), spacing=spacing

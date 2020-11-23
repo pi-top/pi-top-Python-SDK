@@ -1,7 +1,7 @@
 from pitop.pma.camera_core import FrameHandler, CaptureActions
 from unittest import TestCase
 from sys import modules
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 modules["io"] = Mock()
 modules["gpiozero"] = Mock()

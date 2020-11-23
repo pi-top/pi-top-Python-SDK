@@ -1,5 +1,3 @@
-import imageio
-
 from .capture_action_base import CaptureActionBase
 
 

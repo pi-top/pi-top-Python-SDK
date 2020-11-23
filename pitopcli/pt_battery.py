@@ -81,7 +81,8 @@ def parse_args():
                 arg_to_parse = arg[1:]
                 if arg_to_parse[0] == '-':
                     arg_to_parse = arg_to_parse[1:]
-                    if arg_to_parse == 'charging-state' or arg_to_parse == 'capacity' or arg_to_parse == 'time-remaining' or arg_to_parse == 'wattage':
+
+                    if arg_to_parse in ['charging-state', 'capacity', 'time-remaining', 'wattage']:
                         args_order.append(arg_to_parse)
 
                 else:
@@ -97,7 +98,7 @@ def parse_args():
 
     try:
         debug_print("Verbosity level: " + args.verbose)
-    except:
+    except Exception:
         pass
 
 

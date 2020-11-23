@@ -1,10 +1,9 @@
 import atexit
-from fcntl import ioctl, flock, LOCK_EX, LOCK_UN, LOCK_NB
+from fcntl import flock, LOCK_EX, LOCK_UN, LOCK_NB
 from io import open as iopen
 from os import path, chmod, environ
 
 from pitop.utils.sys_info import is_pi
-from pitop.utils.logger import PTLogger
 from pitop.utils.current_session_info import get_first_display
 
 
@@ -39,7 +38,7 @@ def _acquire_device_lock():
     _device_lock_handle = iopen(_device_lock_file, "w")
     try:
         chmod(_device_lock_file, 0o777)
-    except:
+    except Exception:
         pass
 
     flock(_device_lock_handle, LOCK_EX)
@@ -114,7 +113,6 @@ def device_reserved():
 def reset_device_instance(emulator=None, exclusive=True):
     global _device
 
-    del _device
     _device = None
 
     get_device_instance(emulator, exclusive)
