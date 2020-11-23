@@ -12,9 +12,6 @@ class RequestClient:
     _thread = Thread()
 
     def __init__(self):
-        PTLogger.setup_logging(logger_name="python3-pt-buttons",
-                               logging_level=30, log_to_journal=False)
-
         self._thread = Thread(target=self._thread_method)
         self._thread.setDaemon(True)
 
