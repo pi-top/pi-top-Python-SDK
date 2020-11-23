@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Debian package
-        uses: pi-top/action-debian-package@v0.1.0
+        uses: pi-top/action-debian-package@feature/improveCrossPlatform
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
