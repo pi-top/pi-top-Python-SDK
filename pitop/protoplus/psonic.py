@@ -1,1 +1,1 @@
-from psonic import *
+from psonic import *  # noqa: F401, F403

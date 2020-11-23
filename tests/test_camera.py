@@ -1,12 +1,20 @@
 from threading import Thread
-from pitop.pma.camera_core.capture_actions import StoreFrame
-from pitop.pma.camera_core import FrameHandler, CaptureActions
-from pitop.pma.camera_core import UsbCamera, FileSystemCamera, CameraTypes
+from pitop.pma.camera_core import (
+    FrameHandler,
+    CaptureActions
+)
+from pitop.pma.camera_core import (
+    UsbCamera,
+    FileSystemCamera,
+    CameraTypes
+)
 from pitop.pma import Camera
-from unittest import TestCase, skip
+from unittest import (
+    TestCase,
+    skip
+)
 from sys import modules
-from unittest.mock import Mock, patch
-from unittest import skip
+from unittest.mock import Mock
 from time import sleep
 
 modules["io"] = Mock()
@@ -84,38 +92,50 @@ class CameraTestCase(TestCase):
 
     def test_start_detecting_motion_registers_action_on_frame_handler(self):
         c = Camera()
-        def callback(frame): return
+
+        def callback(frame):
+            return
         c.start_detecting_motion(callback)
         self.assertTrue(c._frame_handler.is_running_action(CaptureActions.DETECT_MOTION))
 
     def test_stop_detecting_motion_removes_action_on_frame_handler(self):
         c = Camera()
-        def callback(frame): return
+
+        def callback(frame):
+            return
         c.start_detecting_motion(callback)
         c.stop_detecting_motion()
         self.assertFalse(c._frame_handler.is_running_action(CaptureActions.DETECT_MOTION))
 
     def test_start_detecting_motion_fails_when_using_incorrect_callback(self):
         c = Camera()
-        def callback(a, b): return
+
+        def callback(a, b):
+            return
         with self.assertRaises(ValueError):
             c.start_detecting_motion(callback)
 
     def test_start_handling_frames_registers_action_on_frame_handler(self):
         c = Camera()
-        def callback(frame): return
+
+        def callback(frame):
+            return
         c.start_handling_frames(callback)
         self.assertTrue(c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME))
 
     def test_stop_handling_frames_motion_removes_action_on_frame_handler(self):
         c = Camera()
-        def callback(frame): return
+
+        def callback(frame):
+            return
         c.start_handling_frames(callback)
         c.stop_handling_frames()
         self.assertFalse(c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME))
 
     def test_start_handling_frames_fails_when_using_incorrect_callback(self):
         c = Camera()
-        def callback(a, b): return
+
+        def callback(a, b):
+            return
         with self.assertRaises(ValueError):
             c.start_handling_frames(callback)

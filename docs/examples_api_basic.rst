@@ -21,57 +21,57 @@ pi-topPULSE: Using the microphone
 pi-top [4]: Using the case buttons
 ----------------------------------
 
-.. literalinclude:: ../examples/case_buttons/case_buttons.py
+.. literalinclude:: ../examples/miniscreen/buttons/buttons.py
 
 pi-top [4]: Writing text to the OLED
 ------------------------------------
 
-.. literalinclude:: ../examples/oled/hello_world.py
+.. literalinclude:: ../examples/miniscreen/oled/hello_world.py
 
 pi-top [4]: Showing an image on the OLED
 ----------------------------------------
 
-.. literalinclude:: ../examples/oled/display_an_image.py
+.. literalinclude:: ../examples/miniscreen/oled/display_an_image.py
 
 pi-top [4]: Loop a GIF on the OLED
 ----------------------------------------
 
-.. literalinclude:: ../examples/oled/animated_image_loop.py
+.. literalinclude:: ../examples/miniscreen/oled/animated_image_loop.py
 
 pi-top [4]: Displaying an GIF once
 ----------------------------------------------
 
-.. literalinclude:: ../examples/oled/animated_image_once_simple_way.py
+.. literalinclude:: ../examples/miniscreen/oled/animated_image_once_simple_way.py
 
 pi-top [4]: Displaying an GIF once through frame by frame
 -----------------------------------------------------------------------
 
-.. literalinclude:: ../examples/oled/animated_image_once.py
+.. literalinclude:: ../examples/miniscreen/oled/animated_image_once.py
 
 pi-top [4]: Displaying an GIF looping in background
 ------------------------------------------------------------------
 
-.. literalinclude:: ../examples/oled/animated_image_loop_in_background.py
+.. literalinclude:: ../examples/miniscreen/oled/animated_image_loop_in_background.py
 
 pi-top [4]: Drawing shapes and displaying them on the OLED
 ------------------------------------------------------------------
 
-.. literalinclude:: ../examples/oled/drawing_with_canvas.py
+.. literalinclude:: ../examples/miniscreen/oled/drawing_with_canvas.py
 
 pi-top [4]: Displaying a clock on the OLED
 ------------------------------------------------------------------
 
-.. literalinclude:: ../examples/oled/clock.py
+.. literalinclude:: ../examples/miniscreen/oled/clock.py
 
 pi-top [4]:  Display a particle-based screensaver in the OLED
 ------------------------------------------------------------------
 
-.. literalinclude:: ../examples/oled/particles.py
+.. literalinclude:: ../examples/miniscreen/oled/particles.py
 
 pi-top [4]:  Prim's algorithm
 ------------------------------------------------------------------
 
-.. literalinclude:: ../examples/oled/prims_algorithm.py
+.. literalinclude:: ../examples/miniscreen/oled/prims_algorithm.py
 
 
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from pitop.utils.ptdm_message import Message
-
 from pt_cli_base import CliBaseClass
 
 
@@ -15,7 +14,6 @@ class BatteryCLI(CliBaseClass):
         self.args_order = list()
 
     def run(self) -> int:
-        error = False
         try:
             message = self.socket.send_request(Message.from_parts(Message.REQ_GET_BATTERY_STATE).to_string())
             self.print_battery_state_message(message)
@@ -49,6 +47,7 @@ class BatteryCLI(CliBaseClass):
                         if arg == 'wattage':
                             print(wattage)
                 else:
+
                     if self.args.charging_state:
                         print(charging_state)
                     elif self.args.capacity:

@@ -54,7 +54,7 @@ key_listener_right.when_released = on_right_released
 # Or alternatively you can "poll" for key presses:
 
 while True:
-    if key_listener_uppercase_z.is_pressed == True:
+    if key_listener_uppercase_z.is_pressed is True:
         print("Z pressed!")
 
     sleep(0.1)

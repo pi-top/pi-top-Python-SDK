@@ -19,7 +19,7 @@ class OledCLI(CliBaseClass):
             oled_screen.draw_multiline_text(self.args.text, font_size=self.args.font_size)
             sleep(self.args.timeout)
             return 0
-        except Exception as e:
+        except Exception:
             return 1
 
     @classmethod

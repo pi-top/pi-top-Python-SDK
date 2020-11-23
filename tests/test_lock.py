@@ -2,7 +2,6 @@ from pitop.utils.lock import PTLock
 from unittest import TestCase, skip
 from sys import modules
 from unittest.mock import Mock, mock_open, patch
-from parameterized import parameterized
 from threading import Thread
 
 mock_os = modules["os"] = Mock()
@@ -20,18 +19,18 @@ class PTLockTestCase(TestCase):
 
     @patch('builtins.open', new_callable=mock_open())
     def test_instance_opens_file(self, m):
-        lock_object = PTLock(self.__dummy_lock_id)
+        _ = PTLock(self.__dummy_lock_id)
         m.assert_called_with(self.lock_file_path, 'w')
 
     @patch('pitop.utils.lock.exists', return_value=True)
     def test_chmod_not_called_if_file_exist(self, exists_mock):
-        lock_object = PTLock(self.__dummy_lock_id)
+        _ = PTLock(self.__dummy_lock_id)
         exists_mock.assert_called_once_with(self.lock_file_path)
         mock_os.chmod.assert_not_called()
 
     @patch('pitop.utils.lock.exists', return_value=False)
     def test_chmod_is_called_if_file_doesnt_exist(self, exists_mock):
-        lock_object = PTLock(self.__dummy_lock_id)
+        _ = PTLock(self.__dummy_lock_id)
         exists_mock.assert_called_once_with(self.lock_file_path)
         mock_os.chmod.assert_called_once_with(self.lock_file_path, 146)
 
@@ -65,13 +64,13 @@ class PTLockTestCase(TestCase):
         lock2 = PTLock(self.__dummy_lock_id)
 
         lock1.acquire()
-        for l in (lock1, lock2):
-            self.assertTrue(l.is_locked())
+        for lock in (lock1, lock2):
+            self.assertTrue(lock.is_locked())
         lock1.release()
 
     def test_acquire_locks_thread_until_unlocked(self):
-        def acquire_lock(l: PTLock):
-            l.acquire()
+        def acquire_lock(_lock: PTLock):
+            _lock.acquire()
 
         lock = PTLock(self.__dummy_lock_id)
         lock.acquire()
@@ -90,9 +89,9 @@ class PTLockTestCase(TestCase):
         lock2 = PTLock(self.__dummy_lock_id)
 
         lock1.acquire()
-        for l in (lock1, lock2):
-            self.assertTrue(l.is_locked())
+        for lock in (lock1, lock2):
+            self.assertTrue(lock.is_locked())
 
         lock1.release()
-        for l in (lock1, lock2):
-            self.assertFalse(l.is_locked())
+        for lock in (lock1, lock2):
+            self.assertFalse(lock.is_locked())

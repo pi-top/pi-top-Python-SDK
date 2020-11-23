@@ -10,7 +10,6 @@
 
 from ptpulse import ledmatrix
 import time
-import os
 
 
 def getCpuTemperature():
