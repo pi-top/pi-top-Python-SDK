@@ -1,5 +1,4 @@
-from pitop.oled import (  # noqa: F401
-    PTOLEDDisplay,
+from pitop.miniscreen.oled import (  # noqa: F401
     get_device_instance,
     device_reserved,
     reset_device_instance,
@@ -11,6 +10,7 @@ from pitop.oled import (  # noqa: F401
     oled_manager,
     request_client
 )
-print("Note: Use of the 'ptoled' package is now deprecated. Please use 'pitop.oled' instead.")
+from pitop.miniscreen.oled import OLEDDisplay as PTOLEDDisplay  # noqa: F401
+print("Note: Use of the 'ptoled' package is now deprecated. Please use 'pitop.miniscreen.oled' instead.")
 # TODO
 print("For more information, please see <TODO: URL>")

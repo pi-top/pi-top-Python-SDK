@@ -13,7 +13,7 @@ from copy import deepcopy
 from PIL import Image
 
 
-class PTOLEDDisplay:
+class OLEDDisplay:
     """
     Provides access to the OLED screen on the pi-top [4], and exposes methods
     for simple rendering of text or images to the screen.
@@ -61,7 +61,7 @@ class PTOLEDDisplay:
         """
         Renders a static image file to the screen at a given position.
 
-        The helper methods in the `ptoled.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param OLEDImage image: An `OLEDImage` object to be rendered
@@ -76,10 +76,10 @@ class PTOLEDDisplay:
         """
         Renders an image to the screen at a given position.
 
-        The image should be provided as a `ptoled.OLEDImage` object, which can be
+        The image should be provided as a `pitop.miniscreen.oled.OLEDImage` object, which can be
         used to animate an image with frames (e.g. an animated gif).
 
-        The helper methods in the `ptoled.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param OLEDImage image: An `OLEDImage` object to be rendered
@@ -111,7 +111,7 @@ class PTOLEDDisplay:
         """
         Renders a single line of text to the screen at a given position and size.
 
-        The helper methods in the ptoled.Canvas class can be used to specify the
+        The helper methods in the pitop.miniscreen.oled.Canvas class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -131,7 +131,7 @@ class PTOLEDDisplay:
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
 
-        The helper methods in the `ptoled.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render

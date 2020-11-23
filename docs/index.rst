@@ -26,9 +26,8 @@ Table of Contents
     examples_cli
     examples_api_basic
     examples_api_advanced
-    api_case_buttons
+    api_miniscreen
     api_keyboard
-    api_oled
     api_pulse
     api_pma
     more

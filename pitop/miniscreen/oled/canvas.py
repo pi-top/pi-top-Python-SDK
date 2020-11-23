@@ -37,7 +37,7 @@ class Canvas:
         """
         Renders an image to the canvas at a given position.
 
-        The image should be provided as a `ptoled.OLEDImage` object.
+        The image should be provided as a `pitop.miniscreen.oled.OLEDImage` object.
 
         Use the position methods in this class to specify the `xy`
         position parameter, e.g. `top_left`, `top_right`.
