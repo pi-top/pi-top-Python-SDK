@@ -3,7 +3,7 @@ from .request_client import RequestClient
 from pitop.utils.ptdm_message import Message
 
 
-class PTOLEDManagerException(Exception):
+class MiniScreenOLEDManagerException(Exception):
     pass
 
 
@@ -18,4 +18,4 @@ def set_oled_control_to_pi():
     request_client.cleanup()
 
     if response.message_id() != Message.RSP_SET_OLED_CONTROL:
-        raise PTOLEDManagerException("Unable to take control of OLED from MCU")
+        raise MiniScreenOLEDManagerException("Unable to take control of OLED from pi-top hub")

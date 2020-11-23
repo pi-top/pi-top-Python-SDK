@@ -1,4 +1,4 @@
-from pitop.miniscreen.buttons import PTUpButton
+from pitop.miniscreen.buttons import UpButton
 from unittest.mock import MagicMock
 from unittest import TestCase, main
 import sys
@@ -22,7 +22,7 @@ class PTButtonsCase(TestCase):
         def a():
             pass
 
-        test_up_button = PTUpButton()
+        test_up_button = UpButton()
         test_up_button.when_pressed = MagicMock(side_effect=a)
         test_up_button.when_pressed.assert_not_called()
         test_up_button.when_pressed()

@@ -1,10 +1,10 @@
-from pitop.miniscreen.oled import PTOLEDDisplay, OLEDImage
+from pitop.miniscreen.oled import OLEDDisplay, OLEDImage
 
-ptoled = PTOLEDDisplay()
-ptoled.set_max_fps(10)
+oled_display = OLEDDisplay()
+oled_display.set_max_fps(10)
 
 image = OLEDImage("/usr/share/pt-project-files/images/rocket.gif", loop=True)
 
 while True:
-    ptoled.draw_image(image)
+    oled_display.draw_image(image)
     image.next_frame()

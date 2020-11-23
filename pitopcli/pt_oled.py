@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-from pitop.miniscreen.oled import PTOLEDDisplay
+from pitop.miniscreen.oled import OLEDDisplay
 
 from time import sleep
 from argparse import ArgumentParser
@@ -26,7 +26,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-oled_screen = PTOLEDDisplay()
+oled_screen = OLEDDisplay()
 oled_screen.draw_multiline_text(args.text, font_size=args.font_size)
 
 sleep(args.timeout)
