@@ -22,7 +22,7 @@ Where:
         Get battery information from a pi-top
 
     brightness:
-        Communicate and control the device's screen brightness
+        Query and change the device's screen brightness
 
     devices:
         Get information about device and attached pi-top hardware
