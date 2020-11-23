@@ -1,8 +1,10 @@
-import atexit
-import sys
-
-from threading import Thread
 from pynput.keyboard import Listener
+from os import environ
+
+from pitop.utils.current_session_info import get_first_display
+
+if not environ.get("DISPLAY"):
+    environ["DISPLAY"] = str(get_first_display())
 
 
 class KeyPressListener:

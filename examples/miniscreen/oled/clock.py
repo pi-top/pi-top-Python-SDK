@@ -2,7 +2,6 @@
 
 from pitop.miniscreen.oled import PTOLEDDisplay
 from datetime import datetime
-from time import sleep
 
 ptoled = PTOLEDDisplay()
 ptoled.set_max_fps(1)

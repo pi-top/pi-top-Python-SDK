@@ -4,11 +4,11 @@ from pitop.pma.common.servo_motor_registers import (
     ServoControlModes,
     ServoMotorS1,
     ServoMotorSetup)
-from pitop.pma.servo_controller import ServoController, ServoHardwareSpecs, interp, split_into_bytes
+from pitop.pma.servo_controller import ServoController, interp, split_into_bytes
 from pitop.utils.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 modules["io"] = Mock()
 modules["gpiozero"] = Mock()

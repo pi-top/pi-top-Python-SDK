@@ -14,10 +14,7 @@
 # with the latest pt-device-manager installed          #
 ########################################################
 
-import colorsys
 import time
-import subprocess
-import sys
 from ptpulse import ledmatrix
 import zmq
 from pitop.utils.ptdm_message import Message

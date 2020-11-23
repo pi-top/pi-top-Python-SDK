@@ -1,4 +1,4 @@
-from pitop.miniscreen.oled import (
+from pitop.miniscreen.oled import (  # noqa: F401
     PTOLEDDisplay,
     get_device_instance,
     device_reserved,

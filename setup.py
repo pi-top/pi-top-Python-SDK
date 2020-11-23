@@ -1,9 +1,7 @@
 "pi-top Python SDK"
 
-import io
 import os
 import sys
-import errno
 from setuptools import setup, find_packages
 
 if sys.version_info[0] == 3:
@@ -16,7 +14,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 # Workaround <http://www.eby-sarna.com/pipermail/peak/2010-May/003357.html>
 try:
-    import multiprocessing
+    import multiprocessing  # noqa: F401
 except ImportError:
     pass
 
@@ -38,21 +36,21 @@ debian_version = first_line_changelog.split(" ")[1].rstrip()[1:-1]
 # Convert Debian version to Python version
 python_version = debian_version
 for r in (
-        ("(", ""),
-        (")", ""),
+    ("(", ""),
+    (")", ""),
     # Hacky solution to deal with running 'gbp dch' on a Ubuntu machine
     # (--force-distribution does not appear to work)
     # e.g. '1:0.1.0ubuntu1~1.gbpfa58ce'
     # TODO: remove
-        ("ubuntu1", ""),
+    ("ubuntu1", ""),
     # Convert from gbp version format to PEP 440 local version format:
     # (replace '~' with '+')
     # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
-        ("~", "+"),
+    ("~", "+"),
 
-        # Convert from Debian epoch version format to PEP 440 epoch version format:
-        # (replace ':'' with '!')
-        # See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
+    # Convert from Debian epoch version format to PEP 440 epoch version format:
+    # (replace ':'' with '!')
+    # See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
     (":", "!"),
 ):
     python_version = python_version.replace(*r)

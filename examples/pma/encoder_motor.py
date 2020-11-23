@@ -1,5 +1,4 @@
 from pitop.pma import EncoderMotor, ForwardDirection, BrakingType
-from threading import Thread
 from time import sleep
 
 # Setup the motor

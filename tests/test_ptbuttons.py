@@ -1,5 +1,5 @@
-from pitop.miniscreen.buttons import PTUpButton, PTDownButton, PTSelectButton, PTCancelButton
-from unittest.mock import MagicMock, patch
+from pitop.miniscreen.buttons import PTUpButton
+from unittest.mock import MagicMock
 from unittest import TestCase, main
 import sys
 

@@ -8,7 +8,6 @@ from math import ceil
 from math import radians
 from math import sin
 from math import cos
-from math import sin
 from os import path
 from serial import serialutil
 from serial import Serial
@@ -154,7 +153,6 @@ def _get_avg_colour():
     total_rgb = [0, 0, 0]
     avg_rgb = [0, 0, 0]
 
-    counter = 0
     for x in range(_w):
         for y in range(_h):
             for c in range(3):
@@ -283,9 +281,9 @@ def _flip(direction):
     flipped_pixel_map = deepcopy(_pixel_map)
     for x in range(_w):
         for y in range(_h):
-            if direction is "h":
+            if direction == "h":
                 flipped_pixel_map[x][y] = _pixel_map[(_w - 1) - x][y]
-            elif direction is "v":
+            elif direction == "v":
                 flipped_pixel_map[x][y] = _pixel_map[x][(_h - 1) - y]
             else:
                 err = 'Flip direction must be [h]orizontal or [v]ertical only'

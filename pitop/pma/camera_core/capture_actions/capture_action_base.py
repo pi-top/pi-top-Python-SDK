@@ -1,5 +1,5 @@
 from os import mkdir, path
-from time import strftime, sleep
+from time import strftime
 from pathlib import Path
 from abc import ABC, abstractmethod
 

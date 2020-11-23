@@ -1,11 +1,11 @@
 # camera devices
-from .cameras import (
+from .cameras import (  # noqa: F401
     UsbCamera,
     FileSystemCamera,
     CameraTypes
 )
 # classes to perform actions with frames
-from .capture_actions import (
+from .capture_actions import (  # noqa: F401
     CaptureActions,
     CaptureActionBase,
     StoreFrame,
@@ -14,4 +14,4 @@ from .capture_actions import (
     GenericAction
 )
 
-from .frame_handler import FrameHandler
+from .frame_handler import FrameHandler  # noqa: F401
