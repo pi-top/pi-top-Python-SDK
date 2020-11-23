@@ -1,5 +1,5 @@
-from unittest.mock import MagicMock, patch
-from unittest import TestCase, main
+from unittest.mock import MagicMock
+from unittest import TestCase
 from sys import modules, path as spath
 from os import path, environ
 from PIL import Image
@@ -23,7 +23,8 @@ modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
-from pitop.oled import PTOLEDDisplay, OLEDImage  # nopep8
+# TODO: remove the need for overriding E402 check
+from pitop.oled import PTOLEDDisplay, OLEDImage  # nopep8  # noqa: E402
 
 
 class PTOLEDTestCase(TestCase):

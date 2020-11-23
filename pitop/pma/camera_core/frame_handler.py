@@ -1,6 +1,6 @@
 from threading import Lock
 
-from .capture_actions import CaptureActions, CaptureActionBase
+from .capture_actions import CaptureActions
 from ..common import type_check
 
 

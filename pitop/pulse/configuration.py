@@ -233,7 +233,10 @@ def initialise(host_device_id, device_name="pi-topPULSE"):
 
 def reset_device_state(enable):
     """reset_device_state: Deprecated"""
-    PTLogger.info("'reset_device_state' function has been deprecated, and can likely be removed. If you experience problems, please see documentation for instructions.")
+    PTLogger.info(
+        "'reset_device_state' function has been deprecated, and can likely be removed. "
+        "If you experience problems, please see documentation for instructions."
+    )
     return False
 
 
@@ -258,7 +261,7 @@ def enable_device():
 
     else:
         PTLogger.error("Error - unrecognised device ID '" + str(_host_device_id) +
-                       "' - unsure how to initialise " + speaker_type_name)
+                       "' - unsure how to initialise pi-topPULSE")
 
     if (reboot_required is False):
         _reset_device_state(True)

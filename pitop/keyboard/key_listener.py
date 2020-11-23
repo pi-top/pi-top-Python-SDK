@@ -1,7 +1,3 @@
-import atexit
-import sys
-
-from threading import Thread
 from pynput.keyboard import Listener
 
 

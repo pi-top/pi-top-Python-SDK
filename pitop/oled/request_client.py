@@ -1,5 +1,4 @@
 from pitop.utils.ptdm_message import Message
-from pitop.utils.logger import PTLogger
 import zmq
 import atexit
 

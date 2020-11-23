@@ -180,7 +180,7 @@ class PTOLEDDisplay:
             or in the main thread.
         """
         self._kill_thread = False
-        if background == True:
+        if background is True:
             self.auto_play_thread = Thread(
                 target=self._auto_play, args=(image,))
             self.auto_play_thread.start()
@@ -196,7 +196,7 @@ class PTOLEDDisplay:
             self.auto_play_thread.join()
 
     def _auto_play(self, image):
-        while not image.finished or image.loop == True:
+        while not image.finished or image.loop is True:
             if self._kill_thread:
                 break
             self.draw_image(image)

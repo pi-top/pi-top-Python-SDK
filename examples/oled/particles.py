@@ -1,7 +1,6 @@
 # Example code using particles to make a hyperspace-like screensaver
 
 from pitop.oled import PTOLEDDisplay
-from datetime import datetime
 from random import randint
 
 ptoled = PTOLEDDisplay()

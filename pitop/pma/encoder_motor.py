@@ -1,6 +1,5 @@
 import time
 from math import floor, pi
-from enum import IntEnum
 
 from .parameters import BrakingType, ForwardDirection, Direction
 from .encoder_motor_controller import EncoderMotorController

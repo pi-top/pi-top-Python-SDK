@@ -38,7 +38,7 @@ class PlateInterface:
             self._device_mcu.connect()
             self._mcu_connected = True
             self._send_heartbeat()
-        except Exception as e:
+        except Exception:
             self._disconnect_mcu()
             raise
 

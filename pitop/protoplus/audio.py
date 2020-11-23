@@ -13,7 +13,7 @@ sleep(1)
 
 class beep:
     FRAME_RATE = 22050
-    _TWO_PI = 2 * math.pi
+    _TWO_PI = 2 * pi
     frequency = 750
     volume = 1    # range [0.0, 1.0]
 
@@ -41,7 +41,7 @@ class beep:
             if len(data) > 256:
                 yield data
                 data = b''
-            raw_val = (self.volume * math.sin(phase))
+            raw_val = (self.volume * sin(phase))
             if raw_val > 1:
                 raw_val = 1
             elif raw_val < -1:

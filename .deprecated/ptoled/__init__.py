@@ -1,4 +1,4 @@
-from pitop.oled import (
+from pitop.oled import (  # noqa: F401
     PTOLEDDisplay,
     get_device_instance,
     device_reserved,

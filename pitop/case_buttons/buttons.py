@@ -37,7 +37,7 @@ class CaseButtons:
         self.cancel = CaseButton(self.CANCEL)
         self._setup_request_client()
         atexit.register(self._clean_up)
-        if path.exists("/tmp/button-locks") == False:
+        if path.exists("/tmp/button-locks") is False:
             mkdir("/tmp/button-locks")
         self.lock_path = "/tmp/button-locks/pt-buttons-" + \
             str(getpid()) + ".lock"
