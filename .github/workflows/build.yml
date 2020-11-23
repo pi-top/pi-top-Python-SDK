@@ -105,7 +105,7 @@ jobs:
           source_directory: "./"
           artifacts_directory: "./artifacts"
 
-          docker_image: "pi-top:deb-build"
+          docker_image: "pitop:deb-build"
           distribution: "buster-backports"
           target_architecture: ${{ matrix.target_arch }}
 
