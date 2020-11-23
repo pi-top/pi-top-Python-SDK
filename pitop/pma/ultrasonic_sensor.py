@@ -37,7 +37,7 @@ class UltrasonicSensor(SmoothedInputDevice):
             self.pin.bounce = None
             self.pin.when_changed = self._echo_changed
             self._queue.start()
-        except:
+        except Exception:
             self.close()
             raise
 

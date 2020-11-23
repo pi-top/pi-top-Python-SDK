@@ -98,7 +98,7 @@ def parse_args():
 
     try:
         debug_print("Verbosity level: " + args.verbose)
-    except:
+    except Exception:
         pass
 
 

@@ -38,7 +38,7 @@ def _acquire_device_lock():
     _device_lock_handle = iopen(_device_lock_file, "w")
     try:
         chmod(_device_lock_file, 0o777)
-    except:
+    except Exception:
         pass
 
     flock(_device_lock_handle, LOCK_EX)

@@ -53,7 +53,7 @@ class CaseButtons:
         self._release_buttons_lock()
         try:
             self._request_client.stop_listening()
-        except:
+        except Exception:
             pass
 
     def _acquire_buttons_lock(self):
@@ -62,7 +62,7 @@ class CaseButtons:
             flock(self.lock_handle, LOCK_EX)
         except IOError as error:
             print(error)
-        except:
+        except Exception:
             pass
 
     def _release_buttons_lock(self):

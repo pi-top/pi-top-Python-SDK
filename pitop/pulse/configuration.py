@@ -60,7 +60,7 @@ def _update_device_state_bit(bit, value):
         PTLogger.debug("Current device state: " +
                        _get_bit_string(current_state))
 
-    except:
+    except Exception:
         PTLogger.warning(
             "Error: There was a problem getting the current device state")
         return False
@@ -121,7 +121,7 @@ def _write_device_state(state):
 
         return result
 
-    except:
+    except Exception:
         PTLogger.warning("Error: There was a problem writing to the device")
         return False
 
@@ -137,7 +137,7 @@ def _read_device_state():
 
         return int(current_state)
 
-    except:
+    except Exception:
         PTLogger.warning("Error: There was a problem reading from the device")
         # Best to re-raise as we can't recover from this
         raise

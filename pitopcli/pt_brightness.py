@@ -50,7 +50,7 @@ def parse_args():
 
     try:
         print("Verbosity level: " + args.verbose)
-    except:
+    except Exception:
         pass
 
     # Handle invalid command line parameter combinations
