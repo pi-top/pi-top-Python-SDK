@@ -70,7 +70,7 @@ intersphinx_mapping = {
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-#html_sidebars = {}
+# html_sidebars = {}
 
 html_theme_options = {
     'canonical_url': 'https://docs.pi-top.com/python-sdk/latest/?badge=latest',

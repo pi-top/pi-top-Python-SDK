@@ -3,10 +3,12 @@ from pitop.pma.common.encoder_motor_registers import (
     MotorControlRegisters,
     MotorRegisterTypes,
     MotorControlModes,
-    EncoderMotorM1)
-from pitop.pma.encoder_motor import EncoderMotor
+    EncoderMotorM1
+)
 from pitop.pma.encoder_motor_controller import (
-    EncoderMotorController, PlateInterface, split_into_bytes)
+    EncoderMotorController,
+    split_into_bytes
+)
 from pitop.utils.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules

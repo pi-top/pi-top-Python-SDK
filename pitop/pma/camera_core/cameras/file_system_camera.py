@@ -45,7 +45,7 @@ class FileSystemCamera:
                 try:
                     image_obj = FsImage(file_path.path)
                     self._images_arr.append(image_obj)
-                except:
+                except Exception:
                     continue
 
     def reset(self):

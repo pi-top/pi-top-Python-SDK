@@ -7,7 +7,6 @@
 # by @rricharz
 
 from ptpulse import ledmatrix
-import os
 import time
 
 lastWork = [0, 0, 0, 0]

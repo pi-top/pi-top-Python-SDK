@@ -37,7 +37,7 @@ class CaseButtons:
         self.cancel = CaseButton(self.CANCEL)
         self._setup_request_client()
         atexit.register(self._clean_up)
-        if path.exists("/tmp/button-locks") == False:
+        if path.exists("/tmp/button-locks") is False:
             mkdir("/tmp/button-locks")
         self.lock_path = "/tmp/button-locks/pt-buttons-" + \
             str(getpid()) + ".lock"
@@ -53,7 +53,7 @@ class CaseButtons:
         self._release_buttons_lock()
         try:
             self._request_client.stop_listening()
-        except:
+        except Exception:
             pass
 
     def _acquire_buttons_lock(self):
@@ -62,7 +62,7 @@ class CaseButtons:
             flock(self.lock_handle, LOCK_EX)
         except IOError as error:
             print(error)
-        except:
+        except Exception:
             pass
 
     def _release_buttons_lock(self):

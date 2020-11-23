@@ -37,7 +37,7 @@ class Canvas:
         """
         Renders an image to the canvas at a given position.
 
-        The image should be provided as a `ptoled.OLEDImage` object.
+        The image should be provided as a `pitop.miniscreen.oled.OLEDImage` object.
 
         Use the position methods in this class to specify the `xy`
         position parameter, e.g. `top_left`, `top_right`.
@@ -446,12 +446,6 @@ class Canvas:
         :param int spacing: The number of pixels between lines
         :return: int
         """
-        if font is None:
-            if self._font_path is None:
-                raise Exception(
-                    "No font set - call set_font_path(font_path) before using text functions"
-                )
-            font = self._font
 
         return self.draw.multiline_textsize(
             text=text, font=self._check_for_and_get_font(), spacing=spacing

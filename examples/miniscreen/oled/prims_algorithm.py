@@ -1,17 +1,17 @@
 # Example code using Prim's algorithm to draw a random maze
 # https://en.wikipedia.org/wiki/Maze_generation_algorithm
 
-from pitop.oled import PTOLEDDisplay
+from pitop.miniscreen.oled import OLEDDisplay
 from random import randint, random
 from time import sleep
 
-ptoled = PTOLEDDisplay()
-ptoled.set_max_fps(50)
+oled_display = OLEDDisplay()
+oled_display.set_max_fps(50)
 
 
 def draw_pixel(x, y):
-    ptoled.canvas.point((x, y))
-    ptoled.draw()
+    oled_display.canvas.point((x, y))
+    oled_display.draw()
     drawn_pixels.append((x, y))
 
 
@@ -20,13 +20,13 @@ while True:
     # Setup
 
     drawn_pixels = []
-    ptoled.canvas.clear()
+    oled_display.canvas.clear()
 
     complexity = random()
     density = random()
 
-    width = ((ptoled.canvas.get_width() // 2) * 2 - 1)
-    height = ((ptoled.canvas.get_height() // 2) * 2 - 1)
+    width = ((oled_display.canvas.get_width() // 2) * 2 - 1)
+    height = ((oled_display.canvas.get_height() // 2) * 2 - 1)
 
     # Adjust complexity and density relative to maze size
 

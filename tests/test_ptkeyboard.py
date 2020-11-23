@@ -1,7 +1,5 @@
-from unittest.mock import MagicMock, patch
+# from unittest.mock import MagicMock, patch
 from unittest import TestCase, main
-import sys
-import os
 
 
 class KeyboardTestCase(TestCase):

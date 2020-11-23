@@ -26,7 +26,6 @@ SOFTWARE.
 
 from ptpulse import ledmatrix
 from ptpulse import microphone
-from ptpulse import configuration
 from time import sleep
 
 
