@@ -2,16 +2,42 @@
  Command-Line Tools (CLI)
 ==========================
 
---------------------
-pt-battery
---------------------
+----------------
+'pi-top' Command
+----------------
+
+Utility to interact with pi-top hardware.
+
+.. code-block:: bash
+
+    pi-top [-h] {brightness,device,host,battery,oled} ...
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+{brightness,device,host,battery,oled}
+    battery:
+        Get battery information from a pi-top
+
+    brightness:
+        Query and change the device's screen brightness
+
+    devices:
+        Get information about device and attached pi-top hardware
+
+    host:
+        Returns the name of the host pi-top device
+
+    oled:
+        Quickly display text in pi-top [4]'s OLED screen
+
+
+pi-top battery
+=========================
 
 If the pi-top device has an internal battery, it will report it's status.
-
-Running `pt-battery` on its own will report all the available information about the battery.
-
-Usage
-===============
 
 .. code-block:: bash
 
@@ -19,7 +45,6 @@ Usage
 
 
 Where:
-
 
 -h, --help
     Show a help message and exits
@@ -51,30 +76,26 @@ Where:
     and wattage)
 
 Example
-===============
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-battery
-        Charging State: 0
-        Capacity: 42
-        Time Remaining: 104
-        Wattage: -41
+    pi@pi-top:~ $ pi-top battery
+    Charging State: 0
+    Capacity: 42
+    Time Remaining: 104
+    Wattage: -41
 
---------------------
-pt-brightness
---------------------
+pi-top brightness
+=========================
 
 On pi-top devices with a screen, it allows to query and control its brightness.
 
 Running `pt-brightness` on its own will report back the current brightness value.
 
-Usage
-===============
-
 .. code-block:: bash
 
-    pt-brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
+    pi-top brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
                      [-d] [-l {0,1}] [-t TIMEOUT] [-v]
 
 
@@ -105,90 +126,70 @@ Where:
 
 
 Example
-===============
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-brightness
+    pi@pi-top:~ $ pi-top brightness
     16
 
---------------------
-pt-device
---------------------
+pi-top devices
+===================
 
 Finds useful information about the system and the attached devices that are being managed by `pt-device-manager`.
 
-Usage
-===============
-
 This command doesn't receive arguments.
 
 .. code-block:: bash
 
-    pt-devices
+    pi-top devices
 
 Example
-===============
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-devices
-        Devices and peripherals handled by pt-device-manager:
-        OS release: 5.4.51-v7l+
-        Host device is pi-top [4]
+    pi@pi-top:~ $ pi-top devices
+    Host device: pi-top [4]
+    pi-top Touchscreen: not connected
+    pi-top Keyboard: not connected
+    Upgradable device connected: pi-top [4] Hub (v5.3)
+    Upgradable device connected: pi-top [4] Expansion Plate (v21.5)
 
-
---------------------
-pt-host
---------------------
+pi-top host
+==================
 
 Returns the pi-top host device name where the command is being run.
 
-Usage
-===============
-
 This command doesn't receive arguments.
 
 .. code-block:: bash
 
-    pt-host
+    pi-top host
 
 Example
-===============
+~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
     # on a pi-top [4]
-    pi@pi-top:~ $ pt-host
+    pi@pi-top:~ $ pi-top host
     pi-top [4]
 
 .. code-block:: bash
 
     # on a pi-top [3]
-    pi@pi-top:~ $ pt-host
+    pi@pi-top:~ $ pi-top host
     pi-top [3]
 
-
---------------------
-pt-oled
---------------------
+pi-top oled
+==================
 
 Display text directly into pi-top [4]'s OLED screen.
 
-Usage
-===============
-
 .. code-block:: bash
 
-    pt-oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
-
-
-Example
-===============
-
-.. code-block:: bash
-
-    pt-oled
+    pi-top oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
 
 Where:
 
@@ -203,3 +204,97 @@ text
 
 --font-size FONT_SIZE
     set the font size
+
+Example
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pi-top oled "hey there!" --timeout 5
+
+
+--------------------
+Deprecated CLI
+--------------------
+
+The following is a list of deprecated CLI tools. They continue to work, but will print
+a message prompting to move to the new CLI `pi-top`.
+
+pt-battery
+==================
+
+To learn about the command arguments, check `pi-top battery`_
+
+Example
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pt-battery
+    Note: Use of the 'pt-battery' is now deprecated. Please use 'pi-top battery' instead.
+    Charging State: 0
+    Capacity: 42
+    Time Remaining: 104
+    Wattage: -41
+
+
+pt-brightness
+==================
+
+To learn about the command arguments, check `pi-top brightness`_
+
+Example
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pt-brightness
+    Note: Use of the 'pt-brightness' is now deprecated. Please use 'pi-top brightness' instead.
+    16
+
+pt-devices
+==================
+
+To learn about the command arguments, check `pi-top devices`_
+
+Example
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pt-devices
+    Note: Use of the 'pt-device' is now deprecated. Please use 'pi-top device' instead.
+    Host device: pi-top [4]
+    pi-top Touchscreen: not connected
+    pi-top Keyboard: not connected
+    Upgradable device connected: pi-top [4] Hub (v5.3)
+    Upgradable device connected: pi-top [4] Expansion Plate (v21.5)
+
+
+pt-host
+==============
+
+To learn about the command arguments, check `pi-top host`_
+
+Example
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    # on a pi-top [4]
+    pi@pi-top:~ $ pt-host
+    Note: Use of the 'pt-host' is now deprecated. Please use 'pi-top host' instead.
+    pi-top [4]
+
+pt-oled
+============
+
+To learn about the command arguments, check `pi-top oled`_
+
+Example
+~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pt-oled "hey there!" --timeout 5
+    Note: Use of the 'pt-oled' is now deprecated. Please use 'pi-top oled' instead.

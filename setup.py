@@ -155,6 +155,8 @@ elif sys.version_info[:2] == (3, 4):
 
 __entry_points__ = {
     "console_scripts": [
+        "pi-top=pitopcli.pitop:main",
+        # Deprecated console scripts:
         "pt-battery=pitopcli.pt_battery:main",
         "pt-brightness=pitopcli.pt_brightness:main",
         "pt-devices=pitopcli.pt_devices:main",
