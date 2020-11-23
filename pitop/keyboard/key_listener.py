@@ -1,7 +1,11 @@
 import atexit
 import sys
+from os import environ
 
-from threading import Thread
+from pitop.utils.current_session_info import get_first_display
+
+if not environ.get("DISPLAY"):
+    environ["DISPLAY"] = str(get_first_display())
 from pynput.keyboard import Listener
 
 
