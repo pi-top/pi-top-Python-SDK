@@ -2,15 +2,15 @@
  Command-Line Tools (CLI)
 ==========================
 
---------------------
-pt-config
---------------------
+----------------
+'pi-top' Command
+----------------
 
 Utility to interact with pi-top hardware.
 
 .. code-block:: bash
 
-    pt-config [-h] {brightness,device,host,battery,oled} ...
+    pi-top [-h] {brightness,device,host,battery,oled} ...
 
 Where:
 
@@ -34,7 +34,7 @@ Where:
         Quickly display text in pi-top [4]'s OLED screen
 
 
-pt-config battery
+pi-top battery
 =========================
 
 If the pi-top device has an internal battery, it will report it's status.
@@ -80,13 +80,13 @@ Example
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-config battery
+    pi@pi-top:~ $ pi-top battery
     Charging State: 0
     Capacity: 42
     Time Remaining: 104
     Wattage: -41
 
-pt-config brightness
+pi-top brightness
 =========================
 
 On pi-top devices with a screen, it allows to query and control its brightness.
@@ -95,7 +95,7 @@ Running `pt-brightness` on its own will report back the current brightness value
 
 .. code-block:: bash
 
-    pt-config brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
+    pi-top brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
                      [-d] [-l {0,1}] [-t TIMEOUT] [-v]
 
 
@@ -130,10 +130,10 @@ Example
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-config brightness
+    pi@pi-top:~ $ pi-top brightness
     16
 
-pt-config devices
+pi-top devices
 ===================
 
 Finds useful information about the system and the attached devices that are being managed by `pt-device-manager`.
@@ -142,21 +142,21 @@ This command doesn't receive arguments.
 
 .. code-block:: bash
 
-    pt-config devices
+    pi-top devices
 
 Example
 ~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-config devices
+    pi@pi-top:~ $ pi-top devices
     Host device: pi-top [4]
     pi-top Touchscreen: not connected
     pi-top Keyboard: not connected
     Upgradable device connected: pi-top [4] Hub (v5.3)
     Upgradable device connected: pi-top [4] Expansion Plate (v21.5)
 
-pt-config host
+pi-top host
 ==================
 
 Returns the pi-top host device name where the command is being run.
@@ -165,7 +165,7 @@ This command doesn't receive arguments.
 
 .. code-block:: bash
 
-    pt-config host
+    pi-top host
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -173,23 +173,23 @@ Example
 .. code-block:: bash
 
     # on a pi-top [4]
-    pi@pi-top:~ $ pt-config host
+    pi@pi-top:~ $ pi-top host
     pi-top [4]
 
 .. code-block:: bash
 
     # on a pi-top [3]
-    pi@pi-top:~ $ pt-config host
+    pi@pi-top:~ $ pi-top host
     pi-top [3]
 
-pt-config oled
+pi-top oled
 ==================
 
 Display text directly into pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
-    pt-config oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
+    pi-top oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
 
 Where:
 
@@ -210,7 +210,7 @@ Example
 
 .. code-block:: bash
 
-    pt-config oled "hey there!" --timeout 5
+    pi-top oled "hey there!" --timeout 5
 
 
 --------------------
@@ -218,12 +218,12 @@ Deprecated CLI
 --------------------
 
 The following is a list of deprecated CLI tools. They continue to work, but will print
-a message prompting to move to the new CLI `pt-config`.
+a message prompting to move to the new CLI `pi-top`.
 
 pt-battery
 ==================
 
-To learn about the command arguments, check `pt-config battery`_
+To learn about the command arguments, check `pi-top battery`_
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -231,7 +231,7 @@ Example
 .. code-block:: bash
 
     pi@pi-top:~ $ pt-battery
-    Note: Use of the 'pt-battery' is now deprecated. Please use 'pt-config battery' instead.
+    Note: Use of the 'pt-battery' is now deprecated. Please use 'pi-top battery' instead.
     Charging State: 0
     Capacity: 42
     Time Remaining: 104
@@ -241,7 +241,7 @@ Example
 pt-brightness
 ==================
 
-To learn about the command arguments, check `pt-config brightness`_
+To learn about the command arguments, check `pi-top brightness`_
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -249,13 +249,13 @@ Example
 .. code-block:: bash
 
     pi@pi-top:~ $ pt-brightness
-    Note: Use of the 'pt-brightness' is now deprecated. Please use 'pt-config brightness' instead.
+    Note: Use of the 'pt-brightness' is now deprecated. Please use 'pi-top brightness' instead.
     16
 
 pt-devices
 ==================
 
-To learn about the command arguments, check `pt-config devices`_
+To learn about the command arguments, check `pi-top devices`_
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -263,7 +263,7 @@ Example
 .. code-block:: bash
 
     pi@pi-top:~ $ pt-devices
-    Note: Use of the 'pt-device' is now deprecated. Please use 'pt-config device' instead.
+    Note: Use of the 'pt-device' is now deprecated. Please use 'pi-top device' instead.
     Host device: pi-top [4]
     pi-top Touchscreen: not connected
     pi-top Keyboard: not connected
@@ -274,7 +274,7 @@ Example
 pt-host
 ==============
 
-To learn about the command arguments, check `pt-config host`_
+To learn about the command arguments, check `pi-top host`_
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -283,13 +283,13 @@ Example
 
     # on a pi-top [4]
     pi@pi-top:~ $ pt-host
-    Note: Use of the 'pt-host' is now deprecated. Please use 'pt-config host' instead.
+    Note: Use of the 'pt-host' is now deprecated. Please use 'pi-top host' instead.
     pi-top [4]
 
 pt-oled
 ============
 
-To learn about the command arguments, check `pt-config oled`_
+To learn about the command arguments, check `pi-top oled`_
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -297,4 +297,4 @@ Example
 .. code-block:: bash
 
     pi@pi-top:~ $ pt-oled "hey there!" --timeout 5
-    Note: Use of the 'pt-oled' is now deprecated. Please use 'pt-config oled' instead.
+    Note: Use of the 'pt-oled' is now deprecated. Please use 'pi-top oled' instead.

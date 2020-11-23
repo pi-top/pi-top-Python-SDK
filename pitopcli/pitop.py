@@ -27,7 +27,7 @@ def parse_args():
     Returns:
         Namespace: parsed arguments, as returned by ArgumentParser.parse_args()
     """
-    parser = ArgumentParser(prog='pt-config')
+    parser = ArgumentParser(prog='pi-top')
     subparsers = parser.add_subparsers(title='Subcommands',
                                        description='Set of valid subcommands to use to interface with your pi-top',
                                        help='valid subcommands',
