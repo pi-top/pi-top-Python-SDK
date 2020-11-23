@@ -6,7 +6,7 @@
 pt-config
 --------------------
 
-Utility that allows the user to interact with pi-top hardware.
+Utility to interact with pi-top hardware.
 
 .. code-block:: bash
 
