@@ -19,7 +19,7 @@ Where:
 
 {brightness,device,host,battery,oled}
     battery:
-        Get battery information from a pi-top.
+        Get battery information from a pi-top
 
     brightness:
         Communicate and control the device's screen brightness
