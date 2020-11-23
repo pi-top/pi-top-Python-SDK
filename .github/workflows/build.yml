@@ -99,6 +99,12 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
             path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
 
+      - name: Enable experimental Docker features
+      # cgroup-parent setting was already present in the file
+        run: |
+          echo $'{\n  "cgroup-parent": "/actions_job"\n"experimental": true\n}' | sudo tee /etc/docker/daemon.json
+          sudo service docker restart
+
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.1.0
         with:

@@ -54,21 +54,11 @@ jobs:
   test-debian-package:
     runs-on: ubuntu-20.04
     steps:
-      - name: Experimental Status Before
+      - name: Enable experimental Docker features
+      # cgroup-parent setting was already present in the file
         run: |
-          cat /etc/docker/daemon.json
-          docker version -f '{{.Server.Experimental}}'
-
-      - name: Reconfigure Docker
-        run: |
-          sudo rm /etc/docker/daemon.json
-          echo $'{\n    "experimental": true\n}' | sudo tee /etc/docker/daemon.json
+          echo $'{\n  "cgroup-parent": "/actions_job"\n"experimental": true\n}' | sudo tee /etc/docker/daemon.json
           sudo service docker restart
-
-      - name: Experimental Status After
-        run: |
-          cat /etc/docker/daemon.json
-          docker version -f '{{.Server.Experimental}}'
 
       - name: Checkout code
         uses: actions/checkout@v2
