@@ -1,4 +1,4 @@
-name: Build, Test and Publish
+name: Build
 
 on:
   release:
@@ -9,36 +9,13 @@ on:
     branches: [ "master", "workflow/*" ]
 
 jobs:
-  lint:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Lint code
-        uses: ricardochaves/python-lint@v1.3.0
-        with:
-          python-root-list: "pitop pitopcli"
-          use-pylint: false
-          use-pycodestyle: false
-          use-flake8: true
-          use-black: false
-          use-mypy: false
-          use-isort: false
-          extra-pylint-options: ""
-          extra-pycodestyle-options: ""
-          extra-flake8-options: "--max-line-length=150"
-          extra-black-options: ""
-          extra-mypy-options: ""
-          extra-isort-options: ""
-
   patch-src:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # TODO: move to Debian Docker container
+      # TODO: move to minimal Debian Docker container
       # - name: Install dependencies
       #   if: github.event_name != 'release'
       #   run: |
@@ -89,14 +66,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel readme-renderer
-
-      # TODO: run proper Python tests
-      - name: Test
-        # Create source distribution (sdist) and wheel (bdist_wheel)
-        # By default, both will be placed in dist/ under the current directory
-        run: |
-          python -m readme_renderer README.rst -o /tmp/README.html
+          pip install setuptools wheel
 
       - name: Build
         # Create source distribution (sdist) and wheel (bdist_wheel)
@@ -148,57 +118,57 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "${{ github.workspace }}/artifacts"
 
-  python-publish:
-    needs: [ python-package, debian-package ]
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
+  # python-publish:
+  #   needs: [ python-package, debian-package ]
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: GitHub Environment Variables Action
+  #       uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-      - name: Download Python distribution artifacts
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "${{ github.workspace }}/dist"
+  #     - name: Download Python distribution artifacts
+  #       uses: "actions/download-artifact@v2"
+  #       with:
+  #           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+  #           path: "${{ github.workspace }}/dist"
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: "3.x"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install twine
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install twine
 
-      # TODO: Only publish to TestPyPI for pre-releases (develop branch?)
-      # - name: Publish to TestPyPI
-      #   if: github.event_name == 'pull_request' || github.event_name == 'push'
-      #   env:
-      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      #   run: |
-      #     twine upload --verbose --repository testpypi dist/*
+  #     # TODO: Only publish to TestPyPI for pre-releases (develop branch?)
+  #     # - name: Publish to TestPyPI
+  #     #   if: github.event_name == 'pull_request' || github.event_name == 'push'
+  #     #   env:
+  #     #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+  #     #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+  #     #   run: |
+  #     #     twine upload --verbose --repository testpypi dist/*
 
-      - name: Publish to PyPI
-        if: github.event_name == 'release'
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose dist/*
+  #     - name: Publish to PyPI
+  #       if: github.event_name == 'release'
+  #       env:
+  #         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+  #         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+  #       run: |
+  #         twine upload --verbose dist/*
 
-  debian-publish:
-    needs: [ python-package, debian-package ]
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
+  # debian-publish:
+  #   needs: [ python-package, debian-package ]
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: GitHub Environment Variables Action
+  #       uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-      - name: Download Debian distribution artifacts
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-            path: "${{ github.workspace }}/dist"
+  #     - name: Download Debian distribution artifacts
+  #       uses: "actions/download-artifact@v2"
+  #       with:
+  #           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+  #           path: "${{ github.workspace }}/dist"
 
-      # TODO: publish to APT server
+  #     # TODO: publish to APT server
