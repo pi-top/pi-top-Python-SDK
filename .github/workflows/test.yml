@@ -51,6 +51,9 @@ jobs:
         run: |
           python -m readme_renderer README.rst -o /tmp/README.html
 
+  # test-docs:
+      # PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
+
   test-debian-package:
     runs-on: ubuntu-20.04
     steps:
