@@ -15,17 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # TODO: move to minimal Debian Docker container
-      # - name: Install dependencies
-      #   if: github.event_name != 'release'
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y git-buildpackage
-      # - name: Patch changelog
-      #   if: github.event_name != 'release'
-      #   # '--ignore-branch' for testing on feature branch
-      #   run: |
-      #     gbp dch --ignore-branch --auto --snapshot --distribution=stable --force-distribution
+      - name: Patch changelog (in Debian Docker container)
+        if: github.event_name != 'release'
+        # '--ignore-branch' for testing on feature branch
+        run: |
+          docker create --name py-pitop-chnglg --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
+          docker start py-pitop-chnglg
+          docker exec py-pitop-chnglg gbp dch --ignore-branch --auto --snapshot --distribution=stable --force-distribution
 
       - name: Show updated changelog
         if: github.event_name != 'release'
