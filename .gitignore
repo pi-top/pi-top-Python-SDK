@@ -30,3 +30,5 @@ coverage
 .tox
 .cache
 .pytest_cache
+
+.DS_Store
