@@ -94,6 +94,7 @@ html_static_path = ['_static']
 
 # Custom stuff for project
 autodoc_mock_imports = [
+    'pitoputils',
     'cv2',
     'numpy',
     'imageio',
