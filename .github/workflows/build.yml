@@ -21,7 +21,9 @@ jobs:
         run: |
           docker create --name py-pitop-chnglg --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
           docker start py-pitop-chnglg
-          docker exec py-pitop-chnglg gbp dch --ignore-branch --auto --snapshot --distribution=stable --force-distribution
+          docker exec py-pitop-chnglg git config --global user.name "GitHub Build Action"
+          docker exec py-pitop-chnglg git config --global user.email "https://github.com/pi-top/pi-top-Python-SDK"
+          docker exec py-pitop-chnglg gbp dch --auto --snapshot --git-author --ignore-branch
 
       - name: Show updated changelog
         if: github.event_name != 'release'
