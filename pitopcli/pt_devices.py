@@ -2,10 +2,10 @@
 
 from subprocess import getstatusoutput
 
-from pitop.utils.firmware_device import FirmwareDevice
-from pitop.utils.command_runner import run_command
-from pitop.utils.ptdm_message import Message
-from pitop.utils.common_ids import DeviceID
+from pitoputils.firmware_device import FirmwareDevice
+from pitoputils.command_runner import run_command
+from pitoputils.ptdm_message import Message
+from pitoputils.common_ids import DeviceID
 
 from pt_cli_base import CliBaseClass
 

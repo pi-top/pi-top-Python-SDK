@@ -2,7 +2,6 @@ gpiozero python3-gpiozero
 imageio python3-imageio
 luma.core python3-luma-core
 luma.oled python3-luma-oled
-pitop.utils python3-pitop.utils
 pynput python3-pynput
 python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera

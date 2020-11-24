@@ -1,6 +1,6 @@
 import zmq
 
-from pitop.utils.ptdm_message import Message
+from pitoputils.ptdm_message import Message
 
 
 class PTSocket:

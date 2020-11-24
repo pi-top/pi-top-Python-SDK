@@ -1,4 +1,4 @@
-from pitop.utils.ptdm_message import Message
+from pitoputils.ptdm_message import Message
 import zmq
 import atexit
 

@@ -1,7 +1,7 @@
 from imageio import get_writer
 from numpy import asarray
 
-from pitop.utils.logger import PTLogger
+from pitoputils.logger import PTLogger
 
 from .capture_action_base import CaptureActionBase
 

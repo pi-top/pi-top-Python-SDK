@@ -7,7 +7,7 @@ from .fps_regulator import FPS_Regulator
 
 from threading import Thread
 
-from pitop.utils.sys_info import is_pi
+from pitoputils.sys_info import is_pi
 
 from copy import deepcopy
 from PIL import Image

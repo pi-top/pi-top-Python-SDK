@@ -9,7 +9,7 @@ from pitop.pma.encoder_motor_controller import (
     EncoderMotorController,
     split_into_bytes
 )
-from pitop.utils.bitwise_ops import join_bytes
+from pitoputils.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock, patch
@@ -19,9 +19,9 @@ modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()
 modules["numpy"] = Mock()
-modules["pitop.utils.smbus_device"] = Mock()
-modules["pitop.utils.logger"] = Mock()
-modules["pitop.utils.singleton"] = Mock()
+modules["pitoputils.smbus_device"] = Mock()
+modules["pitoputils.logger"] = Mock()
+modules["pitoputils.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 

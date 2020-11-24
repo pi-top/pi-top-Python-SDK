@@ -9,9 +9,9 @@ modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()
 modules["numpy"] = Mock()
-modules["pitop.utils.smbus_device"] = Mock()
-modules["pitop.utils.logger"] = Mock()
-modules["pitop.utils.singleton"] = Mock()
+modules["pitoputils.smbus_device"] = Mock()
+modules["pitoputils.logger"] = Mock()
+modules["pitoputils.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 

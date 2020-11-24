@@ -1,5 +1,5 @@
-from pitop.utils.logger import PTLogger
-from pitop.utils.ptdm_message import Message
+from pitoputils.logger import PTLogger
+from pitoputils.ptdm_message import Message
 from threading import Thread
 from time import sleep
 import traceback
