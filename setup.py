@@ -38,11 +38,7 @@ python_version = debian_version
 for r in (
     ("(", ""),
     (")", ""),
-    # Hacky solution to deal with running 'gbp dch' on a Ubuntu machine
-    # (--force-distribution does not appear to work)
-    # e.g. '1:0.1.0ubuntu1~1.gbpfa58ce'
-    # TODO: remove
-    ("ubuntu1", ""),
+
     # Convert from gbp version format to PEP 440 local version format:
     # (replace '~' with '+')
     # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
