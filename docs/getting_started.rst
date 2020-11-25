@@ -32,7 +32,7 @@ With pi-top's repository added, you can run the following from your pi-top:
 .. code-block:: sh
 
     $ sudo apt update
-    $ sudo apt install py-pitop
+    $ sudo apt install python3-pitop
 
 
 Using PyPI
@@ -42,7 +42,7 @@ You can also install the latest version of the SDK through PyPI in your pi-top w
 
 .. code-block:: sh
 
-    $ pip3 install py-pitop
+    $ pip3 install python3-pitop
 
 Note: this will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
 
