@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from sys import exit
+from sys import exit, stderr
 from pt_socket import PTSocket
 
 
@@ -10,7 +10,9 @@ def run(cli_cls):
         cli_cls (CliBaseClass): CLI class constructor. Must inherit from CliBaseClass.
     """
     cli_name = cli_cls.cli_name
-    print(f"Note: Use of the 'pt-{cli_name}' is now deprecated. Please use 'pi-top {cli_name}' instead.")
+    print(
+        f"Note: Use of the 'pt-{cli_name}' is now deprecated. "
+        f"Please use 'pi-top {cli_name}' instead.", file=stderr)
 
     exit_code = 1
     args = None
