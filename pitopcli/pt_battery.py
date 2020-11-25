@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pitop.utils.ptdm_message import Message
+from pitopcommon.ptdm_message import Message
 from pt_cli_base import CliBaseClass
 
 

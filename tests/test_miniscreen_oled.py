@@ -6,16 +6,16 @@ from PIL import Image
 root = path.dirname(path.dirname(path.abspath(__file__)))
 spath.append(root)
 
-modules["pitop.utils"] = MagicMock()
+modules["pitopcommon"] = MagicMock()
 
-mock_sys_info = modules["pitop.utils.sys_info"] = MagicMock()
+mock_sys_info = modules["pitopcommon.sys_info"] = MagicMock()
 mock_sys_info.is_pi = MagicMock(return_value=False)
 
-mock_curr_session_info = modules["pitop.utils.current_session_info"] = MagicMock()
+mock_curr_session_info = modules["pitopcommon.current_session_info"] = MagicMock()
 mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 
-modules["pitop.utils.ptdm_message"] = MagicMock()
-modules["pitop.utils.logger"] = MagicMock()
+modules["pitopcommon.ptdm_message"] = MagicMock()
+modules["pitopcommon.logger"] = MagicMock()
 modules["zmq"] = MagicMock()
 modules["numpy"] = MagicMock()
 modules["RPi"] = MagicMock()

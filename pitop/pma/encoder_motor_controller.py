@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from pitop.utils.bitwise_ops import split_into_bytes, join_bytes
+from pitopcommon.bitwise_ops import split_into_bytes, join_bytes
 from .plate_interface import PlateInterface
 from .common import type_check
 from .common.encoder_motor_registers import (

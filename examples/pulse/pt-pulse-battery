@@ -17,7 +17,7 @@
 import time
 from ptpulse import ledmatrix
 import zmq
-from pitop.utils.ptdm_message import Message
+from pitopcommon.ptdm_message import Message
 
 zmq_socket = None
 

@@ -1,6 +1,6 @@
 from .request_client import RequestClient
 
-from pitop.utils.ptdm_message import Message
+from pitopcommon.ptdm_message import Message
 
 
 class MiniScreenOLEDManagerException(Exception):

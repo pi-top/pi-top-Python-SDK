@@ -6,9 +6,9 @@ import sys
 sys.modules["request_client"] = MagicMock()
 sys.modules["threading"] = MagicMock()
 sys.modules["zmq"] = MagicMock()
-sys.modules["pitop.utils"] = MagicMock()
-sys.modules["pitop.utils.logger"] = MagicMock()
-sys.modules["pitop.utils.ptdm_message"] = MagicMock()
+sys.modules["pitopcommon"] = MagicMock()
+sys.modules["pitopcommon.logger"] = MagicMock()
+sys.modules["pitopcommon.ptdm_message"] = MagicMock()
 
 
 class PTButtonsCase(TestCase):

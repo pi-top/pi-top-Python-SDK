@@ -2,7 +2,7 @@
 # Copyright (C) 2017  CEED ltd.
 #
 
-from pitop.utils.logger import PTLogger
+from pitopcommon.logger import PTLogger
 from binascii import hexlify
 from binascii import unhexlify
 from tempfile import mkstemp

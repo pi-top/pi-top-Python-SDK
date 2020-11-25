@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from pitop.utils.ptdm_message import Message
-from pitop.utils.common_ids import DeviceID
+from pitopcommon.ptdm_message import Message
+from pitopcommon.common_ids import DeviceID
 
 from pt_cli_base import CliBaseClass
 

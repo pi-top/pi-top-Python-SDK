@@ -1,4 +1,4 @@
-from pitop.utils.logger import PTLogger
+from pitopcommon.logger import PTLogger
 
 from .servo_controller import ServoController, ServoHardwareSpecs
 

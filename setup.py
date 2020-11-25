@@ -89,7 +89,7 @@ __requires__ = [
     ####################################
     # Utilities - functions, IDs, etc. #
     ####################################
-    "pitop.utils",
+    "pitopcommon",
 
     #######
     # PMA #
