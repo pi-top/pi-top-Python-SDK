@@ -1,4 +1,4 @@
-Source: py-pitop
+Source: py-pitop-sdk
 Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
