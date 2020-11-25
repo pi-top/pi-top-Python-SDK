@@ -59,6 +59,9 @@ def run(args):
     exit(exit_code)
 
 
+def main():
+    run(parse_args())
+
+
 if __name__ == "__main__":
-    args = parse_args()
-    run(args)
+    main()
