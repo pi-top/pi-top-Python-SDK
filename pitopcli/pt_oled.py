@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from time import sleep
 
-from pitop.oled import PTOLEDDisplay
+from pitop.miniscreen.oled import OLEDDisplay
 from .pt_cli_base import CliBaseClass
 
 
@@ -15,7 +15,7 @@ class OledCLI(CliBaseClass):
 
     def run(self) -> int:
         try:
-            oled_screen = PTOLEDDisplay()
+            oled_screen = OLEDDisplay()
             oled_screen.draw_multiline_text(self.args.text, font_size=self.args.font_size)
             sleep(self.args.timeout)
             return 0
