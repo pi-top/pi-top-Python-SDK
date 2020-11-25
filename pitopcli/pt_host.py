@@ -3,7 +3,7 @@
 from pitopcommon.ptdm_message import Message
 from pitopcommon.common_ids import DeviceID
 
-from pt_cli_base import CliBaseClass
+from .pt_cli_base import CliBaseClass
 
 
 class HostCLI(CliBaseClass):
@@ -52,6 +52,10 @@ class HostCLI(CliBaseClass):
         pass
 
 
-if __name__ == "__main__":
-    from deprecated_cli_runner import run
+def main():
+    from .deprecated_cli_runner import run
     run(HostCLI)
+
+
+if __name__ == "__main__":
+    main()

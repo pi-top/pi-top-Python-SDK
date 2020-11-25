@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pitopcommon.ptdm_message import Message
-from pt_cli_base import CliBaseClass
+from .pt_cli_base import CliBaseClass
 
 
 class BatteryCLI(CliBaseClass):
@@ -82,6 +82,10 @@ class BatteryCLI(CliBaseClass):
                             action="count")
 
 
-if __name__ == "__main__":
-    from deprecated_cli_runner import run
+def main():
+    from .deprecated_cli_runner import run
     run(BatteryCLI)
+
+
+if __name__ == "__main__":
+    main()

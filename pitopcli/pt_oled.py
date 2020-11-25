@@ -2,7 +2,7 @@
 from time import sleep
 
 from pitop.oled import PTOLEDDisplay
-from pt_cli_base import CliBaseClass
+from .pt_cli_base import CliBaseClass
 
 
 class OledCLI(CliBaseClass):
@@ -39,6 +39,10 @@ class OledCLI(CliBaseClass):
                             )
 
 
-if __name__ == "__main__":
-    from deprecated_cli_runner import run
+def main():
+    from .deprecated_cli_runner import run
     run(OledCLI)
+
+
+if __name__ == "__main__":
+    main()
