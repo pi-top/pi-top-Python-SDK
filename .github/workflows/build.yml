@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Patch changelog (in Debian Docker container)
+      - name: Set up Debian Docker container for changelog patching
         if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
@@ -23,7 +23,17 @@ jobs:
           docker start chglog
           docker exec chglog git config --global user.name "GitHub Build Action"
           docker exec chglog git config --global user.email "https://github.com/pi-top/pi-top-Python-SDK"
-          docker exec chglog gbp dch --auto --snapshot --git-author --ignore-branch
+
+      - name: Patch changelog (snapshot)
+        if: github.event_name != 'release'
+        # '--ignore-branch' for testing on feature branch
+        run: |
+          docker exec chglog gbp dch --verbose --auto --git-author --ignore-branch --snapshot
+
+      - name: Patch changelog (release)
+        if: github.event_name == 'release'
+        run: |
+          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
 
       - name: Show updated changelog
         if: github.event_name != 'release'
