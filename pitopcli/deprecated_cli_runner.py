@@ -1,6 +1,8 @@
 from argparse import ArgumentParser
 from sys import exit, stderr
 
+# This file serves as support for deprecated CLI paths, that will be removed in the future.
+
 
 def run(cli_cls):
     """Runs the CLI provided as argument, using the class properties and method.
