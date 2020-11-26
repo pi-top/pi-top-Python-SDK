@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from sys import exit, stderr
-from pt_socket import PTSocket
+from pitopcommon.ptdm_request_client import PTDMRequestClient
 
 
 def run(cli_cls):
@@ -16,20 +16,20 @@ def run(cli_cls):
 
     exit_code = 1
     args = None
-    ptsocket = None
+    request_client = None
 
     parser = ArgumentParser(prog=f'pt-{cli_name}', description=cli_cls.parser_help)
     cli_cls.add_parser_arguments(parser)
     args = parser.parse_args()
 
     try:
-        ptsocket = PTSocket()
-        cli_object = cli_cls(ptsocket, args)
+        request_client = PTDMRequestClient()
+        cli_object = cli_cls(request_client, args)
         exit_code = cli_object.run()
     except Exception as e:
         print(f"Error: {e}")
         exit_code = 1
     finally:
-        if hasattr(ptsocket, "cleanup"):
-            ptsocket.cleanup()
+        if hasattr(request_client, "cleanup"):
+            request_client.cleanup()
     exit(exit_code)

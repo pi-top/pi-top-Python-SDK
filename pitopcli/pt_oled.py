@@ -9,9 +9,12 @@ class OledCLI(CliBaseClass):
     parser_help = "pi-top OLED quick text"
     cli_name = 'oled'
 
-    def __init__(self, pt_socket, args) -> None:
+    def __init__(self, request_client, args) -> None:
         self.args = args
-        self.socket = pt_socket
+        # TODO: add support for 'give/take control to/from hub'
+        # REQ_GET_OLED_CONTROL = 125
+        # REQ_SET_OLED_CONTROL = 126
+        self.request_client = request_client
 
     def run(self) -> int:
         try:

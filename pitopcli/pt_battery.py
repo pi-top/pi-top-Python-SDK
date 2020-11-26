@@ -8,14 +8,14 @@ class BatteryCLI(CliBaseClass):
     parser_help = 'Get battery information from a pi-top.'
     cli_name = "battery"
 
-    def __init__(self, pt_socket, args) -> None:
+    def __init__(self, request_client, args) -> None:
         self.args = args
-        self.socket = pt_socket
+        self.request_client = request_client
         self.args_order = list()
 
     def run(self) -> int:
         try:
-            message = self.socket.send_request(Message.from_parts(Message.REQ_GET_BATTERY_STATE).to_string())
+            message = self.request_client.send_request(Message.from_parts(Message.REQ_GET_BATTERY_STATE).to_string())
             self.print_battery_state_message(message)
             return 0
         except Exception as e:

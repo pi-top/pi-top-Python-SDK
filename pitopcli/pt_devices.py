@@ -14,18 +14,18 @@ class DeviceCLI(CliBaseClass):
     parser_help = 'Get information about device and attached pi-top hardware'
     cli_name = 'device'
 
-    def __init__(self, pt_socket, args) -> None:
+    def __init__(self, request_client, args) -> None:
         self.args = args
-        self.socket = pt_socket
+        self.request_client = request_client
 
     def run(self) -> None:
         # Get host device and legacy peripheral devices from pt-device-manager
         try:
-            message = self.socket.send_request(Message.REQ_GET_DEVICE_ID)
+            message = self.request_client.send_request(Message.REQ_GET_DEVICE_ID)
             self.print_device_id(message)
 
             for id in range(5):
-                message = self.socket.send_request(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
+                message = self.request_client.send_request(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
                 self.print_peripheral_enabled(message, id)
         except Exception as e:
             print(f"Unable to get information from pt-device-manager: {e}")

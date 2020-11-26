@@ -3,13 +3,13 @@
 from argparse import ArgumentParser
 from sys import exit
 
-from .pt_socket import PTSocket
 from .pt_brightness import BrightnessCLI
 from .pt_devices import DeviceCLI
 from .pt_host import HostCLI
 from .pt_battery import BatteryCLI
 from .pt_oled import OledCLI
 
+from pitopcommon.ptdm_request_client import PTDMRequestClient
 
 lookup_dict = {
     "brightness": BrightnessCLI,
@@ -42,20 +42,20 @@ def parse_args():
 
 def run(args):
     """Executes the command according to the provided arguments"""
-    ptsocket = None
+    request_client = None
     exit_code = 1
     try:
-        ptsocket = PTSocket()
+        request_client = PTDMRequestClient()
         cls = lookup_dict.get(args.subcommand)
         if cls:
-            obj = cls(ptsocket, args)
+            obj = cls(request_client, args)
             exit_code = obj.run()
     except Exception as e:
         print(f"Error: {e}")
         exit_code = 1
     finally:
-        if hasattr(ptsocket, "cleanup"):
-            ptsocket.cleanup()
+        if hasattr(request_client, "cleanup"):
+            request_client.cleanup()
     exit(exit_code)
 
 

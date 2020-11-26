@@ -8,10 +8,10 @@ class BrightnessCLI(CliBaseClass):
     parser_help = 'communicate and control the device\'s screen brightness'
     cli_name = "brightness"
 
-    def __init__(self, pt_socket, args) -> None:
+    def __init__(self, request_client, args) -> None:
         self.args = args
         self.validate_args()
-        self.socket = pt_socket
+        self.request_cleint = request_client
 
     def run(self) -> int:
         try:
@@ -43,7 +43,7 @@ class BrightnessCLI(CliBaseClass):
         # No parameters - return current brightness
         if not brightness_val_set and not increment_brightness_set and not decrement_brightness_set and not backlight_state_set and not timeout_set:
             self.debug_print("REQ:\tCURRENT BRIGHTNESS", 1)
-            resp = self.socket.send_request(Message.REQ_GET_BRIGHTNESS, [])
+            resp = self.request_cleint.send_request(Message.REQ_GET_BRIGHTNESS, [])
             if resp.message_id() == Message.RSP_GET_BRIGHTNESS and len(resp.parameters()) > 0:
                 print(str(resp.parameters()[0]))
             else:
@@ -52,24 +52,24 @@ class BrightnessCLI(CliBaseClass):
         elif brightness_val_set:
             self.debug_print("REQ:\tSETTING BRIGHTNESS TO " +
                              str(self.args.brightness_value), 1)
-            resp = self.socket.send_request(Message.REQ_SET_BRIGHTNESS, parameters=[
+            resp = self.request_cleint.send_request(Message.REQ_SET_BRIGHTNESS, parameters=[
                 str(self.args.brightness_value)])
 
         elif increment_brightness_set:
             self.debug_print("REQ:\tINCREMENTING BRIGHTNESS", 1)
-            resp = self.socket.send_request(Message.REQ_INCREMENT_BRIGHTNESS)
+            resp = self.request_cleint.send_request(Message.REQ_INCREMENT_BRIGHTNESS)
 
         elif decrement_brightness_set:
             self.debug_print("REQ:\tDECREMENTING BRIGHTNESS", 1)
-            resp = self.socket.send_request(Message.REQ_DECREMENT_BRIGHTNESS)
+            resp = self.request_cleint.send_request(Message.REQ_DECREMENT_BRIGHTNESS)
 
         elif backlight_state_set:
             if self.args.backlight == 1:
                 self.debug_print("REQ:\tTURNING ON BACKLIGHT", 1)
-                resp = self.socket.send_request(Message.REQ_UNBLANK_SCREEN)
+                resp = self.request_cleint.send_request(Message.REQ_UNBLANK_SCREEN)
             else:
                 self.debug_print("REQ:\tTURNING OFF BACKLIGHT", 1)
-                resp = self.socket.send_request(Message.REQ_BLANK_SCREEN)
+                resp = self.request_cleint.send_request(Message.REQ_BLANK_SCREEN)
 
         elif timeout_set:
             if self.args.timeout < 0:
@@ -78,7 +78,7 @@ class BrightnessCLI(CliBaseClass):
             if self.args.timeout % 60 != 0:
                 raise Exception("Timeout must be a multiple of 60")
 
-            resp = self.socket.send_request(
+            resp = self.request_cleint.send_request(
                 Message.REQ_SET_SCREEN_BLANKING_TIMEOUT, [self.args.timeout])
 
             if resp.message_id() == Message.RSP_SET_SCREEN_BLANKING_TIMEOUT:

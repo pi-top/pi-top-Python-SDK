@@ -10,13 +10,13 @@ class HostCLI(CliBaseClass):
     parser_help = 'Returns the name of the host pi-top device'
     cli_name = 'host'
 
-    def __init__(self, pt_socket, args) -> None:
+    def __init__(self, request_client, args) -> None:
         self.args = args
-        self.socket = pt_socket
+        self.request_client = request_client
 
     def run(self) -> int:
         try:
-            message = self.socket.send_request(Message.from_parts(Message.REQ_GET_DEVICE_ID).to_string())
+            message = self.request_client.send_request(Message.from_parts(Message.REQ_GET_DEVICE_ID).to_string())
             status = self.print_device_id(message)
             return status
         except Exception as e:
