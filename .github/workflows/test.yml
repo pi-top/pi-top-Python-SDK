@@ -31,6 +31,43 @@ jobs:
           use-isort: false
           # extra-isort-options: ""
 
+  test-python-pytest:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7" # as on pi, because PyV4L2Camera errors on 3.9
+
+      - name: Install pip
+        run: |
+          python -m pip install --upgrade pip
+
+      # Installing pitopcommon from source as it is not yet published to PyPi
+      - name: Checkout pitopcommon
+        uses: actions/checkout@v2
+        with:
+          repository: pi-top/pi-top-Python-Common-Library
+          path: pi-top-Python-Common-Library
+
+      - name: Install pitopcommon
+        run: |
+          pip install -e pi-top-Python-Common-Library
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: main
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libv4l-dev # for building PyV4L2Camera
+          pip install -e "main[test]"
+
+      - name: Run pytest
+        run: |
+          python -m pytest main
+
   test-readme-render:
     runs-on: ubuntu-20.04
     steps:
