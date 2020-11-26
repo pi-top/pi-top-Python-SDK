@@ -53,35 +53,35 @@ class CaseButtons:
 
             def set_up_button_pressed():
                 self.up.is_pressed = True
-                self.__invoke_method_if_exists(self.up.when_pressed)
+                __invoke_method_if_exists(self.up.when_pressed)
 
             def set_down_button_pressed():
                 self.down.is_pressed = True
-                self.__invoke_method_if_exists(self.down.when_pressed)
+                __invoke_method_if_exists(self.down.when_pressed)
 
             def set_select_button_pressed():
                 self.select.is_pressed = True
-                self.__invoke_method_if_exists(self.select.when_pressed)
+                __invoke_method_if_exists(self.select.when_pressed)
 
             def set_cancel_button_pressed():
                 self.cancel.is_pressed = True
-                self.__invoke_method_if_exists(self.cancel.when_pressed)
+                __invoke_method_if_exists(self.cancel.when_pressed)
 
             def set_up_button_released():
                 self.up.is_pressed = False
-                self.__invoke_method_if_exists(self.up.when_released)
+                __invoke_method_if_exists(self.up.when_released)
 
             def set_down_button_released():
                 self.down.is_pressed = False
-                self.__invoke_method_if_exists(self.down.when_released)
+                __invoke_method_if_exists(self.down.when_released)
 
             def set_select_button_released():
                 self.select.is_pressed = False
-                self.__invoke_method_if_exists(self.select.when_released)
+                __invoke_method_if_exists(self.select.when_released)
 
             def set_cancel_button_released():
                 self.cancel.is_pressed = False
-                self.__invoke_method_if_exists(self.cancel.when_released)
+                __invoke_method_if_exists(self.cancel.when_released)
 
             message_dict = {}
             message_dict[Message.PUB_V3_BUTTON_UP_PRESSED] = set_up_button_pressed()
