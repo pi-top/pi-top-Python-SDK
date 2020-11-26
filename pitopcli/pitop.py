@@ -3,11 +3,11 @@
 from argparse import ArgumentParser
 from sys import exit
 
-from .pt_brightness import BrightnessCLI
-from .pt_devices import DeviceCLI
-from .pt_host import HostCLI
-from .pt_battery import BatteryCLI
-from .pt_oled import OledCLI
+from .brightness import BrightnessCLI
+from .devices import DeviceCLI
+from .host import HostCLI
+from .battery import BatteryCLI
+from .oled import OledCLI
 
 from pitopcommon.ptdm_request_client import PTDMRequestClient
 

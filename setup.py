@@ -153,11 +153,11 @@ __entry_points__ = {
     "console_scripts": [
         "pi-top=pitopcli.pitop:main",
         # Deprecated console scripts:
-        "pt-battery=pitopcli.pt_battery:main",
-        "pt-brightness=pitopcli.pt_brightness:main",
-        "pt-devices=pitopcli.pt_devices:main",
-        "pt-host=pitopcli.pt_host:main",
-        "pt-oled=pitopcli.pt_oled:main",
+        "pt-battery=pitopcli.battery:main",
+        "pt-brightness=pitopcli.brightness:main",
+        "pt-devices=pitopcli.devices:main",
+        "pt-host=pitopcli.host:main",
+        "pt-oled=pitopcli.oled:main",
     ]
 }
 

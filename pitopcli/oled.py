@@ -2,7 +2,7 @@
 from time import sleep
 
 from pitop.miniscreen.oled import OLEDDisplay
-from .pt_cli_base import CliBaseClass
+from .cli_base import CliBaseClass
 
 
 class OledCLI(CliBaseClass):

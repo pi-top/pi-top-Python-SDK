@@ -3,7 +3,7 @@
 from pitopcommon.ptdm_message import Message
 from pitopcommon.common_ids import DeviceID
 
-from .pt_cli_base import CliBaseClass
+from .cli_base import CliBaseClass
 
 
 class HostCLI(CliBaseClass):

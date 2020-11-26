@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from pitopcommon.ptdm_message import Message
-from .pt_cli_base import CliBaseClass
+from pitop.battery import Battery
+from .cli_base import CliBaseClass
 
 
 class BatteryCLI(CliBaseClass):
@@ -10,19 +10,17 @@ class BatteryCLI(CliBaseClass):
 
     def __init__(self, request_client, args) -> None:
         self.args = args
-        self.request_client = request_client
         self.args_order = list()
 
     def run(self) -> int:
         try:
-            message = self.request_client.send_request(Message.from_parts(Message.REQ_GET_BATTERY_STATE).to_string())
-            self.print_battery_state_message(message)
+            self.print_battery_state()
             return 0
         except Exception as e:
             print(f"Error getting battery info: {e}")
             return 1
 
-    def print_battery_state_message(self, message) -> None:
+    def print_battery_state(self) -> None:
         if self.args.charging_state:
             self.args_order.append('charging-state')
         if self.args.capacity:
@@ -32,37 +30,33 @@ class BatteryCLI(CliBaseClass):
         if self.args.wattage:
             self.args_order.append('wattage')
 
-        if message.message_id() == Message.RSP_GET_BATTERY_STATE:
-            if message.validate_parameters([int, int, int, int]):
-                charging_state, capacity, time_remaining, wattage = message.parameters()
+        charging_state, capacity, time_remaining, wattage = Battery.full_state()
 
-                if len(self.args_order) > 0:
-                    for arg in set(self.args_order):
-                        if arg == 'charging-state':
-                            print(charging_state)
-                        if arg == 'capacity':
-                            print(capacity)
-                        if arg == 'time-remaining':
-                            print(time_remaining)
-                        if arg == 'wattage':
-                            print(wattage)
-                else:
+        if len(self.args_order) > 0:
+            for arg in set(self.args_order):
+                if arg == 'charging-state':
+                    print(charging_state)
+                if arg == 'capacity':
+                    print(capacity)
+                if arg == 'time-remaining':
+                    print(time_remaining)
+                if arg == 'wattage':
+                    print(wattage)
+        else:
 
-                    if self.args.charging_state:
-                        print(charging_state)
-                    elif self.args.capacity:
-                        print(capacity)
-                    elif self.args.time_remaining:
-                        print(time_remaining)
-                    elif self.args.wattage:
-                        print(wattage)
-                    else:
-                        print("Charging State: " + charging_state)
-                        print("Capacity: " + capacity)
-                        print("Time Remaining: " + time_remaining)
-                        print("Wattage: " + wattage)
+            if self.args.charging_state:
+                print(charging_state)
+            elif self.args.capacity:
+                print(capacity)
+            elif self.args.time_remaining:
+                print(time_remaining)
+            elif self.args.wattage:
+                print(wattage)
             else:
-                raise Exception("Unable to get valid battery information.")
+                print("Charging State: " + charging_state)
+                print("Capacity: " + capacity)
+                print("Time Remaining: " + time_remaining)
+                print("Wattage: " + wattage)
 
     @classmethod
     def add_parser_arguments(cls, parser):

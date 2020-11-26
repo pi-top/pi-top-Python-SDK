@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pitopcommon.ptdm_message import Message
-from .pt_cli_base import CliBaseClass
+from .cli_base import CliBaseClass
 
 
 class BrightnessCLI(CliBaseClass):
