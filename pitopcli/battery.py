@@ -8,7 +8,7 @@ class BatteryCLI(CliBaseClass):
     parser_help = 'Get battery information from a pi-top.'
     cli_name = "battery"
 
-    def __init__(self, request_client, args) -> None:
+    def __init__(self, args) -> None:
         self.args = args
         self.args_order = list()
 
@@ -30,7 +30,7 @@ class BatteryCLI(CliBaseClass):
         if self.args.wattage:
             self.args_order.append('wattage')
 
-        charging_state, capacity, time_remaining, wattage = Battery.full_state()
+        charging_state, capacity, time_remaining, wattage = Battery.get_full_state()
 
         if len(self.args_order) > 0:
             for arg in set(self.args_order):

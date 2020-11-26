@@ -1,4 +1,4 @@
-from .device_helper import get_device_instance
+from .oled_controls import get_device_instance
 from PIL import Image, ImageSequence
 import re
 import urllib.request

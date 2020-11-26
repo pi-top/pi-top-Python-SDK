@@ -4,11 +4,10 @@ from abc import ABC, abstractmethod, abstractproperty
 class CliBaseClass(ABC):
     """Abstract class, used to create CLI commands"""
     @abstractmethod
-    def __init__(self, request_client, args):
+    def __init__(self, args):
         """Class constructor.
 
         Args:
-            request_client (request_client.PTDMRequestClient): request client used to communicate with pt-device-manager
             args (Namespace): arguments as returned by Argparse.parse_args
         """
         pass

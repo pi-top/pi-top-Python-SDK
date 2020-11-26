@@ -3,7 +3,7 @@ from pitopcommon.ptdm_message import Message
 
 
 class Battery:
-    def full_state(self):
+    def get_full_state(self):
         message = Message.from_parts(Message.REQ_GET_BATTERY_STATE, [])
 
         with PTDMRequestClient() as request_client:
@@ -18,17 +18,17 @@ class Battery:
         return response.parameters()
 
     def charging_state(self):
-        __charging_state, _, _, _ = self.full_state()
+        __charging_state, _, _, _ = self.get_full_state()
         return __charging_state
 
     def capacity(self):
-        _, __capacity, _, _ = self.full_state()
+        _, __capacity, _, _ = self.get_full_state()
         return __capacity
 
     def time_remaining(self):
-        _, _, __time_remaining, _ = self.full_state()
+        _, _, __time_remaining, _ = self.get_full_state()
         return __time_remaining
 
     def wattage(self):
-        _, _, _, __wattage = self.full_state()
+        _, _, _, __wattage = self.get_full_state()
         return __wattage

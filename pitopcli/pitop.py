@@ -9,7 +9,6 @@ from .host import HostCLI
 from .battery import BatteryCLI
 from .oled import OledCLI
 
-from pitopcommon.ptdm_request_client import PTDMRequestClient
 
 lookup_dict = {
     "brightness": BrightnessCLI,
@@ -42,20 +41,17 @@ def parse_args():
 
 def run(args):
     """Executes the command according to the provided arguments"""
-    request_client = None
     exit_code = 1
     try:
-        request_client = PTDMRequestClient()
         cls = lookup_dict.get(args.subcommand)
         if cls:
-            obj = cls(request_client, args)
+            obj = cls(args)
             exit_code = obj.run()
+
     except Exception as e:
         print(f"Error: {e}")
         exit_code = 1
-    finally:
-        if hasattr(request_client, "cleanup"):
-            request_client.cleanup()
+
     exit(exit_code)
 
 

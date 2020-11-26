@@ -2,6 +2,7 @@
 from time import sleep
 
 from pitop.miniscreen.oled import OLEDDisplay
+from pitop.miniscreen.oled import set_oled_control_to_pi
 from .cli_base import CliBaseClass
 
 
@@ -9,16 +10,17 @@ class OledCLI(CliBaseClass):
     parser_help = "pi-top OLED quick text"
     cli_name = 'oled'
 
-    def __init__(self, request_client, args) -> None:
+    def __init__(self, args) -> None:
         self.args = args
         # TODO: add support for 'give/take control to/from hub'
         # REQ_GET_OLED_CONTROL = 125
         # REQ_SET_OLED_CONTROL = 126
-        self.request_client = request_client
 
     def run(self) -> int:
         try:
             oled_screen = OLEDDisplay()
+            if self.args.force:
+                set_oled_control_to_pi()
             oled_screen.draw_multiline_text(self.args.text, font_size=self.args.font_size)
             sleep(self.args.timeout)
             return 0
@@ -27,18 +29,23 @@ class OledCLI(CliBaseClass):
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
+        parser.add_argument("--force", "-f",
+                            type=int,
+                            help="Force the hub to give control of the OLED to the Pi",
+                            default=False,
+                            )
         parser.add_argument("--timeout", "-t",
                             type=int,
-                            help="set the timeout in seconds",
+                            help="Set the timeout in seconds",
                             default=10,
                             )
         parser.add_argument("--font-size", "-s",
                             type=int,
-                            help="set the font size",
+                            help="Set the font size",
                             default=20,
                             )
         parser.add_argument("text",
-                            help="set the text to write to screen",
+                            help="Set the text to write to screen",
                             )
 
 

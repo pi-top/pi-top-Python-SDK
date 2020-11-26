@@ -2,7 +2,7 @@ from os.path import isfile
 from PIL import ImageFont, ImageDraw
 from numpy import reshape
 
-from .device_helper import get_device_instance
+from .oled_controls import get_device_instance
 
 
 class Canvas:

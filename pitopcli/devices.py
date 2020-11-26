@@ -1,107 +1,54 @@
 #! /usr/bin/python3
 
-from subprocess import getstatusoutput
-
-from pitopcommon.firmware_device import FirmwareDevice
-from pitopcommon.command_runner import run_command
-from pitopcommon.ptdm_message import Message
-from pitopcommon.common_ids import DeviceID
+from pitop.system import (
+    device_type,
+    legacy_pitop_peripherals,
+    upgradable_pitop_peripherals,
+    touchscreen_is_connected,
+    pitop_keyboard_is_connected
+)
 
 from .cli_base import CliBaseClass
+
+from sys import stderr
 
 
 class DeviceCLI(CliBaseClass):
     parser_help = 'Get information about device and attached pi-top hardware'
     cli_name = 'device'
 
-    def __init__(self, request_client, args) -> None:
+    def __init__(self, args) -> None:
         self.args = args
-        self.request_client = request_client
 
     def run(self) -> None:
         # Get host device and legacy peripheral devices from pt-device-manager
         try:
-            message = self.request_client.send_request(Message.REQ_GET_DEVICE_ID)
-            self.print_device_id(message)
-
-            for id in range(5):
-                message = self.request_client.send_request(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
-                self.print_peripheral_enabled(message, id)
+            device = device_type()
+            if device is not None:
+                print(f"Host device: {device}")
         except Exception as e:
-            print(f"Unable to get information from pt-device-manager: {e}")
+            print(f"Error: Unable to get device type from pt-device-manager: {e}", file=stderr)
+
+        try:
+            for periph in legacy_pitop_peripherals():
+                print(f"Connected device: {periph}")
+        except Exception as e:
+            print(f"Unable to get connected legacy peripherals from pt-device-manager: {e}", file=stderr)
 
         # Get touchscreen/keyboard from USB devices
-        touchscreen_connected = False
-        keyboard_connected = False
-
-        resp = run_command("lsusb", timeout=3)
-        for line in resp.split("\n"):
-            fields = line.split(" ")
-            if len(fields) < 6:
-                continue
-            device_id = fields[5]
-            if device_id == "222a:0001":
-                touchscreen_connected = True
-            elif device_id == "1c4f:0063":
-                keyboard_connected = True
-
-            if touchscreen_connected and keyboard_connected:
-                break
-
-        print(f"pi-top Touchscreen: {'' if touchscreen_connected else 'not '}connected")
-        print(f"pi-top Keyboard: {'' if keyboard_connected else 'not '}connected")
+        print(f"pi-top Touchscreen: {'' if touchscreen_is_connected() else 'not '}connected")
+        print(f"pi-top Keyboard: {'' if pitop_keyboard_is_connected() else 'not '}connected")
 
         # Firmware-upgradable pi-top peripherals
-        if "pi-top [4]" not in run_command("pt-host", timeout=3):
+        if device == "pi-top [4]":
             return
 
-        for device_enum, device_info in FirmwareDevice.device_info.items():
-            device_str = device_enum.name
-
-            device_address = device_info.get("i2c_addr")
-
-            if getstatusoutput(f"pt-i2cdetect {device_address}"):
-                try:
-                    fw_device = FirmwareDevice(device_enum)
-                    human_readable_name = device_str.replace(
-                        "_", " ").title().replace("Pt4", "pi-top [4]")
-                    print(
-                        f"Upgradable device connected: {human_readable_name} (v{fw_device.get_fw_version()})")
-                except Exception:
-                    pass
-
-    def print_device_id(self, message) -> None:
-        if message.message_id() == Message.RSP_GET_DEVICE_ID:
-            if message.validate_parameters([int]):
-                device_id = message.parameters()
-                if int(device_id[0]) == DeviceID.pi_top.value:
-                    print("Host device: original pi-top")
-                elif int(device_id[0]) == DeviceID.pi_top_ceed.value:
-                    print("Host device: pi-topCEED")
-                elif int(device_id[0]) == DeviceID.pi_top_3.value:
-                    print("Host device: pi-top [3]")
-                elif int(device_id[0]) == DeviceID.pi_top_4.value:
-                    print("Host device: pi-top [4]")
-                else:
-                    print("Host device: Unknown")
-            else:
-                print("Error: Unable to get valid device ID.")
-
-    def print_peripheral_enabled(self, message, id) -> None:
-        p_names = ['pi-topPULSE',
-                   'pi-topSPEAKER-v1-left',
-                   'pi-topSPEAKER-v1-mono',
-                   'pi-topSPEAKER-v1-right',
-                   'pi-topSPEAKER-v2']
-
-        if message.message_id() == Message.RSP_GET_PERIPHERAL_ENABLED:
-            if message.validate_parameters([int]):
-                p_enabled = message.parameters()
-
-                if p_enabled[0] == '1':
-                    print(f"Connected device: {p_names[id]}")
-            else:
-                print("Unable to get valid peripheral enabled.")
+        try:
+            for periph in upgradable_pitop_peripherals():
+                print(
+                    f"Upgradable device connected: {periph.name} (v{periph.fw_version})")
+        except Exception as e:
+            print(f"Unable to get connected peripherals from pt-device-manager: {e}", file=stderr)
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:

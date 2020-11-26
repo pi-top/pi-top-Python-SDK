@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pitopcommon.ptdm_message import Message
+from pitop.display import Display
 from .cli_base import CliBaseClass
 
 
@@ -8,14 +8,13 @@ class BrightnessCLI(CliBaseClass):
     parser_help = 'communicate and control the device\'s screen brightness'
     cli_name = "brightness"
 
-    def __init__(self, request_client, args) -> None:
+    def __init__(self, args) -> None:
         self.args = args
         self.validate_args()
-        self.request_cleint = request_client
 
     def run(self) -> int:
         try:
-            self.send_message_to_device_manager()
+            self.perform_desired_action()
             return 0
         except Exception as e:
             print(f"Error: {e}")
@@ -32,7 +31,7 @@ class BrightnessCLI(CliBaseClass):
         if self.args.increment_brightness and self.args.decrement_brightness:
             raise Exception("Cannot increment and decrement brightness at the same time")
 
-    def send_message_to_device_manager(self) -> None:
+    def perform_desired_action(self) -> None:
         brightness_val_set = (self.args.brightness_value is not None)
         backlight_state_set = (self.args.backlight is not None)
         timeout_set = (self.args.timeout is not None)
@@ -43,48 +42,31 @@ class BrightnessCLI(CliBaseClass):
         # No parameters - return current brightness
         if not brightness_val_set and not increment_brightness_set and not decrement_brightness_set and not backlight_state_set and not timeout_set:
             self.debug_print("REQ:\tCURRENT BRIGHTNESS", 1)
-            resp = self.request_cleint.send_request(Message.REQ_GET_BRIGHTNESS, [])
-            if resp.message_id() == Message.RSP_GET_BRIGHTNESS and len(resp.parameters()) > 0:
-                print(str(resp.parameters()[0]))
-            else:
-                raise Exception("Unable to get brightness")
+            print(Display.brightness)
 
         elif brightness_val_set:
             self.debug_print("REQ:\tSETTING BRIGHTNESS TO " +
                              str(self.args.brightness_value), 1)
-            resp = self.request_cleint.send_request(Message.REQ_SET_BRIGHTNESS, parameters=[
-                str(self.args.brightness_value)])
+            print(Display.brightness(self.args.brightness_value))
 
         elif increment_brightness_set:
             self.debug_print("REQ:\tINCREMENTING BRIGHTNESS", 1)
-            resp = self.request_cleint.send_request(Message.REQ_INCREMENT_BRIGHTNESS)
+            Display.increment_brightness()
 
         elif decrement_brightness_set:
             self.debug_print("REQ:\tDECREMENTING BRIGHTNESS", 1)
-            resp = self.request_cleint.send_request(Message.REQ_DECREMENT_BRIGHTNESS)
+            Display.decrement_brightness()
 
         elif backlight_state_set:
             if self.args.backlight == 1:
                 self.debug_print("REQ:\tTURNING ON BACKLIGHT", 1)
-                resp = self.request_cleint.send_request(Message.REQ_UNBLANK_SCREEN)
+                Display.backlight(True)
             else:
                 self.debug_print("REQ:\tTURNING OFF BACKLIGHT", 1)
-                resp = self.request_cleint.send_request(Message.REQ_BLANK_SCREEN)
+                Display.backlight(False)
 
         elif timeout_set:
-            if self.args.timeout < 0:
-                raise Exception("Cannot set timeout < 0")
-
-            if self.args.timeout % 60 != 0:
-                raise Exception("Timeout must be a multiple of 60")
-
-            resp = self.request_cleint.send_request(
-                Message.REQ_SET_SCREEN_BLANKING_TIMEOUT, [self.args.timeout])
-
-            if resp.message_id() == Message.RSP_SET_SCREEN_BLANKING_TIMEOUT:
-                print("OK")
-            else:
-                print("Setting timeout failed")
+            Display.blanking_timeout(self.args.timeout)
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:

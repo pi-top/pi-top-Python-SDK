@@ -1,31 +1,18 @@
-from .device_helper import get_device_instance
+from .oled_controls import (  # noqa: F401
+    get_device_instance,
+    set_oled_control_to_pi,
+)
 from .oled_image import OLEDImage
 from .core.canvas import Canvas
 from .core.display import Display
 from .fps_regulator import FPS_Regulator
 
-from pitopcommon.ptdm_request_client import PTDMRequestClient
-
 from pitopcommon.sys_info import is_pi
-from pitopcommon.ptdm_message import Message
+
 
 from copy import deepcopy
 from PIL import Image
 from threading import Thread
-
-
-def set_oled_control_to_pi():
-    message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, ["1"])
-
-    with PTDMRequestClient() as request_client:
-        response = request_client.send_message(message)
-
-    if response.message_id() != Message.RSP_SET_OLED_CONTROL:
-
-        class MiniScreenOLEDManagerException(Exception):
-            pass
-
-        raise MiniScreenOLEDManagerException("Unable to take control of OLED from pi-top hub")
 
 
 class OLEDDisplay:

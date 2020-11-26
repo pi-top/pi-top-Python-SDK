@@ -76,7 +76,7 @@ def main():
 
     while True:
         try:
-            charging_state, capacity, _, _ = Battery.full_state()
+            charging_state, capacity, _, _ = Battery.get_full_state()
             update_battery_state(charging_state, capacity)  # Fill battery with capacity
 
         except Exception as e:

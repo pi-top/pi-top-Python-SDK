@@ -3,6 +3,9 @@ from fcntl import flock, LOCK_EX, LOCK_UN, LOCK_NB
 from io import open as iopen
 from os import path, chmod, environ
 
+from pitopcommon.ptdm_request_client import PTDMRequestClient
+from pitopcommon.ptdm_message import Message
+
 from pitopcommon.sys_info import is_pi
 from pitopcommon.current_session_info import get_first_display
 
@@ -25,6 +28,31 @@ spi_device = 0
 spi_bus_speed_hz = 8000000
 spi_cs_high = False
 spi_transfer_size = 4096
+
+
+class MiniScreenOLEDManagerException(Exception):
+    pass
+
+
+def __set_oled_controls(controlled_by_pi):
+    message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))])
+
+    with PTDMRequestClient() as request_client:
+        response = request_client.send_message(message)
+
+    if response.message_id() != Message.RSP_SET_OLED_CONTROL:
+        target_str = "Raspberry Pi" if controlled_by_pi else "pi-top hub"
+        raise MiniScreenOLEDManagerException(
+            f"Unable to give control of OLED to {target_str}"
+        )
+
+
+def set_oled_control_to_pi():
+    __set_oled_controls(controlled_by_pi=True)
+
+
+def set_oled_control_to_hub():
+    __set_oled_controls(controlled_by_pi=False)
 
 
 def _acquire_device_lock():
