@@ -3,9 +3,9 @@ from .oled_controls import (  # noqa: F401
     set_oled_control_to_pi,
 )
 from .oled_image import OLEDImage
-from .core.canvas import Canvas
+from .canvas import Canvas
 from .core.display import Display
-from .fps_regulator import FPS_Regulator
+from pitop.miniscreen.oled.core.fps_regulator import FPS_Regulator
 
 from pitopcommon.sys_info import is_pi
 
