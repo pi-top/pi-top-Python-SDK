@@ -132,3 +132,11 @@ class Display:
             message_id=Message.REQ_SET_SCREEN_BACKLIGHT_STATE,
             expected_response_id=Message.RSP_SET_SCREEN_BACKLIGHT_STATE,
         )
+
+    @property
+    def lid(self):
+        return self.__get_state(
+            state_str="get pi-top display lid open state",
+            message_id=Message.REQ_GET_LID_OPEN_STATE,
+            expected_response_id=Message.RSP_GET_LID_OPEN_STATE,
+        )
