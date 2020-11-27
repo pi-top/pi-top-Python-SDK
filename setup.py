@@ -188,7 +188,7 @@ def main():
             platforms=__platforms__,
             install_requires=__requires__,
             extras_require=__extra_requires__,
-            setup_requires=['pytest-runner'],
+            setup_requires=['pytest-runner', 'flake8'],
             tests_require=['pytest'],
             entry_points=__entry_points__,
         )
