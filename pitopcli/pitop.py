@@ -19,7 +19,7 @@ lookup_dict = {
 }
 
 
-def parse_args():
+def get_parser():
     """Configures the argument parser according to the CLI classes
     defined in ´lookup_dict´, and returns the parsed arguments.
 
@@ -36,7 +36,7 @@ def parse_args():
         class_parser = subparsers.add_parser(cli_name, help=cli_class.parser_help)
         cli_class.add_parser_arguments(class_parser)
 
-    return parser.parse_args()
+    return parser
 
 
 def run(args):
@@ -56,7 +56,7 @@ def run(args):
 
 
 def main():
-    run(parse_args())
+    run(get_parser().parse_args())
 
 
 if __name__ == "__main__":
