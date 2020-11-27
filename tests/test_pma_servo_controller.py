@@ -1,11 +1,3 @@
-from pitop.pma.common.servo_motor_registers import (
-    ServoControlRegisters,
-    ServoRegisterTypes,
-    ServoControlModes,
-    ServoMotorS1,
-    ServoMotorSetup)
-from pitop.pma.servo_controller import ServoController, interp, split_into_bytes
-from pitopcommon.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock
@@ -19,6 +11,18 @@ modules["pitopcommon.smbus_device"] = Mock()
 modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
+# import after applying mocks
+from pitop.pma.common.servo_motor_registers import (  # noqa: E402
+    ServoControlRegisters,
+    ServoRegisterTypes,
+    ServoControlModes,
+    ServoMotorS1,
+    ServoMotorSetup)
+from pitop.pma.servo_controller import (  # noqa: E402
+    ServoController, interp, split_into_bytes
+)
+from pitopcommon.bitwise_ops import join_bytes  # noqa: E402
 
 
 class ServoControllerTestCase(TestCase):

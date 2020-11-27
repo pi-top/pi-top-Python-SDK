@@ -23,8 +23,8 @@ modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
-# TODO: remove the need for overriding E402 check
-from pitop.miniscreen.oled import OLEDDisplay, OLEDImage  # nopep8  # noqa: E402
+# import after applying mocks
+from pitop.miniscreen.oled import OLEDDisplay, OLEDImage  # noqa: E402
 
 
 class OLEDTestCase(TestCase):

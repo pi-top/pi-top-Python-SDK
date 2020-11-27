@@ -1,7 +1,9 @@
-from pitop.miniscreen.buttons import UpButton
 from unittest.mock import MagicMock
 from unittest import TestCase, main
 import sys
+
+# import after applying mocks
+from pitop.miniscreen.buttons import UpButton  # noqa: E402
 
 sys.modules["request_client"] = MagicMock()
 sys.modules["threading"] = MagicMock()

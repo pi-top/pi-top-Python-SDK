@@ -1,15 +1,3 @@
-from pitop.pma.parameters import BrakingType
-from pitop.pma.common.encoder_motor_registers import (
-    MotorControlRegisters,
-    MotorRegisterTypes,
-    MotorControlModes,
-    EncoderMotorM1
-)
-from pitop.pma.encoder_motor_controller import (
-    EncoderMotorController,
-    split_into_bytes
-)
-from pitopcommon.bitwise_ops import join_bytes
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock, patch
@@ -23,6 +11,20 @@ modules["pitopcommon.smbus_device"] = Mock()
 modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
+# import after applying mocks
+from pitop.pma.parameters import BrakingType  # noqa: E402
+from pitop.pma.common.encoder_motor_registers import (  # noqa: E402
+    MotorControlRegisters,
+    MotorRegisterTypes,
+    MotorControlModes,
+    EncoderMotorM1
+)
+from pitop.pma.encoder_motor_controller import (  # noqa: E402
+    EncoderMotorController,
+    split_into_bytes
+)
+from pitopcommon.bitwise_ops import join_bytes  # noqa: E402
 
 
 class EncoderMotorControllerTestCase(TestCase):

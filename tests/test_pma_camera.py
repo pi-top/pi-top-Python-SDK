@@ -1,14 +1,4 @@
 from threading import Thread
-from pitop.pma.camera_core import (
-    FrameHandler,
-    CaptureActions
-)
-from pitop.pma.camera_core import (
-    UsbCamera,
-    FileSystemCamera,
-    CameraTypes
-)
-from pitop.pma import Camera
 from unittest import (
     TestCase,
     skip
@@ -27,6 +17,18 @@ modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["numpy"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
+# import after applying mocks
+from pitop.pma.camera_core import (  # noqa: E402
+    FrameHandler,
+    CaptureActions
+)
+from pitop.pma.camera_core import (  # noqa: E402
+    UsbCamera,
+    FileSystemCamera,
+    CameraTypes
+)
+from pitop.pma import Camera  # noqa: E402
 
 
 UsbCamera.Camera = Mock()
