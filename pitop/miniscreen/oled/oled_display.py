@@ -1,5 +1,5 @@
 from .oled_controls import (  # noqa: F401
-    get_device_instance,
+    get_oled_device,
     set_oled_control_to_pi,
 )
 from .oled_image import OLEDImage
@@ -22,8 +22,8 @@ class OLEDDisplay:
     """
 
     def __init__(self):
-        self.image = Image.new(get_device_instance().mode,
-                               get_device_instance().size)
+        self.image = Image.new(get_oled_device().mode,
+                               get_oled_device().size)
         self.canvas = Canvas(self.image)
         self.display = Display()
         self.fps_regulator = FPS_Regulator()
@@ -56,7 +56,7 @@ class OLEDDisplay:
         if is_pi():
             set_oled_control_to_pi()
         self.canvas.clear()
-        get_device_instance().display(self.image)
+        get_oled_device().display(self.image)
         self.display.reset()
 
     def draw_image_file(self, file_path, xy=None):
@@ -168,7 +168,7 @@ class OLEDDisplay:
                 paint_to_screen = True
 
         if paint_to_screen:
-            get_device_instance().display(self.image)
+            get_oled_device().display(self.image)
 
         self.fps_regulator.start_timer()
         self._previous_frame = Canvas(deepcopy(self.image))

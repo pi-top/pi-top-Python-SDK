@@ -1,4 +1,4 @@
-from .oled_controls import get_device_instance
+from .oled_controls import get_oled_device
 from PIL import Image, ImageSequence
 import re
 import urllib.request
@@ -29,7 +29,7 @@ class OLEDImage:
             file_path_or_url) if is_url else file_path_or_url)
         self.loop = loop
 
-        self._currentframe = self._image.convert(get_device_instance().mode)
+        self._currentframe = self._image.convert(get_oled_device().mode)
 
         self.frame_no = 0
 
@@ -67,9 +67,9 @@ class OLEDImage:
     def _update_frame(self, frame_no):
         self.frame_no = frame_no
         frame = self._frames_of_image[self.frame_no]
-        background = Image.new("RGB", get_device_instance().size, "black")
-        background.paste(frame.resize(get_device_instance().size))
-        self._currentframe = background.convert(get_device_instance().mode)
+        background = Image.new("RGB", get_oled_device().size, "black")
+        background.paste(frame.resize(get_oled_device().size))
+        self._currentframe = background.convert(get_oled_device().mode)
 
     def next_frame(self):
         """

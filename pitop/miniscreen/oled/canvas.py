@@ -2,7 +2,7 @@ from os.path import isfile
 from PIL import ImageFont, ImageDraw
 from numpy import reshape
 
-from .oled_controls import get_device_instance
+from .oled_controls import get_oled_device
 
 
 class Canvas:
@@ -262,7 +262,7 @@ class Canvas:
         :return: A tuple containing the bounding rectangle of the canvas
         :rtype: tuple
         """
-        return get_device_instance().bounding_box
+        return get_oled_device().bounding_box
 
     def _get_corner(self, pos1, pos2):
         """
@@ -317,7 +317,7 @@ class Canvas:
         :return: The dimensions of the canvas as a tuple
         :rtype: tuple
         """
-        return get_device_instance().size
+        return get_oled_device().size
 
     def get_height(self):
         """
@@ -326,7 +326,7 @@ class Canvas:
         :return: The height of canvas in pixels
         :rtype: int
         """
-        return get_device_instance().height
+        return get_oled_device().height
 
     def get_width(self):
         """
@@ -335,7 +335,7 @@ class Canvas:
         :return: The width of canvas in pixels
         :rtype: int
         """
-        return get_device_instance().width
+        return get_oled_device().width
 
     ##################################################
     # Font config methods

@@ -47,20 +47,12 @@ def __set_oled_controls(controlled_by_pi):
         )
 
 
-def set_oled_control_to_pi():
-    __set_oled_controls(controlled_by_pi=True)
-
-
-def set_oled_control_to_hub():
-    __set_oled_controls(controlled_by_pi=False)
-
-
 def _acquire_device_lock():
     global _device_lock_handle
 
     atexit.register(_release_device_lock)
 
-    if device_reserved():
+    if oled_device_is_active():
         raise IOError("Device already in use")
 
     _device_lock_handle = iopen(_device_lock_file, "w")
@@ -117,7 +109,7 @@ def _setup_emulator_and_get_device():
 # Public methods ##############################
 
 
-def device_reserved():
+def oled_device_is_active():
 
     if (_exclusive_mode is True and _device is not None):
         # We already have the device, so no-one else can
@@ -138,15 +130,15 @@ def device_reserved():
             temp_handle.close()
 
 
-def reset_device_instance(emulator=None, exclusive=True):
+def reset_oled_device(emulator=None, exclusive=True):
     global _device
 
     _device = None
 
-    get_device_instance(emulator, exclusive)
+    get_oled_device(emulator, exclusive)
 
 
-def get_device_instance(emulator=None, exclusive=True):
+def get_oled_device(emulator=None, exclusive=True):
     global _device, _exclusive_mode
 
     if _device is None:
@@ -170,3 +162,11 @@ def get_device_instance(emulator=None, exclusive=True):
             _device = _setup_pi_and_get_device()
 
     return _device
+
+
+def set_oled_control_to_pi():
+    __set_oled_controls(controlled_by_pi=True)
+
+
+def set_oled_control_to_hub():
+    __set_oled_controls(controlled_by_pi=False)
