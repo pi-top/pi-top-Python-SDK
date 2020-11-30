@@ -1,9 +1,12 @@
-from .oled_controls import (  # noqa: F401
-    get_oled_device,
-    set_oled_control_to_pi,
+from .controls import (  # noqa: F401
+    device_is_active,
+    reset_device,
+    get_device,
+    set_control_to_pi,
+    set_control_to_hub,
 )
 from .oled_image import OLEDImage
-from .canvas import Canvas
+from .core.canvas import Canvas
 from .core.display import Display
 from pitop.miniscreen.oled.core.fps_regulator import FPS_Regulator
 
@@ -22,10 +25,10 @@ class OLEDDisplay:
     """
 
     def __init__(self):
-        self.image = Image.new(get_oled_device().mode,
-                               get_oled_device().size)
-        self.canvas = Canvas(self.image)
-        self.display = Display()
+        self.image = Image.new(get_device().mode,
+                               get_device().size)
+        self.canvas = Canvas(get_device(), self.image)
+        self.display = Display(get_device())
         self.fps_regulator = FPS_Regulator()
         self._previous_frame = None
         self.auto_play_thread = None
@@ -54,9 +57,9 @@ class OLEDDisplay:
         currently rendering information to the screen) and clears the screen.
         """
         if is_pi():
-            set_oled_control_to_pi()
+            set_control_to_pi()
         self.canvas.clear()
-        get_oled_device().display(self.image)
+        get_device().display(self.image)
         self.display.reset()
 
     def draw_image_file(self, file_path, xy=None):
@@ -94,6 +97,7 @@ class OLEDDisplay:
 
         self.canvas.clear()
         self.canvas.image(xy, image)
+
         self.draw()
 
     def _draw_text_base(self, text_func, text, font_size, xy):
@@ -168,10 +172,10 @@ class OLEDDisplay:
                 paint_to_screen = True
 
         if paint_to_screen:
-            get_oled_device().display(self.image)
+            get_device().display(self.image)
 
         self.fps_regulator.start_timer()
-        self._previous_frame = Canvas(deepcopy(self.image))
+        self._previous_frame = Canvas(get_device(), deepcopy(self.image))
 
     def play_animated_image(self, image, background=False):
         """

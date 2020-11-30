@@ -1,9 +1,11 @@
-from pitop.miniscreen.buttons import Button as PTButton  # noqa: F401
-from pitop.miniscreen.buttons import Buttons as PTButtons  # noqa: F401
-from pitop.miniscreen.buttons import UpButton as PTUpButton  # noqa: F401
-from pitop.miniscreen.buttons import DownButton as PTDownButton  # noqa: F401
-from pitop.miniscreen.buttons import SelectButton as PTSelectButton  # noqa: F401
-from pitop.miniscreen.buttons import CancelButton as PTCancelButton  # noqa: F401
+from pitop.miniscreen.buttons import (  # noqa: F401
+  Button as PTButton,
+  Buttons as PTButtons,
+  UpButton as PTUpButton,
+  DownButton as PTDownButton,
+  SelectButton as PTSelectButton,
+  CancelButton as PTCancelButton
+)
 print("Note, Use of the 'ptbuttons' package is now deprecated. Please use 'pitop.miniscreen.buttons' instead.")
 # TODO
 print("For more information, please see <TODO, URL>")

@@ -1,15 +1,13 @@
-from pitop.miniscreen.oled.oled_controls import get_oled_device
-
-
 class Display:
-    def __init__(self):
+    def __init__(self, oled_device):
         self._visible = False
+        self.__oled_device = oled_device
 
     def reset(self):
         """
         Resets the display
         """
-        get_oled_device().contrast(255)
+        self.__oled_device.contrast(255)
         self.show()
 
     def hide(self):
@@ -19,7 +17,7 @@ class Display:
         internal frame buffer has been changed (so long as draw() has not
         been called).
         """
-        get_oled_device().hide()
+        self.__oled_device.hide()
         self._visible = False
 
     def show(self):
@@ -28,7 +26,7 @@ class Display:
         previous image shown before hide() was called (so long as draw()
         has not been called)
         """
-        get_oled_device().show()
+        self.__oled_device.show()
         self._visible = True
 
     def is_hidden(self):

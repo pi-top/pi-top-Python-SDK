@@ -1,9 +1,9 @@
-from .oled_controls import get_oled_device
 from PIL import Image, ImageSequence
 import re
 import urllib.request
 
 
+# TODO: move to common library
 url_regex = re.compile(
     r'^(?:http|ftp)s?://'  # http:// or https://
     # domain...
@@ -29,8 +29,6 @@ class OLEDImage:
             file_path_or_url) if is_url else file_path_or_url)
         self.loop = loop
 
-        self._currentframe = self._image.convert(get_oled_device().mode)
-
         self.frame_no = 0
 
         if self.is_animated:
@@ -54,7 +52,7 @@ class OLEDImage:
         except AttributeError:
             return False
 
-    def data(self):
+    def data(self, oled_device):
         """
         Gets the raw image data (for the current frame, if the image is
         animated)
@@ -62,14 +60,15 @@ class OLEDImage:
         :return: The raw image data for drawing to screen
         :rtype: Image
         """
-        return self._currentframe
 
-    def _update_frame(self, frame_no):
-        self.frame_no = frame_no
         frame = self._frames_of_image[self.frame_no]
-        background = Image.new("RGB", get_oled_device().size, "black")
-        background.paste(frame.resize(get_oled_device().size))
-        self._currentframe = background.convert(get_oled_device().mode)
+        image = Image.new("RGB", oled_device.size, "black")
+        image.paste(frame.resize(oled_device.size))
+
+        return image.convert(oled_device.mode)
+
+    def __update_frame(self, frame_no):
+        self.frame_no = frame_no
 
     def next_frame(self):
         """
@@ -78,10 +77,10 @@ class OLEDImage:
         if self.is_animated and not self.finished:
 
             if self.frame_no < self.max_frame_no:
-                self._update_frame(self.frame_no + 1)
+                self.__update_frame(self.frame_no + 1)
 
             elif self.loop:
-                self._update_frame(0)
+                self.__update_frame(0)
 
             else:
                 self.finished = True
