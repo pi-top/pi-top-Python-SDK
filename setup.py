@@ -18,17 +18,15 @@ try:
 except ImportError:
     pass
 
-with open(os.path.join(HERE, "debian/rules")) as search:
-    for line in search:
-        if "export PYBUILD_NAME=" in line:
-            __project__ = line.split("=")[1].rstrip()
-            break
+__project__ = "pitop"
 
-assert __project__ != ""
-
-# Get first field of the changelog
-with open(os.path.join(HERE, "debian/changelog")) as f:
-    first_line_changelog = f.readline()
+try:
+    # Get first field of the changelog
+    with open(os.path.join(HERE, "debian/changelog")) as f:
+        first_line_changelog = f.readline()
+except Exception:
+    # Dummy text - we are probably in a tox virtualenv for testing
+    first_line_changelog = "py-pitop-sdk (1:0.1.0) UNRELEASED; urgency=medium"
 
 # Get Debian version from first field; strip surrounding brackets
 debian_version = first_line_changelog.split(" ")[1].rstrip()[1:-1]
