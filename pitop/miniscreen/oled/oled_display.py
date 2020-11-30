@@ -7,8 +7,7 @@ from .controls import (  # noqa: F401
 )
 from .oled_image import OLEDImage
 from .core.canvas import Canvas
-from .core.display import Display
-from pitop.miniscreen.oled.core.fps_regulator import FPS_Regulator
+from .core.fps_regulator import FPS_Regulator
 
 from pitopcommon.sys_info import is_pi
 
@@ -25,21 +24,15 @@ class OLEDDisplay:
     """
 
     def __init__(self):
+        self._visible = False
         self.image = Image.new(get_device().mode,
                                get_device().size)
         self.canvas = Canvas(get_device(), self.image)
-        self.display = Display(get_device())
         self.fps_regulator = FPS_Regulator()
         self._previous_frame = None
         self.auto_play_thread = None
 
-        self._expose_internal_functions()
         self.reset()
-
-    def _expose_internal_functions(self):
-        self.show = self.display.show
-        self.hide = self.display.hide
-        self.is_hidden = self.display.is_hidden
 
     def set_max_fps(self, max_fps):
         """
@@ -51,6 +44,33 @@ class OLEDDisplay:
         """
         self.fps_regulator.set_max_fps(max_fps)
 
+    def hide(self):
+        """
+        The pi-top OLED display is put into low power mode. The previously
+        shown image will re-appear when show() is given, even if the
+        internal frame buffer has been changed (so long as draw() has not
+        been called).
+        """
+        get_device().hide()
+        self._visible = False
+
+    def show(self):
+        """
+        The pi-top OLED display comes out of low power mode showing the
+        previous image shown before hide() was called (so long as draw()
+        has not been called)
+        """
+        get_device().show()
+        self._visible = True
+
+    def is_hidden(self):
+        """
+        Returns whether the device is currently in low power state
+        :return: whether the the screen is in low power mode
+        :rtype: bool
+        """
+        return self._visible
+
     def reset(self):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
@@ -60,7 +80,8 @@ class OLEDDisplay:
             set_control_to_pi()
         self.canvas.clear()
         get_device().display(self.image)
-        self.display.reset()
+        get_device().contrast(255)
+        self.show()
 
     def draw_image_file(self, file_path, xy=None):
         """
