@@ -11,7 +11,7 @@ def legacy_pitop_peripherals():
 
     # Get legacy peripheral devices from pt-device-manager
     for id in range(5):
-        message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [])
+        message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
 
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
