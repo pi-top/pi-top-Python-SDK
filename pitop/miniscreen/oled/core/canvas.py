@@ -1,8 +1,9 @@
 from os.path import isfile
+from .core.image_helper import (
+    process_pil_image,
+)
 from PIL import ImageFont, ImageDraw
 from numpy import reshape
-
-from .oled_controls import get_device_instance
 
 
 class Canvas:
@@ -11,8 +12,9 @@ class Canvas:
     and then render the entire image to the screen as a single frame.
     """
 
-    def __init__(self, image):
+    def __init__(self, oled_device, image):
         self.pil_image = image
+        self.__oled_device = oled_device
         self.draw = ImageDraw.Draw(self.pil_image)
         self.font_size = 30
         self._font = None
@@ -37,17 +39,18 @@ class Canvas:
         """
         Renders an image to the canvas at a given position.
 
-        The image should be provided as a `pitop.miniscreen.oled.OLEDImage` object.
+        The image should be provided as a PIL Image object.
 
         Use the position methods in this class to specify the `xy`
         position parameter, e.g. `top_left`, `top_right`.
 
         :param tuple xy: The position on the canvas to render the image
-        :param OLEDImage image: The image to render
+        :param Image image: The image to render
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.bitmap(xy, image.data(), 1)
+        image_data = process_pil_image(image)
+        self.draw.bitmap(xy, image_data, 1)
         return self.get_pixels()
 
     def text(self, xy, text, fill=1, spacing=0, align="left"):
@@ -262,7 +265,7 @@ class Canvas:
         :return: A tuple containing the bounding rectangle of the canvas
         :rtype: tuple
         """
-        return get_device_instance().bounding_box
+        return self.__oled_device.bounding_box
 
     def _get_corner(self, pos1, pos2):
         """
@@ -317,7 +320,7 @@ class Canvas:
         :return: The dimensions of the canvas as a tuple
         :rtype: tuple
         """
-        return get_device_instance().size
+        return self.__oled_device.size
 
     def get_height(self):
         """
@@ -326,7 +329,7 @@ class Canvas:
         :return: The height of canvas in pixels
         :rtype: int
         """
-        return get_device_instance().height
+        return self.__oled_device.height
 
     def get_width(self):
         """
@@ -335,7 +338,7 @@ class Canvas:
         :return: The width of canvas in pixels
         :rtype: int
         """
-        return get_device_instance().width
+        return self.__oled_device.width
 
     ##################################################
     # Font config methods

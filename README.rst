@@ -51,9 +51,9 @@ modules available in the library:
 
     from time import sleep
     from pitop.pma import UltrasonicSensor
-    from pitop.miniscreen.oled import OLEDDisplay
+    from pitop.miniscreen import OLED
 
-    oled = OLEDDisplay()
+    oled = OLED()
     utrasonic = PMAUltrasonicSensor("D1")
 
     while True:
