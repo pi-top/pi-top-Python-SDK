@@ -1,5 +1,5 @@
-from pitop.miniscreen.oled import OLEDDisplay, OLEDImage
+from pitop.miniscreen import OLED, OLEDImage
 
-oled_display = OLEDDisplay()
+oled_display = OLED()
 image = OLEDImage("/usr/share/pt-project-files/images/rocket.gif")
 oled_display.play_animated_image(image)

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from time import sleep
 
-from pitop.miniscreen.oled import OLEDDisplay
+from pitop.miniscreen import OLED
 from pitop.miniscreen.oled import set_oled_control_to_pi
 from .cli_base import CliBaseClass
 
@@ -18,7 +18,7 @@ class OledCLI(CliBaseClass):
 
     def run(self) -> int:
         try:
-            oled_screen = OLEDDisplay()
+            oled_screen = OLED()
             if self.args.force:
                 set_oled_control_to_pi()
             oled_screen.draw_multiline_text(self.args.text, font_size=self.args.font_size)

@@ -17,7 +17,7 @@ from PIL import Image
 from threading import Thread
 
 
-class OLEDDisplay:
+class OLED:
     """
     Provides access to the OLED screen on the pi-top [4], and exposes methods
     for simple rendering of text or images to the screen.

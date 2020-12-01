@@ -1,8 +1,8 @@
 # Example code showing how to draw various shapes
 
-from pitop.miniscreen.oled import OLEDDisplay, OLEDImage
+from pitop.miniscreen import OLED, OLEDImage
 
-oled_display = OLEDDisplay()
+oled_display = OLED()
 oled_display.set_max_fps(1)
 canvas = oled_display.canvas
 canvas.set_font_size(25)

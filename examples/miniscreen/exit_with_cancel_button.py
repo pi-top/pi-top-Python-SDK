@@ -1,8 +1,8 @@
-from pitop.miniscreen.oled import OLEDDisplay
+from pitop.miniscreen import OLED
 from pitop.miniscreen.buttons import CancelButton
 from time import sleep
 
-oled_display = OLEDDisplay()
+oled_display = OLED()
 cancel_button = CancelButton()
 
 oled_display.draw_multiline_text("Press cancel to exit!", font_size=22)

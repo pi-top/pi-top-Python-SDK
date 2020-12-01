@@ -1,7 +1,7 @@
-from pitop.miniscreen.oled import OLEDDisplay, OLEDImage
+from pitop.miniscreen import OLED, OLEDImage
 from time import sleep
 
-oled_display = OLEDDisplay()
+oled_display = OLED()
 oled_display.set_max_fps(10)
 
 # Set image to loop

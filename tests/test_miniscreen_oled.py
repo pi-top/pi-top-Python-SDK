@@ -24,7 +24,7 @@ modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
 # TODO: remove the need for overriding E402 check
-from pitop.miniscreen.oled import OLEDDisplay, OLEDImage  # nopep8  # noqa: E402
+from pitop.miniscreen import OLED, OLEDImage  # nopep8  # noqa: E402
 
 
 class OLEDTestCase(TestCase):
@@ -37,7 +37,7 @@ class OLEDTestCase(TestCase):
         del environ["SDL_VIDEODRIVER"]
 
     def setUp(self):
-        self.oled_display = OLEDDisplay()
+        self.oled_display = OLED()
 
     def tearDown(self):
         pass

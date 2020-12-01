@@ -1,9 +1,9 @@
 # Example code to draw an analog clock
 
-from pitop.miniscreen.oled import OLEDDisplay
+from pitop.miniscreen import OLED
 from datetime import datetime
 
-oled_display = OLEDDisplay()
+oled_display = OLED()
 oled_display.set_max_fps(1)
 canvas = oled_display.canvas
 
