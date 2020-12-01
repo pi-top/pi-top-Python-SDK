@@ -1,5 +1,4 @@
-from pitopcommon.ptdm_subscribe_client import PTDMSubscribeClient
-from pitopcommon.ptdm_message import Message
+from pitopcommon.ptdm import PTDMSubscribeClient, Message
 
 import atexit
 from os import path, mkdir, getpid, chmod, remove

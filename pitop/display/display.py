@@ -1,5 +1,4 @@
-from pitopcommon.ptdm_request_client import PTDMRequestClient
-from pitopcommon.ptdm_message import Message
+from pitopcommon.ptdm import PTDMRequestClient, Message
 
 
 class Display:

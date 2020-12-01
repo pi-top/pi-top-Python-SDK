@@ -3,9 +3,7 @@ from fcntl import flock, LOCK_EX, LOCK_UN, LOCK_NB
 from io import open as iopen
 from os import path, chmod, environ
 
-from pitopcommon.ptdm_request_client import PTDMRequestClient
-from pitopcommon.ptdm_message import Message
-
+from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.sys_info import is_pi
 from pitopcommon.current_session_info import get_first_display
 
