@@ -1,5 +1,5 @@
 from os.path import isfile
-from .core.image_helper import (
+from .image_helper import (
     process_pil_image,
 )
 from PIL import ImageFont, ImageDraw
