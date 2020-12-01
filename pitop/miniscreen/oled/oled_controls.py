@@ -38,7 +38,7 @@ def __set_oled_controls(controlled_by_pi):
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
 
-    if response.message_id() != Message.RSP_SET_OLED_CONTROL:
+    if response._message_id != Message.RSP_SET_OLED_CONTROL:
         target_str = "Raspberry Pi" if controlled_by_pi else "pi-top hub"
         raise MiniScreenOLEDManagerException(
             f"Unable to give control of OLED to {target_str}"
