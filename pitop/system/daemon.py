@@ -7,7 +7,7 @@ def ping():
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
 
-    if response._message_id != Message.RSP_PING:
+    if response.message_id() != Message.RSP_PING:
         raise Exception("Unable to ping pt-device-manager")
 
     return response.parameters[0]

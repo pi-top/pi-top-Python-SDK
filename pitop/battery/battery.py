@@ -9,7 +9,7 @@ class Battery:
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        if response._message_id != Message.RSP_GET_BATTERY_STATE:
+        if response.message_id() != Message.RSP_GET_BATTERY_STATE:
             raise Exception("Unable to get battery state from pi-top hub")
 
         if not response.validate_parameters([int, int, int, int]):

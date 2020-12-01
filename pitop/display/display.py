@@ -6,7 +6,7 @@ class Display:
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        if response._message_id != expected_response_id:
+        if response.message_id() != expected_response_id:
             raise Exception(f"Unable to {state_str} from pi-top hub")
 
         return response

@@ -8,7 +8,7 @@ def device_type():
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
 
-    if response._message_id != Message.RSP_GET_DEVICE_ID:
+    if response.message_id() != Message.RSP_GET_DEVICE_ID:
         raise Exception("Unable to determine device type from pt-device-manager")
 
     if not response.validate_parameters([int]):
