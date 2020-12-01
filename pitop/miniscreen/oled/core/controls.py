@@ -33,7 +33,7 @@ def __setup_device():
 
     if _exclusive_mode:
         lock.acquire()
-        atexit.register(lock.release)
+        atexit.register(reset_device)
 
     # TODO: Read from hub via request client
     spi_port = 1
@@ -84,6 +84,8 @@ def device_is_active():
 def reset_device():
     global _device
     _device = None
+    if lock.is_locked():
+        lock.release()
 
 
 def get_device():
