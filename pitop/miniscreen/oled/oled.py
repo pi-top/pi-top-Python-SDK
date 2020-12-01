@@ -1,4 +1,4 @@
-from .controls import (  # noqa: F401
+from .core.controls import (  # noqa: F401
     device_is_active as __device_is_active,
     reset_device as __reset_device,
     get_device as __get_device,
