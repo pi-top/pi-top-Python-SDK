@@ -2,12 +2,12 @@ from PIL import Image
 
 from pitopcommon.formatting import is_url
 
-from urllib import urllib
+from urllib.request import urlopen
 
 
 def get_pil_image_from_path(file_path_or_url):
     if is_url(file_path_or_url):
-        image_path = urllib.request.urlopen(file_path_or_url)
+        image_path = urlopen(file_path_or_url)
     else:
         image_path = file_path_or_url
 
