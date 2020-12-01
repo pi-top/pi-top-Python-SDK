@@ -22,7 +22,7 @@ spi_transfer_size = 4096
 
 
 def __set_controls(controlled_by_pi):
-    message = Message.from_parts(Message.REQ_SET_CONTROL, [str(int(controlled_by_pi))])
+    message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))])
 
     with PTDMRequestClient() as request_client:
         request_client.send_message(message)
@@ -33,7 +33,7 @@ def __setup_device():
 
     if _exclusive_mode:
         lock.acquire()
-        atexit.register(lock.release())
+        atexit.register(lock.release)
 
     # TODO: Read from hub via request client
     spi_port = 1

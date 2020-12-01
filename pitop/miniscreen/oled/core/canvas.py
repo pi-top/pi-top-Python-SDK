@@ -1,5 +1,5 @@
 from os.path import isfile
-from .image_helper import (
+from pitop.miniscreen.oled.core.image_helper import (
     process_pil_image,
 )
 from PIL import ImageFont, ImageDraw
