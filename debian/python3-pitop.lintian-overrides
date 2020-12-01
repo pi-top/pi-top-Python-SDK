@@ -4,3 +4,4 @@ python3-pitop: binary-without-manpage usr/bin/pt-devices
 python3-pitop: binary-without-manpage usr/bin/pt-host
 python3-pitop: binary-without-manpage usr/bin/pt-oled
 python3-pitop: binary-without-manpage usr/bin/pi-top
+python3-pitop: no-manual-page usr/bin/pt

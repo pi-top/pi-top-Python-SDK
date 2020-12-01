@@ -1,6 +1,5 @@
 from pitopcommon.firmware_device import FirmwareDevice
-from pitopcommon.ptdm_request_client import PTDMRequestClient
-from pitopcommon.ptdm_message import Message
+from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.command_runner import run_command
 
 from subprocess import getstatusoutput
