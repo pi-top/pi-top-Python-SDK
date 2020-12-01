@@ -5,15 +5,17 @@ from .controls import (  # noqa: F401
     set_control_to_pi as __set_control_to_pi,
     set_control_to_hub as __set_control_to_hub,
 )
-from .oled_image import OLEDImage
 from .core.canvas import Canvas
 from .core.fps_regulator import FPS_Regulator
+from .core.image_helper import (
+    get_pil_image_from_path,
+    process_pil_image,
+)
 
 from pitopcommon.sys_info import is_pi
 
-
 from copy import deepcopy
-from PIL import Image
+from PIL import Image, ImageSequence
 from threading import Thread
 
 
@@ -98,6 +100,18 @@ class OLED:
 
         self.show()
 
+    def get_raw_image(self, file_path_or_url):
+        return get_pil_image_from_path(file_path_or_url)
+
+    def get_processed_image(self, file_path_or_url):
+        image = self.get_raw_image(file_path_or_url)
+
+        return process_pil_image(
+            image,
+            self.__oled_device.size,
+            self.__oled_device.mode
+        )
+
     def draw_image_file(self, file_path, xy=None):
         """
         Renders a static image file to the screen at a given position.
@@ -105,25 +119,25 @@ class OLED:
         The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
-        :param OLEDImage image: An `OLEDImage` object to be rendered
+        :param Image image: A PIL Image object to be rendered
         :param tuple xy: The position on the screen to render the image. If not
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        image = OLEDImage(file_path)
+        image = self.process_image(file_path)
         self.draw_image(image, xy)
 
     def draw_image(self, image, xy=None):
         """
         Renders an image to the screen at a given position.
 
-        The image should be provided as a `pitop.miniscreen.oled.OLEDImage` object, which can be
+        The image should be provided as a PIL Image object, which can be
         used to animate an image with frames (e.g. an animated gif).
 
         The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
-        :param OLEDImage image: An `OLEDImage` object to be rendered
+        :param Image image: A PIL Image object to be rendered
         :param tuple xy: The position on the screen to render the image. If not
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
@@ -213,21 +227,21 @@ class OLED:
         self.fps_regulator.start_timer()
         self._previous_frame = Canvas(self.device, deepcopy(self.image))
 
-    def play_animated_image(self, image, background=False):
+    def play_animated_image(self, image, background=False, loop=False):
         """
         Render an animation or a image to the screen.
 
-        :param OLEDImage image: An `OLEDImage` object to be rendered
+        :param Image image: A PIL Image object to be rendered
         :param bool background: Set whether the image should be in a background thread
             or in the main thread.
         """
         self._kill_thread = False
         if background is True:
             self.auto_play_thread = Thread(
-                target=self._auto_play, args=(image,))
+                target=self.__auto_play, args=(image,))
             self.auto_play_thread.start()
         else:
-            self._auto_play(image)
+            self.__auto_play(image)
 
     def stop_animated_image(self):
         """
@@ -237,9 +251,12 @@ class OLED:
             self._kill_thread = True
             self.auto_play_thread.join()
 
-    def _auto_play(self, image):
-        while not image.finished or image.loop is True:
-            if self._kill_thread:
+    def __auto_play(self, image, loop=False):
+        while True:
+            for frame in ImageSequence.Iterator(image):
+                if self._kill_thread:
+                    break
+                self.draw_image(image)
+
+            if not loop:
                 break
-            self.draw_image(image)
-            image.next_frame()

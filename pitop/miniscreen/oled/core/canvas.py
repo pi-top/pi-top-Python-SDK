@@ -1,4 +1,7 @@
 from os.path import isfile
+from .core.image_helper import (
+    process_pil_image,
+)
 from PIL import ImageFont, ImageDraw
 from numpy import reshape
 
@@ -36,17 +39,18 @@ class Canvas:
         """
         Renders an image to the canvas at a given position.
 
-        The image should be provided as a `pitop.miniscreen.oled.OLEDImage` object.
+        The image should be provided as a PIL Image object.
 
         Use the position methods in this class to specify the `xy`
         position parameter, e.g. `top_left`, `top_right`.
 
         :param tuple xy: The position on the canvas to render the image
-        :param OLEDImage image: The image to render
+        :param Image image: The image to render
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.bitmap(xy, image.data(self.__oled_device), 1)
+        image_data = process_pil_image(image)
+        self.draw.bitmap(xy, image_data, 1)
         return self.get_pixels()
 
     def text(self, xy, text, fill=1, spacing=0, align="left"):

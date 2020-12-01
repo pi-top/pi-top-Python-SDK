@@ -1,7 +1,4 @@
-from .oled import (  # noqa: F401
-  OLED,
-  OLEDImage
-)
+from .oled import OLED  # noqa: F401
 from .buttons import (  # noqa: F401
     CaseButtons,
     CaseButton,

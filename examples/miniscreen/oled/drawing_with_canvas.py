@@ -1,6 +1,7 @@
 # Example code showing how to draw various shapes
 
-from pitop.miniscreen import OLED, OLEDImage
+from pitop.miniscreen import OLED
+from PIL import Image
 
 oled = OLED()
 oled.set_max_fps(1)
@@ -14,7 +15,7 @@ oled.draw()
 
 print("Drawing an image")
 canvas.clear()
-demo_image = OLEDImage("demo.png")
+demo_image = Image.open("demo.png")
 canvas.image(canvas.top_left(), demo_image)
 oled.draw()
 
