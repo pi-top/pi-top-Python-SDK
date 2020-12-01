@@ -1,9 +1,9 @@
 from .controls import (  # noqa: F401
-    device_is_active,
-    reset_device,
-    get_device,
-    set_control_to_pi,
-    set_control_to_hub,
+    device_is_active as __device_is_active,
+    reset_device as __reset_device,
+    get_device as __get_device,
+    set_control_to_pi as __set_control_to_pi,
+    set_control_to_hub as __set_control_to_hub,
 )
 from .oled_image import OLEDImage
 from .core.canvas import Canvas
@@ -25,14 +25,24 @@ class OLED:
 
     def __init__(self):
         self._visible = False
-        self.image = Image.new(get_device().mode,
-                               get_device().size)
-        self.canvas = Canvas(get_device(), self.image)
+        self.device = __get_device()
+        self.image = Image.new(self.device.mode,
+                               self.device.size)
+        self.canvas = Canvas(self.device, self.image)
         self.fps_regulator = FPS_Regulator()
         self._previous_frame = None
         self.auto_play_thread = None
 
         self.reset()
+
+    def is_active(self):
+        __device_is_active()
+
+    def set_control_to_pi(self):
+        __set_control_to_pi()
+
+    def set_control_to_hub(self):
+        __set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """
@@ -51,7 +61,7 @@ class OLED:
         internal frame buffer has been changed (so long as draw() has not
         been called).
         """
-        get_device().hide()
+        self.device.hide()
         self._visible = False
 
     def show(self):
@@ -60,7 +70,7 @@ class OLED:
         previous image shown before hide() was called (so long as draw()
         has not been called)
         """
-        get_device().show()
+        self.device.show()
         self._visible = True
 
     def is_hidden(self):
@@ -77,10 +87,15 @@ class OLED:
         currently rendering information to the screen) and clears the screen.
         """
         if is_pi():
-            set_control_to_pi()
+            self.set_control_to_pi()
         self.canvas.clear()
-        get_device().display(self.image)
-        get_device().contrast(255)
+
+        __reset_device()
+        self.device = __get_device()
+
+        self.device.display(self.image)
+        self.device.contrast(255)
+
         self.show()
 
     def draw_image_file(self, file_path, xy=None):
@@ -193,10 +208,10 @@ class OLED:
                 paint_to_screen = True
 
         if paint_to_screen:
-            get_device().display(self.image)
+            self.device.display(self.image)
 
         self.fps_regulator.start_timer()
-        self._previous_frame = Canvas(get_device(), deepcopy(self.image))
+        self._previous_frame = Canvas(self.device, deepcopy(self.image))
 
     def play_animated_image(self, image, background=False):
         """
