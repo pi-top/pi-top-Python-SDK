@@ -117,7 +117,7 @@ class OLED:
         """
         Renders a static image file to the screen at a given position.
 
-        The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param Image image: A PIL Image object to be rendered
@@ -135,7 +135,7 @@ class OLED:
         The image should be provided as a PIL Image object, which can be
         used to animate an image with frames (e.g. an animated gif).
 
-        The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param Image image: A PIL Image object to be rendered
@@ -168,7 +168,7 @@ class OLED:
         """
         Renders a single line of text to the screen at a given position and size.
 
-        The helper methods in the pitop.miniscreen.oled.Canvas class can be used to specify the
+        The helper methods in the pitop.miniscreen.oled.core.Canvas class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -188,7 +188,7 @@ class OLED:
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
 
-        The helper methods in the `pitop.miniscreen.oled.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
