@@ -6,7 +6,7 @@ class Display:
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        if response.message_id() != expected_response_id:
+        if response._message_id != expected_response_id:
             raise Exception(f"Unable to {state_str} from pi-top hub")
 
         return response
@@ -19,7 +19,6 @@ class Display:
         expected_parameter_response_format=[int]
     ):
         response = self.__do_transaction(
-            self,
             Message.from_parts(message_id, []),
             expected_response_id,
             state_str
@@ -38,8 +37,7 @@ class Display:
         value=None
     ):
         parameters = list() if value is None else [str(value)]
-        self.__do_transaction(self,
-                              Message.from_parts(message_id, parameters),
+        self.__do_transaction(Message.from_parts(message_id, parameters),
                               expected_response_id,
                               state_str
                               )
@@ -108,8 +106,8 @@ class Display:
 
         return self.__set_state(
             state_str="set pi-top display blanking timeout",
-            message_id=Message.REQ_UNBLANK_SCREEN,
-            expected_response_id=Message.RSP_UNBLANK_SCREEN,
+            message_id=Message.REQ_SET_SCREEN_BLANKING_TIMEOUT,
+            expected_response_id=Message.RSP_SET_SCREEN_BLANKING_TIMEOUT,
             value=value
         )
 

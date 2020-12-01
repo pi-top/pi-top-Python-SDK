@@ -14,6 +14,7 @@ from .core.image_helper import (
 
 from pitopcommon.sys_info import is_pi
 
+
 from copy import deepcopy
 from PIL import Image, ImageSequence
 from threading import Thread

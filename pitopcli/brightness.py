@@ -39,34 +39,36 @@ class BrightnessCLI(CliBaseClass):
         increment_brightness_set = self.args.increment_brightness
         decrement_brightness_set = self.args.decrement_brightness
 
+        display = Display()
+
         # No parameters - return current brightness
         if not brightness_val_set and not increment_brightness_set and not decrement_brightness_set and not backlight_state_set and not timeout_set:
             self.debug_print("REQ:\tCURRENT BRIGHTNESS", 1)
-            print(Display.brightness)
+            print(display.brightness)
 
         elif brightness_val_set:
             self.debug_print("REQ:\tSETTING BRIGHTNESS TO " +
                              str(self.args.brightness_value), 1)
-            print(Display.brightness(self.args.brightness_value))
+            display.brightness = self.args.brightness_value
 
         elif increment_brightness_set:
             self.debug_print("REQ:\tINCREMENTING BRIGHTNESS", 1)
-            Display.increment_brightness()
+            display.increment_brightness()
 
         elif decrement_brightness_set:
             self.debug_print("REQ:\tDECREMENTING BRIGHTNESS", 1)
-            Display.decrement_brightness()
+            display.decrement_brightness()
 
         elif backlight_state_set:
             if self.args.backlight == 1:
                 self.debug_print("REQ:\tTURNING ON BACKLIGHT", 1)
-                Display.backlight(True)
+                display.backlight = True
             else:
                 self.debug_print("REQ:\tTURNING OFF BACKLIGHT", 1)
-                Display.backlight(False)
+                display.backlight = False
 
         elif timeout_set:
-            Display.blanking_timeout(self.args.timeout)
+            display.blanking_timeout = self.args.timeout
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:

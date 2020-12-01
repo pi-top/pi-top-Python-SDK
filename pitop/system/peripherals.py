@@ -15,7 +15,7 @@ def legacy_pitop_peripherals():
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        if response.message_id() != Message.RSP_GET_PERIPHERAL_ENABLED:
+        if response._message_id != Message.RSP_GET_PERIPHERAL_ENABLED:
             raise Exception("Unable to determine if peripheral is enabled from pt-device-manager")
 
         if not response.validate_parameters([int]):

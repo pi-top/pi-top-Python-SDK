@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-from time import sleep
-
-from pitop.miniscreen import OLED
-from pitop.miniscreen.oled import set_oled_control_to_pi
 from .cli_base import CliBaseClass
+from pitop.miniscreen.oled import set_oled_control_to_pi
+from pitop.miniscreen import OLED
+from time import sleep
 
 
 class OledCLI(CliBaseClass):

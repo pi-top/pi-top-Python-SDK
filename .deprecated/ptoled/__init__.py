@@ -1,7 +1,7 @@
 from pitop.miniscreen.oled import (  # noqa: F401
     OLED as PTOLEDDisplay,
     canvas,
-    oled_image,
+    # oled_image,  # TODO: re-add
 )
 from pitop.miniscreen.oled.core import (  # noqa: F401
     display,
