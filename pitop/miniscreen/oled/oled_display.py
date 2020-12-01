@@ -1,16 +1,18 @@
-from .device_helper import get_device_instance
+from .oled_controls import (  # noqa: F401
+    get_device_instance,
+    set_oled_control_to_pi,
+)
 from .oled_image import OLEDImage
-from .oled_manager import set_oled_control_to_pi
 from .canvas import Canvas
-from .display import Display
-from .fps_regulator import FPS_Regulator
-
-from threading import Thread
+from .core.display import Display
+from pitop.miniscreen.oled.core.fps_regulator import FPS_Regulator
 
 from pitopcommon.sys_info import is_pi
 
+
 from copy import deepcopy
 from PIL import Image
+from threading import Thread
 
 
 class OLEDDisplay:

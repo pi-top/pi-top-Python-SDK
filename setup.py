@@ -132,8 +132,9 @@ __requires__ = [
 ]
 
 __extra_requires__ = {
-    "doc":   ["sphinx"],
-    "test":  ["pytest", "coverage", "mock"],
+    "computer_vision":  ["opencv"],
+    "doc":              ["sphinx"],
+    "test":             ["pytest", "coverage", "mock"],
 }
 
 if sys.version_info[:2] == (3, 2):
@@ -151,13 +152,17 @@ elif sys.version_info[:2] == (3, 4):
 
 __entry_points__ = {
     "console_scripts": [
+        # 'pt' shortened command
+        "pt=pitopcli.pitop:main",
+        # 'pi-top' longhand/easy-to-remember command
         "pi-top=pitopcli.pitop:main",
         # Deprecated console scripts:
-        "pt-battery=pitopcli.pt_battery:main",
-        "pt-brightness=pitopcli.pt_brightness:main",
-        "pt-devices=pitopcli.pt_devices:main",
-        "pt-host=pitopcli.pt_host:main",
-        "pt-oled=pitopcli.pt_oled:main",
+        # see <TODO: LINK TO WIKI PAGE RE: DEPRECATION OF CLI>
+        "pt-battery=pitopcli.battery:main",
+        "pt-brightness=pitopcli.brightness:main",
+        "pt-devices=pitopcli.devices:main",
+        "pt-host=pitopcli.host:main",
+        "pt-oled=pitopcli.oled:main",
     ]
 }
 

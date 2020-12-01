@@ -3,12 +3,11 @@
 from argparse import ArgumentParser
 from sys import exit
 
-from .pt_socket import PTSocket
-from .pt_brightness import BrightnessCLI
-from .pt_devices import DeviceCLI
-from .pt_host import HostCLI
-from .pt_battery import BatteryCLI
-from .pt_oled import OledCLI
+from .brightness import BrightnessCLI
+from .devices import DeviceCLI
+from .host import HostCLI
+from .battery import BatteryCLI
+from .oled import OledCLI
 
 
 lookup_dict = {
@@ -20,7 +19,7 @@ lookup_dict = {
 }
 
 
-def parse_args():
+def get_parser():
     """Configures the argument parser according to the CLI classes
     defined in ´lookup_dict´, and returns the parsed arguments.
 
@@ -37,30 +36,27 @@ def parse_args():
         class_parser = subparsers.add_parser(cli_name, help=cli_class.parser_help)
         cli_class.add_parser_arguments(class_parser)
 
-    return parser.parse_args()
+    return parser
 
 
 def run(args):
     """Executes the command according to the provided arguments"""
-    ptsocket = None
     exit_code = 1
     try:
-        ptsocket = PTSocket()
         cls = lookup_dict.get(args.subcommand)
         if cls:
-            obj = cls(ptsocket, args)
+            obj = cls(args)
             exit_code = obj.run()
+
     except Exception as e:
         print(f"Error: {e}")
         exit_code = 1
-    finally:
-        if hasattr(ptsocket, "cleanup"):
-            ptsocket.cleanup()
+
     exit(exit_code)
 
 
 def main():
-    run(parse_args())
+    run(get_parser().parse_args())
 
 
 if __name__ == "__main__":

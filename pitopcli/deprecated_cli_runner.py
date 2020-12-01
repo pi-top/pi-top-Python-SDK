@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from sys import exit, stderr
-from pt_socket import PTSocket
+
+# This file serves as support for deprecated CLI paths, that will be removed in the future.
 
 
 def run(cli_cls):
@@ -16,20 +17,17 @@ def run(cli_cls):
 
     exit_code = 1
     args = None
-    ptsocket = None
 
     parser = ArgumentParser(prog=f'pt-{cli_name}', description=cli_cls.parser_help)
     cli_cls.add_parser_arguments(parser)
     args = parser.parse_args()
 
     try:
-        ptsocket = PTSocket()
-        cli_object = cli_cls(ptsocket, args)
+        cli_object = cli_cls(args)
         exit_code = cli_object.run()
+
     except Exception as e:
         print(f"Error: {e}")
         exit_code = 1
-    finally:
-        if hasattr(ptsocket, "cleanup"):
-            ptsocket.cleanup()
+
     exit(exit_code)

@@ -1,4 +1,4 @@
-from .device_helper import get_device_instance
+from pitop.miniscreen.oled.oled_controls import get_device_instance
 
 
 class Display:
