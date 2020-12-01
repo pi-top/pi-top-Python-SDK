@@ -3,9 +3,9 @@
 from pitop.miniscreen import OLED
 from datetime import datetime
 
-oled_display = OLED()
-oled_display.set_max_fps(1)
-canvas = oled_display.canvas
+oled = OLED()
+oled.set_max_fps(1)
+canvas = oled.canvas
 
 clock_face_box = canvas.get_bounding_box()
 big_hand_box = (clock_face_box[0] + 5,
@@ -33,4 +33,4 @@ while True:
                   (current_time.minute * 360 / 12 / 60)) - 90
     canvas.pieslice(little_hand_box, angle_hour, angle_hour + 5, 0, 0)
 
-    oled_display.draw()
+    oled.draw()

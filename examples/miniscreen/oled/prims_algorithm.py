@@ -5,13 +5,13 @@ from pitop.miniscreen import OLED
 from random import randint, random
 from time import sleep
 
-oled_display = OLED()
-oled_display.set_max_fps(50)
+oled = OLED()
+oled.set_max_fps(50)
 
 
 def draw_pixel(x, y):
-    oled_display.canvas.point((x, y))
-    oled_display.draw()
+    oled.canvas.point((x, y))
+    oled.draw()
     drawn_pixels.append((x, y))
 
 
@@ -20,13 +20,13 @@ while True:
     # Setup
 
     drawn_pixels = []
-    oled_display.canvas.clear()
+    oled.canvas.clear()
 
     complexity = random()
     density = random()
 
-    width = ((oled_display.canvas.get_width() // 2) * 2 - 1)
-    height = ((oled_display.canvas.get_height() // 2) * 2 - 1)
+    width = ((oled.canvas.get_width() // 2) * 2 - 1)
+    height = ((oled.canvas.get_height() // 2) * 2 - 1)
 
     # Adjust complexity and density relative to maze size
 
