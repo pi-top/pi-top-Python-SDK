@@ -49,7 +49,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        image_data = process_pil_image(image)
+        image_data = process_pil_image(image, size=self.get_size(), mode="1")
         self.draw.bitmap(xy, image_data, 1)
         return self.get_pixels()
 
