@@ -67,7 +67,7 @@ class FrameHandlerTestCase(TestCase):
         f = FrameHandler()
         capture_actions = f._capture_actions
         f.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
-        self.assertEquals(capture_actions, f._capture_actions)
+        self.assertEqual(capture_actions, f._capture_actions)
 
     def test_remove_action_calls_stop_method_from_action_object(self):
         """remove_action calls stop() methods from action object"""
