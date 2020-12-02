@@ -5,11 +5,7 @@ from pitopcommon.ptdm import (
 from pitopcommon.lock import PTLock
 
 import atexit
-from os import (
-    getpid,
-    mkdir,
-    path,
-)
+from uuid import uuid1
 
 
 class CaseButton:
@@ -46,10 +42,9 @@ class CaseButtons:
 
         atexit.register(self.__clean_up)
 
-        if path.exists("/tmp/button-locks") is False:
-            mkdir("/tmp/button-locks")
+        self.uuid = uuid1()
 
-        self.lock = PTLock(f"button-locks/pt-buttons-{str(getpid())}.lock")
+        self.lock = PTLock(f"pt-buttons-{str(self.uuid)}.lock")
         self.lock.acquire()
 
     def __setup_subscribe_client(self):
