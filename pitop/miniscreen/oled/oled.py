@@ -13,8 +13,12 @@ from .core.image_helper import (
 )
 
 from pitopcommon.sys_info import is_pi
+from pitopcommon.ptdm import (
+    PTDMSubscribeClient,
+    Message,
+)
 
-
+import atexit
 from copy import deepcopy
 from PIL import Image, ImageSequence
 from threading import Thread
@@ -37,6 +41,35 @@ class OLED:
         self.auto_play_thread = None
 
         self.reset()
+
+        self.when_pi_takes_control = None
+        self.when_hub_takes_control = None
+
+        self.__ptdm_subscribe_client = None
+        self.__setup_subscribe_client()
+
+        atexit.register(self.__clean_up)
+
+    def __setup_subscribe_client(self):
+        def on_control_changed(parameters):
+            controller = int(parameters[0])
+
+            if controller == 1:
+                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_pi_takes_control)
+            else:
+                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_hub_takes_control)
+
+        self.__ptdm_subscribe_client = PTDMSubscribeClient()
+        self.__ptdm_subscribe_client.initialise({
+            Message.PUB_OLED_CONTROL_CHANGED: on_control_changed,
+        })
+        self.__ptdm_subscribe_client.start_listening()
+
+    def __clean_up(self):
+        try:
+            self.__ptdm_subscribe_client.stop_listening()
+        except Exception:
+            pass
 
     def is_active(self):
         __device_is_active()
