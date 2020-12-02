@@ -8,22 +8,17 @@ from unittest.mock import Mock
 from time import sleep
 
 modules["io"] = Mock()
-modules["gpiozero"] = Mock()
-modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()
 modules["PyV4L2Camera"] = Mock()
 modules["PyV4L2Camera.camera"] = Mock()
 modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
-modules["numpy"] = Mock()
-modules["pitop.pma.ultrasonic_sensor"] = Mock()
+modules["PIL"] = Mock()
 
 # import after applying mocks
 from pitop.camera.core import (  # noqa: E402
     FrameHandler,
-    CaptureActions
-)
-from pitop.camera.core import (  # noqa: E402
+    CaptureActions,
     UsbCamera,
     FileSystemCamera,
     CameraTypes
@@ -31,10 +26,6 @@ from pitop.camera.core import (  # noqa: E402
 from pitop.camera import Camera  # noqa: E402
 
 
-UsbCamera.Camera = Mock()
-
-
-@skip
 class CameraTestCase(TestCase):
     def test_uses_usb_camera_by_default(self):
         c = Camera(4)
