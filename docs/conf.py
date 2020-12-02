@@ -97,6 +97,7 @@ autodoc_mock_imports = [
     'cv2',
     'numpy',
     'imageio',
+    'luma',
     'luma.oled',
     'luma.core',
     'pitopcommon',
