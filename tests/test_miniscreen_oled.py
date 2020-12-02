@@ -14,6 +14,7 @@ mock_sys_info.is_pi = MagicMock(return_value=False)
 mock_curr_session_info = modules["pitopcommon.current_session_info"] = MagicMock()
 mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 
+modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
 modules["zmq"] = MagicMock()
