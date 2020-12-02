@@ -1,4 +1,3 @@
-from pitop.camera.core import FrameHandler, CaptureActions
 from unittest import TestCase
 from sys import modules
 from unittest.mock import Mock
@@ -9,6 +8,9 @@ modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()
 modules["numpy"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
+# import after applying mocks
+from pitop.camera.core import FrameHandler, CaptureActions  # noqa: E402
 
 
 class FrameHandlerTestCase(TestCase):
@@ -65,7 +67,7 @@ class FrameHandlerTestCase(TestCase):
         f = FrameHandler()
         capture_actions = f._capture_actions
         f.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
-        self.assertEquals(capture_actions, f._capture_actions)
+        self.assertEqual(capture_actions, f._capture_actions)
 
     def test_remove_action_calls_stop_method_from_action_object(self):
         """remove_action calls stop() methods from action object"""
