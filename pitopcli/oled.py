@@ -39,7 +39,7 @@ class OledCLI(CliBaseClass):
                 if isfile(self.args.text) or is_url(self.args.text):
                     oled.set_max_fps(10)
                     img = oled.get_raw_image(self.args.text)
-                    skip_timeout = not is_animated(img)
+                    skip_timeout = is_animated(img)
 
                     for i in range(self.args.loop):
                         for frame in ImageSequence.Iterator(img):
@@ -47,7 +47,7 @@ class OledCLI(CliBaseClass):
                 else:
                     oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
 
-                if skip_timeout:
+                if not skip_timeout:
                     sleep(self.args.timeout)
 
             else:
