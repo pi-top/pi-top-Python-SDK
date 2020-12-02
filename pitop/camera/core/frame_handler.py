@@ -1,7 +1,7 @@
 from threading import Lock
 
 from .capture_actions import CaptureActions
-from ..common import type_check
+from pitop.pma.common import type_check
 
 
 class FrameHandler:

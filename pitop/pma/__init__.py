@@ -1,7 +1,6 @@
 # Foundation Kit
 from .button import Button  # noqa: F401
 from .buzzer import Buzzer  # noqa: F401
-from .camera import Camera  # noqa: F401
 from .led import LED  # noqa: F401
 from .light_sensor import LightSensor  # noqa: F401
 from .potentiometer import Potentiometer  # noqa: F401

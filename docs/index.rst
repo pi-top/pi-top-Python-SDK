@@ -27,9 +27,10 @@ Table of Contents
     examples_api_basic
     examples_api_advanced
     api_miniscreen
+    api_pma
+    api_camera
     api_keyboard
     api_pulse
-    api_pma
     more
 
 

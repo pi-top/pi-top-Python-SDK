@@ -71,6 +71,6 @@ Try and run the following:
 
 .. code-block:: sh
 
-    $ pt-host
+    $ pitop device type
 
 If this works, then you should be good to go! Go and check out the Examples section!
