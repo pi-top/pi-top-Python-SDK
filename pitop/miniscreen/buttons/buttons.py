@@ -1,8 +1,11 @@
-from .request_client import RequestClient
+from pitopcommon.ptdm import (
+    PTDMSubscribeClient,
+    Message
+)
+from pitopcommon.lock import PTLock
 
 import atexit
-from os import path, mkdir, getpid, chmod, remove
-from fcntl import flock, LOCK_UN, LOCK_EX
+from uuid import uuid1
 
 
 class CaseButton:
@@ -23,8 +26,6 @@ class CaseButtons:
     Instantiates a single instance for each of the four button types up, down,
     select and cancel.
     """
-
-    _request_client = None
     UP = "UP"
     DOWN = "DOWN"
     SELECT = "SELECT"
@@ -35,41 +36,71 @@ class CaseButtons:
         self.down = CaseButton(self.DOWN)
         self.select = CaseButton(self.SELECT)
         self.cancel = CaseButton(self.CANCEL)
-        self._setup_request_client()
-        atexit.register(self._clean_up)
-        if path.exists("/tmp/button-locks") is False:
-            mkdir("/tmp/button-locks")
-        self.lock_path = "/tmp/button-locks/pt-buttons-" + \
-            str(getpid()) + ".lock"
-        self.lock_handle = open(self.lock_path, "w")
-        self._acquire_buttons_lock()
 
-    def _setup_request_client(self):
-        self._request_client = RequestClient()
-        self._request_client.initialise(self)
-        self._request_client.start_listening()
+        self.__ptdm_subscribe_client = None
+        self.__setup_subscribe_client()
 
-    def _clean_up(self):
-        self._release_buttons_lock()
+        atexit.register(self.__clean_up)
+
+        self.uuid = uuid1()
+
+        self.lock = PTLock(f"pt-buttons-{str(self.uuid)}.lock")
+        self.lock.acquire()
+
+    def __setup_subscribe_client(self):
+        def set_up_button_pressed():
+            self.up.is_pressed = True
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.up.when_pressed)
+
+        def set_down_button_pressed():
+            self.down.is_pressed = True
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.down.when_pressed)
+
+        def set_select_button_pressed():
+            self.select.is_pressed = True
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.select.when_pressed)
+
+        def set_cancel_button_pressed():
+            self.cancel.is_pressed = True
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.cancel.when_pressed)
+
+        def set_up_button_released():
+            self.up.is_pressed = False
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.up.when_released)
+
+        def set_down_button_released():
+            self.down.is_pressed = False
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.down.when_released)
+
+        def set_select_button_released():
+            self.select.is_pressed = False
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.select.when_released)
+
+        def set_cancel_button_released():
+            self.cancel.is_pressed = False
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.cancel.when_released)
+
+        self.__ptdm_subscribe_client = PTDMSubscribeClient()
+        self.__ptdm_subscribe_client.initialise(
+            {
+                Message.PUB_V3_BUTTON_UP_PRESSED: set_up_button_pressed,
+                Message.PUB_V3_BUTTON_DOWN_PRESSED: set_down_button_pressed,
+                Message.PUB_V3_BUTTON_SELECT_PRESSED: set_select_button_pressed,
+                Message.PUB_V3_BUTTON_CANCEL_PRESSED: set_cancel_button_pressed,
+                Message.PUB_V3_BUTTON_UP_RELEASED: set_up_button_released,
+                Message.PUB_V3_BUTTON_DOWN_RELEASED: set_down_button_released,
+                Message.PUB_V3_BUTTON_SELECT_RELEASED: set_select_button_released,
+                Message.PUB_V3_BUTTON_CANCEL_RELEASED: set_cancel_button_released,
+            }
+        )
+        self.__ptdm_subscribe_client.start_listening()
+
+    def __clean_up(self):
+        self.lock.release()
         try:
-            self._request_client.stop_listening()
+            self.__ptdm_subscribe_client.stop_listening()
         except Exception:
             pass
-
-    def _acquire_buttons_lock(self):
-        try:
-            chmod(self.lock_path, 0o777)
-            flock(self.lock_handle, LOCK_EX)
-        except IOError as error:
-            print(error)
-        except Exception:
-            pass
-
-    def _release_buttons_lock(self):
-        if self.lock_handle is not None:
-            flock(self.lock_handle.fileno(), LOCK_UN)
-            self.lock_handle.close()
-            remove(self.lock_path)
 
 
 buttons = CaseButtons()

@@ -2,24 +2,13 @@
 Examples - API: Basic
 =====================================================
 
-.. Generic examples
 
-pi-topPULSE: Using the LED matrix
----------------------------------
+.. pi-top [4]
 
-.. literalinclude:: ../examples/pulse/led-demo.py
+.. Miniscreen
 
-pi-topPULSE: Using the microphone
----------------------------------
-
-.. literalinclude:: ../examples/pulse/mic-demo.py
-
-.. pi-top [4] Examples
-
-.. CASE BUTTONS
-
-pi-top [4]: Using the case buttons
-----------------------------------
+pi-top [4]: Using the miniscreen buttons
+-------------------------------------------------------------------------------
 
 .. literalinclude:: ../examples/miniscreen/buttons/buttons.py
 
@@ -74,8 +63,7 @@ pi-top [4]:  Prim's algorithm
 .. literalinclude:: ../examples/miniscreen/oled/prims_algorithm.py
 
 
-
-.. PMA COMPONENTS
+.. PMA Components
 
 PMA: Using a Light Sensor
 -------------------------
@@ -117,21 +105,38 @@ PMA: Using a Servo Motor
 
 .. literalinclude:: ../examples/pma/servo_motor.py
 
-PMA: Using a Camera (capture video)
------------------------------------
-
-.. literalinclude:: ../examples/pma/camera_capture_video.py
-
-.. COMBINING PMA COMPONENTS; SIMPLE EXAMPLES
+.. Combining PMA Components: Simple Examples
 
 PMA: Using a Button to Control an LED
 -------------------------------------
 
 .. literalinclude:: ../examples/pma/button_led.py
 
-.. BONUS
 
-Bonus: Using a Keyboard as an Input Device
-------------------------------------------
+.. Camera
+
+Camera: Using a USB Camera (capture video)
+-------------------------------------------------------------------------------
+
+.. literalinclude:: ../examples/camera/camera_capture_video.py
+
+
+.. Keyboard
+
+Keyboard: Using a Keyboard as an Input Device
+-------------------------------------------------------------------------------
 
 .. literalinclude:: ../examples/pma/button_led.py
+
+
+.. pi-topPULSE
+
+pi-topPULSE: Using the LED matrix
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/led-demo.py
+
+pi-topPULSE: Using the microphone
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/mic-demo.py

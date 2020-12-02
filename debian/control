@@ -47,8 +47,6 @@ Depends:
 Recommends:
 # Preferred OLED font
  fonts-fs-me-pro,
-# Required for Luma emulator
- python3-pygame,
 Suggests:
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,

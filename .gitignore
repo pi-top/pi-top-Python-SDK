@@ -8,6 +8,7 @@ tags
 
 # Packaging detritus
 *.egg
+*.eggs
 *.egg-info
 dist
 .pybuild

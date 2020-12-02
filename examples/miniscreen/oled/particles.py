@@ -1,10 +1,10 @@
 # Example code using particles to make a hyperspace-like screensaver
 
-from pitop.miniscreen.oled import OLEDDisplay
+from pitop.miniscreen import OLED
 from random import randint
 
-oled_display = OLEDDisplay()
-canvas = oled_display.canvas
+oled = OLED()
+canvas = oled.canvas
 
 screen_width = canvas.get_width()
 screen_height = canvas.get_height()
@@ -58,4 +58,4 @@ while True:
                 canvas.point((x, y))
                 particle.update()
 
-        oled_display.draw()
+        oled.draw()

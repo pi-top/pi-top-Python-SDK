@@ -1,10 +1,11 @@
-from pitop.miniscreen.oled import OLEDDisplay, OLEDImage
+from pitop.miniscreen import OLED
+from PIL import Image, ImageSequence
 
-oled_display = OLEDDisplay()
-oled_display.set_max_fps(10)
+oled = OLED()
+oled.set_max_fps(10)
 
-image = OLEDImage("/usr/share/pt-project-files/images/rocket.gif", loop=True)
+rocket = Image.open("/usr/share/pt-project-files/images/rocket.gif")
 
 while True:
-    oled_display.draw_image(image)
-    image.next_frame()
+    for frame in ImageSequence.Iterator(rocket):
+        oled.draw_image(frame)

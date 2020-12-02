@@ -19,16 +19,16 @@ modules["numpy"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 # import after applying mocks
-from pitop.pma.camera_core import (  # noqa: E402
+from pitop.camera.core import (  # noqa: E402
     FrameHandler,
     CaptureActions
 )
-from pitop.pma.camera_core import (  # noqa: E402
+from pitop.camera.core import (  # noqa: E402
     UsbCamera,
     FileSystemCamera,
     CameraTypes
 )
-from pitop.pma import Camera  # noqa: E402
+from pitop.camera import Camera  # noqa: E402
 
 
 UsbCamera.Camera = Mock()

@@ -1,8 +1,8 @@
 # Example code to draw a static image to the screen
 
-from pitop.miniscreen.oled import OLEDDisplay
+from pitop.miniscreen import OLED
 from time import sleep
 
-oled_display = OLEDDisplay()
-oled_display.draw_image_file("wave.png")
+oled = OLED()
+oled.draw_image_file("wave.png")
 sleep(2)

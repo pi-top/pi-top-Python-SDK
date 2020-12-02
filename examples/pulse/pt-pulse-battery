@@ -1,60 +1,12 @@
-#! /usr/bin/python3
+#!/usr/bin/python3
 
-########################################################
-# pi-top battery level gauge (pt-pulse-battery)        #
-# using the pi-topPULSE and getting battery state info #
-# from the pt-device-manager                           #
-# Original by Jez - @JezShed for Unicorn hat           #
-# Code to interact with device manager by pi-top       #
-# Modified by @rricharz for pi-topPULSE                #
-# version 1.1                                          #
-# Note:                                                #
-# This script requires either the latest pi-topOS      #
-# with the pt-device-manager, or Raspbian Stretch      #
-# with the latest pt-device-manager installed          #
-########################################################
+from time import sleep
 
-import time
-from ptpulse import ledmatrix
-import zmq
-from pitopcommon.ptdm_message import Message
-
-zmq_socket = None
+from pitop.pulse import ledmatrix
+from pitop.battery import Battery
 
 
-def connect_to_socket():
-    global zmq_socket
-
-    zmq_context_send = zmq.Context()
-    zmq_socket = zmq_context_send.socket(zmq.REQ)
-    zmq_socket.sndtimeo = 1000
-    zmq_socket.rcvtimeo = 1000
-    zmq_socket.connect("tcp://127.0.0.1:3782")
-
-
-def send_request(message_request_id, parameters):
-
-    message = Message.from_parts(message_request_id, parameters)
-    zmq_socket.send_string(message.to_string())
-
-    response_string = zmq_socket.recv_string()
-    return Message.from_string(response_string)
-
-
-def cleanup():
-    if (zmq_socket is not None):
-        zmq_socket.close(0)
-
-
-def get_battery_state_message():
-    message = Message.from_parts(Message.REQ_GET_BATTERY_STATE, [])
-    zmq_socket.send_string(message.to_string())
-
-    response_string = zmq_socket.recv_string()
-    return Message.from_string(response_string)
-
-
-def drawbattery():  # Draw the naked battery
+def draw_battery_outline():  # Draw the naked battery
     for y in range(0, 6):
         ledmatrix.set_pixel(1, y, 64, 64, 255)
         ledmatrix.set_pixel(5, y, 64, 64, 255)
@@ -64,24 +16,7 @@ def drawbattery():  # Draw the naked battery
     ledmatrix.show()
 
 
-def show_capacity(message):
-    # Plot the battery level on the pi-topPULSE
-    if message.message_id() == Message.RSP_GET_BATTERY_STATE:
-        if message.validate_parameters([int, int, int, int]):
-            str_charging_state, str_capacity, str_time_remaining, str_wattage = message.parameters()
-            # print("Charging State: " + str_charging_state)
-            # print("Capacity: " + str_capacity)
-            charging_state = int(str_charging_state)
-            capacity = int(str_capacity)
-        else:
-            print("Invalid parameter types received from device manager.")
-            time.sleep(5)
-            return 2
-    else:
-        print("Unable to get valid battery information.")
-        time.sleep(5)
-        return 1
-
+def update_battery_state(charging_state, capacity):
     r = 0
     g = 0
     b = 0
@@ -116,13 +51,13 @@ def show_capacity(message):
                     ledmatrix.set_pixel(3, y, 0, 0, 0)
                     ledmatrix.set_pixel(4, y, 0, 0, 0)
                 ledmatrix.show()
-                time.sleep(0.4)
+                sleep(0.4)
                 for y in range(cap+1, 6):
                     ledmatrix.set_pixel(2, y, 255, 0, 0)
                     ledmatrix.set_pixel(3, y, 255, 0, 0)
                     ledmatrix.set_pixel(4, y, 255, 0, 0)
                 ledmatrix.show()
-                time.sleep(0.4)
+                sleep(0.4)
 
         else:
             for y in range(cap+1, 6):
@@ -130,24 +65,23 @@ def show_capacity(message):
                 ledmatrix.set_pixel(3, y, 0, 0, 0)
                 ledmatrix.set_pixel(4, y, 0, 0, 0)
             ledmatrix.show()
-            time.sleep(5)
+            sleep(5)
     return 0
 
 
-############################
-# Main program starts here #
-############################
-ledmatrix.rotation(0)
-ledmatrix.clear()          # Clear the display
-drawbattery()               # Draw the battery
+def main():
+    ledmatrix.rotation(0)
+    ledmatrix.clear()          # Clear the display
+    draw_battery_outline()     # Draw the battery outline
 
-while True:
-    try:
-        connect_to_socket()
-        message = get_battery_state_message()
-        show_capacity(message)
-        cleanup()
+    while True:
+        try:
+            charging_state, capacity, _, _ = Battery.get_full_state()
+            update_battery_state(charging_state, capacity)  # Fill battery with capacity
 
-    except Exception as e:
-        print("Error getting battery info: " + str(e))
-        time.sleep(5)
+        except Exception as e:
+            print("Error getting battery info: " + str(e))
+
+
+if __name__ == "__main__":
+    main()
