@@ -6,8 +6,6 @@ from PIL import Image
 root = path.dirname(path.dirname(path.abspath(__file__)))
 spath.append(root)
 
-modules["pitopcommon"] = MagicMock()
-
 mock_sys_info = modules["pitopcommon.sys_info"] = MagicMock()
 mock_sys_info.is_pi = MagicMock(return_value=False)
 
