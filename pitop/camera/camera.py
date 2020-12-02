@@ -1,10 +1,10 @@
 from threading import Thread
 from inspect import signature
 
-from .camera_core import (
+from .core import (
     FrameHandler,
     CameraTypes)
-from .camera_core.capture_actions import CaptureActions
+from .core.capture_actions import CaptureActions
 from pitop.pma.common import type_check
 
 
@@ -21,10 +21,10 @@ class Camera:
     def __init__(self, camera_device_id=0, camera_type=CameraTypes.USB_CAMERA, path_to_images=""):
 
         if camera_type == CameraTypes.USB_CAMERA:
-            from .camera_core import UsbCamera
+            from .core import UsbCamera
             self._camera = UsbCamera(camera_device_id)
         elif camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
-            from .camera_core import FileSystemCamera
+            from .core import FileSystemCamera
             self._camera = FileSystemCamera(path_to_images)
 
         self._continue_processing = True
