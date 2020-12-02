@@ -5,7 +5,7 @@ from .camera_core import (
     FrameHandler,
     CameraTypes)
 from .camera_core.capture_actions import CaptureActions
-from .common import type_check
+from pitop.pma.common import type_check
 
 
 class Camera:
