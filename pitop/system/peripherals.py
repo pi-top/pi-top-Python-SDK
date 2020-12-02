@@ -13,13 +13,7 @@ def legacy_pitop_peripherals():
         message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
 
         with PTDMRequestClient() as request_client:
-            response = request_client.send_message(message)
-
-        if response.message_id() != Message.RSP_GET_PERIPHERAL_ENABLED:
-            raise Exception("Unable to determine if peripheral is enabled from pt-device-manager")
-
-        if not response.validate_parameters([int]):
-            raise Exception("Unable to validate if peripheral is enabled from pt-device-manager")
+            request_client.send_message(message)
 
         p_names = ['pi-topPULSE',
                    'pi-topSPEAKER-v1-left',
