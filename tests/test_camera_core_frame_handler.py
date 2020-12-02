@@ -1,13 +1,5 @@
 from unittest import TestCase
-from sys import modules
 from unittest.mock import Mock
-
-modules["io"] = Mock()
-modules["gpiozero"] = Mock()
-modules["gpiozero.exc"] = Mock()
-modules["cv2"] = Mock()
-modules["numpy"] = Mock()
-modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 # import after applying mocks
 from pitop.camera.core import FrameHandler, CaptureActions  # noqa: E402
