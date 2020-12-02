@@ -8,6 +8,8 @@ modules["zmq"] = MagicMock()
 modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()
+modules["RPi"] = MagicMock()
+modules["RPi.GPIO"] = MagicMock()
 
 # import after applying mocks
 from pitop.miniscreen.buttons import UpButton  # noqa: E402
