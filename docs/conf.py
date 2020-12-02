@@ -98,6 +98,7 @@ autodoc_mock_imports = [
     'numpy',
     'imageio',
     'luma.oled',
+    'luma.core',
     'pitopcommon',
     'PyV4L2Camera',
     'PIL',
