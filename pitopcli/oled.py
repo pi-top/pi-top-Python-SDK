@@ -55,7 +55,7 @@ class OledCLI(CliBaseClass):
 
             return 0
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error on pitop-oled.run: {e}")
             return 1
 
     @classmethod

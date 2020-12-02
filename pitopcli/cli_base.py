@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod, abstractproperty
 
 
+class PitopCliException(Exception):
+    pass
+
+
 class CliBaseClass(ABC):
     """Abstract class, used to create CLI commands"""
     @abstractmethod
