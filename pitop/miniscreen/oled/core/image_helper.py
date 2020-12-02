@@ -1,25 +1,20 @@
 from PIL import Image
+from urllib.request import urlopen
 
 from pitopcommon.formatting import is_url
-from io import BytesIO
-
-from urllib.request import urlopen
 
 
 def get_pil_image_from_path(file_path_or_url):
     if is_url(file_path_or_url):
         image_path = urlopen(file_path_or_url)
-        # Saving as Bytes to avoid PIL from cleaning the
-        # urlopen object after closing the image
-        image_path = BytesIO(image_path.read())
     else:
         image_path = file_path_or_url
 
     image = Image.open(image_path)
-    image.verify()
-    # Need to close and re-open after verifying...
-    image.close()
-    image = Image.open(image_path)
+
+    test_image = image.copy()
+    test_image.verify()
+
     return image
 
 
