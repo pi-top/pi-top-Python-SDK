@@ -142,8 +142,8 @@ class OLED:
 
         return process_pil_image(
             image,
-            self.__oled_device.size,
-            self.__oled_device.mode
+            self.device.size,
+            self.device.mode
         )
 
     def draw_image_file(self, file_path, xy=None):
@@ -158,7 +158,7 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        image = self.process_image(file_path)
+        image = self.get_processed_image(file_path)
         self.draw_image(image, xy)
 
     def draw_image(self, image, xy=None):

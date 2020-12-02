@@ -1,5 +1,5 @@
 from os.path import isfile
-from pitop.miniscreen.oled.core.image_helper import (
+from .image_helper import (
     process_pil_image,
 )
 from PIL import ImageFont, ImageDraw
@@ -49,7 +49,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        image_data = process_pil_image(image, size=self.get_size(), mode="1")
+        image_data = process_pil_image(image, size=self.__oled_device.size, mode=self.__oled_device.mode)
         self.draw.bitmap(xy, image_data, 1)
         return self.get_pixels()
 
