@@ -42,11 +42,9 @@ class OledCLI(CliBaseClass):
                     img = oled.get_raw_image(self.args.text)
                     skip_timeout = not is_animated(img)
 
-                    loops = 0
-                    while loops < self.args.loop:
+                    for i in range(self.args.loop):
                         for frame in ImageSequence.Iterator(img):
                             oled.draw_image(frame)
-                        loops = loops + 1
                 else:
                     oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
 
