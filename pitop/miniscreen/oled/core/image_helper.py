@@ -1,8 +1,7 @@
 from PIL import Image
+from urllib.request import urlopen
 
 from pitopcommon.formatting import is_url
-
-from urllib.request import urlopen
 
 
 def get_pil_image_from_path(file_path_or_url):
@@ -12,10 +11,13 @@ def get_pil_image_from_path(file_path_or_url):
         image_path = file_path_or_url
 
     image = Image.open(image_path)
-    image.verify()
-    # Need to close and re-open after verifying...
-    image.close()
-    image = Image.open(image_path)
+
+    # Verify on deep copy to avoid needing to close and
+    # re-open after verifying...
+    test_image = image.copy()
+    # Raise exception if there's an issue with the image
+    test_image.verify()
+
     return image
 
 
