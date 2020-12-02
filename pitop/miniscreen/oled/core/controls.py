@@ -55,7 +55,7 @@ def __setup_device():
             gpio_RST=None,
             gpio=None,
         ),
-        rotate=2
+        rotate=0
     )
 
 
