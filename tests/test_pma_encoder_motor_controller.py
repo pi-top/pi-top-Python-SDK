@@ -1,4 +1,4 @@
-from unittest import TestCase
+from unittest import TestCase, skip
 from sys import modules
 from unittest.mock import Mock, patch
 
@@ -27,6 +27,7 @@ from pitop.pma.encoder_motor_controller import (  # noqa: E402
 from pitopcommon.bitwise_ops import join_bytes  # noqa: E402
 
 
+@skip
 class EncoderMotorControllerTestCase(TestCase):
 
     @patch.object(EncoderMotorController, "set_braking_type")

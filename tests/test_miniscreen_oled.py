@@ -1,5 +1,5 @@
 from unittest.mock import MagicMock
-from unittest import TestCase
+from unittest import TestCase, skip
 from sys import modules, path as spath
 from os import path, environ
 from PIL import Image
@@ -26,6 +26,7 @@ modules["luma.oled.device"] = MagicMock()
 from pitop.miniscreen.oled import OLED  # noqa: E402
 
 
+@skip
 class OLEDTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
