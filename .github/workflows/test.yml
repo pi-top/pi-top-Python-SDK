@@ -52,7 +52,7 @@ jobs:
 
       - name: Install pitopcommon
         run: |
-          pip install -e pi-top-Python-Common-Library
+          pip install ./pi-top-Python-Common-Library
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -62,7 +62,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install libv4l-dev # for building PyV4L2Camera
-          pip install -e "main[test]"
+          pip install "./main[test]"
 
       - name: Run pytest
         run: |

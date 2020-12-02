@@ -1,7 +1,6 @@
 import atexit
 
-from pitopcommon.ptdm_request_client import PTDMRequestClient
-from pitopcommon.ptdm_message import Message
+from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.lock import PTLock
 
 import RPi.GPIO as GPIO
@@ -22,21 +21,11 @@ spi_cs_high = False
 spi_transfer_size = 4096
 
 
-class MiniScreenOLEDManagerException(Exception):
-    pass
-
-
 def __set_controls(controlled_by_pi):
     message = Message.from_parts(Message.REQ_SET_CONTROL, [str(int(controlled_by_pi))])
 
     with PTDMRequestClient() as request_client:
-        response = request_client.send_message(message)
-
-    if response.message_id() != Message.RSP_SET_CONTROL:
-        target_str = "Raspberry Pi" if controlled_by_pi else "pi-top hub"
-        raise MiniScreenOLEDManagerException(
-            f"Unable to give control of OLED to {target_str}"
-        )
+        request_client.send_message(message)
 
 
 def __setup_device():
