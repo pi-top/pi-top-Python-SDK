@@ -41,13 +41,3 @@ UltrasonicSensor
 
 .. autoclass:: pitop.pma.UltrasonicSensor
     :exclude-members: ECHO_LOCK
-
-
-USB Components (USB Port)
-=================================================
-
-Camera
--------------------------------
-
-.. autoclass:: pitop.pma.Camera(camera_device_id=0)
-    :exclude-members: __init__, from_file_system, from_usb

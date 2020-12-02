@@ -1,7 +1,7 @@
-from pitop.pma import Camera
+from pitop.camera import Camera
 from time import sleep
 
-# Record a 2s video
+# Record a 2s video to ~/Camera/
 
 cam = Camera()
 
