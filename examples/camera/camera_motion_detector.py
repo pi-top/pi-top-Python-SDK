@@ -1,4 +1,4 @@
-from pitop.pma import Camera
+from pitop.camera import Camera
 from time import sleep
 from datetime import datetime
 

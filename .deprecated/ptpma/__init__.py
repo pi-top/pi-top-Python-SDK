@@ -10,10 +10,10 @@ from pitop.pma import (  # noqa: F401
     Potentiometer as PMAPotentiometer,
     LightSensor as PMALightSensor,
     LED as PMALed,
-    Camera as PMACamera,
     Buzzer as PMABuzzer,
     Button as PMAButton
 )
+from pitop.camera import Camera as PMACamera
 print("Note: Use of the 'ptpma' package is now deprecated. Please use 'pitop.pma' instead.")
 # TODO
 print("For more information, please see <TODO: URL>")

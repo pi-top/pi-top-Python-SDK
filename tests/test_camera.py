@@ -1,14 +1,14 @@
 from threading import Thread
-from pitop.pma.camera_core import (
+from pitop.camera.core import (
     FrameHandler,
     CaptureActions
 )
-from pitop.pma.camera_core import (
+from pitop.camera.core import (
     UsbCamera,
     FileSystemCamera,
     CameraTypes
 )
-from pitop.pma import Camera
+from pitop.camera import Camera
 from unittest import (
     TestCase,
     skip
