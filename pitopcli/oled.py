@@ -22,9 +22,8 @@ class OledCLI(CliBaseClass):
     def run(self) -> int:
         def is_animated(image):
             try:
-                image.seek(1)
-                return True
-            except Exception:
+                return image.is_animated
+            except AttributeError:
                 return False
 
         try:
