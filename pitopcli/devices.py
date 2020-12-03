@@ -29,10 +29,10 @@ class DeviceCLI(CliBaseClass):
             print(f"{StdoutFormat.BOLD}{section_name}{StdoutFormat.ENDC} {'='*(get_terminal_size().columns - len(section_name) - 2)}")
 
         def print_peripheral_line(data):
-            if data.get('connected') is False and vars(self.args).get('all') is False:
+            if data.get('connected') is False and vars(self.args).get('quiet'):
                 return
 
-            if self.args.devices_subcommand is None or vars(self.args).get('all'):
+            if self.args.devices_subcommand is None or not vars(self.args).get('quiet'):
                 print(f"[ {StdoutFormat.GREEN}{'✓' if data.get('connected') else ' '}{StdoutFormat.ENDC} ]", end=" ")
             print(f"{data.get('name')}", end=" ")
             if data.get("fw_version"):
@@ -72,8 +72,8 @@ class DeviceCLI(CliBaseClass):
         subparser.add_parser("hub", help="Get host device name")
         # "pitop devices peripherals" subcommand
         peripherals_parser = subparser.add_parser("peripherals", help="Get information about attached pi-top peripherals")
-        peripherals_parser.add_argument("--all", "-a",
-                                        help="Display all devices, even if not plugged to your pi-top",
+        peripherals_parser.add_argument("--quiet", "-q",
+                                        help="Display only the connected devices to your pi-top",
                                         action="store_true"
                                         )
 
