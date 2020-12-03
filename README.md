@@ -32,9 +32,10 @@ Supports all pi-top peripherals:
 
 <img src="docs/_static/peripherals/pi-topPULSE.jpg" width="150px"><img src="docs/_static/peripherals/pi-topSPEAKER.jpg" width="150px"><img src="docs/_static/peripherals/pi-topPROTO+.jpg" width="150px">
 
-Support's pi-top Maker Architecture (PMA):
+Supports pi-top Maker Architecture (PMA):
 
-<img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="150px"><img src="docs/_static/pma/robotics_kit/Alex.jpg" width="150px">
+<img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="300px">
+<img src="docs/_static/pma/robotics_kit/Alex.jpg" width="300px">
 
 About
 -----
