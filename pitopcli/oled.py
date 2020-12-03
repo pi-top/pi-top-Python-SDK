@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-from time import sleep
-from os.path import isfile
+from os.path import isfile, isdir, join
 from PIL import ImageSequence
+from time import sleep, strftime
 
 from pitopcommon.formatting import is_url
 
@@ -25,6 +25,16 @@ class OledCLI(CliBaseClass):
                 return image.is_animated
             except AttributeError:
                 return False
+
+        def path_to_stored_file(arg_path):
+            file_path = ""
+            if isfile(arg_path):
+                file_path = arg_path
+            elif isdir(arg_path):
+                file_path = join(arg_path, f"output_{strftime('%Y-%m-%d-%H-%M-%S')}")
+            else:
+                raise Exception(f"Invalid path: {arg_path}")
+            return file_path
 
         try:
             oled = OLED()
@@ -50,8 +60,17 @@ class OledCLI(CliBaseClass):
                 if not skip_timeout:
                     sleep(self.args.timeout)
 
-            else:
-                print("Functionality not available yet")
+            elif self.args.oled_subcommand == "capture":
+                if self.args.capture_subcommand == "save":
+                    file_path = path_to_stored_file(self.args.path)
+                    extension = "PNG"
+                    print(f"Saving capture to {file_path}.{extension}")
+                    oled.canvas.save(f"{file_path}.{extension}")
+                elif self.args.capture_subcommand == "start":
+                    file_path = path_to_stored_file(self.args.path)
+                    print(f"Saving video capture to {self.args.path}")
+                elif self.args.capture_subcommand == "stop":
+                    print("Stopping video capture")
 
             return 0
         except Exception as e:
@@ -64,6 +83,7 @@ class OledCLI(CliBaseClass):
                                           description="Set of utilities to use pi-top [4]'s OLED screen",
                                           dest="oled_subcommand")
 
+        # "draw" option arguments
         parser_draw = subparser.add_parser("draw", help="Draw text and images into the OLED")
         parser_draw.add_argument("--force", "-f",
                                  help="Force the hub to give control of the OLED to the Pi",
@@ -88,11 +108,38 @@ class OledCLI(CliBaseClass):
                                  help="Set the text to write to screen",
                                  )
 
+        # "capture" option sub commands
         parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
         parser_capture.add_argument("--force", "-f",
                                     help="Force the hub to give control of the OLED to the Pi",
                                     action="store_true"
                                     )
+        capture_subparser = parser_capture.add_subparsers(title="Capture images or videos of the OLED content",
+                                                          description="description",
+                                                          dest="capture_subcommand")
+        # "capture save" arguments
+        save_parser = capture_subparser.add_parser("save",
+                                                   help="Store an image in the given path with the current content of the OLED",
+                                                   )
+        save_parser.add_argument("--path", "-p",
+                                 type=str,
+                                 help="Path where snap will be stored. Defaults to /tmp/",
+                                 default="/tmp/"
+                                 )
+
+        # "capture start" arguments
+        start_parser = capture_subparser.add_parser("start",
+                                                    help="Start recording OLED screen",
+                                                    )
+        start_parser.add_argument("--path", "-p",
+                                  type=str,
+                                  help="Path where video will be stored. Defaults to /tmp/",
+                                  default="/tmp/"
+                                  )
+
+        capture_subparser.add_parser("stop",
+                                     help="Stop recording OLED screen",
+                                     )
 
 
 def main():
