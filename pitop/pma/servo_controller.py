@@ -8,6 +8,7 @@ from .common.servo_motor_registers import (
     ServoRegisterTypes,
     ServoControlRegisters,
     ServoControlModes,
+    ServoAccelerationModes,
     ServoMotorSetup)
 
 
@@ -120,3 +121,7 @@ class ServoController:
     def control_mode(self) -> ServoControlModes:
         reported_control_mode = self._mcu_device.read_unsigned_byte(self.registers[ServoRegisterTypes.CONTROL_MODE])
         return ServoControlModes(reported_control_mode)
+
+    @type_check
+    def set_acceleration_mode(self, mode: int):
+        self._mcu_device.write_byte(self.registers[ServoRegisterTypes.ACC_MODE], mode)

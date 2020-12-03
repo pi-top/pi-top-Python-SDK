@@ -10,25 +10,29 @@ class ServoRegisterTypes:
 ServoMotorS1 = {
     ServoRegisterTypes.CONTROL_MODE: 0x50,
     ServoRegisterTypes.SPEED: 0x56,
-    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5C
+    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5C,
+    ServoRegisterTypes.ACC_MODE: 0x00
 }
 
 ServoMotorS2 = {
     ServoRegisterTypes.CONTROL_MODE: 0x51,
     ServoRegisterTypes.SPEED: 0x57,
-    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5D
+    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5D,
+    ServoRegisterTypes.ACC_MODE: 0x00
 }
 
 ServoMotorS3 = {
     ServoRegisterTypes.CONTROL_MODE: 0x52,
     ServoRegisterTypes.SPEED: 0x58,
-    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5E
+    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5E,
+    ServoRegisterTypes.ACC_MODE: 0x00
 }
 
 ServoMotorS4 = {
     ServoRegisterTypes.CONTROL_MODE: 0x53,
     ServoRegisterTypes.SPEED: 0x59,
-    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5F
+    ServoRegisterTypes.ANGLE_AND_SPEED: 0x5F,
+    ServoRegisterTypes.ACC_MODE: 0x00
 }
 
 
@@ -48,3 +52,4 @@ class ServoMotorSetup:
 class ServoControlModes(Enum):
     MODE_0 = 0
     MODE_1 = 1
+

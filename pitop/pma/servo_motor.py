@@ -149,3 +149,22 @@ class ServoMotor:
 
         self._controller.set_target_speed(speed)
         self.__has_set_angle = True
+
+    def set_acceleration_mode(self, mode):
+        """
+        Set the acceleration profile mode between default and smoothed. When setting the speed and/or position of the
+        servos, this will determine how the Expansion Plate MCU will accelerate the servo's speed throughout an angle
+        change.
+
+        Default mode 0: speed will be constant throughout angle change
+        Smoothed mode 1: servo speed will accelerate to the set speed at the start of movement and decelerate to 0 at
+        the end of the movement.
+
+        :type mode: int
+        :param mode: value of 0 or 1 to choose default or smoothed mode
+        """
+
+        if mode not in (0, 1):
+            raise ValueError("Mode value must be either 0 (default) or 1 (smoothed).")
+
+        self._controller.set_acceleration_mode(mode)
