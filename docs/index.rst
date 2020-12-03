@@ -1,4 +1,4 @@
-.. include:: ../.README/main.rst
+.. include:: ../README.rst
 
 -----------------
 Table of Contents
