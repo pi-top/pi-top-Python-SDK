@@ -30,7 +30,7 @@ Supports all pi-top devices:
 
 Supports all pi-top peripherals:
 
-<img src="docs/_static/peripherals/pi-topPULSE.jpg" width="150px"><img src="docs/_static/peripherals/pi-topSPEAKER.jpg" width="150px"><img src="docs/_static/peripherals/pi-topPROTO+.jpg" width="150px">
+<img src="docs/_static/peripherals/pi-topPULSE.jpg" height="250px"><img src="docs/_static/peripherals/pi-topSPEAKER.jpg" height="250px"><img src="docs/_static/peripherals/pi-topPROTO+.jpg" height="250px">
 
 Supports pi-top Maker Architecture (PMA):
 
