@@ -26,18 +26,18 @@ related accessories and components.
 
 Supports all pi-top devices:
 
-<img src="docs/_static/devices/pi-top_4.jpg" height="400px">
+<img src="docs/_static/devices/pi-top_4.jpg" height="300px">
 
 
-<img src="docs/_static/devices/pi-top_3.jpg" height="250px"><img src="docs/_static/devices/pi-topCEED.jpg" height="250px"><img src="docs/_static/devices/pi-top_1.jpg" height="250px">
+<img src="docs/_static/devices/pi-top_3.jpg" height="200px"><img src="docs/_static/devices/pi-topCEED.jpg" height="200px"><img src="docs/_static/devices/pi-top_1.jpg" height="200px">
 
 Supports pi-top Maker Architecture (PMA):
 
-<img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="400px"><img src="docs/_static/pma/robotics_kit/Alex.jpg" width="400px">
+<img src="docs/_static/pma/foundation_kit/components_spread.jpg" height="400px"><img src="docs/_static/pma/robotics_kit/Alex.jpg" height="400px">
 
 Supports all pi-top peripherals:
 
-<img src="docs/_static/peripherals/pi-topPULSE.jpg" height="250px"><img src="docs/_static/peripherals/pi-topSPEAKER.jpg" height="250px"><img src="docs/_static/peripherals/pi-topPROTO+.jpg" height="250px">
+<img src="docs/_static/peripherals/pi-topPULSE.jpg" height="150px"><img src="docs/_static/peripherals/pi-topSPEAKER.jpg" height="150px"><img src="docs/_static/peripherals/pi-topPROTO+.jpg" height="150px">
 
 About
 -----
