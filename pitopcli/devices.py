@@ -19,7 +19,7 @@ class StdoutFormat:
 
 class DeviceCLI(CliBaseClass):
     parser_help = 'Get information about device and attached pi-top hardware'
-    cli_name = 'device'
+    cli_name = 'devices'
 
     def __init__(self, args) -> None:
         self.args = args
@@ -81,6 +81,15 @@ class DeviceCLI(CliBaseClass):
 def main():
     from .deprecated_cli_runner import run
     run(DeviceCLI)
+
+
+def host():
+    from .deprecated_cli_runner import run_with_args
+    args = {"devices_subcommand": "hub"}
+    run_with_args(DeviceCLI,
+                  old_command="pt-host",
+                  new_command="pi-top devices hub",
+                  args_dict=args)
 
 
 if __name__ == "__main__":
