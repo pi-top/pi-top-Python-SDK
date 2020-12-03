@@ -35,16 +35,16 @@ Build Status: Latest
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
 .. image:: docs/_static/devices/pi-top_1.jpg
-   :width: 300
+   :width: 100
 
 .. image:: docs/_static/devices/pi-topCEED.jpg
-   :width: 300
+   :width: 100
 
 .. image:: docs/_static/devices/pi-top_3.jpg
-   :width: 300
+   :width: 100
 
 .. image:: docs/_static/devices/pi-top_4.jpg
-   :width: 300
+   :width: 100
 
 .. image:: docs/_static/peripherals/pi-topPULSE.jpg
    :width: 300
