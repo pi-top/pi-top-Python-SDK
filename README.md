@@ -26,7 +26,7 @@ related accessories and components.
 
 Supports all pi-top devices:
 
-<img src="docs/_static/devices/pi-top_1.jpg" width="150px"><img src="docs/_static/devices/pi-topCEED.jpg" width="150px"><img src="docs/_static/devices/pi-top_3.jpg" width="150px"><img src="docs/_static/devices/pi-top_4.jpg" width="150px">
+<img src="docs/_static/devices/pi-top_1.jpg" height="250px"><img src="docs/_static/devices/pi-topCEED.jpg" height="250px"><img src="docs/_static/devices/pi-top_3.jpg" height="250px"><img src="docs/_static/devices/pi-top_4.jpg" height="250px">
 
 Supports all pi-top peripherals:
 
