@@ -34,29 +34,23 @@ Build Status: Latest
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
+Supports all pi-top devices:
+
 .. raw:: html
 
     <img src="docs/_static/devices/pi-top_1.jpg" width="150px"><img src="docs/_static/devices/pi-topCEED.jpg" width="150px"><img src="docs/_static/devices/pi-top_3.jpg" width="150px"><img src="docs/_static/devices/pi-top_4.jpg" width="150px">
 
-.. raw:: html
-
-    <img src="docs/_static/peripherals/pi-topPULSE.jpg" width="300px">
+Supports all pi-top peripherals:
 
 .. raw:: html
 
-    <img src="docs/_static/peripherals/pi-topSPEAKER.jpg" width="300px">
+    <img src="docs/_static/peripherals/pi-topPULSE.jpg" width="150px"><img src="docs/_static/peripherals/pi-topSPEAKER.jpg" width="150px"><img src="docs/_static/peripherals/pi-topPROTO+.jpg" width="150px">
+
+Support's pi-top Maker Architecture (PMA):
 
 .. raw:: html
 
-    <img src="docs/_static/peripherals/pi-topPROTO+.jpg" width="300px">
-
-.. raw:: html
-
-    <img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="300px">
-
-.. raw:: html
-
-    <img src="docs/_static/pma/robotics_kit/Alex.jpg" width="300px">
+    <img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="150px"><img src="docs/_static/pma/robotics_kit/Alex.jpg" width="150px">
 
 -----
 About
