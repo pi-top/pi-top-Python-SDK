@@ -1,35 +1,8 @@
-=====================================================
-pi-top Python SDK
-=====================================================
+.. include:: ../.README/main.rst
 
-.. image:: docs/_static/devices/pi-top_1_sml.jpg
-
-.. image:: docs/_static/devices/pi-topCEED_sml.jpg
-
-.. image:: docs/_static/devices/pi-top_3_sml.jpg
-
-.. image:: docs/_static/devices/pi-top_4_sml.jpg
-
-.. image:: docs/_static/peripherals/pi-topPULSE.jpg
-
-.. image:: docs/_static/peripherals/pi-topSPEAKER.jpg
-
-.. image:: docs/_static/peripherals/pi-topPROTO+.jpg
-
-.. image:: docs/_static/pma/foundation_kit/components_spread.jpg
-
-.. image:: docs/_static/pma/robotics_kit/Alex.jpg
-
-This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
-with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
-to interact with your pi-top using the terminal.
-
-The SDK is included out-of-the-box with pi-topOS.
-
-Ensure that you keep your system up-to-date to enjoy the latest features and bug fixes.
-
+-----------------
 Table of Contents
-=================
+-----------------
 
 .. toctree::
     :maxdepth: 2
@@ -47,9 +20,9 @@ Table of Contents
     api_pulse
     more
 
-
+-----------------
 Indices and tables
-==================
+-----------------
 
 * :ref:`genindex`
 * :ref:`modindex`
