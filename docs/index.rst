@@ -2,9 +2,23 @@
 pi-top Python SDK
 =====================================================
 
-.. image:: _static/foundation_kit.png
-    :target: https://knowledgebase.pi-top.com/knowledge/foundation-kit
-    :alt: Foundation Kit
+.. image:: docs/_static/devices/pi_top_1.jpg
+
+.. image:: docs/_static/devices/pi_topCEED.jpg
+
+.. image:: docs/_static/devices/pi_top_3.jpg
+
+.. image:: docs/_static/devices/pi_top_4.jpg
+
+.. image:: docs/_static/peripherals/pi-topPULSE.jpg
+
+.. image:: docs/_static/peripherals/pi-topSPEAKER.jpg
+
+.. image:: docs/_static/peripherals/pi-topPROTO+.jpg
+
+.. image:: docs/_static/pma/foundation_kit/components_spread.jpg
+
+.. image:: docs/_static/pma/robotics_kit/Alex.jpg
 
 This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
 with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,

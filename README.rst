@@ -34,7 +34,23 @@ Build Status: Latest
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
-.. image:: docs/_static/pi_top_4.png
+.. image:: docs/_static/devices/pi_top_1.jpg
+
+.. image:: docs/_static/devices/pi_topCEED.jpg
+
+.. image:: docs/_static/devices/pi_top_3.jpg
+
+.. image:: docs/_static/devices/pi_top_4.jpg
+
+.. image:: docs/_static/peripherals/pi-topPULSE.jpg
+
+.. image:: docs/_static/peripherals/pi-topSPEAKER.jpg
+
+.. image:: docs/_static/peripherals/pi-topPROTO+.jpg
+
+.. image:: docs/_static/pma/foundation_kit/components_spread.jpg
+
+.. image:: docs/_static/pma/robotics_kit/Alex.jpg
 
 -----
 About
