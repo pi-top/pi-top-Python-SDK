@@ -36,10 +36,7 @@ A simple, modular interface for interacting with a pi-top and its related access
 
 .. raw:: html
 
-    <img src="docs/_static/devices/pi-top_1.jpg" width="150px">
-    <img src="docs/_static/devices/pi-topCEED.jpg" width="150px">
-    <img src="docs/_static/devices/pi-top_3.jpg" width="150px">
-    <img src="docs/_static/devices/pi-top_4.jpg" width="150px">
+    <img src="docs/_static/devices/pi-top_1.jpg" width="150px"><img src="docs/_static/devices/pi-topCEED.jpg" width="150px"><img src="docs/_static/devices/pi-top_3.jpg" width="150px"><img src="docs/_static/devices/pi-top_4.jpg" width="150px">
 
 .. raw:: html
 
