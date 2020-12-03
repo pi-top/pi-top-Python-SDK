@@ -34,32 +34,41 @@ Build Status: Latest
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
-.. image:: docs/_static/devices/pi-top_1.jpg
-   :width: 100
+.. raw:: html
 
-.. image:: docs/_static/devices/pi-topCEED.jpg
-   :width: 100
+    <img src="docs/_static/devices/pi-top_1.jpg" height="150px">
 
-.. image:: docs/_static/devices/pi-top_3.jpg
-   :width: 100
+.. raw:: html
 
-.. image:: docs/_static/devices/pi-top_4.jpg
-   :width: 100
+    <img src="docs/_static/devices/pi-topCEED.jpg" height="150px">
 
-.. image:: docs/_static/peripherals/pi-topPULSE.jpg
-   :width: 300
+.. raw:: html
 
-.. image:: docs/_static/peripherals/pi-topSPEAKER.jpg
-   :width: 300
+    <img src="docs/_static/devices/pi-top_3.jpg" height="150px">
 
-.. image:: docs/_static/peripherals/pi-topPROTO+.jpg
-   :width: 300
+.. raw:: html
 
-.. image:: docs/_static/pma/foundation_kit/components_spread.jpg
-   :width: 300
+    <img src="docs/_static/devices/pi-top_4.jpg" height="150px">
 
-.. image:: docs/_static/pma/robotics_kit/Alex.jpg
-   :width: 300
+.. raw:: html
+
+    <img src="docs/_static/peripherals/pi-topPULSE.jpg" height="300px">
+
+.. raw:: html
+
+    <img src="docs/_static/peripherals/pi-topSPEAKER.jpg" height="300px">
+
+.. raw:: html
+
+    <img src="docs/_static/peripherals/pi-topPROTO+.jpg" height="300px">
+
+.. raw:: html
+
+    <img src="docs/_static/pma/foundation_kit/components_spread.jpg" height="300px">
+
+.. raw:: html
+
+    <img src="docs/_static/pma/robotics_kit/Alex.jpg" height="300px">
 
 -----
 About
