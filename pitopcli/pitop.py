@@ -13,7 +13,7 @@ from .cli_base import PitopCliException
 
 lookup_dict = {
     "brightness": BrightnessCLI,
-    "device": DeviceCLI,
+    "devices": DeviceCLI,
     "host": HostCLI,
     "battery": BatteryCLI,
     "oled": OledCLI

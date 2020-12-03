@@ -6,7 +6,7 @@ from subprocess import getstatusoutput
 
 
 def legacy_pitop_peripherals():
-    connected_peripherals = []
+    peripherals = []
 
     # Get legacy peripheral devices from pt-device-manager
     for id in range(5):
@@ -23,14 +23,15 @@ def legacy_pitop_peripherals():
 
         p_enabled = (message.parameters()[0] == '1')
 
-        if p_enabled:
-            connected_peripherals.append(p_names[id])
+        peripherals.append({
+            "name": p_names[id],
+            "connected": p_enabled})
 
-    return connected_peripherals
+    return peripherals
 
 
 def upgradable_pitop_peripherals():
-    connected_peripherals = []
+    peripherals = []
 
     for device_enum, device_info in FirmwareDevice.device_info.items():
         device_str = device_enum.name
@@ -45,13 +46,19 @@ def upgradable_pitop_peripherals():
 
                 peripheral = {
                     "name": human_readable_name,
-                    "fw_version": fw_device.get_fw_version()
+                    "fw_version": fw_device.get_fw_version(),
+                    "connected": True
                 }
-                connected_peripherals.append(peripheral)
+                peripherals.append(peripheral)
             except Exception:
                 pass
 
-    return connected_peripherals
+    return peripherals
+
+
+def usb_pitop_peripherals():
+    return [{'name': 'pi-top Touchscreen', 'connected': touchscreen_is_connected()},
+            {'name': 'pi-top Keyboard', 'connected': pitop_keyboard_is_connected()}]
 
 
 def touchscreen_is_connected():
@@ -78,3 +85,7 @@ def pitop_keyboard_is_connected():
             return True
 
     return False
+
+
+def pitop_peripherals():
+    return upgradable_pitop_peripherals() + usb_pitop_peripherals() + legacy_pitop_peripherals()
