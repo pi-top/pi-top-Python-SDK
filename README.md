@@ -34,8 +34,8 @@ Supports all pi-top peripherals:
 
 Supports pi-top Maker Architecture (PMA):
 
-<img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="300px">
-<img src="docs/_static/pma/robotics_kit/Alex.jpg" width="300px">
+<img src="docs/_static/pma/foundation_kit/components_spread.jpg" width="500px">
+<img src="docs/_static/pma/robotics_kit/Alex.jpg" width="400px">
 
 About
 -----
