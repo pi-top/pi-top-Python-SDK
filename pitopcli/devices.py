@@ -27,13 +27,13 @@ class DeviceCLI(CliBaseClass):
             if device is not None:
                 print(f"Host device: {device}")
         except Exception as e:
-            print(f"Error: Unable to get device type from pt-device-manager: {e}", file=stderr)
+            print(f"Error on pitop-devices.run: Unable to get device type from pt-device-manager: {e}", file=stderr)
 
         try:
             for periph in legacy_pitop_peripherals():
                 print(f"Connected device: {periph}")
         except Exception as e:
-            print(f"Unable to get connected legacy peripherals from pt-device-manager: {e}", file=stderr)
+            print(f"Error on pitop-devices.run: Unable to get connected legacy peripherals from pt-device-manager: {e}", file=stderr)
 
         # Get touchscreen/keyboard from USB devices
         print(f"pi-top Touchscreen: {'' if touchscreen_is_connected() else 'not '}connected")
@@ -48,7 +48,7 @@ class DeviceCLI(CliBaseClass):
                 print(
                     f"Upgradable device connected: {periph.name} (v{periph.fw_version})")
         except Exception as e:
-            print(f"Unable to get connected peripherals from pt-device-manager: {e}", file=stderr)
+            print(f"Error on pitop-devices.run: Unable to get connected peripherals from pt-device-manager: {e}", file=stderr)
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
