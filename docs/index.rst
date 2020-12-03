@@ -2,13 +2,13 @@
 pi-top Python SDK
 =====================================================
 
-.. image:: docs/_static/devices/pi-top_1.jpg
+.. image:: docs/_static/devices/pi-top_1_sml.jpg
 
-.. image:: docs/_static/devices/pi-topCEED.jpg
+.. image:: docs/_static/devices/pi-topCEED_sml.jpg
 
-.. image:: docs/_static/devices/pi-top_3.jpg
+.. image:: docs/_static/devices/pi-top_3_sml.jpg
 
-.. image:: docs/_static/devices/pi-top_4.jpg
+.. image:: docs/_static/devices/pi-top_4_sml.jpg
 
 .. image:: docs/_static/peripherals/pi-topPULSE.jpg
 
