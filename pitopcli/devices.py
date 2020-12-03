@@ -69,7 +69,7 @@ class DeviceCLI(CliBaseClass):
                                           dest="devices_subcommand")
 
         # "pitop devices hub" subcommand
-        subparser.add_parser("hub", help="Get host device name")
+        subparser.add_parser("hub", help="Get the name of the active pi-top device")
         # "pitop devices peripherals" subcommand
         peripherals_parser = subparser.add_parser("peripherals", help="Get information about attached pi-top peripherals")
         peripherals_parser.add_argument("--quiet", "-q",
