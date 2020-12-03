@@ -66,26 +66,19 @@ class ServoMotor:
 
         return (self.min_angle, self.max_angle)
 
-    def get_target_angle(self):
-        """
-        Return the current angle of the servo motor horn.
-
-        The value given is relative to the zero-point, which may either be true zero, or a user-set zero.
-        The range of valid values is from -90 to +90 degrees, although in practice the servo will not support
-        such a wide range of motion.
-
-        .. warning::
-            The method will return :data:`None` if called before using a method that moves the servo horn.
-        """
-
+    def get_current_angle_and_speed(self):
         if not self.__has_set_angle:
-            PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve the target angle")
-            return None
+            PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve angle or speed")
+            return None, None
 
-        target_angle = self._controller.get_target_angle()
-        if target_angle is None:
-            PTLogger.warning("No target_angle specified. Set one using set_target_angle()")
-        return target_angle - self._zero_point
+        angle, speed = self._controller.get_current_angle_and_speed()
+        return angle, speed
+
+    def get_current_angle(self):
+        return self.get_current_angle_and_speed()[0]
+
+    def get_current_speed(self):
+        return self.get_current_angle_and_speed()[1]
 
     def set_target_angle(self, angle, speed=50.0):
         """
@@ -118,16 +111,6 @@ class ServoMotor:
         self._controller.set_target_angle(angle + self._zero_point, speed)
         self.__has_set_angle = True
 
-    def get_target_speed(self):
-        """
-        Returns the speed at which the servo motor horn is set to move, from -100.0 to 100.0 deg/s.
-        """
-
-        target_speed = self._controller.get_target_speed()
-        if target_speed is None:
-            PTLogger.warning("No target_speed specified. Set it using set_target_speed()")
-        return target_speed
-
     def set_target_speed(self, speed):
         """
         Move the servo horn from the current position to one of the servo motor limits (maximum/minimum possible angle),
@@ -144,27 +127,6 @@ class ServoMotor:
             The target speed at which to move the servo horn, from -100 to 100 deg/s.
         """
 
-        if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
-            raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
+        angle_setting = self.min_angle if speed < 0 else self.max_angle
 
-        self._controller.set_target_speed(speed)
-        self.__has_set_angle = True
-
-    def set_acceleration_mode(self, mode):
-        """
-        Set the acceleration profile mode between default and smoothed. When setting the speed and/or position of the
-        servos, this will determine how the Expansion Plate MCU will accelerate the servo's speed throughout an angle
-        change.
-
-        Default mode 0: speed will be constant throughout angle change
-        Smoothed mode 1: servo speed will accelerate to the set speed at the start of movement and decelerate to 0 at
-        the end of the movement.
-
-        :type mode: int
-        :param mode: value of 0 or 1 to choose default or smoothed mode
-        """
-
-        if mode not in (0, 1):
-            raise ValueError("Mode value must be either 0 (default) or 1 (smoothed).")
-
-        self._controller.set_acceleration_mode(mode)
+        self.set_target_angle(angle_setting, speed)
