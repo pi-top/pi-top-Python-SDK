@@ -13,12 +13,16 @@ Digital Components (D Port)
 Buzzer
 -------------------------------
 
+.. image:: ../_static/pma/foundation_kit/components/buzzer.jpg
+
 .. autoclass:: pitop.pma.Buzzer
    :inherited-members: gpiozero.Buzzer
    :exclude-members: pin_factory
 
 LED
 -------------------------------
+
+.. image:: ../_static/pma/foundation_kit/components/led_red.jpg
 
 .. autoclass:: pitop.pma.LED
    :inherited-members: gpiozero.LED

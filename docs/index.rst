@@ -20,9 +20,9 @@ Table of Contents
     api_pulse
     more
 
------------------
+------------------
 Indices and tables
------------------
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

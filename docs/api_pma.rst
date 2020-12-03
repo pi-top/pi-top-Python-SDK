@@ -2,6 +2,10 @@
 API - pi-top Makers Architecture (PMA)
 ======================================
 
+.. image:: _static/pma/foundation_kit/components_spread.jpg
+
+.. image:: _static/pma/robotics_kit/Alex.jpg
+
 .. toctree::
     :maxdepth: 2
 
