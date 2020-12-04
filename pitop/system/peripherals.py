@@ -1,7 +1,8 @@
 from pitopcommon.firmware_device import FirmwareDevice
 from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.command_runner import run_command
-from pitopcommon.common_ids import FirmwareDeviceID
+from pitopcommon.common_ids import FirmwareDeviceID, PeripheralID
+from pitopcommon.common_names import PeripheralName
 
 from subprocess import getstatusoutput
 
@@ -16,16 +17,10 @@ def legacy_pitop_peripherals():
         with PTDMRequestClient() as request_client:
             request_client.send_message(message)
 
-        p_names = ['pi-topPULSE',
-                   'pi-topSPEAKER-v1-left',
-                   'pi-topSPEAKER-v1-mono',
-                   'pi-topSPEAKER-v1-right',
-                   'pi-topSPEAKER-v2']
-
+        peripheral_id = PeripheralID(id)
         p_enabled = (message.parameters()[0] == '1')
-
         peripherals.append({
-            "name": p_names[id],
+            "name": PeripheralName[peripheral_id.name].value,
             "connected": p_enabled})
 
     return peripherals
