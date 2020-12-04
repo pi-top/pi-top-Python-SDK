@@ -10,14 +10,14 @@ Utility to interact with pi-top hardware.
 
 .. code-block:: bash
 
-    pi-top [-h] {brightness,device,host,battery,oled} ...
+    pi-top [-h] {brightness,devices,host,battery,oled} ...
 
 Where:
 
 -h, --help
     Show a help message and exits
 
-{brightness,device,host,battery,oled}
+{brightness,devices,host,battery,oled}
     battery:
         Get battery information from a pi-top
 
@@ -138,11 +138,28 @@ pi-top devices
 
 Finds useful information about the system and the attached devices that are being managed by `pt-device-manager`.
 
-This command doesn't receive arguments.
+Running `pi-top devices` on its own will report back the current brightness value.
 
 .. code-block:: bash
 
-    pi-top devices
+    pi-top devices [-h] [--quiet] [--name-only] {hub,peripherals}
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+--quiet, -q
+    Display only the connected devices
+
+--name-only, -n
+    Display only the name of the devices, without further information
+
+hub
+    Get the name of the active pi-top device
+
+peripherals
+    Get information about attached pi-top peripherals
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -150,37 +167,34 @@ Example
 .. code-block:: bash
 
     pi@pi-top:~ $ pi-top devices
-    Host device: pi-top [4]
-    pi-top Touchscreen: not connected
-    pi-top Keyboard: not connected
-    Upgradable device connected: pi-top [4] Hub (v5.3)
-    Upgradable device connected: pi-top [4] Expansion Plate (v21.5)
-
-pi-top host
-==================
-
-Returns the pi-top host device name where the command is being run.
-
-This command doesn't receive arguments.
-
-.. code-block:: bash
-
-    pi-top host
-
-Example
-~~~~~~~~~~~~~~~~~
+    HUB ===================================================
+    pi-top [4] (v5.4)
+    PERIPHERALS ===========================================
+    [ ✓ ] pi-top [4] Expansion Plate (v21.5)
+    [   ] pi-top Touchscreen
+    [   ] pi-top Keyboard
+    [   ] pi-topPULSE
+    [   ] pi-topSPEAKER (v1) - Left channel
+    [   ] pi-topSPEAKER (v1) - Right channel
+    [   ] pi-topSPEAKER (v1) - Mono
+    [   ] pi-topSPEAKER (v2)
 
 .. code-block:: bash
 
-    # on a pi-top [4]
-    pi@pi-top:~ $ pi-top host
+    pi@pi-top:~ $ pt devices peripherals
+    [ ✓ ] pi-top [4] Expansion Plate (v21.5)
+    [   ] pi-top Touchscreen
+    [   ] pi-top Keyboard
+    [   ] pi-topPULSE
+    [   ] pi-topSPEAKER (v1) - Left channel
+    [   ] pi-topSPEAKER (v1) - Right channel
+    [   ] pi-topSPEAKER (v1) - Mono
+    [   ] pi-topSPEAKER (v2)
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pt devices hub --name-only
     pi-top [4]
-
-.. code-block:: bash
-
-    # on a pi-top [3]
-    pi@pi-top:~ $ pi-top host
-    pi-top [3]
 
 pi-top oled
 ==================
@@ -274,7 +288,7 @@ Example
 pt-host
 ==============
 
-To learn about the command arguments, check `pi-top host`_
+Prints the name of the active pi-top device. Check `pi-top devices`_
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -283,7 +297,7 @@ Example
 
     # on a pi-top [4]
     pi@pi-top:~ $ pt-host
-    Note: Use of the 'pt-host' is now deprecated. Please use 'pi-top host' instead.
+    Note: Use of the 'pt-host' is now deprecated. Please use 'pi-top devices hub' instead.
     pi-top [4]
 
 pt-oled
