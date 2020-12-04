@@ -85,17 +85,28 @@ modules available in the library:
         oled.draw_multiline_text(str(distance))
         sleep(0.1)
 
+Check out the `Basic API Examples`_ chapter of the documentation for ideas on how to get started.
 
-This repository also contains CLI utilities, to communicate with your pi-top using the terminal.
+.. _Basic API Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
+
+
+This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
 
 .. code-block:: bash
 
-    $ pt-oled "Hey! I'm a $(pt-host)"
+    $ pi-top oled write "Hey! I'm a $(pt devices hub)"
 
 
-See the `Basic Examples`_ chapter of the documentation for ideas on how to get started.
+A 'pt' alias is also provided for quicker typing:
 
-.. _Basic Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
+.. code-block:: bash
+
+    $ pt oled write "Hey! I'm a $(pt devices hub)"
+
+
+Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
+
+.. _CLI Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
 
 ------------
 Installation
