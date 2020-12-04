@@ -18,6 +18,8 @@ The recommended way of getting the latest version is through `apt`.
 
 Check out `Using pi-top Hardware with Raspberry Pi OS`_ in the pi-top knowledge base for how to do this.
 
+.. _Using pi-top Hardware with Raspberry Pi OS: https://knowledgebase.pi-top.com/knowledge/pi-top-and-raspberry-pi-os
+
 Note: if you only want to install the SDK, then you can replace the "Install software packages" step:
 
 .. code-block:: sh
