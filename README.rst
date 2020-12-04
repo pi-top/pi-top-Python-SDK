@@ -2,13 +2,32 @@
 pi-top Python SDK (Preview)
 ===========================
 
----------------------------------
-This SDK is currently pre-release
----------------------------------
+A simple, modular interface for interacting with a pi-top and its related accessories and components.
+
+Supports all pi-top devices:
+
+.. image:: docs/_static/overview/devices.jpg
+
+Supports pi-top Maker Architecture (PMA):
+
+.. image:: docs/_static/overview/pma.jpg
+
+Supports all pi-top peripherals:
+
+.. image:: docs/_static/overview/peripherals.jpg
+
+--------------------------
+Status: Active Development
+--------------------------
 
 This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
 
 Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+
+Backwards Compatibility
+=======================
+
+When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
 
 --------------------
 Build Status: Latest
@@ -32,13 +51,18 @@ Build Status: Latest
 ..     :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
 ..     :alt: Coverage
 
-A simple, modular interface for interacting with a pi-top and its related accessories and components.
-
-.. image:: docs/_static/pi_top_4.png
-
 -----
 About
 -----
+
+This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
+
+with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
+to interact with your pi-top using the terminal.
+
+The SDK is included out-of-the-box with pi-topOS.
+
+Ensure that you keep your system up-to-date to enjoy the latest features and bug fixes.
 
 This library is installed as a Python 3 module called `pitop`. It includes several
 submodules that allow you to easily interact with most of the hardware inside a pi-top.
@@ -61,75 +85,56 @@ modules available in the library:
         oled.draw_multiline_text(str(distance))
         sleep(0.1)
 
+Check out the `Basic API Examples`_ chapter of the documentation for ideas on how to get started.
 
-This repository also contains CLI utilities, to communicate with your pi-top using the terminal.
+.. _Basic API Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
+
+
+This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
 
 .. code-block:: bash
 
-    $ pt-oled "Hey! I'm a $(pt-host)"
+    $ pi-top oled write "Hey! I'm a $(pt devices hub)"
 
 
-See the `Recipes`_ chapter of the documentation for ideas on how to get started.
+A 'pt' alias is also provided for quicker typing:
 
-.. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
+.. code-block:: bash
 
------------------------
-Backwards Compatibility
------------------------
+    $ pt oled write "Hey! I'm a $(pt devices hub)"
 
-When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
 
-------------
-Requirements
-------------
+Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
 
-The following packages are required in your device for this library to work.
-
-.. table::
-    :widths: 30 70
-
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | Package Name              | Usage                                                                                                                 |
-    +===========================+=======================================================================================================================+
-    | ``alsa-utils``            | Used for configuring the system audio; such as setting the correct audio card when connecting a pi-topSPEAKER.        |
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | ``coreutils``             | Used to perform basic OS operations and commands; such as ``ls`` and ``chmod``                                        |
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | ``fonts-droid-fallback``  | Minimum essential font used by the OLED screen.                                                                       |
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | ``i2c-tools``             | Communicate with pi-top I2C devices.                                                                                  |
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | ``pt-device-manager``     | Allows communication with pi-top's hub; such as getting battery state.                                                |
-    |                           | This package installs a ``systemd`` service that needs to be running for this library to work properly                |
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | ``raspi-config``          | Required to communicate and set parameters to the Raspberry Pi.                                                       |
-    +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
+.. _CLI Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
 
 ------------
 Installation
 ------------
 
 The pi-top Python SDK is installed out of the box with pi-topOS, which is available from
-pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Installing`_ chapter.
+pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
-.. _Installing: https://pitop.readthedocs.io/en/stable/installing.html
+.. _Getting Started: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
 
 -------------
 Documentation
 -------------
 
-Comprehensive documentation is available at https://pitop.readthedocs.io/.
-Please refer to the `Contributing`_ and `Development`_ chapters in the
-documentation for information on contributing to the project.
+Comprehensive documentation is available here_.
 
-.. _Contributing: https://pitop.readthedocs.io/en/stable/contributing.html
-.. _Development: https://pitop.readthedocs.io/en/stable/development.html
+.. _here: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
 
 ------------
-Contributors
+Contributing
 ------------
 
-See the `contributors page`_ on GitHub for more info.
+Please refer to the `Contributing`_ document in this repository
+for information on contributing to the project.
+
+.. _Contributing: https://github.com/pi-top/pi-top-Python-SDK/blob/master/.github/CONTRIBUTING.md
+
+See the `contributors page`_ on GitHub for more info on contributors.
 
 .. _contributors page: https://github.com/pi-top/pitop/graphs/contributors
