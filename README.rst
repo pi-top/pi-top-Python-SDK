@@ -36,15 +36,15 @@ A simple, modular interface for interacting with a pi-top and its related access
 
 Supports all pi-top devices:
 
-.. image:: ../.README/devices.jpg
+.. image:: .README/devices.jpg
 
 Supports pi-top Maker Architecture (PMA):
 
-.. image:: ../.README/pma.jpg
+.. image:: .README/pma.jpg
 
 Supports all pi-top peripherals:
 
-.. image:: ../.README/peripherals.jpg
+.. image:: .README/peripherals.jpg
 
 -----
 About
