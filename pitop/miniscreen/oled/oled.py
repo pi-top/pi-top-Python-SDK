@@ -1,9 +1,9 @@
 from .core.controls import (  # noqa: F401
     device_is_active as __device_is_active,
-    reset_device as __reset_device,
-    get_device as __get_device,
-    set_control_to_pi as __set_control_to_pi,
-    set_control_to_hub as __set_control_to_hub,
+    reset_device as _reset_device,
+    get_device as _get_device,
+    set_control_to_pi as _set_control_to_pi,
+    set_control_to_hub as _set_control_to_hub,
 )
 from .core.canvas import Canvas
 from .core.fps_regulator import FPS_Regulator
@@ -32,7 +32,7 @@ class OLED:
 
     def __init__(self):
         self._visible = False
-        self.device = __get_device()
+        self.device = _get_device()
         self.image = Image.new(self.device.mode,
                                self.device.size)
         self.canvas = Canvas(self.device, self.image)
@@ -75,10 +75,10 @@ class OLED:
         __device_is_active()
 
     def set_control_to_pi(self):
-        __set_control_to_pi()
+        _set_control_to_pi()
 
     def set_control_to_hub(self):
-        __set_control_to_hub()
+        _set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """
@@ -126,8 +126,8 @@ class OLED:
             self.set_control_to_pi()
         self.canvas.clear()
 
-        __reset_device()
-        self.device = __get_device()
+        _reset_device()
+        self.device = _get_device()
 
         self.device.display(self.image)
         self.device.contrast(255)
@@ -142,8 +142,8 @@ class OLED:
 
         return process_pil_image(
             image,
-            self.__oled_device.size,
-            self.__oled_device.mode
+            self.device.size,
+            self.device.mode
         )
 
     def draw_image_file(self, file_path, xy=None):
@@ -158,7 +158,7 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        image = self.process_image(file_path)
+        image = self.get_processed_image(file_path)
         self.draw_image(image, xy)
 
     def draw_image(self, image, xy=None):

@@ -19,7 +19,7 @@ class HostCLI(CliBaseClass):
                 print(device)
                 return 0
         except Exception as e:
-            print(f"Error: Unable to get information from pt-device-manager: {e}")
+            print(f"Error on pitop-host.run: Unable to get information from pt-device-manager: {e}")
 
         return 1
 

@@ -2,6 +2,8 @@
 API - pi-top [4] Mini Screen - OLED
 ===================================
 
+.. image:: ../_static/miniscreen/pi-top_4_Front_OLED.jpg
+
 This module contains information to allow a programmer to work with the mini-screen on the pi-top [4].
 Below you will find a list of the different objects that can be created to do this along with their
 descriptions, methods and examples of how to do this.

@@ -11,7 +11,7 @@ class MotorRegisterTypes:
     ODOMETER = 6
 
 
-EncoderMotorM1 = {
+EncoderMotorM0 = {
     MotorRegisterTypes.CONTROL_MODE: 0x60,
     MotorRegisterTypes.MODE_0_POWER: 0x64,
     MotorRegisterTypes.MODE_1_RPM: 0x68,
@@ -22,7 +22,7 @@ EncoderMotorM1 = {
 }
 
 
-EncoderMotorM2 = {
+EncoderMotorM1 = {
     MotorRegisterTypes.CONTROL_MODE: 0x61,
     MotorRegisterTypes.MODE_0_POWER: 0x65,
     MotorRegisterTypes.MODE_1_RPM: 0x69,
@@ -33,7 +33,7 @@ EncoderMotorM2 = {
 }
 
 
-EncoderMotorM3 = {
+EncoderMotorM2 = {
     MotorRegisterTypes.CONTROL_MODE: 0x62,
     MotorRegisterTypes.MODE_0_POWER: 0x66,
     MotorRegisterTypes.MODE_1_RPM: 0x6A,
@@ -44,7 +44,7 @@ EncoderMotorM3 = {
 }
 
 
-EncoderMotorM4 = {
+EncoderMotorM3 = {
     MotorRegisterTypes.CONTROL_MODE: 0x63,
     MotorRegisterTypes.MODE_0_POWER: 0x67,
     MotorRegisterTypes.MODE_1_RPM: 0x6B,
@@ -56,10 +56,10 @@ EncoderMotorM4 = {
 
 
 class MotorControlRegisters(Enum):
+    M0 = EncoderMotorM0
     M1 = EncoderMotorM1
     M2 = EncoderMotorM2
     M3 = EncoderMotorM3
-    M4 = EncoderMotorM4
 
 
 class MotorControlModes(Enum):
