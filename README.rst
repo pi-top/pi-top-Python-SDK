@@ -122,7 +122,7 @@ pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `
 Documentation
 -------------
 
-Comprehensive documentation is available here_
+Comprehensive documentation is available here_.
 
 .. _here: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
 
