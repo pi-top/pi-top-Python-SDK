@@ -16,13 +16,18 @@ Supports all pi-top peripherals:
 
 .. image:: docs/_static/overview/peripherals.jpg
 
----------------------------------
-This SDK is currently pre-release
----------------------------------
+--------------------------
+Status: Active Development
+--------------------------
 
 This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
 
 Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+
+Backwards Compatibility
+=======================
+
+When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
 
 --------------------
 Build Status: Latest
@@ -88,41 +93,37 @@ This repository also contains CLI utilities, to communicate with your pi-top usi
     $ pt-oled "Hey! I'm a $(pt-host)"
 
 
-See the `Recipes`_ chapter of the documentation for ideas on how to get started.
+See the `Basic Examples`_ chapter of the documentation for ideas on how to get started.
 
-.. _Recipes: https://pitop.readthedocs.io/en/stable/recipes.html
-
------------------------
-Backwards Compatibility
------------------------
-
-When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
+.. _Basic Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
 
 ------------
 Installation
 ------------
 
 The pi-top Python SDK is installed out of the box with pi-topOS, which is available from
-pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Installing`_ chapter.
+pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
-.. _Installing: https://pitop.readthedocs.io/en/stable/installing.html
+.. _Getting Started: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
 
 -------------
 Documentation
 -------------
 
-Comprehensive documentation is available at https://pitop.readthedocs.io/.
-Please refer to the `Contributing`_ and `Development`_ chapters in the
-documentation for information on contributing to the project.
+Comprehensive documentation is available here_
 
-.. _Contributing: https://pitop.readthedocs.io/en/stable/contributing.html
-.. _Development: https://pitop.readthedocs.io/en/stable/development.html
+.. _here: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
 
 ------------
-Contributors
+Contributing
 ------------
 
-See the `contributors page`_ on GitHub for more info.
+Please refer to the `Contributing`_ document in this repository
+for information on contributing to the project.
+
+.. _Contributing: https://github.com/pi-top/pi-top-Python-SDK/blob/master/.github/CONTRIBUTING.md
+
+See the `contributors page`_ on GitHub for more info on contributors.
 
 .. _contributors page: https://github.com/pi-top/pitop/graphs/contributors
