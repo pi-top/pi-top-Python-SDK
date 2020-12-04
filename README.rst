@@ -2,6 +2,20 @@
 pi-top Python SDK (Preview)
 ===========================
 
+A simple, modular interface for interacting with a pi-top and its related accessories and components.
+
+Supports all pi-top devices:
+
+.. image:: docs/_static/overview/devices.jpg
+
+Supports pi-top Maker Architecture (PMA):
+
+.. image:: docs/_static/overview/pma.jpg
+
+Supports all pi-top peripherals:
+
+.. image:: docs/_static/overview/peripherals.jpg
+
 ---------------------------------
 This SDK is currently pre-release
 ---------------------------------
@@ -31,20 +45,6 @@ Build Status: Latest
 .. image: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
 ..     :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
 ..     :alt: Coverage
-
-A simple, modular interface for interacting with a pi-top and its related accessories and components.
-
-Supports all pi-top devices:
-
-.. image:: .README/devices.jpg
-
-Supports pi-top Maker Architecture (PMA):
-
-.. image:: .README/pma.jpg
-
-Supports all pi-top peripherals:
-
-.. image:: .README/peripherals.jpg
 
 -----
 About
