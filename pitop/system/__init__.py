@@ -1,4 +1,8 @@
-from .device import device_type  # noqa: F401
+from .device import (  # noqa: F401
+    device_info,
+    device_firmware,
+    device_type,
+)
 from .peripherals import (  # noqa: F401
     legacy_pitop_peripherals,
     upgradable_pitop_peripherals,

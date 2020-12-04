@@ -5,7 +5,6 @@ from sys import exit
 
 from .brightness import BrightnessCLI
 from .devices import DeviceCLI
-from .host import HostCLI
 from .battery import BatteryCLI
 from .oled import OledCLI
 from .cli_base import PitopCliException
@@ -14,7 +13,6 @@ from .cli_base import PitopCliException
 lookup_dict = {
     "brightness": BrightnessCLI,
     "devices": DeviceCLI,
-    "host": HostCLI,
     "battery": BatteryCLI,
     "oled": OledCLI
 }

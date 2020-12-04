@@ -1,6 +1,7 @@
 from pitopcommon.firmware_device import FirmwareDevice
 from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.command_runner import run_command
+from pitopcommon.common_ids import FirmwareDeviceID
 
 from subprocess import getstatusoutput
 
@@ -34,6 +35,8 @@ def upgradable_pitop_peripherals():
     peripherals = []
 
     for device_enum, device_info in FirmwareDevice.device_info.items():
+        if device_enum is FirmwareDeviceID.pt4_hub:
+            continue
         device_str = device_enum.name
 
         device_address = device_info.get("i2c_addr")
