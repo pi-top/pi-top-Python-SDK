@@ -2,6 +2,8 @@
 API - pi-top [4] Mini Screen - Buttons
 ======================================
 
+.. image:: ../_static/miniscreen/pi-top_4_Front_BUTTONS.jpg
+
 This module allows you to interact with the buttons on the front of a pi-top [4].
 You can write code to respond to these buttons being pressed and released.
 The following code example shows two different ways of doing this.
