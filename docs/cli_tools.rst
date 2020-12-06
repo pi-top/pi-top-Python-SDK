@@ -86,27 +86,47 @@ Example
     Time Remaining: 104
     Wattage: -41
 
-pi-top brightness
+pi-top display
 =========================
 
-On pi-top devices with a screen, it allows to query and control its brightness.
-
-Running `pt-brightness` on its own will report back the current brightness value.
+On pi-top devices with a screen, it allows to control different display settings.
 
 .. code-block:: bash
 
-    pi-top brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
-                     [-d] [-l {0,1}] [-t TIMEOUT] [-v]
-
+    pi-top display [-h] {brightness,backlight,timeout}
 
 Where:
 
 -h, --help
     Show a help message and exits
 
--b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, --brightness_value {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
-    Set screen brightness level [1-10] on pi-topHUB, or
-    [1-16] or pi-topHUB v2
+brightness
+    Control display brightness
+
+backlight
+    Control display backlight
+
+timeout
+    Set the timeout before the screen blanks in seconds (0 to disable)
+
+
+pi-top display brightness
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using `pi-top display brightness` without arguments will return the current brightness value.
+
+.. code-block:: bash
+
+    pi-top display brightness [-h] [-v] [-i] [-d]
+                                 [brightness_value]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-v, --verbose
+    Increase verbosity of output
 
 -i, --increment_brightness
     Increment screen brightness level
@@ -114,15 +134,9 @@ Where:
 -d, --decrement_brightness
     Decrement screen brightness level
 
--l {0,1}, --backlight {0,1}
-    Set the screen backlight state [0-1]
-
--t TIMEOUT, --timeout TIMEOUT
-    Set the timeout before the screen blanks in seconds (0
-    to disable)
-
--v, --verbose
-    Increase output verbosity
+brightness_value
+    Set screen brightness level [1-10] on pi-topHUB, or
+    [1-16] or pi-topHUB v2
 
 
 Example
@@ -130,8 +144,50 @@ Example
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pi-top brightness
+    pi@pi-top:~ $ pi-top display brightness
     16
+
+
+pi-top display brightness
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using `pi-top display backlight` without arguments will return the current backlight status.
+
+.. code-block:: bash
+
+    pi-top display backlight [-h] [-v] [{0,1}]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-v, --verbose
+    Increase verbosity of output
+
+{0,1}
+    Set the screen backlight state [0-1]
+
+pi-top display tiemout
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using `pi-top display tiemout` without arguments will return the screen's timeout value.
+
+.. code-block:: bash
+
+    pi-top display timeout [-h] [-v] [timeout_value]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-v, --verbose
+    Increase verbosity of output
+
+timeout_value
+    Timeout value in seconds
+
 
 pi-top devices
 ===================
@@ -255,7 +311,7 @@ Example
 pt-brightness
 ==================
 
-To learn about the command arguments, check `pi-top brightness`_
+To learn about the command arguments, check `pi-top display brightness`.
 
 Example
 ~~~~~~~~~~~~~~~~~
@@ -263,7 +319,7 @@ Example
 .. code-block:: bash
 
     pi@pi-top:~ $ pt-brightness
-    Note: Use of the 'pt-brightness' is now deprecated. Please use 'pi-top brightness' instead.
+    Note: Use of the 'pt-brightness' is now deprecated. Please use 'pi-top display brightness' instead.
     16
 
 pt-devices
