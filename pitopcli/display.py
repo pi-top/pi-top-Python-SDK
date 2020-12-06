@@ -40,17 +40,16 @@ class DisplayCLI(CliBaseClass):
         display = Display()
 
         if self.args.display_subcommand == "brightness":
-            print(vars(self.args))
-            if vars(self.args).get('brightness_value') is not None:
-                self.debug_print("REQ:\tSETTING BRIGHTNESS TO " +
-                                 str(self.args.brightness_value), 1)
-                display.brightness = self.args.brightness_value
-            elif self.args.increment_brightness:
+            if self.args.increment_brightness:
                 self.debug_print("REQ:\tINCREMENTING BRIGHTNESS", 1)
                 display.increment_brightness()
             elif self.args.decrement_brightness:
                 self.debug_print("REQ:\tDECREMENTING BRIGHTNESS", 1)
                 display.decrement_brightness()
+            elif vars(self.args).get('brightness_value') or self.args.brightness_value is not None:
+                self.debug_print("REQ:\tSETTING BRIGHTNESS TO " +
+                                 str(self.args.brightness_value), 1)
+                display.brightness = self.args.brightness_value
             else:
                 self.debug_print("REQ:\tCURRENT BRIGHTNESS", 1)
                 print(display.brightness)
@@ -86,17 +85,7 @@ class DisplayCLI(CliBaseClass):
 
         # "pi-top display brightness"
         brightness_parser = subparser.add_parser("brightness", help="Control display brightness", parents=[parent_parser])
-        brightness_parser.add_argument("brightness_value",
-                                       help="Set screen brightness level [1-10] on pi-topHUB, or [1-16] or pi-topHUB v2",
-                                       type=int,
-                                       choices=range(1, 17),
-                                       nargs='?')
-        brightness_parser.add_argument("-i", "--increment_brightness",
-                                       help="Increment screen brightness level",
-                                       action="store_true")
-        brightness_parser.add_argument("-d", "--decrement_brightness",
-                                       help="Decrement screen brightness level",
-                                       action="store_true")
+        cls.add_brightness_arguments(brightness_parser)
 
         # "pi-top display backlight"
         backlight_parser = subparser.add_parser("backlight", help="Control display backlight", parents=[parent_parser])
@@ -114,10 +103,38 @@ class DisplayCLI(CliBaseClass):
                                     type=int,
                                     nargs='?')
 
+    @classmethod
+    def add_brightness_arguments(cls, parser):
+        parser.add_argument("brightness_value",
+                            help="Set screen brightness level [1-10] on pi-topHUB, or [1-16] or pi-topHUB v2",
+                            type=int,
+                            choices=range(1, 17),
+                            nargs='?')
+        parser.add_argument("-i", "--increment_brightness",
+                            help="Increment screen brightness level",
+                            action="store_true")
+        parser.add_argument("-d", "--decrement_brightness",
+                            help="Decrement screen brightness level",
+                            action="store_true")
+
 
 def main():
     from .deprecated_cli_runner import run
     run(DisplayCLI)
+
+
+def brightness():
+    parser = ArgumentParser("brightness", description="Control display brightness")
+    DisplayCLI.add_brightness_arguments(parser)
+    args = parser.parse_args()
+    args = vars(args)
+    args["display_subcommand"] = "brightness"
+
+    from .deprecated_cli_runner import run_with_args
+    run_with_args(DisplayCLI,
+                  old_command="pt-brightness",
+                  new_command="pi-top display brightness",
+                  args_dict=args)
 
 
 if __name__ == "__main__":
