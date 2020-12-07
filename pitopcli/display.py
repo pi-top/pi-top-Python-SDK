@@ -6,7 +6,7 @@ from .cli_base import CliBaseClass, PitopCliException
 
 
 class DisplayCLI(CliBaseClass):
-    parser_help = 'communicate and control the device\'s display'
+    parser_help = "communicate and control the device's display"
     cli_name = "display"
 
     def __init__(self, args) -> None:
