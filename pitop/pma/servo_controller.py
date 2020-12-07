@@ -40,20 +40,20 @@ class ServoController:
 
     @type_check
     def set_min_pulse_width(self, min_width_us: int) -> None:
-        # self._mcu_device.write_word(ServoMotorSetup.REGISTER_MIN_PULSE_WIDTH,
-        #                             min_width_us,
-        #                             signed=False,
-        #                             little_endian=True)
+        self._mcu_device.write_word(ServoMotorSetup.REGISTER_MIN_PULSE_WIDTH,
+                                    min_width_us,
+                                    signed=False,
+                                    little_endian=True)
 
         self.__lower_duty_cycle = ServoHardwareSpecs.DUTY_REGISTER_RANGE * ((min_width_us * 1e-6) * self.pwm_frequency())
         self.__lower_duty_cycle = int(round(self.__lower_duty_cycle))
 
     @type_check
     def set_max_pulse_width(self, max_width_us: int) -> None:
-        # self._mcu_device.write_word(ServoMotorSetup.REGISTER_MAX_PULSE_WIDTH,
-        #                             max_width_us,
-        #                             signed=False,
-        #                             little_endian=True)
+        self._mcu_device.write_word(ServoMotorSetup.REGISTER_MAX_PULSE_WIDTH,
+                                    max_width_us,
+                                    signed=False,
+                                    little_endian=True)
 
         self.__upper_duty_cycle = ServoHardwareSpecs.DUTY_REGISTER_RANGE * ((max_width_us * 1e-6) * self.pwm_frequency())
         self.__upper_duty_cycle = int(round(self.__upper_duty_cycle))
