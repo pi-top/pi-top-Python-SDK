@@ -25,19 +25,39 @@ class ImuController:
     def set_imu_config(self, imu_function: int, enable: bool):
         self._mcu_device.write_word(self._enable_registers[imu_function], int(enable), little_endian=True, signed=False)
 
-    def set_acc_config(self, enable: bool):
+    @property
+    def acc_enable(self):
+        return self._acc_enable
+
+    @acc_enable.setter
+    def acc_enable(self, enable: bool):
         self.set_imu_config(RegisterTypes.ACC.value, enable)
         self._acc_enable = enable
 
-    def set_gyro_config(self, enable: bool):
+    @property
+    def gyro_enable(self):
+        return self._gyro_enable
+
+    @gyro_enable.setter
+    def gyro_enable(self, enable: bool):
         self.set_imu_config(RegisterTypes.GYRO.value, enable)
         self._gyro_enable = enable
 
-    def set_mag_config(self, enable: bool):
+    @property
+    def mag_enable(self):
+        return self._mag_enable
+
+    @mag_enable.setter
+    def mag_enable(self, enable: bool):
         self.set_imu_config(RegisterTypes.MAG.value, enable)
         self._mag_enable = enable
 
-    def set_orientation_config(self, enable: bool):
+    @property
+    def orientation_enable(self):
+        return self._mag_enable
+
+    @orientation_enable.setter
+    def orientation_enable(self, enable: bool):
         self.set_imu_config(RegisterTypes.ORIENTATION.value, enable)
         self._orientation_enable = enable
 
@@ -66,19 +86,19 @@ class ImuController:
 
     def get_accelerometer_raw(self):
         if not self._acc_enable:
-            self.set_acc_config(enable=True)
+            self.acc_enable = True
 
         return self.get_raw_data(RegisterTypes.ACC.value)
 
     def get_gyroscope_raw(self):
         if not self._gyro_enable:
-            self.set_gyro_config(enable=True)
+            self.gyro_enable = True
 
         return self.get_raw_data(RegisterTypes.GYRO.value)
 
     def get_magnetometer_raw(self):
         if not self._mag_enable:
-            self.set_mag_config(enable=True)
+            self.mag_enable = True
 
         return self.get_raw_data(RegisterTypes.MAG.value)
 
