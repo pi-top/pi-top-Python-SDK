@@ -20,7 +20,7 @@ class Imu:
 
     @property
     def orientation_degrees(self):
-        roll, pitch, yaw = self._imu_controller.get_orientation_data()
+        roll, pitch, yaw = self._imu_controller.orientation_data
 
         data = {
             'roll': roll,
@@ -49,7 +49,7 @@ class Imu:
 
     @property
     def accelerometer_raw(self):
-        x, y, z = self._imu_controller.accelerometer_raw()
+        x, y, z = self._imu_controller.accelerometer_raw
 
         data = {
             'x': x,
@@ -61,7 +61,7 @@ class Imu:
 
     @property
     def gyroscope_raw(self):
-        x, y, z = self._imu_controller.gyroscope_raw()
+        x, y, z = self._imu_controller.gyroscope_raw
 
         data = {
             'x': x,
@@ -79,7 +79,7 @@ class Imu:
             intensity of the axis in microteslas (µT).
         :rtype: dict
         """
-        x, y, z = self._imu_controller.magnetometer_raw()
+        x, y, z = self._imu_controller.magnetometer_raw
 
         data = {
             'x': x,
