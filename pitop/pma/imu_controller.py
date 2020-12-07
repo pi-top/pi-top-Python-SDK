@@ -61,6 +61,27 @@ class ImuController:
         self.set_imu_config(RegisterTypes.ORIENTATION.value, enable)
         self._orientation_enable = enable
 
+    @property
+    def accelerometer_raw(self):
+        if not self.orientation_enable:
+            self.acc_enable = True
+
+        return self.get_raw_data(RegisterTypes.ACC.value)
+
+    @property
+    def gyroscope_raw(self):
+        if not self.gyro_enable:
+            self.gyro_enable = True
+
+        return self.get_raw_data(RegisterTypes.GYRO.value)
+
+    @property
+    def magnetometer_raw(self):
+        if not self.mag_enable:
+            self.mag_enable = True
+
+        return self.get_raw_data(RegisterTypes.MAG.value)
+
     def read_imu_data(self, data_register: int):
         return self._mcu_device.read_signed_word(data_register, little_endian=True)
 
@@ -83,25 +104,3 @@ class ImuController:
                 self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.YAW]) / self._MCU_DATA_SCALE
 
         return roll, pitch, yaw
-
-    @property
-    def accelerometer_raw(self):
-        if not self.orientation_enable:
-            self.acc_enable = True
-
-        return self.get_raw_data(RegisterTypes.ACC.value)
-
-    @property
-    def gyroscope_raw(self):
-        if not self.gyro_enable:
-            self.gyro_enable = True
-
-        return self.get_raw_data(RegisterTypes.GYRO.value)
-
-    @property
-    def magnetometer_raw(self):
-        if not self.mag_enable:
-            self.mag_enable = True
-
-        return self.get_raw_data(RegisterTypes.MAG.value)
-
