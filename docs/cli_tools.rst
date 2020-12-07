@@ -113,7 +113,9 @@ timeout
 pi-top display brightness
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using `pi-top display brightness` without arguments will return the current brightness value.
+Request or change the value of the display's brightness.
+
+Note: this only works for the original pi-top, pi-topCEED and pi-top [3]. The pi-top [4] Full HD Touch Display uses hardware buttons to control the brightness, and is not controllable via this SDK.
 
 .. code-block:: bash
 
@@ -139,6 +141,11 @@ brightness_value
     [1-16] or pi-topHUB v2
 
 
+Using `pi-top display brightness` without arguments will return the current brightness value.
+
+Note that the `brightness_value` range differs for different devices: for pi-top [3] is from 0-16; pi-top [1] and CEED is 0-10.
+
+
 Example
 ~~~~~~~~~~~~~~~~~
 
@@ -148,7 +155,7 @@ Example
     16
 
 
-pi-top display brightness
+pi-top display backlight
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using `pi-top display backlight` without arguments will return the current backlight status.
@@ -168,10 +175,12 @@ Where:
 {0,1}
     Set the screen backlight state [0-1]
 
-pi-top display timeout
+pi-top display blank_time
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using `pi-top display timeout` without arguments will return the screen's timeout value.
+Set the time before the screen goes blank on inactivity periods.
+
+Using `pi-top display blank_time` without arguments will return the screen's timeout value.
 
 .. code-block:: bash
 
@@ -186,7 +195,7 @@ Where:
     Increase verbosity of output
 
 timeout_value
-    Timeout value in seconds
+    Timeout value in seconds. Set to 0 to disable.
 
 
 pi-top devices

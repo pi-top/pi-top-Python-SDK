@@ -49,7 +49,7 @@ class DisplayCLI(CliBaseClass):
             if vars(self.args).get("backlight_value") is None:
                 print(display.backlight)
             else:
-                display.backlight = self.args.backlight_value > 0
+                display.backlight = self.args.backlight_value in ("on", 1)
 
         elif self.args.display_subcommand == "blank_time":
             if vars(self.args).get("timeout_value") is None:
@@ -64,11 +64,6 @@ class DisplayCLI(CliBaseClass):
                                           required=True,
                                           dest="display_subcommand")
 
-        # manage arguments common to subparser options
-        parent_parser = ArgumentParser(add_help=False)
-        parent_parser.add_argument("-v", "--verbose",
-                                   action="count")
-
         # "pi-top display brightness"
         brightness_parser = subparser.add_parser("brightness",
                                                  help="Control display brightness")
@@ -78,14 +73,13 @@ class DisplayCLI(CliBaseClass):
         backlight_parser = subparser.add_parser("backlight",
                                                 help="Control display backlight")
         backlight_parser.add_argument("backlight_value",
-                                      help="Set the screen backlight state [0-1]",
-                                      type=int,
-                                      choices=range(2),
+                                      help="Set the screen backlight state",
+                                      choices=("on", "off", 0, 1),
                                       nargs='?')
 
-        # "pi-top display timeout"
-        timeout_parser = subparser.add_parser(
-            "timeout", help="Set the timeout before the screen blanks in seconds (0 to disable)", parents=[parent_parser])
+        # "pi-top display blank_time"
+        timeout_parser = subparser.add_parser("blank_time",
+                                              help="Set the time before the screen goes blank on inactivity (0 to disable)")
         timeout_parser.add_argument("timeout_value",
                                     help="Timeout value",
                                     type=int,
