@@ -84,20 +84,23 @@ class ImuController:
 
         return roll, pitch, yaw
 
-    def get_accelerometer_raw(self):
-        if not self._acc_enable:
+    @property
+    def accelerometer_raw(self):
+        if not self.orientation_enable:
             self.acc_enable = True
 
         return self.get_raw_data(RegisterTypes.ACC.value)
 
-    def get_gyroscope_raw(self):
-        if not self._gyro_enable:
+    @property
+    def gyroscope_raw(self):
+        if not self.gyro_enable:
             self.gyro_enable = True
 
         return self.get_raw_data(RegisterTypes.GYRO.value)
 
-    def get_magnetometer_raw(self):
-        if not self._mag_enable:
+    @property
+    def magnetometer_raw(self):
+        if not self.mag_enable:
             self.mag_enable = True
 
         return self.get_raw_data(RegisterTypes.MAG.value)

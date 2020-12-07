@@ -46,7 +46,7 @@ class Imu:
         return data
 
     def get_accelerometer_raw(self):
-        x, y, z = self._imu_controller.get_accelerometer_raw()
+        x, y, z = self._imu_controller.accelerometer_raw()
 
         data = {
             'x': x,
@@ -57,7 +57,7 @@ class Imu:
         return data
 
     def get_gyroscope_raw(self):
-        x, y, z = self._imu_controller.get_gyroscope_raw()
+        x, y, z = self._imu_controller.gyroscope_raw()
 
         data = {
             'x': x,
@@ -74,7 +74,7 @@ class Imu:
             intensity of the axis in microteslas (µT).
         :rtype: dict
         """
-        x, y, z = self._imu_controller.get_magnetometer_raw()
+        x, y, z = self._imu_controller.magnetometer_raw()
 
         data = {
             'x': x,
