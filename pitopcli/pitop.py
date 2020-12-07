@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 from sys import exit
 
-from .brightness import BrightnessCLI
+from .display import DisplayCLI
 from .devices import DeviceCLI
 from .battery import BatteryCLI
 from .oled import OledCLI
@@ -11,9 +11,11 @@ from .cli_base import PitopCliException
 
 
 lookup_dict = {
-    "brightness": BrightnessCLI,
-    "devices": DeviceCLI,
     "battery": BatteryCLI,
+    "brightness": DisplayCLI,
+    "devices": DeviceCLI,
+    "display": DisplayCLI,
+    "host": DeviceCLI,
     "oled": OledCLI
 }
 
