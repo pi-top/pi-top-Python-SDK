@@ -4,9 +4,9 @@ from time import sleep
 imu = Imu()
 
 while True:
-    acc = imu.get_accelerometer_raw()
-    gyro = imu.get_gyroscope_raw()
-    mag = imu.get_magnetometer_raw()
+    acc = imu.accelerometer_raw()
+    gyro = imu.gyroscope_raw()
+    mag = imu.magnetometer_raw()
 
     print("acc: {x}, {y}, {z}".format(**acc))
     print("gyro: {x}, {y}, {z}".format(**gyro))

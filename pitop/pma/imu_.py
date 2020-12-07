@@ -11,13 +11,15 @@ class Imu:
         self._imu_controller = ImuController()
         weakref.finalize(self._imu_controller, self._imu_controller.cleanup)
 
-    def get_orientation_radians(self):
-        data = self.get_orientation_degrees()
+    @property
+    def orientation_radians(self):
+        data = self.orientation_degrees
         for key, value in data.items():
             data[key] = math.radians(value)
         return data
 
-    def get_orientation_degrees(self):
+    @property
+    def orientation_degrees(self):
         roll, pitch, yaw = self._imu_controller.get_orientation_data()
 
         data = {
@@ -29,11 +31,11 @@ class Imu:
 
     @property
     def orientation(self):
-        return self.get_orientation_degrees()
+        return self.orientation_degrees
 
     @property
     def accelerometer_orientation(self):
-        acc_data = self.get_accelerometer_raw()
+        acc_data = self.accelerometer_raw
         x, y, z = itemgetter('x', 'y', 'z')(acc_data)
         roll = math.atan2(x, math.sqrt(y**2 + z**2)) * 180 / math.pi
         pitch = math.atan2(-y, math.sqrt(x**2 + z**2)) * 180 / math.pi
@@ -45,7 +47,8 @@ class Imu:
 
         return data
 
-    def get_accelerometer_raw(self):
+    @property
+    def accelerometer_raw(self):
         x, y, z = self._imu_controller.accelerometer_raw()
 
         data = {
@@ -56,7 +59,8 @@ class Imu:
 
         return data
 
-    def get_gyroscope_raw(self):
+    @property
+    def gyroscope_raw(self):
         x, y, z = self._imu_controller.gyroscope_raw()
 
         data = {
@@ -67,7 +71,8 @@ class Imu:
 
         return data
 
-    def get_magnetometer_raw(self):
+    @property
+    def magnetometer_raw(self):
         """
         Gets the raw x, y and z axis magnetometer data
         :return: A dictionary object indexed by the strings x, y and z. The values are Floats representing the magnetic
