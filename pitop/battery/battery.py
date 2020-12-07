@@ -68,12 +68,12 @@ class Battery:
         return response.parameters()
 
     @property
-    def is_charging(self):
+    def charging(self):
         __charging_state, _, _, _ = Battery.get_full_state()
         return __charging_state != "0"
 
     @property
-    def is_full(self):
+    def full(self):
         __charging_state, _, _, _ = Battery.get_full_state()
         return __charging_state == "2"
 
