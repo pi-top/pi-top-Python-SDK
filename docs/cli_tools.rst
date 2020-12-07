@@ -89,7 +89,7 @@ Example
 pi-top display
 =========================
 
-On pi-top devices with a screen, it allows to control different display settings.
+This command provides a way to control different display settings on pi-top devices with a built-in screen.
 
 .. code-block:: bash
 
@@ -137,8 +137,8 @@ Where:
     Decrement screen brightness level
 
 brightness_value
-    Set screen brightness level [1-10] on pi-topHUB, or
-    [1-16] or pi-topHUB v2
+    Set screen brightness level; [1-10] on pi-top [1] and pi-topCEED,
+    [1-16] for pi-top [3]
 
 
 Using `pi-top display brightness` without arguments will return the current brightness value.
