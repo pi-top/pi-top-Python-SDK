@@ -6,7 +6,7 @@ from .cli_base import CliBaseClass, PitopCliException
 
 
 class DisplayCLI(CliBaseClass):
-    parser_help = 'communicate and control the device\'s display'
+    parser_help = "communicate and control the device's display"
     cli_name = "display"
 
     def __init__(self, args) -> None:
@@ -20,10 +20,6 @@ class DisplayCLI(CliBaseClass):
         except Exception as e:
             print(f"Error on pitop-brightness.run: {e}")
             return 1
-
-    def debug_print(self, text, required_verbosity_lvl=1) -> None:
-        if self.args.verbose is not None and self.args.verbose >= required_verbosity_lvl:
-            print(text)
 
     def validate_args(self) -> None:
         # Handle invalid command line parameter combinations
@@ -41,40 +37,30 @@ class DisplayCLI(CliBaseClass):
 
         if self.args.display_subcommand == "brightness":
             if self.args.increment_brightness:
-                self.debug_print("REQ:\tINCREMENTING BRIGHTNESS", 1)
                 display.increment_brightness()
             elif self.args.decrement_brightness:
-                self.debug_print("REQ:\tDECREMENTING BRIGHTNESS", 1)
                 display.decrement_brightness()
-            elif vars(self.args).get('brightness_value') or self.args.brightness_value is not None:
-                self.debug_print("REQ:\tSETTING BRIGHTNESS TO " +
-                                 str(self.args.brightness_value), 1)
+            elif vars(self.args).get("brightness_value") or self.args.brightness_value is not None:
                 display.brightness = self.args.brightness_value
             else:
-                self.debug_print("REQ:\tCURRENT BRIGHTNESS", 1)
                 print(display.brightness)
 
         elif self.args.display_subcommand == "backlight":
-            if vars(self.args).get('backlight_value') is None:
-                self.debug_print("REQ:\tCURRENT BACKLIGHT", 1)
+            if vars(self.args).get("backlight_value") is None:
                 print(display.backlight)
             else:
-                backlight_state = self.args.backlight_value > 0
-                self.debug_print(f"REQ:\tTURNING {'ON' if backlight_state else 'OFF'} BACKLIGHT", 1)
-                display.backlight = backlight_state
+                display.backlight = self.args.backlight_value > 0
 
-        elif self.args.display_subcommand == "timeout":
-            if vars(self.args).get('timeout_value') is None:
-                self.debug_print("REQ:\tCURRENT TIMEOUT", 1)
+        elif self.args.display_subcommand == "blank_time":
+            if vars(self.args).get("timeout_value") is None:
                 print(display.blanking_timeout)
             else:
-                self.debug_print(f"REQ:\tSETTING TIMEOUT TO {self.args.timeout_value}", 1)
                 display.blanking_timeout = self.args.timeout_value
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
         subparser = parser.add_subparsers(title="pi-top display utility",
-                                          description="Interface to communicate with the device\'s display",
+                                          description="Interface to communicate with the device's display",
                                           required=True,
                                           dest="display_subcommand")
 
@@ -84,11 +70,13 @@ class DisplayCLI(CliBaseClass):
                                    action="count")
 
         # "pi-top display brightness"
-        brightness_parser = subparser.add_parser("brightness", help="Control display brightness", parents=[parent_parser])
+        brightness_parser = subparser.add_parser("brightness",
+                                                 help="Control display brightness")
         cls.add_brightness_arguments(brightness_parser)
 
         # "pi-top display backlight"
-        backlight_parser = subparser.add_parser("backlight", help="Control display backlight", parents=[parent_parser])
+        backlight_parser = subparser.add_parser("backlight",
+                                                help="Control display backlight")
         backlight_parser.add_argument("backlight_value",
                                       help="Set the screen backlight state [0-1]",
                                       type=int,
