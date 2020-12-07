@@ -161,7 +161,7 @@ __entry_points__ = {
         "pt-battery=pitopcli.battery:main",
         "pt-brightness=pitopcli.brightness:main",
         "pt-devices=pitopcli.devices:main",
-        "pt-host=pitopcli.host:main",
+        "pt-host=pitopcli.devices:host",
         "pt-oled=pitopcli.oled:main",
     ]
 }
