@@ -9,13 +9,13 @@ class RegisterTypes(Enum):
     ORIENTATION = 3
 
 
-class RawDataRegisterTypes:
+class RawRegisterTypes:
     X = 0
     Y = 1
     Z = 2
 
 
-class OrientationDataRegisterTypes:
+class OrientationRegisterTypes:
     ROLL = 0
     PITCH = 1
     YAW = 2
@@ -30,24 +30,24 @@ ImuEnableRegisters = {
 
 ImuDataRegisters = {
     RegisterTypes.ACC.value: {
-        RawDataRegisterTypes.X: 0x80,
-        RawDataRegisterTypes.Y: 0x81,
-        RawDataRegisterTypes.Z: 0x82
+        RawRegisterTypes.X: 0x80,
+        RawRegisterTypes.Y: 0x81,
+        RawRegisterTypes.Z: 0x82
     },
     RegisterTypes.GYRO.value: {
-        RawDataRegisterTypes.X: 0x83,
-        RawDataRegisterTypes.Y: 0x84,
-        RawDataRegisterTypes.Z: 0x85
+        RawRegisterTypes.X: 0x83,
+        RawRegisterTypes.Y: 0x84,
+        RawRegisterTypes.Z: 0x85
     },
     RegisterTypes.MAG.value: {
-        RawDataRegisterTypes.X: 0x86,
-        RawDataRegisterTypes.Y: 0x87,
-        RawDataRegisterTypes.Z: 0x88
+        RawRegisterTypes.X: 0x86,
+        RawRegisterTypes.Y: 0x87,
+        RawRegisterTypes.Z: 0x88
     },
     RegisterTypes.ORIENTATION.value: {
-        OrientationDataRegisterTypes.ROLL: 0x89,
-        OrientationDataRegisterTypes.PITCH: 0x8A,
-        OrientationDataRegisterTypes.YAW: 0x8B
+        OrientationRegisterTypes.ROLL: 0x89,
+        OrientationRegisterTypes.PITCH: 0x8A,
+        OrientationRegisterTypes.YAW: 0x8B
     }
 }
 

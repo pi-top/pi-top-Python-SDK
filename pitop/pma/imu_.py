@@ -2,6 +2,9 @@
 
 from .imu_controller import ImuController
 import weakref
+import math
+from operator import itemgetter
+
 
 class Imu:
     def __init__(self):
@@ -9,30 +12,60 @@ class Imu:
         weakref.finalize(self._imu_controller, self._imu_controller.cleanup)
 
     def get_orientation_radians(self):
-        pass
+        data = self.get_orientation_degrees()
+        for key, value in data.items():
+            data[key] = math.radians(value)
+        return data
 
     def get_orientation_degrees(self):
-        pass
+        roll, pitch, yaw = self._imu_controller.get_orientation_data()
 
-    def get_orientation(self):
-        self.get_orientation_degrees()
+        data = {
+            'roll': roll,
+            'pitch': pitch,
+            'yaw': yaw
+        }
+        return data
 
-    def get_acceleration(self):
-        pass
+    @property
+    def orientation(self):
+        return self.get_orientation_degrees()
+
+    @property
+    def accelerometer_orientation(self):
+        acc_data = self.get_accelerometer_raw()
+        x, y, z = itemgetter('x', 'y', 'z')(acc_data)
+        roll = math.atan2(x, math.sqrt(y**2 + z**2)) * 180 / math.pi
+        pitch = math.atan2(-y, math.sqrt(x**2 + z**2)) * 180 / math.pi
+
+        data = {
+            'roll': roll,
+            'pitch': pitch
+        }
+
+        return data
 
     def get_accelerometer_raw(self):
-        pass
+        x, y, z = self._imu_controller.get_accelerometer_raw()
 
-    def get_gyroscope(self):
-        pass
+        data = {
+            'x': x,
+            'y': y,
+            'z': z
+        }
+
+        return data
 
     def get_gyroscope_raw(self):
-        pass
+        x, y, z = self._imu_controller.get_gyroscope_raw()
 
-    def get_magnetometer(self):
-        mag_data = self.get_magnetometer_raw()
+        data = {
+            'x': x,
+            'y': y,
+            'z': z
+        }
 
-        pass
+        return data
 
     def get_magnetometer_raw(self):
         """
@@ -41,7 +74,15 @@ class Imu:
             intensity of the axis in microteslas (µT).
         :rtype: dict
         """
-        pass
+        x, y, z = self._imu_controller.get_magnetometer_raw()
+
+        data = {
+            'x': x,
+            'y': y,
+            'z': z
+        }
+
+        return data
 
     def calibrate_gyroscope(self):
         pass

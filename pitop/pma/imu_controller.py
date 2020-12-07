@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .common.imu_registers import ImuRegisters, RegisterTypes, RawDataRegisterTypes, OrientationDataRegisterTypes
+from .common.imu_registers import ImuRegisters, RegisterTypes, RawRegisterTypes, OrientationRegisterTypes
 from .plate_interface import PlateInterface
 
 
@@ -8,6 +8,7 @@ class ImuController:
     """
     Class used to read/write IMU registers from the Expansion Plate MCU
     """
+    _MCU_DATA_SCALE = 100.0
     def __init__(self):
         self._data_registers = ImuRegisters.DATA
         self._enable_registers = ImuRegisters.ENABLE
@@ -44,37 +45,40 @@ class ImuController:
         return self._mcu_device.read_signed_word(data_register, little_endian=True)
 
     def get_raw_data(self, data_type: int):
-        data = {
-            'x': self.read_imu_data(self._data_registers[data_type][RawDataRegisterTypes.X]),
-            'y': self.read_imu_data(self._data_registers[data_type][RawDataRegisterTypes.Y]),
-            'z': self.read_imu_data(self._data_registers[data_type][RawDataRegisterTypes.Z]),
-        }
+        x = self.read_imu_data(self._data_registers[data_type][RawRegisterTypes.X]) / self._MCU_DATA_SCALE
+        y = self.read_imu_data(self._data_registers[data_type][RawRegisterTypes.Y]) / self._MCU_DATA_SCALE
+        z = self.read_imu_data(self._data_registers[data_type][RawRegisterTypes.Z]) / self._MCU_DATA_SCALE
 
-        return data
+        return x, y, z
 
     def get_orientation_data(self):
-        data = {
-            'roll': self.read_imu_data(self._data_registers[RegisterTypes.ORIENTATION][OrientationDataRegisterTypes.ROLL]),
-            'pitch': self.read_imu_data(self._data_registers[RegisterTypes.ORIENTATION][OrientationDataRegisterTypes.PITCH]),
-            'yaw': self.read_imu_data(self._data_registers[RegisterTypes.ORIENTATION][OrientationDataRegisterTypes.YAW])
-        }
-        return data
+
+        roll = self.read_imu_data(
+            self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.ROLL]) / self._MCU_DATA_SCALE,
+
+        pitch = self.read_imu_data(
+                self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.PITCH]) / self._MCU_DATA_SCALE,
+
+        yaw = self.read_imu_data(
+                self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.YAW]) / self._MCU_DATA_SCALE
+
+        return roll, pitch, yaw
 
     def get_accelerometer_raw(self):
         if not self._acc_enable:
             self.set_acc_config(enable=True)
 
-        return self.get_raw_data(RegisterTypes.ACC)
+        return self.get_raw_data(RegisterTypes.ACC.value)
 
     def get_gyroscope_raw(self):
         if not self._gyro_enable:
             self.set_gyro_config(enable=True)
 
-        return self.get_raw_data(RegisterTypes.GYRO)
+        return self.get_raw_data(RegisterTypes.GYRO.value)
 
     def get_magnetometer_raw(self):
         if not self._mag_enable:
             self.set_mag_config(enable=True)
 
-        return self.get_raw_data(RegisterTypes.MAG)
+        return self.get_raw_data(RegisterTypes.MAG.value)
 
