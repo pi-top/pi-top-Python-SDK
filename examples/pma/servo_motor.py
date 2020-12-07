@@ -22,9 +22,9 @@ sleep(1)
 speed = 10
 
 print("Setting target speed to ", -speed)
-servo.set_target_speed(-speed)
+servo.target_speed(-speed)
 sleep(5)
 
 print("Setting target speed to ", speed)
-servo.set_target_speed(speed)
+servo.target_speed(speed)
 sleep(5)

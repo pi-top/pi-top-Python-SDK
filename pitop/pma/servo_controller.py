@@ -90,8 +90,6 @@ class ServoController:
 
         mapped_speed = int(round(speed * 10))
 
-        # self._mcu_device.write_byte(0x50, 1)
-
         list_to_send = split_into_bytes(mapped_duty_cycle, 2, signed=True, little_endian=True)
         list_to_send += split_into_bytes(mapped_speed, 2, signed=True, little_endian=True)
 
