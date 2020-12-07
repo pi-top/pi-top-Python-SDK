@@ -9,6 +9,7 @@ class ImuController:
     Class used to read/write IMU registers from the Expansion Plate MCU
     """
     _MCU_DATA_SCALE = 100.0
+
     def __init__(self):
         self._data_registers = ImuRegisters.DATA
         self._enable_registers = ImuRegisters.ENABLE
@@ -89,10 +90,10 @@ class ImuController:
             self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.ROLL]) / self._MCU_DATA_SCALE,
 
         pitch = self._read_imu_data(
-                self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.PITCH]) / self._MCU_DATA_SCALE,
+            self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.PITCH]) / self._MCU_DATA_SCALE,
 
         yaw = self._read_imu_data(
-                self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.YAW]) / self._MCU_DATA_SCALE
+            self._data_registers[RegisterTypes.ORIENTATION][OrientationRegisterTypes.YAW]) / self._MCU_DATA_SCALE
 
         return roll, pitch, yaw
 
