@@ -4,6 +4,7 @@ from .core.controls import (  # noqa: F401
     get_device as _get_device,
     set_control_to_pi as _set_control_to_pi,
     set_control_to_hub as _set_control_to_hub,
+    _set_exclusive_mode
 )
 from .core.canvas import Canvas
 from .core.fps_regulator import FPS_Regulator
@@ -79,6 +80,10 @@ class OLED:
 
     def set_control_to_hub(self):
         _set_control_to_hub()
+
+    # Only intended to be used by pt-sys-oled
+    def _set_exclusive_mode(val: bool):
+        _set_exclusive_mode(val)
 
     def set_max_fps(self, max_fps):
         """
