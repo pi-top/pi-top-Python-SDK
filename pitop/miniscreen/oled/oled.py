@@ -1,5 +1,5 @@
 from .core.controls import (  # noqa: F401
-    device_is_active as __device_is_active,
+    device_is_active as _device_is_active,
     reset_device as _reset_device,
     get_device as _get_device,
     set_control_to_pi as _set_control_to_pi,
@@ -73,7 +73,7 @@ class OLED:
             pass
 
     def is_active(self):
-        __device_is_active()
+        _device_is_active()
 
     def set_control_to_pi(self):
         _set_control_to_pi()
