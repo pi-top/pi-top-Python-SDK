@@ -168,10 +168,10 @@ Where:
 {0,1}
     Set the screen backlight state [0-1]
 
-pi-top display tiemout
+pi-top display timeout
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using `pi-top display tiemout` without arguments will return the screen's timeout value.
+Using `pi-top display timeout` without arguments will return the screen's timeout value.
 
 .. code-block:: bash
 
