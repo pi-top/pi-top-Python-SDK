@@ -94,6 +94,3 @@ class Imu:
 
     def calibrate_magnetometer(self):
         pass
-
-
-
