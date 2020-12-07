@@ -27,38 +27,38 @@ class ImuController:
         self._mcu_device.write_word(self._enable_registers[imu_function], int(enable), little_endian=True, signed=False)
 
     @property
-    def _acc_enable(self):
+    def acc_enable(self):
         return self._acc_enable
 
-    @_acc_enable.setter
-    def _acc_enable(self, enable: bool):
+    @acc_enable.setter
+    def acc_enable(self, enable: bool):
         self._set_imu_config(RegisterTypes.ACC.value, enable)
         self._acc_enable = enable
 
     @property
-    def _gyro_enable(self):
+    def gyro_enable(self):
         return self._gyro_enable
 
-    @_gyro_enable.setter
-    def _gyro_enable(self, enable: bool):
+    @gyro_enable.setter
+    def gyro_enable(self, enable: bool):
         self._set_imu_config(RegisterTypes.GYRO.value, enable)
         self._gyro_enable = enable
 
     @property
-    def _mag_enable(self):
+    def mag_enable(self):
         return self._mag_enable
 
-    @_mag_enable.setter
-    def _mag_enable(self, enable: bool):
+    @mag_enable.setter
+    def mag_enable(self, enable: bool):
         self._set_imu_config(RegisterTypes.MAG.value, enable)
         self._mag_enable = enable
 
     @property
-    def _orientation_enable(self):
+    def orientation_enable(self):
         return self._mag_enable
 
-    @_orientation_enable.setter
-    def _orientation_enable(self, enable: bool):
+    @orientation_enable.setter
+    def orientation_enable(self, enable: bool):
         self._set_imu_config(RegisterTypes.ORIENTATION.value, enable)
         self._orientation_enable = enable
 
