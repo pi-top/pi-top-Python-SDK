@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pitop.display import Display
-from .cli_base import CliBaseClass
+from .cli_base import CliBaseClass, PitopCliException
 
 
 class BrightnessCLI(CliBaseClass):
@@ -17,7 +17,7 @@ class BrightnessCLI(CliBaseClass):
             self.perform_desired_action()
             return 0
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error on pitop-brightness.run: {e}")
             return 1
 
     def debug_print(self, text, required_verbosity_lvl=1) -> None:
@@ -27,9 +27,11 @@ class BrightnessCLI(CliBaseClass):
     def validate_args(self) -> None:
         # Handle invalid command line parameter combinations
         if self.args.brightness_value and (self.args.increment_brightness or self.args.decrement_brightness):
-            raise Exception("Cannot increment/decrement at the same time as setting brightness value")
+            print("Error on pitop-brightness.validate_args: Cannot increment/decrement at the same time as setting brightness value")
+            raise PitopCliException
         if self.args.increment_brightness and self.args.decrement_brightness:
-            raise Exception("Cannot increment and decrement brightness at the same time")
+            print("Error on pitop-brightness.validate_args: Cannot increment and decrement brightness at the same time")
+            raise PitopCliException
 
     def perform_desired_action(self) -> None:
         brightness_val_set = (self.args.brightness_value is not None)

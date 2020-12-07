@@ -17,7 +17,7 @@ class BatteryCLI(CliBaseClass):
             self.print_battery_state()
             return 0
         except Exception as e:
-            print(f"Error getting battery info: {e}")
+            print(f"Error on pitop-battery.run: {e}")
             return 1
 
     def print_battery_state(self) -> None:

@@ -5,15 +5,14 @@ from sys import exit
 
 from .brightness import BrightnessCLI
 from .devices import DeviceCLI
-from .host import HostCLI
 from .battery import BatteryCLI
 from .oled import OledCLI
+from .cli_base import PitopCliException
 
 
 lookup_dict = {
     "brightness": BrightnessCLI,
-    "device": DeviceCLI,
-    "host": HostCLI,
+    "devices": DeviceCLI,
     "battery": BatteryCLI,
     "oled": OledCLI
 }
@@ -47,9 +46,10 @@ def run(args):
         if cls:
             obj = cls(args)
             exit_code = obj.run()
-
+    except PitopCliException:
+        exit_code = 1
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error on pitop.run: {e}")
         exit_code = 1
 
     exit(exit_code)
