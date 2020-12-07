@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 from .imu_controller import ImuController
+import weakref
 
 class Imu:
     def __init__(self):
         self._imu_controller = ImuController()
+        weakref.finalize(self._imu_controller, self._imu_controller.cleanup)
 
     def get_orientation_radians(self):
         pass

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 
-class ImuRegisterTypes:
+class RegisterTypes(Enum):
     ACC = 0
     GYRO = 1
     MAG = 2
@@ -22,31 +22,36 @@ class OrientationDataRegisterTypes:
 
 
 ImuEnableRegisters = {
-    ImuRegisterTypes.ACC: 0x90,
-    ImuRegisterTypes.GYRO: 0x91,
-    ImuRegisterTypes.MAG: 0x92,
-    ImuRegisterTypes.ORIENTATION: 0x93
+    RegisterTypes.ACC.value: 0x90,
+    RegisterTypes.GYRO.value: 0x91,
+    RegisterTypes.MAG.value: 0x92,
+    RegisterTypes.ORIENTATION.value: 0x93
 }
 
 ImuDataRegisters = {
-    ImuRegisterTypes.ACC: {
+    RegisterTypes.ACC.value: {
         RawDataRegisterTypes.X: 0x80,
         RawDataRegisterTypes.Y: 0x81,
         RawDataRegisterTypes.Z: 0x82
     },
-    ImuRegisterTypes.GYRO: {
+    RegisterTypes.GYRO.value: {
         RawDataRegisterTypes.X: 0x83,
         RawDataRegisterTypes.Y: 0x84,
         RawDataRegisterTypes.Z: 0x85
     },
-    ImuRegisterTypes.MAG: {
+    RegisterTypes.MAG.value: {
         RawDataRegisterTypes.X: 0x86,
         RawDataRegisterTypes.Y: 0x87,
         RawDataRegisterTypes.Z: 0x88
     },
-    ImuRegisterTypes.ORIENTATION: {
+    RegisterTypes.ORIENTATION.value: {
         OrientationDataRegisterTypes.ROLL: 0x89,
         OrientationDataRegisterTypes.PITCH: 0x8A,
         OrientationDataRegisterTypes.YAW: 0x8B
     }
 }
+
+
+class ImuRegisters:
+    ENABLE = ImuEnableRegisters
+    DATA = ImuDataRegisters
