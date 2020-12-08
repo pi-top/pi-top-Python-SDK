@@ -5,11 +5,12 @@ import weakref
 import math
 from operator import itemgetter
 
-
 class Imu:
     def __init__(self):
-        self._imu_controller = ImuController()
-        weakref.finalize(self._imu_controller, self._imu_controller.cleanup)
+        self.imu_controller = ImuController()
+        self.imu_controller.acc_scaler = 2
+        self.imu_controller.gyro_scaler = 250
+        weakref.finalize(self.imu_controller, self.imu_controller.cleanup)
 
     @property
     def orientation_radians(self):
@@ -32,7 +33,7 @@ class Imu:
             angle of the axis in degrees.
         :rtype: dict
         """
-        roll, pitch, yaw = self._imu_controller.orientation_data
+        roll, pitch, yaw = self.imu_controller.orientation_data
 
         data = {
             'roll': roll,
@@ -56,7 +57,7 @@ class Imu:
             of the axis in degrees.
         :rtype: dict
         """
-        acc_data = self.accelerometer_raw
+        acc_data = self.accelerometer
         x, y, z = itemgetter('x', 'y', 'z')(acc_data)
         roll = math.degrees(math.atan2(x, math.sqrt(y**2 + z**2)))
         pitch = math.degrees(math.atan2(-y, math.sqrt(x**2 + z**2)))
@@ -69,14 +70,14 @@ class Imu:
         return data
 
     @property
-    def accelerometer_raw(self):
+    def accelerometer(self):
         """
-        Gets the raw x, y and z axis gyroscope data
+        Gets the x, y and z axis gyroscope data
         :return: A dictionary object indexed by the strings x, y and z. A dictionary object indexed by the strings x, y
             and z. The values are Floats representing the acceleration intensity of the axis in Gs.
         :rtype: dict
         """
-        x, y, z = self._imu_controller.accelerometer_raw
+        x, y, z = self.imu_controller.accelerometer_raw
 
         data = {
             'x': x,
@@ -87,14 +88,14 @@ class Imu:
         return data
 
     @property
-    def gyroscope_raw(self):
+    def gyroscope(self):
         """
-        Gets the raw x, y and z axis gyroscope data.
+        Gets the x, y and z axis gyroscope data.
         :return: A dictionary object indexed by the strings x, y and z. A dictionary object indexed by the strings x, y
             and z. The values are Floats representing the rotational intensity of the axis in radians per second.
         :rtype: dict
         """
-        x, y, z = self._imu_controller.gyroscope_raw
+        x, y, z = self.imu_controller.gyroscope_raw
 
         data = {
             'x': x,
@@ -105,14 +106,14 @@ class Imu:
         return data
 
     @property
-    def magnetometer_raw(self):
+    def magnetometer(self):
         """
-        Gets the raw x, y and z axis magnetometer data.
+        Gets the x, y and z axis magnetometer data.
         :return: A dictionary object indexed by the strings x, y and z. The values are Floats representing the magnetic
             intensity of the axis in microteslas (µT).
         :rtype: dict
         """
-        x, y, z = self._imu_controller.magnetometer_raw
+        x, y, z = self.imu_controller.magnetometer_raw
 
         data = {
             'x': x,
@@ -122,8 +123,12 @@ class Imu:
 
         return data
 
-    def calibrate_gyroscope(self):
-        pass
-
-    def calibrate_magnetometer(self):
-        pass
+    @property
+    def acc_mag_orientation(self):
+        """
+        Calculates roll, pitch and yaw orientations using accelerometer and magnetometer data.
+        :return: A dictionary object indexed by the strings roll, pitch and yaw. The values are Floats representing the
+            angle of the axis in degrees.
+        :rtype: dict
+        """
+        return

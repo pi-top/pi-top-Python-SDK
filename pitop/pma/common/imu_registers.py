@@ -27,6 +27,26 @@ ImuEnableRegisters = {
     RegisterTypes.ORIENTATION.value: 0x93
 }
 
+ImuConfigRegisters = {
+    RegisterTypes.ACC.value: 0xA0,
+    RegisterTypes.GYRO.value: 0xA2
+}
+
+ScaleMappings = {
+    RegisterTypes.ACC: {
+        2: 0x00,
+        4: 0x01,
+        8: 0x02,
+        16: 0x03
+    },
+    RegisterTypes.GYRO: {
+        250: 0x00,
+        500: 0x01,
+        1000: 0x02,
+        2000: 0x03
+    }
+}
+
 ImuDataRegisters = {
     RegisterTypes.ACC.value: {
         RawRegisterTypes.X: 0x80,
@@ -54,3 +74,4 @@ ImuDataRegisters = {
 class ImuRegisters:
     ENABLE = ImuEnableRegisters
     DATA = ImuDataRegisters
+    CONFIG = ImuConfigRegisters
