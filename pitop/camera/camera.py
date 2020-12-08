@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Event
 from inspect import signature
 
 from .core import (
@@ -29,6 +29,7 @@ class Camera:
 
         self._continue_processing = True
         self._frame_handler = FrameHandler()
+        self._new_frame_event = Event()
         self._process_image_thread = Thread(target=self._process_camera_output, daemon=True)
         self._process_image_thread.start()
 
@@ -175,10 +176,10 @@ class Camera:
         self._frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
 
     def _process_camera_output(self):
-
         while self._camera and self._continue_processing is True:
             try:
                 self._frame_handler.frame = self._camera.get_frame()
+                self._new_frame_event.set()
                 self._frame_handler.process()
             except Exception as e:
                 print(f"There was an error: {e}")
@@ -189,4 +190,14 @@ class Camera:
 
         By default, the returned image is formated as a :class:`PIL.Image.Image` object.
         """
+        return self._frame_handler.frame
+
+    def get_frame(self):
+        """
+        Returns the next frame captured by the camera.
+
+        By default, the returned image is formated as a :class:`PIL.Image.Image` object.
+        """
+        self._new_frame_event.wait()
+        self._new_frame_event.clear()
         return self._frame_handler.frame
