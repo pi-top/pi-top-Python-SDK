@@ -52,7 +52,6 @@ class CameraTestCase(TestCase):
         self.assertIsInstance(c._process_image_thread, Thread)
         self.assertTrue(c._process_image_thread.is_alive())
 
-    @skip
     def test_stops_background_thread_by_changing_an_attribute(self):
         c = Camera()
         c._continue_processing = False
