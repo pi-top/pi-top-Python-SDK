@@ -1,4 +1,5 @@
 from pitopcommon.logger import PTLogger
+import weakref
 
 from .servo_controller import ServoController, ServoHardwareSpecs
 
@@ -29,6 +30,7 @@ class ServoMotor:
         self.__has_set_angle = False
         self._zero_point = zero_point
         self._target_speed = 0
+        weakref.finalize(self._controller, self._controller.cleanup)
 
     @property
     def zero_point(self):
@@ -71,7 +73,7 @@ class ServoMotor:
     @property
     def current_angle_and_speed(self):
         if not self.__has_set_angle:
-            PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve angle or speed")
+            PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve angle or speed.")
             return None, None
 
         angle, speed = self._controller.get_current_angle_and_speed()
@@ -137,6 +139,8 @@ class ServoMotor:
         :param speed:
             The target speed at which to move the servo horn, from -100 to 100 deg/s.
         """
+        if not self.__has_set_angle:
+            PTLogger.warning("You should initialise the servo motor with an angle first, e.g. using set_target_angle(0)")
 
         angle_setting = self._min_angle if speed < 0 else self._max_angle
 

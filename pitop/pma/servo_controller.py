@@ -38,6 +38,9 @@ class ServoController:
         self.set_min_pulse_width(ServoHardwareSpecs.MIN_PULSE_WIDTH_MICRO_S)
         self.set_max_pulse_width(ServoHardwareSpecs.MAX_PULSE_WIDTH_MICRO_S)
 
+    def cleanup(self):
+        self.set_target_angle(0, 0)
+
     @type_check
     def set_min_pulse_width(self, min_width_us: int) -> None:
         self._mcu_device.write_word(ServoMotorSetup.REGISTER_MIN_PULSE_WIDTH,
