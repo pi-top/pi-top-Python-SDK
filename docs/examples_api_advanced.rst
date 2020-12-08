@@ -13,7 +13,7 @@ Processing Camera Frames with OpenCV
 .. literalinclude:: ../examples/camera/camera_opencv_processing.py
 
 Processing Camera Frames in the Background
----------------------------------------
+------------------------------------------
 
 .. literalinclude:: ../examples/camera/camera_background_processing.py
 

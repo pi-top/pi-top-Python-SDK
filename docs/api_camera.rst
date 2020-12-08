@@ -17,10 +17,9 @@ Camera frames are instances of the Pillow module
 `PIL.Image.Image <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image>`_
 class, which provides various methods for working with the image.
 
-For using OpenCV to process the camera frames, the PIL Image can be easily
-converted to OpenCV's format using the NumPy module
-`asarray <https://numpy.org/doc/stable/reference/generated/numpy.asarray.html>`_
-function: ``numpy.asarray(pil_image)``.
+For using OpenCV to process the camera frames, the PIL Image must be converted
+to the BGR array format. `pitop.camera` exposes a `pil_to_opencv` helper for
+doing this, or you can just pass the opencv=True parameter to relevant methods:
 
 .. literalinclude:: ../examples/camera/camera_opencv_processing.py
 
