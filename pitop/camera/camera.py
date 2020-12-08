@@ -6,6 +6,7 @@ from .core import (
     CameraTypes)
 from .core.capture_actions import CaptureActions
 from pitop.pma.common import type_check
+from .pil_to_opencv import pil_to_opencv
 
 
 class Camera:
@@ -145,7 +146,7 @@ class Camera:
         self._frame_handler.remove_action(CaptureActions.DETECT_MOTION)
 
     @type_check
-    def start_handling_frames(self, callback_on_frame, frame_interval=1):
+    def start_handling_frames(self, callback_on_frame, frame_interval=1, opencv=False):
         """
         Begin calling the passed callback with each new frame, allowing for custom processing.
 
@@ -160,6 +161,10 @@ class Camera:
         :type frame_interval: int
         :param frame_interval:
             The callback will run every frame_interval frames, decreasing the frame rate of processing. Defaults to 1.
+
+        :type opencv: boolean
+        :param opencv:
+            When True the frames will be provided in an OpenCV standard BGR array format.
         """
 
         args = locals()
@@ -184,20 +189,35 @@ class Camera:
             except Exception as e:
                 print(f"There was an error: {e}")
 
-    def current_frame(self):
+    def current_frame(self, opencv=False):
         """
         Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
 
-        The returned image is formated as a :class:`PIL.Image.Image` object.
+        By default the returned image is formated as a :class:`PIL.Image.Image` object.
+
+        :type opencv: boolean
+        :param opencv:
+            When True the image will be returned in an OpenCV standard BGR array format.
         """
+        if opencv:
+            return pil_to_opencv(self._frame_handler.frame)
+
         return self._frame_handler.frame
 
-    def get_frame(self):
+    def get_frame(self, opencv=False):
         """
         Returns the next frame captured by the camera. This method blocks until a new frame is available.
 
-        The returned image is formated as a :class:`PIL.Image.Image` object.
+        By default the returned image is formated as a :class:`PIL.Image.Image` object.
+
+        :type opencv: boolean
+        :param opencv:
+            When True the image will be returned in an OpenCV standard BGR array format.
         """
         self._new_frame_event.wait()
         self._new_frame_event.clear()
+
+        if opencv:
+            return pil_to_opencv(self._frame_handler.frame)
+
         return self._frame_handler.frame

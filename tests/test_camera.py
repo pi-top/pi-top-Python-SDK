@@ -14,6 +14,7 @@ modules["PyV4L2Camera.camera"] = Mock()
 modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
+modules["pitop.camera.pil_to_opencv"] = Mock()
 
 # import after applying mocks
 from pitop.camera.core import (  # noqa: E402
@@ -65,6 +66,11 @@ class CameraTestCase(TestCase):
         c._camera.is_opened.return_value = False
         sleep(1)
         self.assertFalse(c._process_image_thread.is_alive())
+
+    def test_current_frame_opencv(self):
+        c = Camera(4)
+        frame = c.current_frame(opencv=True)
+        self.assertIsInstance(frame, Mock)
 
     def test_current_frame_does_not_block(self):
         c = Camera(4)
