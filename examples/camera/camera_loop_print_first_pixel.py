@@ -4,4 +4,4 @@ cam = Camera()
 
 while True:
     image = cam.get_frame()
-    image.show()
+    print(image.getpixel(0, 0))
