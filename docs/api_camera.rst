@@ -22,6 +22,8 @@ converted to OpenCV's format using the NumPy module
 `asarray <https://numpy.org/doc/stable/reference/generated/numpy.asarray.html>`_
 function: ``numpy.asarray(pil_image)``.
 
+.. literalinclude:: ../examples/camera/camera_opencv_processing.py
+
 ----------------------
 Camera
 ----------------------

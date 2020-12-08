@@ -186,17 +186,17 @@ class Camera:
 
     def current_frame(self):
         """
-        Returns the latest frame captured by the camera.
+        Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
 
-        By default, the returned image is formated as a :class:`PIL.Image.Image` object.
+        The returned image is formated as a :class:`PIL.Image.Image` object.
         """
         return self._frame_handler.frame
 
     def get_frame(self):
         """
-        Returns the next frame captured by the camera.
+        Returns the next frame captured by the camera. This method blocks until a new frame is available.
 
-        By default, the returned image is formated as a :class:`PIL.Image.Image` object.
+        The returned image is formated as a :class:`PIL.Image.Image` object.
         """
         self._new_frame_event.wait()
         self._new_frame_event.clear()
