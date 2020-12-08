@@ -41,7 +41,7 @@ class Buttons:
 
         self.uuid = uuid1()
 
-        self.exclusive_mode = False
+        self.exclusive_mode = True
         self.lock = None
         self.__configure_locks()
 
