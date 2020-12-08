@@ -18,8 +18,8 @@ Camera frames are instances of the Pillow module
 class, which provides various methods for working with the image.
 
 For using OpenCV to process the camera frames, the PIL Image must be converted
-to the BGR array format. `pitop.camera` exposes a `pil_to_opencv` helper for
-doing this, or you can just pass the opencv=True parameter to relevant methods:
+to the BGR array format. The module provides a helper ``pil_to_opencv`` for this
+and converts for you in relevant methods if you pass an ``opencv=True`` parameter.
 
 .. literalinclude:: ../examples/camera/camera_opencv_processing.py
 
@@ -28,3 +28,4 @@ Camera
 ----------------------
 
 .. autoclass:: pitop.camera.Camera
+.. autofunction:: pitop.camera.pil_to_opencv

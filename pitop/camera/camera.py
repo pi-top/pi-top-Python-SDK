@@ -164,7 +164,7 @@ class Camera:
 
         :type opencv: boolean
         :param opencv:
-            When True the frames will be provided in an OpenCV standard BGR array format.
+            When True the frames will be provided as a BGR numpy.ndarray as used by OpenCV.
         """
 
         args = locals()
@@ -197,7 +197,7 @@ class Camera:
 
         :type opencv: boolean
         :param opencv:
-            When True the image will be returned in an OpenCV standard BGR array format.
+            When True the frames will be provided as a BGR numpy.ndarray as used by OpenCV.
         """
         if opencv:
             return pil_to_opencv(self._frame_handler.frame)
@@ -212,7 +212,7 @@ class Camera:
 
         :type opencv: boolean
         :param opencv:
-            When True the image will be returned in an OpenCV standard BGR array format.
+            When True the frames will be provided as a BGR numpy.ndarray as used by OpenCV.
         """
         self._new_frame_event.wait()
         self._new_frame_event.clear()
