@@ -24,6 +24,9 @@ class EncoderMotorController:
         self.registers = MotorControlRegisters[port].value
         self.set_braking_type(braking_type)
 
+    def cleanup(self):
+        self.stop()
+
     def control_mode(self) -> MotorControlModes:
         reported_control_mode = self._mcu_device.read_unsigned_byte(self.registers[MotorRegisterTypes.CONTROL_MODE])
         return MotorControlModes(reported_control_mode)

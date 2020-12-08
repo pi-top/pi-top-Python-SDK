@@ -1,5 +1,6 @@
 import time
 from math import floor, pi
+import weakref
 
 from .parameters import BrakingType, ForwardDirection, Direction
 from .encoder_motor_controller import EncoderMotorController
@@ -55,6 +56,8 @@ class EncoderMotor:
 
         self._prev_time_dist_cnt = time.time()
         self._previous_reading_odometer = 0
+
+        weakref.finalize(self._motor_core, self._motor_core.cleanup)
 
     @property
     def forward_direction(self):
