@@ -184,7 +184,7 @@ class Camera:
             except Exception as e:
                 print(f"There was an error: {e}")
 
-    def get_image(self):
+    def current_frame(self):
         """
         Returns the latest frame captured by the camera.
 
