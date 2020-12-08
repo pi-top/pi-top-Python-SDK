@@ -3,7 +3,6 @@ from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message,
 )
-from pitopcommon.lock import PTLock
 
 import atexit
 
@@ -21,9 +20,6 @@ class Battery:
         self.__setup_subscribe_client()
 
         atexit.register(self.__clean_up)
-
-        self.lock = PTLock("pt-battery")
-        self.lock.acquire()
 
     def __setup_subscribe_client(self):
         def on_low_battery():
@@ -52,7 +48,6 @@ class Battery:
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):
-        self.lock.release()
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
