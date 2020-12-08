@@ -48,49 +48,26 @@ class CaseButtons:
         self.lock.acquire()
 
     def __setup_subscribe_client(self):
-        def set_up_button_pressed():
-            self.up.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.up.when_pressed)
-
-        def set_down_button_pressed():
-            self.down.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.down.when_pressed)
-
-        def set_select_button_pressed():
-            self.select.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.select.when_pressed)
-
-        def set_cancel_button_pressed():
-            self.cancel.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.cancel.when_pressed)
-
-        def set_up_button_released():
-            self.up.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.up.when_released)
-
-        def set_down_button_released():
-            self.down.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.down.when_released)
-
-        def set_select_button_released():
-            self.select.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.select.when_released)
-
-        def set_cancel_button_released():
-            self.cancel.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.cancel.when_released)
+        def set_button_state(button, pressed_state):
+            button.is_pressed = pressed_state
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                button.when_pressed if button.is_pressed else button.when_released
+            )
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise(
             {
-                Message.PUB_V3_BUTTON_UP_PRESSED: set_up_button_pressed,
-                Message.PUB_V3_BUTTON_DOWN_PRESSED: set_down_button_pressed,
-                Message.PUB_V3_BUTTON_SELECT_PRESSED: set_select_button_pressed,
-                Message.PUB_V3_BUTTON_CANCEL_PRESSED: set_cancel_button_pressed,
-                Message.PUB_V3_BUTTON_UP_RELEASED: set_up_button_released,
-                Message.PUB_V3_BUTTON_DOWN_RELEASED: set_down_button_released,
-                Message.PUB_V3_BUTTON_SELECT_RELEASED: set_select_button_released,
-                Message.PUB_V3_BUTTON_CANCEL_RELEASED: set_cancel_button_released,
+                Message.PUB_V3_BUTTON_UP_PRESSED: lambda: set_button_state(self.up, True),
+                Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(self.up, False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(self.down, True),
+                Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(self.down, False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(self.select, True),
+                Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(self.select, False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(self.cancel, True),
+                Message.PUB_V3_BUTTON_CANCEL_RELEASED: lambda: set_button_state(self.cancel, False),
             }
         )
         self.__ptdm_subscribe_client.start_listening()
