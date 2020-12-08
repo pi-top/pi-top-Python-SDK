@@ -5,7 +5,7 @@ from unittest import (
 )
 from sys import modules
 from unittest.mock import Mock
-from time import sleep
+from time import sleep, perf_counter
 
 modules["io"] = Mock()
 modules["cv2"] = Mock()
@@ -66,6 +66,23 @@ class CameraTestCase(TestCase):
         c._camera.is_opened.return_value = False
         sleep(1)
         self.assertFalse(c._process_image_thread.is_alive())
+
+    def test_current_frame_does_not_block(self):
+        c = Camera(4)
+        start = perf_counter()
+        c.current_frame()
+        c.current_frame()
+        end = perf_counter()
+        self.assertTrue(end - start < 0.01)
+
+    def test_get_frame_does_block(self):
+        c = Camera(4)
+        c._new_frame_event.clear()
+        start = perf_counter()
+        c.get_frame()
+        c.get_frame()
+        end = perf_counter()
+        self.assertTrue(end - start > 0.01)
 
     def test_capture_image_registers_action_on_frame_handler(self):
         c = Camera()
