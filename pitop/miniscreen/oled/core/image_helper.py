@@ -21,7 +21,7 @@ def get_pil_image_from_path(file_path_or_url):
     return image
 
 
-def process_pil_image(pil_image, size, mode):
+def process_pil_image_frame(pil_image, size, mode):
     staging_data = Image.new("RGB", size, "black")
     staging_data.paste(pil_image.resize(size))
 
