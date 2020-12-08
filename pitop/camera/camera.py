@@ -6,7 +6,7 @@ from .core import (
     CameraTypes)
 from .core.capture_actions import CaptureActions
 from pitop.pma.common import type_check
-from .pil_to_opencv import pil_to_opencv
+from .pil_opencv_conversion import pil_to_opencv
 
 
 class Camera:

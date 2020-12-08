@@ -6,6 +6,7 @@ from unittest import (
 from sys import modules
 from unittest.mock import Mock
 from time import sleep, perf_counter
+import numpy as np
 
 modules["io"] = Mock()
 modules["cv2"] = Mock()
@@ -14,7 +15,7 @@ modules["PyV4L2Camera.camera"] = Mock()
 modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
-modules["pitop.camera.pil_to_opencv"] = Mock()
+modules["pitop.camera.pil_opencv_conversion"] = Mock()
 
 # import after applying mocks
 from pitop.camera.core import (  # noqa: E402

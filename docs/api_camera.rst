@@ -29,3 +29,4 @@ Camera
 
 .. autoclass:: pitop.camera.Camera
 .. autofunction:: pitop.camera.pil_to_opencv
+.. autofunction:: pitop.camera.opencv_to_pil

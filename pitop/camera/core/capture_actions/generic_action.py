@@ -1,7 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
 
-from pitop.camera.pil_to_opencv import pil_to_opencv
+from pitop.camera.pil_opencv_conversion import pil_to_opencv
 from .capture_action_base import CaptureActionBase
 
 
