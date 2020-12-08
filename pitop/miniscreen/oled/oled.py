@@ -147,12 +147,12 @@ class OLED:
 
     def draw_image_file(self, file_path_or_url, xy=None):
         """
-        Renders a static image file to the screen at a given position.
+        Render a static image to the screen from a file or URL at a given position.
 
         The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
-        :param Image image: A PIL Image object to be rendered
+        :param str file_path_or_url: A file path or URL to the image
         :param tuple xy: The position on the screen to render the image. If not
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
@@ -162,10 +162,9 @@ class OLED:
 
     def draw_image(self, image, xy=None):
         """
-        Renders an image to the screen at a given position.
+        Render a static image to the screen from a file or URL at a given position.
 
-        The image should be provided as a PIL Image object, which can be
-        used to animate an image with frames (e.g. an animated gif).
+        The image should be provided as a PIL Image object.
 
         The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
@@ -262,11 +261,13 @@ class OLED:
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
-        Render an animation or a image to the screen.
+        Render an animated image to the screen from a file or URL.
 
-        :param Image image: A PIL Image object to be rendered
+        :param str file_path_or_url: A file path or URL to the image
         :param bool background: Set whether the image should be in a background thread
             or in the main thread.
+        :param bool loop: Set whether the image animation should start again when it
+            has finished
         """
         image = get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
@@ -275,9 +276,13 @@ class OLED:
         """
         Render an animation or a image to the screen.
 
+        Use stop_animated_image() to end a background animation
+
         :param Image image: A PIL Image object to be rendered
         :param bool background: Set whether the image should be in a background thread
             or in the main thread.
+        :param bool loop: Set whether the image animation should start again when it
+            has finished
         """
         self.__kill_thread = False
         if background is True:
