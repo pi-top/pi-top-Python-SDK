@@ -10,15 +10,12 @@ from uuid import uuid1
 
 class CaseButton:
     def __init__(self, button_type):
-        #: Returns a string representing which button it is.
+        # State parameters
         self.type = button_type
-        self.is_pressed = False  #: Returns True is button is pressed.
-        self.when_pressed = (
-            None
-        )  #: If a method is assigned to this data member it will be invoked when the button is pressed.
-        self.when_released = (
-            None
-        )  #: If a method is assigned to this data member it will be invoked when the button is released.
+        self.is_pressed = False
+        # Event-based functions
+        self.when_pressed = None
+        self.when_released = None
 
 
 class CaseButtons:
@@ -44,8 +41,22 @@ class CaseButtons:
 
         self.uuid = uuid1()
 
-        self.lock = PTLock(f"pt-buttons-{str(self.uuid)}")
-        self.lock.acquire()
+        self.exclusive_mode = False
+        self.lock = None
+        self.__configure_locks()
+
+    def _set_exclusive_mode(self, exclusive):
+        self.exclusive_mode = exclusive
+        self.__configure_locks()
+
+    def __configure_locks(self):
+        if self.exclusive_mode:
+            self.lock = PTLock(f"pt-buttons-{str(self.uuid)}")
+            self.lock.acquire()
+        else:
+            if self.lock is not None:
+                self.lock.release()
+                self.lock = None
 
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed_state):
@@ -73,7 +84,9 @@ class CaseButtons:
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):
-        self.lock.release()
+        if self.lock is not None:
+            self.lock.release()
+
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
