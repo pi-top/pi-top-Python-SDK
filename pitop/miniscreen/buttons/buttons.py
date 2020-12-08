@@ -44,7 +44,7 @@ class CaseButtons:
 
         self.uuid = uuid1()
 
-        self.lock = PTLock(f"pt-buttons-{str(self.uuid)}.lock")
+        self.lock = PTLock(f"pt-buttons-{str(self.uuid)}")
         self.lock.acquire()
 
     def __setup_subscribe_client(self):
