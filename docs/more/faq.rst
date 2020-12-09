@@ -24,7 +24,7 @@ I was using an older version of the Python libraries. How can I update to use th
 ---------------------------------------------------------------------------------------
 Note: .deprecated directory.
 PMA: PMA prefix is now dropped
-Buttons: PT prefix is now dropped. 'Buttons' is now 'CaseButtons'
+Buttons: PT prefix is now dropped. 'PTButtons' is now 'Buttons'
 
 Everything else should be updatable with a Find and Replace:
 

@@ -8,7 +8,7 @@ import atexit
 from uuid import uuid1
 
 
-class CaseButton:
+class Button:
     def __init__(self, button_type):
         # State parameters
         self.type = button_type
@@ -18,7 +18,7 @@ class CaseButton:
         self.when_released = None
 
 
-class CaseButtons:
+class Buttons:
     """
     Instantiates a single instance for each of the four button types up, down,
     select and cancel.
@@ -29,10 +29,10 @@ class CaseButtons:
     CANCEL = "CANCEL"
 
     def __init__(self):
-        self.up = CaseButton(self.UP)
-        self.down = CaseButton(self.DOWN)
-        self.select = CaseButton(self.SELECT)
-        self.cancel = CaseButton(self.CANCEL)
+        self.up = Button(self.UP)
+        self.down = Button(self.DOWN)
+        self.select = Button(self.SELECT)
+        self.cancel = Button(self.CANCEL)
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -41,7 +41,7 @@ class CaseButtons:
 
         self.uuid = uuid1()
 
-        self.exclusive_mode = False
+        self.exclusive_mode = True
         self.lock = None
         self.__configure_locks()
 
@@ -51,7 +51,13 @@ class CaseButtons:
 
     def __configure_locks(self):
         if self.exclusive_mode:
-            self.lock = PTLock(f"pt-buttons-{str(self.uuid)}")
+            # UUID makes this lock single-purpose
+            #
+            # This is actually just a hack workaround to let pt-sys-oled know that
+            # the buttons are in use. In an ideal world, there would be a way
+            # to ask pt-device-manager how many things are registered to listen
+            # for particular events
+            self.lock = PTLock(f"pt-buttons-{str(self.uuid)}", _single_purpose=True)
             self.lock.acquire()
         else:
             if self.lock is not None:
@@ -93,13 +99,13 @@ class CaseButtons:
             pass
 
 
-buttons = CaseButtons()
+buttons = Buttons()
 
 
 def UpButton():
     """
     :return: A button object for the up button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.up
 
@@ -107,7 +113,7 @@ def UpButton():
 def DownButton():
     """
     :return: A button object for the down button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.down
 
@@ -115,7 +121,7 @@ def DownButton():
 def SelectButton():
     """
     :return: A button object for the select button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.select
 
@@ -123,6 +129,6 @@ def SelectButton():
 def CancelButton():
     """
     :return: A button object for the cancel button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.cancel

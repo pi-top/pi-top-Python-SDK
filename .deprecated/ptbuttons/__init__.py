@@ -1,5 +1,4 @@
 from pitop.miniscreen.buttons import (  # noqa: F401
-  Button as PTButton,
   Buttons as PTButtons,
   UpButton as PTUpButton,
   DownButton as PTDownButton,
