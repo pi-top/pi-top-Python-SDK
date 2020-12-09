@@ -6,8 +6,14 @@ about: Report a bug with this project. Make sure you've read "Things To Know Bef
 ---
 
 <!--
-  ✏️ Fill out the following document, following the template provided by the
-  headings and these comments.
+  💡 Useful tip: this is a comment!
+
+  Use the information provided in comments as guidance for completing each section.
+
+  Comment sections are not visible in the final submitted Issue.
+  This means you can either delete them or leave them - the output will be the same. Make sure you click "Preview" before you submit, to ensure that you are happy with the formatting.
+
+  ⚠️ Do not add information that you intend to be read by others into comment sections!
 -->
 
 <!--

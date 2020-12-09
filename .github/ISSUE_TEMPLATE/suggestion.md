@@ -6,18 +6,24 @@ about: Suggest an idea for this project. Make sure you've read "Things To Know B
 ---
 
 <!--
-  ✏️ Fill out the following document, following the template provided by the
-  headings and these comments.
+  💡 Useful tip: this is a comment!
+
+  Use the information provided in comments as guidance for completing each section.
+
+  Comment sections are not visible in the final submitted Issue.
+  This means you can either delete them or leave them - the output will be the same. Make sure you click "Preview" before you submit, to ensure that you are happy with the formatting.
+
+  ⚠️ Do not add information that you intend to be read by others into comment sections!
 -->
 
 <!--
   ⚠️ Before submitting this suggestion please:
-    - Ensure this is a legitimate suggestion. If you are not sure, check the
-        [forum][1] and open a discussion there.
-    - Ensure this suggestion or a similar one was not already made. Check the
+    - Ensure this is a legitimate suggestion. If you are not sure, check the [forum][1] and open
+        a discussion there.
+    - Ensure this suggestion or a similar one has not already been made. Check the
         existing GitHub issues as well as the [forum][1]. If there is a
         relevant post please add you contributions there instead.
-    - Read [Things To Know Before Submitting A Bug Suggestion][2]
+    - Read [Things To Know Before Submitting A Suggestion][2]
 
 [1]: https://forum.pi-top.com/c/pi-top-software
 [2]: https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Suggestion
