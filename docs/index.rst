@@ -96,6 +96,7 @@ Table of Contents
     :numbered:
 
     getting_started
+    overview
     cli_tools
     examples_cli
     examples_api_basic
