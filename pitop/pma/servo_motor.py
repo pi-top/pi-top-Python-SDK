@@ -30,6 +30,7 @@ class ServoMotor:
         self.__has_set_angle = False
         self._zero_point = zero_point
         self._target_speed = 0
+        self._target_angle = 0
         weakref.finalize(self._controller, self._controller.cleanup)
 
     @property
@@ -87,7 +88,7 @@ class ServoMotor:
     def current_speed(self):
         return self.current_angle_and_speed[1]
 
-    def set_target_angle(self, angle, speed=50.0):
+    def set_target_angle_and_speed(self, angle, speed=50.0):
         """
         Sets the angle of the servo horn, relative to the zero position. Optionally, the speed at which
         the horn will move can also be provided.
@@ -111,13 +112,24 @@ class ServoMotor:
 
         if not (self._min_angle <= angle <= self._max_angle):
             raise ValueError(f"Angle value must be from {self._min_angle} to {self._max_angle} degrees (inclusive)")
+        else:
+            self._target_angle = angle
 
         if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
             raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
+        else:
+            self._target_speed = speed
 
-        self._target_speed = speed
         self._controller.set_target_angle(angle + self._zero_point, speed)
         self.__has_set_angle = True
+
+    @property
+    def target_angle(self):
+        return self._target_angle
+
+    @target_angle.setter
+    def target_angle(self, angle):
+        self.set_target_angle_and_speed(angle)
 
     @property
     def target_speed(self):
@@ -144,4 +156,4 @@ class ServoMotor:
 
         angle_setting = self._min_angle if speed < 0 else self._max_angle
 
-        self.set_target_angle(angle_setting, speed)
+        self.set_target_angle_and_speed(angle_setting, speed)

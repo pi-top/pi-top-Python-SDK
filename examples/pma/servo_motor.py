@@ -8,12 +8,12 @@ TARGET_SPEED = 25
 
 for current_angle in range(90, -100, -10):
     print("Setting angle to", current_angle)
-    servo.set_target_angle(current_angle, TARGET_SPEED)
+    servo.set_target_angle_and_speed(current_angle, TARGET_SPEED)
     sleep(0.5)
 
 for current_angle in range(-90, 100, 10):
     print("Setting angle to", current_angle)
-    servo.set_target_angle(current_angle, TARGET_SPEED)
+    servo.set_target_angle_and_speed(current_angle, TARGET_SPEED)
     sleep(0.5)
 
 sleep(1)
