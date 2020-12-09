@@ -33,13 +33,13 @@ ImuConfigRegisters = {
 }
 
 ScaleMappings = {
-    RegisterTypes.ACC: {
+    RegisterTypes.ACC.value: {
         2: 0x00,
         4: 0x01,
         8: 0x02,
         16: 0x03
     },
-    RegisterTypes.GYRO: {
+    RegisterTypes.GYRO.value: {
         250: 0x00,
         500: 0x01,
         1000: 0x02,

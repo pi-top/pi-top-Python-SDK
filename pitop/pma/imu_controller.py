@@ -2,6 +2,7 @@
 
 from .common.imu_registers import ImuRegisters, RegisterTypes, RawRegisterTypes, OrientationRegisterTypes, ScaleMappings
 from .plate_interface import PlateInterface
+import math
 
 g = 9.807
 
@@ -10,6 +11,8 @@ class ImuController:
     Class used to read/write IMU registers from the Expansion Plate MCU
     """
     _ORIENTATION_DATA_SCALE = 100.0
+    _MAG_SIGNED_RANGE = 4900.0
+    _16BIT_SIGNED_RANGE = 2**15
 
     def __init__(self):
         self._data_registers = ImuRegisters.DATA
@@ -20,8 +23,8 @@ class ImuController:
         self._gyro_enable = False
         self._mag_enable = False
         self._orientation_enable = False
-        self._acc_scaler = 2
-        self._gyro_scaler = 250
+        self.acc_scaler = 2
+        self.gyro_scaler = 250
 
     def cleanup(self):
         for name, member in RegisterTypes.__members__.items():
@@ -110,7 +113,7 @@ class ImuController:
 
         imu_acc_raw = self._get_raw_data(RegisterTypes.ACC.value)
 
-        imu_acc_scaled = tuple([axis * g / (2**15 / float(self._acc_scaler)) for axis in imu_acc_raw])
+        imu_acc_scaled = tuple([axis * g / (self._16BIT_SIGNED_RANGE / float(self._acc_scaler)) for axis in imu_acc_raw])
 
         return imu_acc_scaled
 
@@ -121,7 +124,7 @@ class ImuController:
 
         imu_gyro_raw = self._get_raw_data(RegisterTypes.GYRO.value)
 
-        imu_gyro_scaled = tuple([axis * g / (2 ** 15 / float(self._gyro_scaler)) for axis in imu_gyro_raw])
+        imu_gyro_scaled = tuple([axis / (self._16BIT_SIGNED_RANGE / float(self._gyro_scaler)) for axis in imu_gyro_raw])
 
         return imu_gyro_scaled
 
@@ -132,8 +135,9 @@ class ImuController:
 
         mag_raw = self._get_raw_data(RegisterTypes.MAG.value)
 
+        mag_raw_scaled = tuple(axis * self._MAG_SIGNED_RANGE / self._16BIT_SIGNED_RANGE for axis in mag_raw)
 
-        return self._get_raw_data(RegisterTypes.MAG.value)
+        return mag_raw_scaled
 
     @property
     def orientation_data(self):
@@ -156,8 +160,8 @@ class ImuController:
         return self._mcu_device.read_signed_word(data_register, little_endian=True)
 
     def _get_raw_data(self, data_type: int):
-        x = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.X]) / self._ORIENTATION_DATA_SCALE
-        y = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.Y]) / self._ORIENTATION_DATA_SCALE
-        z = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.Z]) / self._ORIENTATION_DATA_SCALE
+        x = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.X])
+        y = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.Y])
+        z = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.Z])
 
         return x, y, z
