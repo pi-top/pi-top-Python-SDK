@@ -27,7 +27,6 @@ Plate connections
 
 Foundation and Expansion Plates have multiple connectors that can be used to interface with different kind components.
 
-These ports are labeled and coloured to simplify
 
 Digital Ports
 -----------------------------
