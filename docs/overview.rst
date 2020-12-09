@@ -25,6 +25,8 @@ to these pins.
 Plate connections
 ======================================
 
+.. image:: _static/pma/robotics_kit/ExpansionPlate.jpg
+
 Foundation and Expansion Plates have multiple connectors that can be used to interface with different kind components.
 
 .. _digital-port:
@@ -57,7 +59,7 @@ Communicates a motor encoder component with the motor controller, located inside
 
 These ports are labeled from `M0` to `M3`
 
-.. servomotor-port:
+.. _servomotor-port:
 
 ServoMotor Ports
 -----------------------------
