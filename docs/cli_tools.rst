@@ -27,9 +27,6 @@ Where:
     devices:
         Get information about device and attached pi-top hardware
 
-    host:
-        Returns the name of the host pi-top device
-
     oled:
         Quickly display text in pi-top [4]'s OLED screen
 
@@ -37,11 +34,11 @@ Where:
 pi-top battery
 =========================
 
-If the pi-top device has an internal battery, it will report it's status.
+If the pi-top device has an internal battery, it will report its status.
 
 .. code-block:: bash
 
-    pt-battery [-h] [-s] [-c] [-t] [-w] [-v]
+    pi-top battery [-h] [-s] [-c] [-t] [-w] [-v]
 
 
 Where:

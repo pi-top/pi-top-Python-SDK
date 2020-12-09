@@ -5,7 +5,7 @@ from .cli_base import CliBaseClass
 
 
 class BatteryCLI(CliBaseClass):
-    parser_help = 'Get battery information from a pi-top.'
+    parser_help = 'Get battery information from a pi-top'
     cli_name = "battery"
 
     def __init__(self, args) -> None:
