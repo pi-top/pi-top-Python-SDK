@@ -1,6 +1,5 @@
 from .buttons import (  # noqa: F401
-    CaseButtons,
-    CaseButton,
+    Buttons,
     UpButton,
     DownButton,
     SelectButton,
