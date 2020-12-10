@@ -19,7 +19,7 @@ def running_median(old_array, new_data):
 
 
 class ImuCalibration:
-    _MAG_POLL_FREQUENCY = 50.0  # Hz
+    _MAG_POLL_FREQUENCY = 25.0  # Hz
     _GYRO_POLL_FREQUENCY = 5.0  # Hz
     _SLEEP_TIME = 0.005
     _MAG_DATA_TOLERANCE = 10.0
@@ -32,14 +32,13 @@ class ImuCalibration:
         self.imu_controller.mag_enable = True
         self._mag_measurements = np.zeros((1, 3), dtype=float)
         self._mag_filter_array = np.zeros((self._MAG_FILTER_SIZE, 3), dtype=float)
-        # print(self._mag_filter_array)
         weakref.finalize(self.imu_controller, self.imu_controller.cleanup)
 
     @property
     def mag_data(self):
         return self._mag_measurements
 
-    def rotation_check(self, axis: str):
+    def _rotation_check(self, axis: str):
         prev_time = time.time()
         degrees_rotated = 0
         while abs(degrees_rotated) < 360.0:
@@ -59,13 +58,15 @@ class ImuCalibration:
                 time.sleep(self._SLEEP_TIME)
 
     def calibrate_magnetometer(self, test_data=None, save_data=False):
-        if test_data is not None:
-            self._mag_measurements = test_data
+        if test_data is None:
+            self._get_test_data()
         else:
-            self.get_test_data()
+            self._mag_measurements = test_data
+
 
         if save_data and test_data is None:
-            with open('mag_data_5.npy', 'wb') as f:
+            print("Saving test data...")
+            with open('mag_data_10.npy', 'wb') as f:
                 np.save(f, self._mag_measurements[self._MAG_FILTER_SIZE:])
 
         print("Calculating calibration matrix...")
@@ -84,10 +85,10 @@ class ImuCalibration:
 
         return hard_iron_offset, soft_iron_matrix
 
-    def get_test_data(self):
+    def _get_test_data(self):
         imu_controller = ImuController()
         thread_event = threading.Event()
-        mag_poll_thread = threading.Thread(target=self.poll_magnetometer_data, args=[thread_event, imu_controller, ],
+        mag_poll_thread = threading.Thread(target=self._poll_magnetometer_data, args=[thread_event, imu_controller, ],
                                            daemon=True)
         mag_poll_thread.start()
 
@@ -96,17 +97,17 @@ class ImuCalibration:
         # mag_poll_thread.join()
 
         print("Rotate the pi-top [4] 360 degrees whilst the pi-top logo faces the ceiling.")
-        self.rotation_check(axis='z')
+        self._rotation_check(axis='z')
         print("Done!")
         time.sleep(1)
 
         print("Turn the pi-top [4] so the pi-top logo is on it's side and faces the walls, then rotate 360 degrees.")
-        self.rotation_check(axis='x')
+        self._rotation_check(axis='x')
         print("Done!")
         time.sleep(1)
 
         print("Turn the pi-top [4] so the pi-top logo faces you the right way up and rotation it 360 degrees")
-        self.rotation_check(axis='y')
+        self._rotation_check(axis='y')
         print("Done!")
 
         thread_event.set()
@@ -189,6 +190,7 @@ class ImuCalibration:
 
         fig1 = plt.figure(1, figsize=(10, 10), dpi=80)
         ax1 = fig1.add_subplot(111, projection='3d')
+        ax1.axis('equal')
         ax1.set_xlabel('X')
         ax1.set_ylabel('Y')
         ax1.set_zlabel('Z')
@@ -198,6 +200,7 @@ class ImuCalibration:
 
         fig2 = plt.figure(2, figsize=(10, 10), dpi=80)
         ax2 = fig2.add_subplot(111, projection='3d')
+        ax2.axis('equal')
         ax2.set_xlabel('X')
         ax2.set_ylabel('Y')
         ax2.set_zlabel('Z')
@@ -215,22 +218,26 @@ class ImuCalibration:
         plt.show()
 
 
-    def poll_magnetometer_data(self, thread_event, imu_controller):
+    def _poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")
         prev_time = time.time()
+        # error_tolerance = 0.01
         while not thread_event.is_set():
             current_time = time.time()
             if current_time - prev_time > (1 / self._MAG_POLL_FREQUENCY):
                 x, y, z = imu_controller.magnetometer_raw
+                # if abs(x) < error_tolerance and abs(y) < error_tolerance and abs(z) < error_tolerance:
+                #     print("Read error, trying again...")
+                #     continue
                 new_mag_data = [x, y, z]
-                self._mag_filter_array, mag_median = self.running_median(self._mag_filter_array, new_mag_data)
+                self._mag_filter_array, mag_median = self._running_median(self._mag_filter_array, new_mag_data)
                 self._mag_measurements = np.append(self._mag_measurements, [mag_median], axis=0)
                 prev_time = current_time
             else:
                 time.sleep(self._SLEEP_TIME)
 
     @staticmethod
-    def running_median(old_array, new_data):
+    def _running_median(old_array, new_data):
         new_array = np.append(np.delete(old_array, 0, 0), [new_data], axis=0)
         new_median = np.median(new_array, axis=0)
         return new_array, new_median
@@ -240,8 +247,9 @@ if __name__ == "__main__":
     calibrator = ImuCalibration()
     with open('mag_data_4.npy', 'rb') as f:
         mag_data = np.load(f)
-    hard_iron_offset, soft_iron_matrix = calibrator.calibrate_magnetometer(test_data=mag_data, save_data=False)
-    print(hard_iron_offset)
+    hard_iron_offset, soft_iron_matrix = calibrator.calibrate_magnetometer(save_data=True)
+    print("hard_iron_offset: {}".format(hard_iron_offset))
+    print("soft_iron_matrix: {}".format(soft_iron_matrix))
     print(soft_iron_matrix)
 
     # with open('mag_data_4.npy', 'rb') as f:
