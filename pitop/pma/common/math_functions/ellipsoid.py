@@ -1,106 +1,45 @@
 import numpy as np
 
-class EllipsoidTool:
-    """Some stuff for playing with ellipsoids"""
 
-    def __init__(self):
-        pass
+def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):
+    """Plot an ellipsoid"""
+    u = np.linspace(0.0, 2.0 * np.pi, 100)
+    v = np.linspace(0.0, np.pi, 100)
 
-    def getMinVolEllipse(self, P=None, tolerance=0.01):
-        """ Find the minimum volume ellipsoid which holds all the points
+    # cartesian coordinates that correspond to the spherical angles:
+    x = radii[0] * np.outer(np.cos(u), np.sin(v))
+    y = radii[1] * np.outer(np.sin(u), np.sin(v))
+    z = radii[2] * np.outer(np.ones_like(u), np.cos(v))
+    # rotate accordingly
+    for i in range(len(x)):
+        for j in range(len(x)):
+            [x[i, j], y[i, j], z[i, j]] = np.dot([x[i, j], y[i, j], z[i, j]], rotation) + center
 
-        Based on work by Nima Moshtagh
-        http://www.mathworks.com/matlabcentral/fileexchange/9542
-        and also by looking at:
-        http://cctbx.sourceforge.net/current/python/scitbx.math.minimum_covering_ellipsoid.html
-        Which is based on the first reference anyway!
-
-        Here, P is a numpy array of N dimensional points like this:
-        P = [[x,y,z,...], <-- one point per line
-             [x,y,z,...],
-             [x,y,z,...]]
-
-        Returns:
-        (center, radii, rotation)
-
-        """
-        (N, d) = np.shape(P)
-        d = float(d)
-
-        # Q will be our working array
-        Q = np.vstack([np.copy(P.T), np.ones(N)])
-        QT = Q.T
-
-        # initializations
-        err = 1.0 + tolerance
-        u = (1.0 / N) * np.ones(N)
-
-        # Khachiyan Algorithm
-        while err > tolerance:
-            V = np.dot(Q, np.dot(np.diag(u), QT))
-            M = np.diag(np.dot(QT, np.dot(np.linalg.inv(V), Q)))  # M the diagonal vector of an NxN matrix
-            j = np.argmax(M)
-            maximum = M[j]
-            step_size = (maximum - d - 1.0) / ((d + 1.0) * (maximum - 1.0))
-            new_u = (1.0 - step_size) * u
-            new_u[j] += step_size
-            err = np.linalg.norm(new_u - u)
-            u = new_u
-
-        # center of the ellipse
-        center = np.dot(P.T, u)
-
-        U = np.diag(u)
-
-        # A = np.linalg.inv(P * U * P.T - (P * u) * (P * u).T)
-        A = (1 / d) * np.linalg.inv(np.dot(P.T, np.dot(U, P)) - np.outer(center, center))
-
-        # Get the values we'd like to return
-        U, s, rotation = np.linalg.svd(A)
-        radii = 1.0 / np.sqrt(s)
-
-        return center, radii, rotation, A
-
-    def getEllipsoidVolume(self, radii):
-        """Calculate the volume of the blob"""
-        return 4. / 3. * np.pi * radii[0] * radii[1] * radii[2]
-
-    def plotEllipsoid(self, center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):
-        """Plot an ellipsoid"""
-        u = np.linspace(0.0, 2.0 * np.pi, 100)
-        v = np.linspace(0.0, np.pi, 100)
-
-        # cartesian coordinates that correspond to the spherical angles:
-        x = radii[0] * np.outer(np.cos(u), np.sin(v))
-        y = radii[1] * np.outer(np.sin(u), np.sin(v))
-        z = radii[2] * np.outer(np.ones_like(u), np.cos(v))
+    if plotAxes:
+        # make some purdy axes
+        axes = np.array([[radii[0], 0.0, 0.0],
+                         [0.0, radii[1], 0.0],
+                         [0.0, 0.0, radii[2]]])
         # rotate accordingly
-        for i in range(len(x)):
-            for j in range(len(x)):
-                [x[i, j], y[i, j], z[i, j]] = np.dot([x[i, j], y[i, j], z[i, j]], rotation) + center
+        for i in range(len(axes)):
+            axes[i] = np.dot(axes[i], rotation)
 
-        if plotAxes:
-            # make some purdy axes
-            axes = np.array([[radii[0], 0.0, 0.0],
-                             [0.0, radii[1], 0.0],
-                             [0.0, 0.0, radii[2]]])
-            # rotate accordingly
-            for i in range(len(axes)):
-                axes[i] = np.dot(axes[i], rotation)
+        # plot axes
+        for p in axes:
+            X3 = np.linspace(-p[0], p[0], 100) + center[0]
+            Y3 = np.linspace(-p[1], p[1], 100) + center[1]
+            Z3 = np.linspace(-p[2], p[2], 100) + center[2]
+            ax.plot(X3, Y3, Z3, color=cageColor)
 
-            # plot axes
-            for p in axes:
-                X3 = np.linspace(-p[0], p[0], 100) + center[0]
-                Y3 = np.linspace(-p[1], p[1], 100) + center[1]
-                Z3 = np.linspace(-p[2], p[2], 100) + center[2]
-                ax.plot(X3, Y3, Z3, color=cageColor)
-
-        # plot ellipsoid
-        if ax:
-            ax.plot_wireframe(x, y, z, rstride=4, cstride=4, color=cageColor, alpha=cageAlpha)
+    # plot ellipsoid
+    if ax:
+        ax.plot_wireframe(x, y, z, rstride=4, cstride=4, color=cageColor, alpha=cageAlpha)
 
 
-def fitEllipsoid(magX, magY, magZ):
+def least_squares_ellipsoid_fit(magX, magY, magZ):
+    # ax^2 + by^2 + cz^2 +2fyz + 2gxz + 2hxy + px + qy + rz + d = 0
+    # x_T.M.x + x_T.n + d = 0
+
     a1 = magX ** 2
     a2 = magY ** 2
     a3 = magZ ** 2
@@ -153,7 +92,7 @@ def fitEllipsoid(magX, magY, magZ):
     return M, n, d
 
 
-def plot_ellipsoid(M, n, d):
+def get_ellipsoid_geometric_params(M, n, d):
     a = M[0, 0]
     b = M[1, 1]
     c = M[2, 2]
@@ -161,11 +100,11 @@ def plot_ellipsoid(M, n, d):
     g = M[0, 2]
     h = M[0, 1]
 
-    p = n[0]
-    q = n[1]
-    r = n[2]
+    p = n[0][0]
+    q = n[1][0]
+    r = n[2][0]
 
-    Amat = np.array(
+    Q = np.array(
         [
             [a, h, g, p],
             [h, b, f, q],
@@ -177,11 +116,26 @@ def plot_ellipsoid(M, n, d):
     Minv = np.linalg.inv(M)
     b = -np.dot(Minv, n)
     center = b.T[0]
-    # Center the ellipsoid at the origin
+
     Tofs = np.eye(4)
     Tofs[3, 0:3] = center
-    R = np.dot(Tofs, np.dot(Amat, Tofs.T))
+
+    R = np.dot(Tofs, np.dot(Q, Tofs.T))
+    print("R: {}".format(R))
+
     R3 = R[0:3, 0:3]
+
+    s1 = -R[3, 3]
+    R3S = R3 / s1
+    eigenvalues, eigenvectors = np.linalg.eig(R3S)
+
+    rotation_matrix = np.linalg.inv(eigenvectors)  # inverse is actually the transpose here
+
+    eigen_reciprocal = 1.0 / np.abs(eigenvalues)
+    radii = np.sqrt(eigen_reciprocal)
+
+    return center, radii, rotation_matrix
+
 
 
 

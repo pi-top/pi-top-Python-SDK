@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pitop.pma.imu_controller import ImuController
-from pitop.pma.common.math_functions.ellipsoid import EllipsoidTool, fitEllipsoid
+from pitop.pma.common.math_functions.ellipsoid import least_squares_ellipsoid_fit, get_ellipsoid_geometric_params, plot_ellipsoid
 import weakref
 import math
 import numpy as np
@@ -149,8 +149,6 @@ if __name__ == "__main__":
     # print(vector)
     # print(field_strength)
 
-    ellipsoid_tools = EllipsoidTool()
-
     with open('mag_data_4.npy', 'rb') as f:
         mag_data = np.load(f)
 
@@ -181,9 +179,9 @@ if __name__ == "__main__":
     y_uncal = mag_data[:, 1]
     z_uncal = mag_data[:, 2]
 
-    x_mean = np.mean(x_uncal)
-    y_mean = np.mean(y_uncal)
-    z_mean = np.mean(z_uncal)
+    # x_mean = np.mean(x_uncal)
+    # y_mean = np.mean(y_uncal)
+    # z_mean = np.mean(z_uncal)
 
     # x_uncal /= x_mean
     # y_uncal /= y_mean
@@ -191,68 +189,69 @@ if __name__ == "__main__":
 
     # center, radii, rotation, A = ellipsoid_tools.getMinVolEllipse(P=mag_data)
 
-    M, n, d = fitEllipsoid(x_uncal, y_uncal, z_uncal)
+    M, n, d = least_squares_ellipsoid_fit(x_uncal, y_uncal, z_uncal)
 
-    a = M[0, 0]
-    b = M[1, 1]
-    c = M[2, 2]
-    f = M[2, 1]
-    g = M[0, 2]
-    h = M[0, 1]
+    center, radii, rotation_matrix = get_ellipsoid_geometric_params(M, n, d)
 
-    p = n[0][0]
-    q = n[1][0]
-    r = n[2][0]
-
-    Q = np.array(
-        [
-            [a, h, g, p],
-            [h, b, f, q],
-            [g, f, c, r],
-            [p, q, r, d]
-        ]
-    )
+    # a = M[0, 0]
+    # b = M[1, 1]
+    # c = M[2, 2]
+    # f = M[2, 1]
+    # g = M[0, 2]
+    # h = M[0, 1]
+    #
+    # p = n[0][0]
+    # q = n[1][0]
+    # r = n[2][0]
+    #
+    # Q = np.array(
+    #     [
+    #         [a, h, g, p],
+    #         [h, b, f, q],
+    #         [g, f, c, r],
+    #         [p, q, r, d]
+    #     ]
+    # )
     # print("Q: {}".format(Q))
     # print("M: {}".format(M))
 
     Minv = np.linalg.inv(M)
     # print(Qinv)
-    b = -np.dot(Minv, n)
-    center = b.T[0]
+
     # print(b)
     Ainv = np.real(field_strength / np.sqrt(np.dot(n.T, np.dot(Minv, n)) - d) * linalg.sqrtm(M))
 
-    Tofs = np.eye(4)
-    Tofs[3, 0:3] = center
-    # print("Tofs: {}".format(Tofs))
-    # print("np.dot(Q, Tofs.T): {}".format(np.dot(Q, Tofs.T)))
-    R = np.dot(Tofs, np.dot(Q, Tofs.T))
-    print("R: {}".format(R))
+    # Tofs = np.eye(4)
+    # Tofs[3, 0:3] = center
+    # # print("Tofs: {}".format(Tofs))
+    # # print("np.dot(Q, Tofs.T): {}".format(np.dot(Q, Tofs.T)))
+    # R = np.dot(Tofs, np.dot(Q, Tofs.T))
+    # print("R: {}".format(R))
 
-    R3 = R[0:3, 0:3]
-    print(R3)
-    R3test = R3 / R3[0, 0]
-    print(R3test)
-    s1 = -R[3, 3]
-    R3S = R3 / s1
-    (el, ec) = np.linalg.eig(R3S)
-    rotation_matrix = np.linalg.inv(ec)  # inverse is actually the transpose here
-    print("rotation_matrix: {}".format(rotation_matrix))
-    recip = 1.0 / np.abs(el)
-    axes = np.sqrt(recip)
-    print("axes: {}".format(axes))
-
-
+    # R3 = R[0:3, 0:3]
+    # print(R3)
+    # R3test = R3 / R3[0, 0]
+    # print(R3test)
+    # s1 = -R[3, 3]
+    # R3S = R3 / s1
+    # (el, ec) = np.linalg.eig(R3S)
+    # rotation_matrix = np.linalg.inv(ec)  # inverse is actually the transpose here
+    # print("rotation_matrix: {}".format(rotation_matrix))
+    # recip = 1.0 / np.abs(el)
+    # axes = np.sqrt(recip)
+    # print("axes: {}".format(axes))
 
 
-    A = np.linalg.inv(Ainv)
-    print("A: {}".format(A))
-    U, s, rotation = np.linalg.svd(A)
-    radii = 1.0 / np.sqrt(s)
-    print("radii: {}".format(radii))
 
-    center = b.T[0]
-    print("center: {}".format(center))
+
+    # A = np.linalg.inv(Ainv)
+    # print("A: {}".format(A))
+    # U, s, rotation = np.linalg.svd(A)
+    # radii = 1.0 / np.sqrt(s)
+    # print("radii: {}".format(radii))
+    #
+    # center = b.T[0]
+    # print("center: {}".format(center))
 
     # ellipsoid_tools.plotEllipsoid(center, radii, rotation, ax=ax1)
 
@@ -261,6 +260,8 @@ if __name__ == "__main__":
     calibratedX = np.zeros(x_uncal.shape)
     calibratedY = np.zeros(x_uncal.shape)
     calibratedZ = np.zeros(x_uncal.shape)
+
+    b = -np.dot(Minv, n)
 
     totalError = 0
     for i in range(len(x_uncal)):
@@ -285,7 +286,7 @@ if __name__ == "__main__":
     ax1.set_zlabel('Z')
     ax1.scatter(x_uncal, y_uncal, z_uncal, s=5, color='r')
 
-    ellipsoid_tools.plotEllipsoid(center, axes, rotation_matrix, ax=ax1)
+    plot_ellipsoid(center, radii, rotation_matrix, ax=ax1, plotAxes=True)
 
     fig2 = plt.figure(2, figsize=(10, 10), dpi=80)
     ax2 = fig2.add_subplot(111, projection='3d')
