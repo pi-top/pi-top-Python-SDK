@@ -6,7 +6,6 @@ from unittest import (
 from sys import modules
 from unittest.mock import Mock
 from time import sleep, perf_counter
-import numpy as np
 
 modules["io"] = Mock()
 modules["cv2"] = Mock()
