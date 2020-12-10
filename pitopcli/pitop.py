@@ -12,10 +12,8 @@ from .cli_base import PitopCliException, PitopCliInvalidArgument
 
 lookup_dict = {
     "battery": BatteryCLI,
-    "brightness": DisplayCLI,
     "devices": DeviceCLI,
     "display": DisplayCLI,
-    "host": DeviceCLI,
     "oled": OledCLI
 }
 
