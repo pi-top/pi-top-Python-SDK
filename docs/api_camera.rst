@@ -13,13 +13,16 @@ such as testing.
 
 .. literalinclude:: ../examples/camera/camera_capture_video.py
 
-Camera frames are instances of the Pillow module
-`PIL.Image.Image <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image>`_
-class, which provides various methods for working with the image.
+By default, Camera frames are provided as instances of the Pillow module
+:class:`PIL.Image.Image` class, which provides various methods for working with
+the image. These Image objects use raw, RGB-ordered pixels.
 
-For using OpenCV to process the camera frames, the PIL Image must be converted
-to the BGR array format. The module provides a helper ``pil_to_opencv`` for this
-and converts for you in relevant methods if you pass an ``opencv=True`` parameter.
+The Camera also supports providing frames in the OpenCV standard format. You
+can pass the parameter ``format='OpenCV'`` to Camera methods such as
+:class:`get_frame` and :class:`start_handling_frames` to have them provide this
+format instead. There are also helpers :class:`pil_to_opencv` and
+:class:`opencv_to_pil` for performing this conversion yourself. The OpenCV
+format uses raw, BGR-ordered pixels in a NumPy :class:`numpy.ndarray` object.
 
 .. literalinclude:: ../examples/camera/camera_opencv_processing.py
 

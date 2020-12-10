@@ -4,7 +4,7 @@ import cv2
 cam = Camera()
 
 while True:
-    image = cam.get_frame(opencv=True)
+    image = cam.get_frame(format='OpenCV')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     cv2.imshow('frame', gray)

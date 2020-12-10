@@ -7,15 +7,18 @@ cam = Camera()
 
 
 def show_image_with_cross(im):
+    # Use Pillow to draw a red cross over the image
     draw = ImageDraw.Draw(im)
     draw.line((0, 0) + im.size, fill=128)
     draw.line((0, im.size[1], im.size[0], 0), fill=128)
+
+    # Use OpenCV to display the image in a desktop window
     cv2.imshow('crossed', pil_to_opencv(im))
-    cv2.waitKey(1)
+    cv2.waitKey(1)  # this call is necessary to ensure the frame is displayed
 
 
-# send every other frame to our processing function
+# Register our callback to process camera frames, skipping every other frame
 cam.start_handling_frames(show_image_with_cross, frame_interval=2)
 
-# image processing is not blocking to keep this alive so use signal.pause
+# As our image processing is not blocking, use signal.pause to keep running
 pause()

@@ -146,7 +146,7 @@ class Camera:
         self._frame_handler.remove_action(CaptureActions.DETECT_MOTION)
 
     @type_check
-    def start_handling_frames(self, callback_on_frame, frame_interval=1, opencv=False):
+    def start_handling_frames(self, callback_on_frame, frame_interval=1, format='PIL'):
         """
         Begin calling the passed callback with each new frame, allowing for custom processing.
 
@@ -162,9 +162,11 @@ class Camera:
         :param frame_interval:
             The callback will run every frame_interval frames, decreasing the frame rate of processing. Defaults to 1.
 
-        :type opencv: boolean
-        :param opencv:
-            When True the frames will be provided as a BGR numpy.ndarray as used by OpenCV.
+        :type format: string
+        :param format:
+            The image format to provide to the callback. Case-insensitive.
+            By Default, with format=PIL, the image will be provided as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            When ``format='Opencv'`` the image will be provided as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
 
         args = locals()
@@ -189,35 +191,37 @@ class Camera:
             except Exception as e:
                 print(f"There was an error: {e}")
 
-    def current_frame(self, opencv=False):
+    def current_frame(self, format='PIL'):
         """
         Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
 
-        By default the returned image is formated as a :class:`PIL.Image.Image` object.
+        By default the returned image is formated as a .
 
-        :type opencv: boolean
-        :param opencv:
-            When True the frames will be provided as a BGR numpy.ndarray as used by OpenCV.
+        :type format: string
+        :param format:
+            The image format to return. Case-insensitive.
+            By Default, with format=PIL, the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
-        if opencv:
+        if format.lower() == 'opencv':
             return pil_to_opencv(self._frame_handler.frame)
 
         return self._frame_handler.frame
 
-    def get_frame(self, opencv=False):
+    def get_frame(self, format='PIL'):
         """
         Returns the next frame captured by the camera. This method blocks until a new frame is available.
 
-        By default the returned image is formated as a :class:`PIL.Image.Image` object.
-
-        :type opencv: boolean
-        :param opencv:
-            When True the frames will be provided as a BGR numpy.ndarray as used by OpenCV.
+        :type format: string
+        :param format:
+            The image format to return. Case-insensitive.
+            By Default, with format=PIL, the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
         self._new_frame_event.wait()
         self._new_frame_event.clear()
 
-        if opencv:
+        if format.lower() == 'opencv':
             return pil_to_opencv(self._frame_handler.frame)
 
         return self._frame_handler.frame

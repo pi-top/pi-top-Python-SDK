@@ -69,7 +69,7 @@ class CameraTestCase(TestCase):
 
     def test_current_frame_opencv(self):
         c = Camera(4)
-        frame = c.current_frame(opencv=True)
+        frame = c.current_frame(format='OpenCV')
         self.assertIsInstance(frame, Mock)
 
     def test_current_frame_does_not_block(self):
