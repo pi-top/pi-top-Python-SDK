@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 from pitop.pma.imu_controller import ImuController
-from pitop.pma.common.math_functions.ellipsoid_functions import least_squares_ellipsoid_fit, get_ellipsoid_geometric_params, plot_ellipsoid
+from pitop.pma.common.math_functions.ellipsoid_functions import least_squares_ellipsoid_fit, \
+    get_ellipsoid_geometric_params, plot_ellipsoid
 import weakref
 import math
 import numpy as np
@@ -62,7 +63,6 @@ class ImuCalibration:
             self._get_test_data()
         else:
             self._mag_measurements = test_data
-
 
         if save_data and test_data is None:
             print("Saving test data...")
@@ -182,7 +182,6 @@ class ImuCalibration:
 
         return x_cal, y_cal, z_cal
 
-
     def plot_graphs(self, x_cal, y_cal, z_cal, center, radii, rotation_matrix, field_strength):
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
@@ -217,7 +216,6 @@ class ImuCalibration:
 
         plt.show()
 
-
     def _poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")
         prev_time = time.time()
@@ -251,7 +249,3 @@ if __name__ == "__main__":
     print("hard_iron_offset: {}".format(hard_iron_offset))
     print("soft_iron_matrix: {}".format(soft_iron_matrix))
     print(soft_iron_matrix)
-
-
-
-
