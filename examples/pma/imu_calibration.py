@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from pitop.pma.imu_controller import ImuController
-from pitop.pma.common.math_functions.ellipsoid import least_squares_ellipsoid_fit, get_ellipsoid_geometric_params, plot_ellipsoid
+from pitop.pma.common.math_functions.ellipsoid_functions import least_squares_ellipsoid_fit, get_ellipsoid_geometric_params, plot_ellipsoid
 import weakref
 import math
 import numpy as np
@@ -79,7 +79,7 @@ class ImuCalibration:
 
         hard_iron_offset, soft_iron_matrix = self.get_calibration_matrices(M, n, d, field_strength)
 
-        x_cal, y_cal, z_cal = self.calibrate_test_data(field_strength, hard_iron_offset, soft_iron_matrix)
+        x_cal, y_cal, z_cal = self.calibrate_mag_data(field_strength, hard_iron_offset, soft_iron_matrix)
 
         self.plot_graphs(x_cal, y_cal, z_cal, center, radii, rotation_matrix, field_strength)
 
@@ -156,7 +156,7 @@ class ImuCalibration:
 
         return hard_iron_offset, soft_iron_matrix
 
-    def calibrate_test_data(self, field_strength, hard_iron_offset, soft_iron_matrix):
+    def calibrate_mag_data(self, field_strength, hard_iron_offset, soft_iron_matrix):
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]
@@ -252,10 +252,6 @@ if __name__ == "__main__":
     print("soft_iron_matrix: {}".format(soft_iron_matrix))
     print(soft_iron_matrix)
 
-    # with open('mag_data_4.npy', 'rb') as f:
-    #     mag_data = np.load(f)
-
-    # mag_data = calibrator.mag_data
 
 
 
