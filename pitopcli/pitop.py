@@ -7,7 +7,7 @@ from .display import DisplayCLI
 from .devices import DeviceCLI
 from .battery import BatteryCLI
 from .oled import OledCLI
-from .cli_base import PitopCliException
+from .cli_base import PitopCliException, PitopCliInvalidArgument
 
 
 lookup_dict = {
@@ -25,7 +25,7 @@ def get_parser():
     defined in ´lookup_dict´, and returns the parsed arguments.
 
     Returns:
-        Namespace: parsed arguments, as returned by ArgumentParser.parse_args()
+        ArgumentParser: parser object
     """
     parser = ArgumentParser(prog='pi-top')
     subparsers = parser.add_subparsers(title='Subcommands',
@@ -36,6 +36,7 @@ def get_parser():
     for cli_name, cli_class in lookup_dict.items():
         class_parser = subparsers.add_parser(cli_name, help=cli_class.parser_help)
         cli_class.add_parser_arguments(class_parser)
+        cli_class.parser = class_parser
 
     return parser
 
@@ -43,6 +44,7 @@ def get_parser():
 def run(args):
     """Executes the command according to the provided arguments"""
     exit_code = 1
+    cls = None
     try:
         cls = lookup_dict.get(args.subcommand)
         if cls:
@@ -50,6 +52,10 @@ def run(args):
             exit_code = obj.run()
     except PitopCliException:
         exit_code = 1
+    except PitopCliInvalidArgument:
+        exit_code = 1
+        if cls:
+            print(cls.parser.print_help())
     except Exception as e:
         print(f"Error on pitop.run: {e}")
         exit_code = 1
@@ -58,7 +64,12 @@ def run(args):
 
 
 def main():
-    run(get_parser().parse_args())
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.subcommand is None:
+        parser.print_help()
+        exit(1)
+    run(args)
 
 
 if __name__ == "__main__":
