@@ -10,7 +10,7 @@ import threading
 import time
 import matplotlib.pyplot as plt
 from scipy import linalg
-from mpl_toolkits import mplot3d
+from mpl_toolkits import mplot3d  # don't delete, actually required for "3d" plot type
 
 
 def running_median(old_array, new_data):
