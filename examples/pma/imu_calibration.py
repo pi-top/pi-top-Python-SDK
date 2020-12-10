@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 
 from pitop.pma.imu_controller import ImuController
+from pitop.pma.common.math_functions.ellipsoid import EllipsoidTool, fitEllipsoid
 import weakref
 import math
 import numpy as np
 import threading
 import time
-
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import proj3d
+from scipy import linalg
+from mpl_toolkits import mplot3d
 
 
 def running_median(old_array, new_data):
     new_array = np.append(np.delete(old_array, 0, 0), [new_data], axis=0)
     new_median = np.median(new_array, axis=0)
     return new_array, new_median
+
 
 class ImuCalibration:
     _MAG_POLL_FREQUENCY = 50.0  # Hz
@@ -32,6 +34,10 @@ class ImuCalibration:
         self._mag_filter_array = np.zeros((self._MAG_FILTER_SIZE, 3), dtype=float)
         # print(self._mag_filter_array)
         weakref.finalize(self.imu_controller, self.imu_controller.cleanup)
+
+    @property
+    def mag_data(self):
+        return self._mag_measurements
 
     def rotation_check(self, axis: str):
         prev_time = time.time()
@@ -52,7 +58,7 @@ class ImuCalibration:
             else:
                 time.sleep(self._SLEEP_TIME)
 
-    def calibrate_magnetometer(self):
+    def calibrate_magnetometer(self, save_data=False):
         imu_controller = ImuController()
         thread_event = threading.Event()
         mag_poll_thread = threading.Thread(target=self.poll_magnetometer_data, args=[thread_event, imu_controller, ],
@@ -82,9 +88,9 @@ class ImuCalibration:
 
         time.sleep(1)
 
-
-        with open('mag_data_3.npy', 'wb') as f:
-            np.save(f, self._mag_measurements[self._MAG_FILTER_SIZE:])
+        if save_data:
+            with open('mag_data_4.npy', 'wb') as f:
+                np.save(f, self._mag_measurements[self._MAG_FILTER_SIZE:])
 
         print("Calculating calibration matrix...")
 
@@ -114,15 +120,6 @@ class ImuCalibration:
 
         field_strength = math.sqrt(beta_vector[3] + np.sum(np.square(correction_vector)))
 
-        # x = self._mag_measurements[:, 0]
-        # y = self._mag_measurements[:, 1]
-        # z = self._mag_measurements[:, 2]
-        # fig = plt.figure(figsize=(8, 8))
-        # ax = fig.add_subplot(111, projection='3d')
-        #
-        # ax.scatter(x, y, z)
-        # plt.show()
-
         return correction_vector, field_strength
 
     def poll_magnetometer_data(self, thread_event, imu_controller):
@@ -133,198 +130,177 @@ class ImuCalibration:
             if current_time - prev_time > (1 / self._MAG_POLL_FREQUENCY):
                 x, y, z = imu_controller.magnetometer_raw
                 new_mag_data = [x, y, z]
-                self._mag_filter_array, mag_median = running_median(self._mag_filter_array, new_mag_data)
+                self._mag_filter_array, mag_median = self.running_median(self._mag_filter_array, new_mag_data)
                 self._mag_measurements = np.append(self._mag_measurements, [mag_median], axis=0)
                 prev_time = current_time
             else:
                 time.sleep(self._SLEEP_TIME)
 
-
-class EllipsoidTool:
-    """Some stuff for playing with ellipsoids"""
-
-    def __init__(self):
-        pass
-
-    def getMinVolEllipse(self, P=None, tolerance=0.01):
-        """ Find the minimum volume ellipsoid which holds all the points
-
-        Based on work by Nima Moshtagh
-        http://www.mathworks.com/matlabcentral/fileexchange/9542
-        and also by looking at:
-        http://cctbx.sourceforge.net/current/python/scitbx.math.minimum_covering_ellipsoid.html
-        Which is based on the first reference anyway!
-
-        Here, P is a numpy array of N dimensional points like this:
-        P = [[x,y,z,...], <-- one point per line
-             [x,y,z,...],
-             [x,y,z,...]]
-
-        Returns:
-        (center, radii, rotation)
-
-        """
-        (N, d) = np.shape(P)
-        d = float(d)
-
-        # Q will be our working array
-        Q = np.vstack([np.copy(P.T), np.ones(N)])
-        QT = Q.T
-
-        # initializations
-        err = 1.0 + tolerance
-        u = (1.0 / N) * np.ones(N)
-
-        # Khachiyan Algorithm
-        while err > tolerance:
-            V = np.dot(Q, np.dot(np.diag(u), QT))
-            M = np.diag(np.dot(QT, np.dot(np.linalg.inv(V), Q)))  # M the diagonal vector of an NxN matrix
-            j = np.argmax(M)
-            maximum = M[j]
-            step_size = (maximum - d - 1.0) / ((d + 1.0) * (maximum - 1.0))
-            new_u = (1.0 - step_size) * u
-            new_u[j] += step_size
-            err = np.linalg.norm(new_u - u)
-            u = new_u
-
-        # center of the ellipse
-        center = np.dot(P.T, u)
-
-        # the A matrix for the ellipse
-        print(np.dot(P.T, np.dot(np.diag(u), P)))
-        print(np.array([[a * b for b in center] for a in center]))
-        A = np.linalg.inv(
-                            np.dot(P.T, np.dot(np.diag(u), P)) -
-                            np.array([[a * b for b in center] for a in center])
-                            ) / d
-        print("A: {}".format(A))
-        # G et the values we'd like to return
-        U, s, rotation = np.linalg.svd(A)
-        radii = 1.0 / np.sqrt(s)
-
-        return center, radii, rotation, A
-
-    def getEllipsoidVolume(self, radii):
-        """Calculate the volume of the blob"""
-        return 4. / 3. * np.pi * radii[0] * radii[1] * radii[2]
-
-    def plotEllipsoid(self, center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):
-        """Plot an ellipsoid"""
-        make_ax = ax is None
-        if make_ax:
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-
-        u = np.linspace(0.0, 2.0 * np.pi, 100)
-        v = np.linspace(0.0, np.pi, 100)
-
-        # cartesian coordinates that correspond to the spherical angles:
-        x = radii[0] * np.outer(np.cos(u), np.sin(v))
-        y = radii[1] * np.outer(np.sin(u), np.sin(v))
-        z = radii[2] * np.outer(np.ones_like(u), np.cos(v))
-        # rotate accordingly
-        for i in range(len(x)):
-            for j in range(len(x)):
-                [x[i, j], y[i, j], z[i, j]] = np.dot([x[i, j], y[i, j], z[i, j]], rotation) + center
-
-        if plotAxes:
-            # make some purdy axes
-            axes = np.array([[radii[0], 0.0, 0.0],
-                             [0.0, radii[1], 0.0],
-                             [0.0, 0.0, radii[2]]])
-            # rotate accordingly
-            for i in range(len(axes)):
-                axes[i] = np.dot(axes[i], rotation)
-
-            # plot axes
-            for p in axes:
-                X3 = np.linspace(-p[0], p[0], 100) + center[0]
-                Y3 = np.linspace(-p[1], p[1], 100) + center[1]
-                Z3 = np.linspace(-p[2], p[2], 100) + center[2]
-                ax.plot(X3, Y3, Z3, color=cageColor)
-
-        # plot ellipsoid
-        ax.plot_wireframe(x, y, z, rstride=4, cstride=4, color=cageColor, alpha=cageAlpha)
-
-        if make_ax:
-            plt.show()
-            plt.close(fig)
-            del fig
-
-
-def apply_hard_iron_calibration(data):
-    calibration_vector = [0.53196167, 36.61249794, 83.1567736]
-    field = 41.740706425640774
-
-    data_cal = data - calibration_vector
-
-    # x_cal = (x_raw - calibration_vector[0])
-    # y_cal = (y_raw - calibration_vector[1])
-    # z_cal = (z_raw - calibration_vector[2])
-
-    # return x_cal, y_cal, z_cal
-    return data_cal
+    @staticmethod
+    def running_median(old_array, new_data):
+        new_array = np.append(np.delete(old_array, 0, 0), [new_data], axis=0)
+        new_median = np.median(new_array, axis=0)
+        return new_array, new_median
 
 
 if __name__ == "__main__":
     # calibrator = ImuCalibration()
-    # vector, field_strength = calibrator.calibrate_magnetometer()
+    # vector, field_strength = calibrator.calibrate_magnetometer(save_data=True)
     # print(vector)
     # print(field_strength)
 
     ellipsoid_tools = EllipsoidTool()
 
-    with open('mag_data_3.npy', 'rb') as f:
+    with open('mag_data_4.npy', 'rb') as f:
         mag_data = np.load(f)
 
-    normalized_mag_data = mag_data / 100.0
+    squared_measurements = np.square(mag_data)
+    # print("squared_measurements shape: {}".format(squared_measurements.shape))
 
-    x_uncal = normalized_mag_data[:, 0]
-    y_uncal = normalized_mag_data[:, 1]
-    z_uncal = normalized_mag_data[:, 2]
+    matrix_y = np.sum(squared_measurements, axis=1)
 
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111, projection='3d')
+    rows, columns = mag_data.shape
+    ones = np.ones((rows, 1))
+    matrix_x = np.column_stack((mag_data, ones))
+    # print("matrix_x shape: {}".format(matrix_x.shape))
 
-    ax.scatter(x_uncal, y_uncal, z_uncal)
+    matrix_x_transpose = np.transpose(matrix_x)
+    # print("matrix_x_transpose shape: {}".format(matrix_x_transpose.shape))
+
+    x_t_x_inverse = np.linalg.inv(np.matmul(matrix_x_transpose, matrix_x))
+    x_t_y = np.matmul(matrix_x_transpose, matrix_y)
+
+    beta_vector = np.matmul(x_t_x_inverse, x_t_y)
+
+    correction_vector = 0.5 * beta_vector[0:3]
+
+    field_strength = math.sqrt(beta_vector[3] + np.sum(np.square(correction_vector)))
+    # mag_data = calibrator.mag_data
+
+    x_uncal = mag_data[:, 0]
+    y_uncal = mag_data[:, 1]
+    z_uncal = mag_data[:, 2]
+
+    x_mean = np.mean(x_uncal)
+    y_mean = np.mean(y_uncal)
+    z_mean = np.mean(z_uncal)
+
+    # x_uncal /= x_mean
+    # y_uncal /= y_mean
+    # z_uncal /= z_mean
+
+    # center, radii, rotation, A = ellipsoid_tools.getMinVolEllipse(P=mag_data)
+
+    M, n, d = fitEllipsoid(x_uncal, y_uncal, z_uncal)
+
+    a = M[0, 0]
+    b = M[1, 1]
+    c = M[2, 2]
+    f = M[2, 1]
+    g = M[0, 2]
+    h = M[0, 1]
+
+    p = n[0][0]
+    q = n[1][0]
+    r = n[2][0]
+
+    Q = np.array(
+        [
+            [a, h, g, p],
+            [h, b, f, q],
+            [g, f, c, r],
+            [p, q, r, d]
+        ]
+    )
+    # print("Q: {}".format(Q))
+    # print("M: {}".format(M))
+
+    Minv = np.linalg.inv(M)
+    # print(Qinv)
+    b = -np.dot(Minv, n)
+    center = b.T[0]
+    # print(b)
+    Ainv = np.real(field_strength / np.sqrt(np.dot(n.T, np.dot(Minv, n)) - d) * linalg.sqrtm(M))
+
+    Tofs = np.eye(4)
+    Tofs[3, 0:3] = center
+    # print("Tofs: {}".format(Tofs))
+    # print("np.dot(Q, Tofs.T): {}".format(np.dot(Q, Tofs.T)))
+    R = np.dot(Tofs, np.dot(Q, Tofs.T))
+    print("R: {}".format(R))
+
+    R3 = R[0:3, 0:3]
+    print(R3)
+    R3test = R3 / R3[0, 0]
+    print(R3test)
+    s1 = -R[3, 3]
+    R3S = R3 / s1
+    (el, ec) = np.linalg.eig(R3S)
+    rotation_matrix = np.linalg.inv(ec)  # inverse is actually the transpose here
+    print("rotation_matrix: {}".format(rotation_matrix))
+    recip = 1.0 / np.abs(el)
+    axes = np.sqrt(recip)
+    print("axes: {}".format(axes))
 
 
 
-    center, radii, rotation, A = ellipsoid_tools.getMinVolEllipse(P=normalized_mag_data)
 
-    print(A)
-    w_inverse = np.sqrt(A)
+    A = np.linalg.inv(Ainv)
+    print("A: {}".format(A))
+    U, s, rotation = np.linalg.svd(A)
+    radii = 1.0 / np.sqrt(s)
+    print("radii: {}".format(radii))
 
-    print(w_inverse)
+    center = b.T[0]
+    print("center: {}".format(center))
 
-    ellipsoid_tools.plotEllipsoid(center, radii, rotation, ax=ax)
+    # ellipsoid_tools.plotEllipsoid(center, radii, rotation, ax=ax1)
 
-    rows, columns = np.shape(mag_data)
-    # mag_data_cal = np.matmul(w_inverse, (normalized_mag_data - center).T)
-    mag_data_cal = normalized_mag_data - center
+    # mag_data_cal = np.matmul((mag_data - d), Ainv) * field_strength
 
-    x_cal = mag_data_cal[:, 0]
-    y_cal = mag_data_cal[:, 1]
-    z_cal = mag_data_cal[:, 2]
+    calibratedX = np.zeros(x_uncal.shape)
+    calibratedY = np.zeros(x_uncal.shape)
+    calibratedZ = np.zeros(x_uncal.shape)
 
-    ax.scatter(x_cal, y_cal, z_cal, color='r')
+    totalError = 0
+    for i in range(len(x_uncal)):
+        h = np.array([[x_uncal[i], y_uncal[i], z_uncal[i]]]).T
+        hHat = np.matmul(Ainv, h - b)
+        calibratedX[i] = hHat[0]
+        calibratedY[i] = hHat[1]
+        calibratedZ[i] = hHat[2]
+        mag = np.dot(hHat.T, hHat)
+        err = (mag[0][0] - 1) ** 2
+        totalError += err
+    print("Total Error: %f" % totalError)
 
-    plt.show()
-
-
-    # mag_data_cal = apply_hard_iron_calibration(mag_data)
-    #
-    # a_matrix, ellipsoid_center = get_ellipsoid_matrix(mag_data)
-    # print(a_matrix)
-    # print(ellipsoid_center)
-    #
     # x_cal = mag_data_cal[:, 0]
     # y_cal = mag_data_cal[:, 1]
-    # z_cal = mag_data_cal[:, 2]
-    #
-    # fig = plt.figure(figsize=(8, 8))
-    # ax = fig.add_subplot(111, projection='3d')
-    #
-    # ax.scatter(x_uncal, y_uncal, z_uncal)
-    # ax.scatter(x_cal, y_cal, z_cal)
-    # plt.show()
+    # z_cal = mag_data_cal
+
+    fig1 = plt.figure(1, figsize=(10, 10), dpi=80)
+    ax1 = fig1.add_subplot(111, projection='3d')
+    ax1.set_xlabel('X')
+    ax1.set_ylabel('Y')
+    ax1.set_zlabel('Z')
+    ax1.scatter(x_uncal, y_uncal, z_uncal, s=5, color='r')
+
+    ellipsoid_tools.plotEllipsoid(center, axes, rotation_matrix, ax=ax1)
+
+    fig2 = plt.figure(2, figsize=(10, 10), dpi=80)
+    ax2 = fig2.add_subplot(111, projection='3d')
+    ax2.set_xlabel('X')
+    ax2.set_ylabel('Y')
+    ax2.set_zlabel('Z')
+    ax2.scatter(calibratedX, calibratedY, calibratedZ, color='r')
+
+    # # plot unit sphere
+    u = np.linspace(0, 2 * np.pi, 100)
+    v = np.linspace(0, np.pi, 100)
+    x = np.outer(np.cos(u), np.sin(v)) * field_strength
+    y = np.outer(np.sin(u), np.sin(v)) * field_strength
+    z = np.outer(np.ones(np.size(u)), np.cos(v)) * field_strength
+    ax2.plot_wireframe(x, y, z, rstride=10, cstride=10, alpha=0.5)
+    ax2.plot_surface(x, y, z, alpha=0.3, color='b')
+
+    plt.show()
