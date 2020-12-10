@@ -188,16 +188,18 @@ class ImuCalibration:
         z_uncal = self.mag_data[:, 2]
 
         fig1 = plt.figure(1, figsize=(10, 10), dpi=80)
+        fig1.suptitle('Raw Magnetometer Data with Least Squares Ellipsoid Fit', fontsize=16)
         ax1 = fig1.add_subplot(111, projection='3d')
         ax1.axis('equal')
         ax1.set_xlabel('X')
         ax1.set_ylabel('Y')
         ax1.set_zlabel('Z')
-        ax1.scatter(x_uncal, y_uncal, z_uncal, s=5, color='r')
+        ax1.scatter(x_uncal, y_uncal, z_uncal, color='r')
 
         plot_ellipsoid(center, radii, rotation_matrix, ax=ax1, plotAxes=True)
 
         fig2 = plt.figure(2, figsize=(10, 10), dpi=80)
+        fig2.suptitle('Calibrated Magnetometer Data with Field Strength Unit Sphere', fontsize=16)
         ax2 = fig2.add_subplot(111, projection='3d')
         ax2.axis('equal')
         ax2.set_xlabel('X')
@@ -243,9 +245,9 @@ class ImuCalibration:
 
 if __name__ == "__main__":
     calibrator = ImuCalibration()
-    with open('mag_data_4.npy', 'rb') as f:
+    with open('mag_data_9.npy', 'rb') as f:
         mag_data = np.load(f)
-    hard_iron_offset, soft_iron_matrix = calibrator.calibrate_magnetometer(save_data=True)
+    hard_iron_offset, soft_iron_matrix = calibrator.calibrate_magnetometer(mag_data)
     print("hard_iron_offset: {}".format(hard_iron_offset))
     print("soft_iron_matrix: {}".format(soft_iron_matrix))
     print(soft_iron_matrix)
