@@ -9,3 +9,6 @@ contact_links:
   - name: Committed to creating a GitHub Issue? Read the Wiki!
     url: https://github.com/pi-top/pi-top-Python-SDK/wiki/
     about: Get information about how to create effective GitHub Issues.
+  - name: Looking to learn about programming? Check out Further!
+    url: https://further.pi-top.com/explore/
+    about: Complete challenges to learn how to program your pi-top.

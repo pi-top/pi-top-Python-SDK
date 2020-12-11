@@ -73,7 +73,6 @@ def _set_exclusive_mode(val: bool):
 
 
 def device_is_active():
-
     if (_exclusive_mode is True and _device is not None):
         # We already have the device, so no-one else can
         return False

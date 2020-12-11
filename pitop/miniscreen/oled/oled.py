@@ -1,18 +1,18 @@
 from .core.controls import (  # noqa: F401
-    device_is_active as __device_is_active,
+    device_is_active as _device_is_active,
     reset_device as _reset_device,
     get_device as _get_device,
     set_control_to_pi as _set_control_to_pi,
     set_control_to_hub as _set_control_to_hub,
+    _set_exclusive_mode
 )
 from .core.canvas import Canvas
 from .core.fps_regulator import FPS_Regulator
 from .core.image_helper import (
     get_pil_image_from_path,
-    process_pil_image,
+    process_pil_image_frame,
 )
 
-from pitopcommon.sys_info import is_pi
 from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message,
@@ -22,6 +22,7 @@ import atexit
 from copy import deepcopy
 from PIL import Image, ImageSequence
 from threading import Thread
+from time import sleep
 
 
 class OLED:
@@ -72,13 +73,17 @@ class OLED:
             pass
 
     def is_active(self):
-        __device_is_active()
+        _device_is_active()
 
     def set_control_to_pi(self):
         _set_control_to_pi()
 
     def set_control_to_hub(self):
         _set_control_to_hub()
+
+    # Only intended to be used by pt-sys-oled
+    def _set_exclusive_mode(self, val: bool):
+        _set_exclusive_mode(val)
 
     def set_max_fps(self, max_fps):
         """
@@ -122,8 +127,7 @@ class OLED:
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
         """
-        if is_pi():
-            self.set_control_to_pi()
+        self.set_control_to_pi()
         self.canvas.clear()
 
         _reset_device()
@@ -134,39 +138,33 @@ class OLED:
 
         self.show()
 
-    def get_raw_image(self, file_path_or_url):
-        return get_pil_image_from_path(file_path_or_url)
-
-    def get_processed_image(self, file_path_or_url):
-        image = self.get_raw_image(file_path_or_url)
-
-        return process_pil_image(
+    def __process_image_frame(self, image):
+        return process_pil_image_frame(
             image,
             self.device.size,
             self.device.mode
         )
 
-    def draw_image_file(self, file_path, xy=None):
+    def draw_image_file(self, file_path_or_url, xy=None):
         """
-        Renders a static image file to the screen at a given position.
+        Render a static image to the screen from a file or URL at a given position.
 
         The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
-        :param Image image: A PIL Image object to be rendered
+        :param str file_path_or_url: A file path or URL to the image
         :param tuple xy: The position on the screen to render the image. If not
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        image = self.get_processed_image(file_path)
-        self.draw_image(image, xy)
+        image = get_pil_image_from_path(file_path_or_url)
+        self.draw_image(self.__process_image_frame(image), xy)
 
     def draw_image(self, image, xy=None):
         """
-        Renders an image to the screen at a given position.
+        Render a static image to the screen from a file or URL at a given position.
 
-        The image should be provided as a PIL Image object, which can be
-        used to animate an image with frames (e.g. an animated gif).
+        The image should be provided as a PIL Image object.
 
         The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
@@ -261,18 +259,35 @@ class OLED:
         self.fps_regulator.start_timer()
         self._previous_frame = Canvas(self.device, deepcopy(self.image))
 
+    def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
+        """
+        Render an animated image to the screen from a file or URL.
+
+        :param str file_path_or_url: A file path or URL to the image
+        :param bool background: Set whether the image should be in a background thread
+            or in the main thread.
+        :param bool loop: Set whether the image animation should start again when it
+            has finished
+        """
+        image = get_pil_image_from_path(file_path_or_url)
+        self.play_animated_image(image, background, loop)
+
     def play_animated_image(self, image, background=False, loop=False):
         """
         Render an animation or a image to the screen.
 
+        Use stop_animated_image() to end a background animation
+
         :param Image image: A PIL Image object to be rendered
         :param bool background: Set whether the image should be in a background thread
             or in the main thread.
+        :param bool loop: Set whether the image animation should start again when it
+            has finished
         """
-        self._kill_thread = False
+        self.__kill_thread = False
         if background is True:
             self.auto_play_thread = Thread(
-                target=self.__auto_play, args=(image,))
+                target=self.__auto_play, args=(image, loop))
             self.auto_play_thread.start()
         else:
             self.__auto_play(image)
@@ -282,15 +297,24 @@ class OLED:
         Stop background animation started using `start()`, if currently running.
         """
         if self.auto_play_thread is not None:
-            self._kill_thread = True
+            self.__kill_thread = True
             self.auto_play_thread.join()
 
     def __auto_play(self, image, loop=False):
         while True:
             for frame in ImageSequence.Iterator(image):
-                if self._kill_thread:
-                    break
-                self.draw_image(image)
 
-            if not loop:
+                if self.__kill_thread:
+                    break
+
+                self.draw_image(
+                    self.__process_image_frame(frame)
+                )
+                # Wait for animated image's frame length
+                sleep(
+                    float(frame.info["duration"] / 1000)  # ms to s
+                )
+
+            if self.__kill_thread or not loop:
+                self.reset()
                 break
