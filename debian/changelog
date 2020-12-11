@@ -1,4 +1,10 @@
-py-pitop-sdk (1:0.1.0) UNRELEASED; urgency=medium
+py-pitop-sdk (1:0.1.1) buster; urgency=medium
+
+  * Move desktop link to docs to pt-ui-mods
+
+ -- Mike Roberts <mike@pi-top.com>  Fri, 11 Dec 2020 16:49:11 +0000
+
+py-pitop-sdk (1:0.1.0) buster; urgency=medium
 
   * Initial release of package
   * Use version epoch of 1 to smoothly move from deprecated packages
