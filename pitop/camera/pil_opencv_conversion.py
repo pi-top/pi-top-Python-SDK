@@ -20,7 +20,7 @@ def pil_to_opencv(image):
 
 def opencv_to_pil(image):
     """
-    Converts an an OpenCV compatible BGR numpy ndarray into an RGB Pillow Image.
+    Converts an OpenCV compatible BGR numpy ndarray into an RGB Pillow Image.
 
     :type image: numpy.ndarray
     :param image: Raw BGR image data as a numpy ndarray
