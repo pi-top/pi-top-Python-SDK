@@ -48,7 +48,7 @@ class ImuCalibration:
     def mag_data(self):
         return self._mag_measurements
 
-    def calibrate_magnetometer(self, test_data=None, save_data_name=None):
+    def calibrate_magnetometer(self, test_data=None, save_data_name=None, update_mcu=True):
         self._test_data = test_data
         self._save_data_name = save_data_name
         if test_data is None:
@@ -71,9 +71,13 @@ class ImuCalibration:
 
         self._hard_iron_offset, self._soft_iron_matrix = self._get_calibration_matrices(M, n, d, self._field_strength)
 
+        print("_hard_iron_offset: {}".format(self._hard_iron_offset))
+        print("_soft_iron_matrix: {}".format(self._soft_iron_matrix))
+
         self._mag_measurements_calibrated = self._calibrate_mag_data()
 
-        return self._hard_iron_offset, self._soft_iron_matrix
+        if update_mcu:
+            self.imu_controller.write_mag_cal_params(self._hard_iron_offset, self._soft_iron_matrix)
 
     def plot_graphs(self):
         x_uncal = self.mag_data[:, 0]

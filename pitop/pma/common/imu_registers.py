@@ -19,6 +19,22 @@ class OrientationRegisterTypes:
     PITCH = 1
     YAW = 2
 
+class MagCalRegisterTypes:
+    HARD = 0
+    SOFT = 1
+
+class MagCalHardTypes:
+    X = 0
+    Y = 1
+    Z = 2
+
+class MagCalSoftTypes:
+    XX = 0
+    YY = 1
+    ZZ = 2
+    XY = 3
+    XZ = 4
+    YZ = 5
 
 ImuEnableRegisters = {
     RegisterTypes.ACC.value: 0x90,
@@ -30,6 +46,23 @@ ImuEnableRegisters = {
 ImuConfigRegisters = {
     RegisterTypes.ACC.value: 0xA0,
     RegisterTypes.GYRO.value: 0xA2
+}
+
+MagCalibrationRegisters = {
+    MagCalRegisterTypes.HARD: {
+        MagCalHardTypes.X: 0xB0,
+        MagCalHardTypes.Y: 0xB1,
+        MagCalHardTypes.Z: 0xB2,
+    },
+    MagCalRegisterTypes.SOFT: {
+        MagCalSoftTypes.XX: 0xB3,
+        MagCalSoftTypes.YY: 0xB4,
+        MagCalSoftTypes.ZZ: 0xB5,
+        MagCalSoftTypes.XY: 0xB6,
+        MagCalSoftTypes.XZ: 0xB7,
+        MagCalSoftTypes.YZ: 0xB8,
+
+    }
 }
 
 ScaleMappings = {
@@ -75,3 +108,4 @@ class ImuRegisters:
     ENABLE = ImuEnableRegisters
     DATA = ImuDataRegisters
     CONFIG = ImuConfigRegisters
+    MAGCAL = MagCalibrationRegisters
