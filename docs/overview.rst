@@ -3,57 +3,76 @@ Overview
 =================
 
 ----------------------------------------
-System Architecture
+pi-top [4]
 ----------------------------------------
 
-----------------------------------------
-Using the pi-top
-----------------------------------------
+Interacting with the pi-top
+========================================
 
-----------------------------------------
+TODO: talk about unique features (miniscreen), `pt-sys-oled` and other interesting topics.
+
 Doing physical computing with pi-top [4]
+========================================
+
+Inputs and Outputs
 ----------------------------------------
 
-Ports/pins
-======================================
+A component can be classified as an Input or Output, according to how it behaves.
+
+An Input component generates electric signals that can be interpreted as information when read. For example, when a button is clicked,
+the electric signal it produces lets you know that it's state changed.
+
+An Output component receives electric signals and performs an action based on them. For example, a buzzer;
+when no signal is applied it will be silent; however when an electric signal is applied, it will
+generate sound.
+
+Digital and Analog
+----------------------------------------
+
+Components can also be classified according to the type of electric signals they use.
+
+Digital components only use digital electric signals; digital signals are discrete and carry information in binary form, most of the times consisting in different voltage values.
+This change in voltage can be read by a Raspberry Pi directly.
+
+Analog components use analog electric signals; analog signals are continuous and can have infinite values in a determined range.
+Raspberry Pi can't directly read these signals since it's a digital component. To be able to manage analog signals, the Foundation and Expansion plates include
+an Analog to Digital Converter (DAC). This device converts the analog signal from the component into a digital signal that can be interpreted by the Raspberry Pi.
+
+Ports and Pins
+----------------------------------------
 
 The pi-top Maker Architecture (PMA) connector on the pi-top [4] makes available all GPIO from the Raspberry Pi to the Foundation and Expansion Plates.
 
 This means that the ports located in these plates are mapped to the GPIO header on the Raspberry Pi, providing easy and standard access through Grove connectors
 to these pins.
 
-Plate connections
-======================================
+Foundation and Expansion Plates have multiple connectors that can be used to interface with different kind components.
 
 .. image:: _static/pma/robotics_kit/ExpansionPlate.jpg
-
-Foundation and Expansion Plates have multiple connectors that can be used to interface with different kind components.
 
 .. _digital-port:
 
 Digital Ports
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Used to communicate with digital devices.
 
-These ports are labeled from `D0` to `D7`
+These ports are labeled from `D0` to `D7`.
 
 .. _analog-port:
 
 Analog Ports
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Used to communicate with analog devices.
 
-Since Raspberry Pi can't actually read analog signals, these are first processed by an Analog to Digital Converter (DAC) located inside the Foundation & Expansion Plates.
-This device converts the analog electric signal from the component into a digital signal, that can be interpreted by the Raspberry Pi.
 
 These ports are labeled from `A0` to `A3`.
 
 .. _motor-port:
 
 Motor Ports
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Communicates a motor encoder component with the motor controller, located inside the Expansion Plate.
 
@@ -62,17 +81,17 @@ These ports are labeled from `M0` to `M3`
 .. _servomotor-port:
 
 ServoMotor Ports
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Communicates a servo motor component with the servomotor controller, located inside the Expansion Plate.
 
-These ports are labeled from `S0` to `S3`
+These ports are labeled from `S0` to `S3`.
 
 
 .. _i2c-port:
 
 I2C Ports
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Used to communicate with generic I2C devices.
 
@@ -80,59 +99,80 @@ These ports are labeled as `I2C`.
 
 
 Identifying PMA port for a component
-======================================
+----------------------------------------
 
 The components included in the Foundation Kit & Robotics Kit can be classified according to how they operate and communicate.
 
-.. _digital-input-component:
+.. _digital-component:
 
-Digital Input component
-----------------------------------------
-
-A component that generates data in form of digital signals when an event occurs.
+Digital component
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These components should be connected to a :ref:`Digital Port<digital-port>` on the Foundation/Expansion Plates.
 
-.. _digital-output-component:
+The Digital components included in the Foundation & Robotics Kits are:
 
-Digital Output component
-----------------------------------------
+- :ref:`Button<component-button>`
+- :ref:`Buzzer<component-buzzer>`
+- :ref:`LED<component-led>`
 
-A component that can be controlled using digital signals, which are generated by the Raspberry Pi and communicated to the component through the Foundation/Expansion Plate.
 
-These components should be connected to a :ref:`Digital Port<digital-port>` on the Foundation/Expansion Plates.
+.. _analog-component:
 
-.. _analog-input-component:
-
-Analog Input component
-----------------------------------------
-
-A component that generates data in form of analog signals.
-
+Analog component
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These components should be connected to a :ref:`Analog Port<analog-port>` on the Foundation/Expansion Plates, labeled from `A0` to `A3`.
+
+The Analog components included in the Foundation & Robotics Kits are:
+
+- :ref:`LightSensor<component-lightsensor>`
+- :ref:`Potentiometer<component-potentiometer>`
+- :ref:`SoundSensor<component-soundsensor>`
+- :ref:`UltrasonicSensor<component-ultrasonic>`
 
 .. _motor-component:
 
 Motor component
-----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An electromechanical component that is controlled by communicating with a microprocessor located inside the Expansion Plate.
 
-These components should be connected to a :ref:`Motor Port<motor-port>` on the Expansion Plate.
+These components should be connected to a :ref:`Motor Port<motor-port>` or to :ref:`ServoMotor Port<servomotor-port>` on the Expansion Plate,
+depending on the component used.
 
-.. _servomotor-component:
+The `Motor` component included in the Robotics Kits are:
 
-ServoMotor component
-----------------------------------------
-
-An electromechanical component that is controlled by communicating with a microprocessor located inside the Expansion Plate.
-
-These components should be connected to a :ref:`ServoMotor Port<servomotor-port>` on the Expansion Plate.
+- :ref:`MotorEncoder<component-motorencoder>` (connects to a :ref:`Motor Port<motor-port>`)
+- :ref:`ServoMotor<component-servomotor>` (connects to a :ref:`ServoMotor Port<servomotor-port>`)
 
 ----------------------------------------
+pi-top laptops
+----------------------------------------
+
+Interacting with the pi-top
+========================================
+
+TODO: talk about unique features (battery, display)
+
 Using peripherals
+========================================
+
+TODO: compatible pi-top peripherals
+
 ----------------------------------------
+pi-topCEED
+----------------------------------------
+
+Interacting with the pi-top
+========================================
+
+TODO: talk about unique features (display)
+
+Using peripherals
+========================================
+
+TODO: compatible pi-top peripherals
 
 ----------------------------------------
 Making use of additional helper classes
