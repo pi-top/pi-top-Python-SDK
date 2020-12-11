@@ -195,7 +195,7 @@ class Camera:
         """
         Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
 
-        By default the returned image is formated as a .
+        By default the returned image is formatted as a :class:`PIL.Image.Image`.
 
         :type format: string
         :param format:
