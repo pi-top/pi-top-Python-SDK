@@ -16,7 +16,7 @@ class DocsCLI(CliBaseClass):
 
     def __is_connected_to_internet(self) -> bool:
         try:
-            run_command("ping -c1 8.8.8.8", timeout=10, check=True)
+            run_command("ping -c1 8.8.8.8", timeout=10, check=True, verbose=False)
             return True
         except Exception:
             return False
