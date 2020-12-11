@@ -221,14 +221,14 @@ class ImuCalibration:
     def _poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")
         prev_time = time.time()
-        # error_tolerance = 0.01
+        error_tolerance = 0.01
         while not thread_event.is_set():
             current_time = time.time()
             if current_time - prev_time > (1 / self._MAG_POLL_FREQUENCY):
                 x, y, z = imu_controller.magnetometer_raw
-                # if abs(x) < error_tolerance and abs(y) < error_tolerance and abs(z) < error_tolerance:
-                #     print("Read error, trying again...")
-                #     continue
+                if abs(x) < error_tolerance and abs(y) < error_tolerance and abs(z) < error_tolerance:
+                    print("Read error, trying again...")
+                    continue
                 new_mag_data = [x, y, z]
                 self._mag_filter_array, mag_median = self._running_median(self._mag_filter_array, new_mag_data)
                 self._mag_measurements = np.append(self._mag_measurements, [mag_median], axis=0)
@@ -250,4 +250,4 @@ if __name__ == "__main__":
     hard_iron_offset, soft_iron_matrix = calibrator.calibrate_magnetometer(mag_data)
     print("hard_iron_offset: {}".format(hard_iron_offset))
     print("soft_iron_matrix: {}".format(soft_iron_matrix))
-    print(soft_iron_matrix)
+
