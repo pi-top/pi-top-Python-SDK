@@ -43,11 +43,6 @@ for r in (
     # (replace '~' with '+')
     # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
     ("~", "+"),
-
-    # Convert from Debian epoch version format to PEP 440 epoch version format:
-    # (replace ':'' with '!')
-    # See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
-    (":", "!"),
 ):
     python_version = python_version.replace(*r)
 
