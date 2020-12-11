@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 
 from pitop.display import Display
-from .cli_base import CliBaseClass, PitopCliException
+from .cli_base import CliBaseClass, PitopCliException, PitopCliInvalidArgument
 
 
 class DisplayCLI(CliBaseClass):
@@ -18,18 +18,20 @@ class DisplayCLI(CliBaseClass):
             self.perform_desired_action()
             return 0
         except Exception as e:
-            print(f"Error on pitop-brightness.run: {e}")
+            print(f"Error on pitop-display.run: {e}")
             return 1
 
     def validate_args(self) -> None:
+        if vars(self.args).get('display_subcommand') is None:
+            raise PitopCliInvalidArgument
         # Handle invalid command line parameter combinations
         if self.args.display_subcommand != "brightness":
             return
         if self.args.brightness_value and (self.args.increment_brightness or self.args.decrement_brightness):
-            print("Error on pitop-brightness.validate_args: Cannot increment/decrement at the same time as setting brightness value")
+            print("Error on pitop-display.validate_args: Cannot increment/decrement at the same time as setting brightness value")
             raise PitopCliException
         if self.args.increment_brightness and self.args.decrement_brightness:
-            print("Error on pitop-brightness.validate_args: Cannot increment and decrement brightness at the same time")
+            print("Error on pitop-display.validate_args: Cannot increment and decrement brightness at the same time")
             raise PitopCliException
 
     def perform_desired_action(self) -> None:
@@ -61,7 +63,6 @@ class DisplayCLI(CliBaseClass):
     def add_parser_arguments(cls, parser) -> None:
         subparser = parser.add_subparsers(title="pi-top display utility",
                                           description="Interface to communicate with the device's display",
-                                          required=True,
                                           dest="display_subcommand")
 
         # "pi-top display brightness"
