@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from .common.imu_registers import ImuRegisters, RegisterTypes, RawRegisterTypes, OrientationRegisterTypes, ScaleMappings, MagCalHardTypes, MagCalSoftTypes, MagCalRegisterTypes
+from .common.imu_registers import ImuRegisters, RegisterTypes, RawRegisterTypes, OrientationRegisterTypes, ScaleMappings
+from .common.imu_registers import MagCalHardTypes, MagCalSoftTypes, MagCalRegisterTypes
 from .plate_interface import PlateInterface
 from pitopcommon.logger import PTLogger
 import numpy as np
