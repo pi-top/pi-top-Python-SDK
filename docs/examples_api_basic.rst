@@ -115,7 +115,12 @@ PMA: Using a Button to Control an LED
 
 .. Camera
 
-Camera: Using a USB Camera (capture video)
+Camera: Using a USB Camera to Access Image Data
+-------------------------------------------------------------------------------
+
+.. literalinclude:: ../examples/camera/camera_loop_print_first_pixel.py
+
+Camera: Using a USB Camera to Capture Video
 -------------------------------------------------------------------------------
 
 .. literalinclude:: ../examples/camera/camera_capture_video.py
