@@ -337,7 +337,4 @@ if __name__ == "__main__":
     calibrator = ImuCalibration()
     with open('mag_data_9.npy', 'rb') as f:
         mag_data = np.load(f)
-    hard_iron_offset, soft_iron_matrix = calibrator.calibrate_magnetometer(mag_data)
-    print("hard_iron_offset: {}".format(hard_iron_offset))
-    print("soft_iron_matrix: {}".format(soft_iron_matrix))
-
+    calibrator.calibrate_magnetometer(mag_data)
