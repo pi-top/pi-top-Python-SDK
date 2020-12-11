@@ -121,7 +121,6 @@ def get_ellipsoid_geometric_params(M, n, d):
     Tofs[3, 0:3] = center
 
     R = np.dot(Tofs, np.dot(Q, Tofs.T))
-    # print("R: {}".format(R))
 
     R3 = R[0:3, 0:3]
 

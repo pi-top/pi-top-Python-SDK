@@ -4,12 +4,14 @@ from .imu_controller import ImuController
 import weakref
 import math
 from operator import itemgetter
+# from .common import ImuCalibration
+
 
 class Imu:
     def __init__(self):
         self.imu_controller = ImuController()
-        # self.imu_controller.acc_scaler = 2
-        # self.imu_controller.gyro_scaler = 250
+        self.imu_controller.acc_scaler = 2
+        self.imu_controller.gyro_scaler = 250
         weakref.finalize(self.imu_controller, self.imu_controller.cleanup)
 
     @property
@@ -132,3 +134,6 @@ class Imu:
         :rtype: dict
         """
         return
+
+    def calibrate_magnetometer(self, hard_iron_offset, soft_iron_matrix):
+        pass
