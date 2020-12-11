@@ -165,7 +165,7 @@ class Camera:
         :type format: string
         :param format:
             The image format to provide to the callback. Case-insensitive.
-            By Default, with format=PIL, the image will be provided as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            By default, with format='PIL', the image will be provided as a raw RGB-ordered :class:`PIL.Image.Image` object.
             When ``format='OpenCV'`` the image will be provided as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
 
