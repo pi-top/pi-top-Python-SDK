@@ -134,18 +134,3 @@ def get_ellipsoid_geometric_params(M, n, d):
     radii = np.sqrt(eigen_reciprocal)
 
     return center, radii, rotation_matrix
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
