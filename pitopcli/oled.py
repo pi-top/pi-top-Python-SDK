@@ -5,7 +5,7 @@ from os.path import isfile
 from pitopcommon.formatting import is_url
 
 from pitop.miniscreen import OLED
-from .cli_base import CliBaseClass
+from .cli_base import CliBaseClass, PitopCliInvalidArgument
 
 
 class OledCLI(CliBaseClass):
@@ -14,9 +14,15 @@ class OledCLI(CliBaseClass):
 
     def __init__(self, args) -> None:
         self.args = args
+        self.validate_args()
+
         # TODO: add support for 'give/take control to/from hub'
         # REQ_GET_OLED_CONTROL = 125
         # REQ_SET_OLED_CONTROL = 126
+
+    def validate_args(self) -> None:
+        if self.args.oled_subcommand is None:
+            raise PitopCliInvalidArgument
 
     def run(self) -> int:
         def is_animated(image):
@@ -60,7 +66,7 @@ class OledCLI(CliBaseClass):
         parser_draw = subparser.add_parser("draw", help="Draw text and images into the OLED")
         parser_draw.add_argument("--force", "-f",
                                  help="Force the hub to give control of the OLED to the Pi",
-                                 action="store_true"
+                                 action="store_false"
                                  )
         parser_draw.add_argument("--timeout", "-t",
                                  type=int,
@@ -84,7 +90,7 @@ class OledCLI(CliBaseClass):
         parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
         parser_capture.add_argument("--force", "-f",
                                     help="Force the hub to give control of the OLED to the Pi",
-                                    action="store_true"
+                                    action="store_false"
                                     )
 
 
