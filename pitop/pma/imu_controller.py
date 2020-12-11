@@ -31,15 +31,6 @@ class ImuController:
         self.acc_scaler = 2
         self.gyro_scaler = 250
         self._mag_cal_error_count = 0
-        # self._hard_x = 0
-        # self._hard_y = 0
-        # self._hard_z = 0
-        # self._soft_xx = 0
-        # self._soft_xx = 0
-        # self._soft_xx = 0
-        # self._soft_xx = 0
-        # self._soft_xx = 0
-        # self._soft_xx = 0
 
     def cleanup(self):
         for name, member in RegisterTypes.__members__.items():
