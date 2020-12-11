@@ -200,7 +200,7 @@ class Camera:
         :type format: string
         :param format:
             The image format to return. Case-insensitive.
-            By Default, with format=PIL, the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            By default, with format='PIL', the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
             When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
         if format.lower() == 'opencv':
