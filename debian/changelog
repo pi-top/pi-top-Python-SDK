@@ -1,3 +1,10 @@
+py-pitop-sdk (0.2.0) buster; urgency=medium
+
+  * Move support for deprecated user libs to python3-pitop-depr (to be dropped
+  at a later date)
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 04 Nov 2020 16:26:34 +0000
+
 py-pitop-sdk (0.1.0) buster; urgency=medium
 
   * Initial release of package
