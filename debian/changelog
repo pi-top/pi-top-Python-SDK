@@ -1,4 +1,4 @@
-py-pitop-sdk (0.3.2) buster; urgency=medium
+py-pitop-sdk (0.3.3) buster; urgency=medium
 
   * Breaks with python3-pt-oled (<< 2.0.0)
 
