@@ -2,6 +2,7 @@
 from os import get_terminal_size
 
 from pitopcommon.command_runner import run_command, run_command_background
+from pitopcommon.current_session_info import get_first_display
 
 from .cli_base import CliBaseClass
 
@@ -74,6 +75,9 @@ class HelpCLI(CliBaseClass):
 
         if self.args.help_subcommand == "docs":
             if self.args.open:
+                display = get_first_display()
+                if display is None:
+                    raise Exception("There isn't a display available to open the documentation.")
                 url = self.__get_docs_url()
                 run_command_background(f"x-www-browser {url}")
             elif self.args.preferred:
