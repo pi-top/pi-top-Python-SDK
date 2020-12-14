@@ -7,7 +7,7 @@ from .battery import BatteryCLI
 from .cli_base import PitopCliException, PitopCliInvalidArgument
 from .display import DisplayCLI
 from .devices import DeviceCLI
-from .docs import DocsCLI
+from .help import HelpCLI
 from .oled import OledCLI
 
 
@@ -15,7 +15,7 @@ lookup_dict = {
     "battery": BatteryCLI,
     "devices": DeviceCLI,
     "display": DisplayCLI,
-    "docs": DocsCLI,
+    "help": HelpCLI,
     "oled": OledCLI
 }
 
