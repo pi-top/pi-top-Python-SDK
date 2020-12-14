@@ -54,7 +54,7 @@ Breaks:
 # CLI utils
  pt-device-manager (<< 4.0.0),
 # pt-oled
- python3-pt-oled
+ python3-pt-oled (<< 3.0.0),
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
