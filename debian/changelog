@@ -1,3 +1,9 @@
+py-pitop-sdk (0.3.2) buster; urgency=medium
+
+  * Breaks with python3-pt-oled (pt-oled)
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:52:03 +0000
+
 py-pitop-sdk (0.3.1) buster; urgency=medium
 
   * Breaks with pt-device-manager << 4.0.0 (CLI utils)

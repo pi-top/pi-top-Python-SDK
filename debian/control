@@ -51,7 +51,10 @@ Suggests:
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
 Breaks:
+# CLI utils
  pt-device-manager (<< 4.0.0),
+# pt-oled
+ python3-pt-oled
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
