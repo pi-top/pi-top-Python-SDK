@@ -45,8 +45,8 @@ class HelpCLI(CliBaseClass):
             return self.LOCAL_URI
         else:
             raise Exception(
-                """Not connected to internet and python3-pitop-doc not installed.
-                Please, connect to the internet or install the documentation package via 'sudo apt install python3-pitop-doc'""")
+                "Not connected to internet and python3-pitop-doc not installed.\n" +
+                "Please, connect to the internet or install the documentation package via 'sudo apt install python3-pitop-doc'")
 
     def run(self) -> int:
         def print_header(section_name):
