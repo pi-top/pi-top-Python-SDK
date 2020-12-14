@@ -66,7 +66,7 @@ class OledCLI(CliBaseClass):
         parser_draw = subparser.add_parser("draw", help="Draw text and images into the OLED")
         parser_draw.add_argument("--force", "-f",
                                  help="Force the hub to give control of the OLED to the Pi",
-                                 action="store_false"
+                                 action="store_true"
                                  )
         parser_draw.add_argument("--timeout", "-t",
                                  type=int,
@@ -90,7 +90,7 @@ class OledCLI(CliBaseClass):
         parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
         parser_capture.add_argument("--force", "-f",
                                     help="Force the hub to give control of the OLED to the Pi",
-                                    action="store_false"
+                                    action="store_true"
                                     )
 
 
