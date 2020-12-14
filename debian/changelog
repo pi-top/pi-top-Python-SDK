@@ -1,3 +1,9 @@
+py-pitop-sdk (0.2.5) buster; urgency=medium
+
+  * Fix battery API
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 18:24:02 -0300
+
 py-pitop-sdk (0.2.4) buster; urgency=medium
 
   * Check for available displays before opening browser in help CLI
