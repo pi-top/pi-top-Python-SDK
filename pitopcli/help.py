@@ -57,7 +57,7 @@ class HelpCLI(CliBaseClass):
 
         def print_line(title, text, url, status):
             print(f"[ {StdoutFormat.GREEN}{'✓' if status else ' '}{StdoutFormat.ENDC} ]", end=" ")
-            print(f"{StdoutFormat.BOLD}{title}{StdoutFormat.ENDC}: {text}\n\t{clickable_text(url, url) if status else text}", end=" ")
+            print(f"{StdoutFormat.BOLD}{title}{StdoutFormat.ENDC}: {text}\n\t{clickable_text(url, url) if status else url}", end=" ")
             print("")
 
         def print_docs():
