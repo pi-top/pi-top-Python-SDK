@@ -50,11 +50,6 @@ Recommends:
 Suggests:
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
-# This package now provides pt-oled
-Breaks:
- python3-pt-oled (<< 3.0.0)
-Replaces:
- python3-pt-oled (<< 3.0.0)
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .

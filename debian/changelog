@@ -1,3 +1,9 @@
+py-pitop-sdk (0.3.0) buster; urgency=medium
+
+  * Do not break python3-pt-oled
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:10:06 +0000
+
 py-pitop-sdk (0.2.6) buster; urgency=medium
 
   * Set default OLED CLI force argument to False
