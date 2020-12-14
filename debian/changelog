@@ -1,3 +1,10 @@
+py-pitop-sdk (0.2.3) buster; urgency=medium
+
+  * Add help section to CLI, including support for opening a browser directing
+  to the first recommended available docs URL
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 14:53:24 +0000
+
 py-pitop-sdk (0.2.2) buster; urgency=medium
 
   * Make miniscreen buttons top-level object a singleton, to ensure that
