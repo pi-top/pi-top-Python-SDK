@@ -97,6 +97,6 @@ class HelpCLI(CliBaseClass):
                                  action="store_true"
                                  )
         docs_parser.add_argument("--preferred", "-p",
-                                 help="Print the URL to access the documentation",
+                                 help="Print the first available recommended URL to access the documentation",
                                  action="store_true"
                                  )
