@@ -1,3 +1,10 @@
+py-pitop-sdk (0.2.2) buster; urgency=medium
+
+  * Make miniscreen buttons top-level object a singleton, to ensure that
+  pt-sys-oled can correctly set 'exclusive mode' for the application scope
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 14:22:01 +0000
+
 py-pitop-sdk (0.2.1) buster; urgency=medium
 
   * Fix changelog date
