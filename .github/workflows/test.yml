@@ -98,7 +98,8 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Debian package
-        uses: pi-top/action-debian-package@add-pre-run-command
+        # uses: pi-top/action-debian-package@add-pre-run-command
+        uses: pi-top/action-debian-package@v0.2.0
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts"
@@ -110,4 +111,4 @@ jobs:
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
           # Package uses latest packaging syntax and Lintian opts/tags
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
-          pre_run_command: "apt-get install -y python3-pip && pip3 install ."
+          # pre_run_command: "apt-get install -y python3-pip && pip3 install ."
