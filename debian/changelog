@@ -1,3 +1,9 @@
+py-pitop-sdk (0.3.4) buster; urgency=medium
+
+  * Supplement 'Breaks' with 'Replaces'
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 01:58:43 +0000
+
 py-pitop-sdk (0.3.3) buster; urgency=medium
 
   * Breaks with python3-pt-oled (<< 2.0.0)
