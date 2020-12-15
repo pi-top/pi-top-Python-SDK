@@ -161,7 +161,7 @@ And you can build the docs locally by running:
 To view the generated docs open the `build/html/index.html` file in your browser.
 
 Most of the SDK requires pi-top hardware to work but it should be possible to
-run the tests and build documentation in any environemnt with Python3.
+run the tests and build documentation in any environment with Python3.
 
 ------------
 Contributing

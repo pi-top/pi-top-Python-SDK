@@ -50,11 +50,16 @@ Recommends:
 Suggests:
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
-# This package now provides pt-oled
 Breaks:
- python3-pt-oled (<< 3.0.0)
+# CLI utils
+ pt-device-manager (<< 4.0.0),
+# pt-oled
+ python3-pt-oled (<< 3.0.0),
 Replaces:
- python3-pt-oled (<< 3.0.0)
+# CLI utils
+ pt-device-manager (<< 4.0.0),
+# pt-oled
+ python3-pt-oled (<< 3.0.0),
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
@@ -72,47 +77,3 @@ Description: pi-top Python 3 Library - Documentation
  General purpose Python library for controlling a pi-top.
  .
  This is the documentation part of the package.
-
-Package: python3-pt-buttons
-Architecture: any
-Depends: ${misc:Depends},
- ${python3:Depends},
- python3-pitop (= ${binary:Version}),
-Description: Deprecated pi-top [4] Buttons Library (Python 3.x)
- A library to interacting with the pi-top [4]'s buttons
- .
- Note: this package is replaced by python3-pitop.
-
-Package: python3-pt-oled
-Architecture: any
-Depends: ${misc:Depends},
- ${python3:Depends},
- python3-pitop (= ${binary:Version}),
-Description: Deprecated pi-top OLED Library (Python 3.x)
- A library to interacting with the pi-top [4]'s OLED screen
- .
- Note: this package is replaced by python3-pitop.
-
-Package: python3-pt-pma
-Architecture: any
-Depends:
- ${misc:Depends},
- ${python3:Depends},
- python3-pitop (= ${binary:Version}),
-Description: Deprecated pi-top [4] PMA Library (Python 3.x)
- A library to interacting with the pi-top [4]'s
- Maker Architecture (PMA)
- .
- Note: this package is replaced by python3-pitop.
-
-Package: python3-pt-proto-plus
-Architecture: any
-Depends:
- ${misc:Depends},
- ${python3:Depends},
- python3-pitop (= ${binary:Version}),
-Description: Deprecated pi-topPROTO+ Library (Python 3.x)
- Python module to communicate with the pi-top
- inventor's kit addon board.
- .
- Note: this package is replaced by python3-pitop.

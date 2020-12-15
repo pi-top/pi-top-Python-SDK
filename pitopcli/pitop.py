@@ -3,17 +3,19 @@
 from argparse import ArgumentParser
 from sys import exit
 
+from .battery import BatteryCLI
+from .cli_base import PitopCliException, PitopCliInvalidArgument
 from .display import DisplayCLI
 from .devices import DeviceCLI
-from .battery import BatteryCLI
+from .help import HelpCLI
 from .oled import OledCLI
-from .cli_base import PitopCliException, PitopCliInvalidArgument
 
 
 lookup_dict = {
     "battery": BatteryCLI,
     "devices": DeviceCLI,
     "display": DisplayCLI,
+    "help": HelpCLI,
     "oled": OledCLI
 }
 

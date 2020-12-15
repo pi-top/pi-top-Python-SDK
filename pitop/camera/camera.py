@@ -1,4 +1,4 @@
-from threading import Thread
+from threading import Thread, Event
 from inspect import signature
 
 from .core import (
@@ -6,6 +6,7 @@ from .core import (
     CameraTypes)
 from .core.capture_actions import CaptureActions
 from pitop.pma.common import type_check
+from .pil_opencv_conversion import pil_to_opencv
 
 
 class Camera:
@@ -29,6 +30,7 @@ class Camera:
 
         self._continue_processing = True
         self._frame_handler = FrameHandler()
+        self._new_frame_event = Event()
         self._process_image_thread = Thread(target=self._process_camera_output, daemon=True)
         self._process_image_thread.start()
 
@@ -144,7 +146,7 @@ class Camera:
         self._frame_handler.remove_action(CaptureActions.DETECT_MOTION)
 
     @type_check
-    def start_handling_frames(self, callback_on_frame, frame_interval=1):
+    def start_handling_frames(self, callback_on_frame, frame_interval=1, format='PIL'):
         """
         Begin calling the passed callback with each new frame, allowing for custom processing.
 
@@ -159,6 +161,12 @@ class Camera:
         :type frame_interval: int
         :param frame_interval:
             The callback will run every frame_interval frames, decreasing the frame rate of processing. Defaults to 1.
+
+        :type format: string
+        :param format:
+            The image format to provide to the callback. Case-insensitive.
+            By default, with format='PIL', the image will be provided as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            When ``format='OpenCV'`` the image will be provided as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
 
         args = locals()
@@ -175,18 +183,45 @@ class Camera:
         self._frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
 
     def _process_camera_output(self):
-
         while self._camera and self._continue_processing is True:
             try:
                 self._frame_handler.frame = self._camera.get_frame()
+                self._new_frame_event.set()
                 self._frame_handler.process()
             except Exception as e:
                 print(f"There was an error: {e}")
 
-    def get_image(self):
+    def current_frame(self, format='PIL'):
         """
-        Returns the latest frame captured by the camera.
+        Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
 
-        By default, the returned image is formated as a :class:`PIL.Image.Image` object.
+        By default the returned image is formatted as a :class:`PIL.Image.Image`.
+
+        :type format: string
+        :param format:
+            The image format to return. Case-insensitive.
+            By default, with format='PIL', the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
         """
+        if format.lower() == 'opencv':
+            return pil_to_opencv(self._frame_handler.frame)
+
+        return self._frame_handler.frame
+
+    def get_frame(self, format='PIL'):
+        """
+        Returns the next frame captured by the camera. This method blocks until a new frame is available.
+
+        :type format: string
+        :param format:
+            The image format to return. Case-insensitive.
+            By default, with format='PIL', the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
+            When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
+        """
+        self._new_frame_event.wait()
+        self._new_frame_event.clear()
+
+        if format.lower() == 'opencv':
+            return pil_to_opencv(self._frame_handler.frame)
+
         return self._frame_handler.frame
