@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class RegisterTypes(Enum):
+class RegisterTypes:
     ACC = 0
     GYRO = 1
     MAG = 2
@@ -37,15 +37,15 @@ class MagCalSoftTypes:
     YZ = 5
 
 ImuEnableRegisters = {
-    RegisterTypes.ACC.value: 0x90,
-    RegisterTypes.GYRO.value: 0x91,
-    RegisterTypes.MAG.value: 0x92,
-    RegisterTypes.ORIENTATION.value: 0x93
+    RegisterTypes.ACC: 0x90,
+    RegisterTypes.GYRO: 0x91,
+    RegisterTypes.MAG: 0x92,
+    RegisterTypes.ORIENTATION: 0x93
 }
 
 ImuConfigRegisters = {
-    RegisterTypes.ACC.value: 0xA0,
-    RegisterTypes.GYRO.value: 0xA2
+    RegisterTypes.ACC: 0xA0,
+    RegisterTypes.GYRO: 0xA2
 }
 
 MagCalibrationRegisters = {
@@ -66,13 +66,13 @@ MagCalibrationRegisters = {
 }
 
 ScaleMappings = {
-    RegisterTypes.ACC.value: {
+    RegisterTypes.ACC: {
         2: 0x00,
         4: 0x01,
         8: 0x02,
         16: 0x03
     },
-    RegisterTypes.GYRO.value: {
+    RegisterTypes.GYRO: {
         250: 0x00,
         500: 0x01,
         1000: 0x02,
@@ -81,22 +81,22 @@ ScaleMappings = {
 }
 
 ImuDataRegisters = {
-    RegisterTypes.ACC.value: {
+    RegisterTypes.ACC: {
         RawRegisterTypes.X: 0x80,
         RawRegisterTypes.Y: 0x81,
         RawRegisterTypes.Z: 0x82
     },
-    RegisterTypes.GYRO.value: {
+    RegisterTypes.GYRO: {
         RawRegisterTypes.X: 0x83,
         RawRegisterTypes.Y: 0x84,
         RawRegisterTypes.Z: 0x85
     },
-    RegisterTypes.MAG.value: {
+    RegisterTypes.MAG: {
         RawRegisterTypes.X: 0x86,
         RawRegisterTypes.Y: 0x87,
         RawRegisterTypes.Z: 0x88
     },
-    RegisterTypes.ORIENTATION.value: {
+    RegisterTypes.ORIENTATION: {
         OrientationRegisterTypes.ROLL: 0x89,
         OrientationRegisterTypes.PITCH: 0x8A,
         OrientationRegisterTypes.YAW: 0x8B

@@ -33,8 +33,10 @@ class ImuController:
         self._mag_cal_error_count = 0
 
     def cleanup(self):
-        for name, member in RegisterTypes.__members__.items():
-            self._set_imu_config(member.value, enable=False)
+        self.acc_enable = False
+        self.gyro_enable = False
+        self.mag_enable = False
+        self.orientation_enable = False
 
     def _set_imu_config(self, imu_function: int, enable: bool):
         self._mcu_device.write_word(self._enable_registers[imu_function], int(enable), little_endian=True, signed=False)
@@ -45,7 +47,7 @@ class ImuController:
 
     @acc_enable.setter
     def acc_enable(self, enable: bool):
-        self._set_imu_config(RegisterTypes.ACC.value, enable)
+        self._set_imu_config(RegisterTypes.ACC, enable)
         self._acc_enable = enable
 
     @property
@@ -54,7 +56,7 @@ class ImuController:
 
     @gyro_enable.setter
     def gyro_enable(self, enable: bool):
-        self._set_imu_config(RegisterTypes.GYRO.value, enable)
+        self._set_imu_config(RegisterTypes.GYRO, enable)
         self._gyro_enable = enable
 
     @property
@@ -63,7 +65,7 @@ class ImuController:
 
     @mag_enable.setter
     def mag_enable(self, enable: bool):
-        self._set_imu_config(RegisterTypes.MAG.value, enable)
+        self._set_imu_config(RegisterTypes.MAG, enable)
         self._mag_enable = enable
 
     @property
@@ -72,7 +74,7 @@ class ImuController:
 
     @orientation_enable.setter
     def orientation_enable(self, enable: bool):
-        self._set_imu_config(RegisterTypes.ORIENTATION.value, enable)
+        self._set_imu_config(RegisterTypes.ORIENTATION, enable)
         self._orientation_enable = enable
 
     def _data_scale_config_write(self, register_type: int, scaler: int):
@@ -88,11 +90,11 @@ class ImuController:
 
     @property
     def acc_scaler(self):
-        return self._data_scale_config_read(RegisterTypes.ACC.value)
+        return self._data_scale_config_read(RegisterTypes.ACC)
 
     @acc_scaler.setter
     def acc_scaler(self, scaler: int):
-        self._data_scale_config_write(RegisterTypes.ACC.value, scaler)
+        self._data_scale_config_write(RegisterTypes.ACC, scaler)
         if self.acc_scaler == scaler:
             self._acc_scaler = scaler
         else:
@@ -101,11 +103,11 @@ class ImuController:
 
     @property
     def gyro_scaler(self):
-        return self._data_scale_config_read(RegisterTypes.GYRO.value)
+        return self._data_scale_config_read(RegisterTypes.GYRO)
 
     @gyro_scaler.setter
     def gyro_scaler(self, scaler: int):
-        self._data_scale_config_write(RegisterTypes.GYRO.value, scaler)
+        self._data_scale_config_write(RegisterTypes.GYRO, scaler)
         if self.gyro_scaler == scaler:
             self._gyro_scaler = scaler
         else:
@@ -117,7 +119,7 @@ class ImuController:
         if not self.acc_enable:
             self.acc_enable = True
 
-        imu_acc_raw = self._get_raw_data(RegisterTypes.ACC.value)
+        imu_acc_raw = self._get_raw_data(RegisterTypes.ACC)
 
         imu_acc_scaled = tuple([axis * g / (self._16BIT_SIGNED_RANGE / float(self._acc_scaler)) for axis in imu_acc_raw])
 
@@ -128,7 +130,7 @@ class ImuController:
         if not self.gyro_enable:
             self.gyro_enable = True
 
-        imu_gyro_raw = self._get_raw_data(RegisterTypes.GYRO.value)
+        imu_gyro_raw = self._get_raw_data(RegisterTypes.GYRO)
 
         imu_gyro_scaled = tuple([axis / (self._16BIT_SIGNED_RANGE / float(self._gyro_scaler)) for axis in imu_gyro_raw])
 
@@ -139,7 +141,7 @@ class ImuController:
         if not self.mag_enable:
             self.mag_enable = True
 
-        mag_raw = self._get_raw_data(RegisterTypes.MAG.value)
+        mag_raw = self._get_raw_data(RegisterTypes.MAG)
 
         mag_raw_scaled = tuple(axis * self._MAG_SIGNED_RANGE / self._16BIT_SIGNED_RANGE for axis in mag_raw)
 
