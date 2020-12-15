@@ -28,16 +28,12 @@ Interacting with onboard pi-top [4] hardware
 pi-top [4] supports the following API sections for its onboard hardware:
 
 * Battery
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_miniscreen:API - pi-top [4] Miniscreen>`
-* :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
-* :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
 * System
 
 pi-top [4] does not support the following API sections:
 
 * Display
-* pi-topPROTO+
 
 This is due to the fact that pi-top [4] has no attached display, and the pi-top [4] official display's brightness is handled in hardware with physical brightness buttons, and the backlight is handled by DPMS (the operating system's internal screen blanking functionality).
 
@@ -46,8 +42,17 @@ Physical computing with pi-top [4]
 
 pi-top [4] supports the following API sections for physical computing:
 
+* :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
 * :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
 * :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
+
+The pi-topPULSE can be used as a Raspberry Pi HAT with a pi-top [4]. The USB camera library can be used with any USB camera, and - whilst technically can be used with any Raspberry Pi/pi-top, was designed with the pi-top [4] and PMA in mind.
+
+pi-top [4] does not support the following API sections:
+
+* pi-topPROTO+
+
+This is due to the fact that pi-topPROTO+ makes use of the legacy 'modular rail', which has no way of connecting to a pi-top [4].
 
 See :ref:`getting_started_pma:Getting Started with pi-top Maker Architecture`
 
@@ -87,7 +92,7 @@ pi-top laptops does not support the following API sections:
 
 * :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
 
-This is due to the fact that pi-top laptops do not support PMA.
+This is due to the fact that PMA is only available for pi-top [4].
 
 ----------------------------------------
 pi-topCEED
@@ -125,10 +130,11 @@ pi-topCEED does not support the following API sections:
 
 * :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
 
-This is due to the fact that pi-topCEED do not support PMA.
+This is due to the fact that PMA is only available for pi-top [4].
 
 ----------------------------------------
-Making use of additional helper classes
+Additional helper modules/classes
 ----------------------------------------
 
-TODO: determine additional helpers - keyboard, speech, etc.
+The pi-top SDK provides some helpful modules/classes to get the most out of your pi-top.
+Check out :ref:`the Keyboard module<api_keyboard:API - pi-top Keyboard Input Component>` to use your computer keyboard as an input device, similar to a PMA button.
