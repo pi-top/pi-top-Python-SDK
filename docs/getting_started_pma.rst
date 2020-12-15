@@ -116,10 +116,10 @@ These components should be connected to a :ref:`Analog Port<analog-port>` on the
 
 The Analog components included in the Foundation & Robotics Kits are:
 
-- :ref:`LightSensor<component-lightsensor>`
+- :ref:`LightSensor<component-light-sensor>`
 - :ref:`Potentiometer<component-potentiometer>`
-- :ref:`SoundSensor<component-soundsensor>`
-- :ref:`UltrasonicSensor<component-ultrasonic>`
+- :ref:`SoundSensor<component-sound-sensor>`
+- :ref:`UltrasonicSensor<component-ultrasonic-sensor>`
 
 .. _motor-component:
 
@@ -133,5 +133,5 @@ depending on the component used.
 
 The `Motor` component included in the Robotics Kits are:
 
-- :ref:`MotorEncoder<component-motorencoder>` (connects to a :ref:`Motor Port<motor-port>`)
-- :ref:`ServoMotor<component-servomotor>` (connects to a :ref:`ServoMotor Port<servomotor-port>`)
+- :ref:`MotorEncoder<component-encoder-motor>` (connects to a :ref:`Motor Port<motor-port>`)
+- :ref:`ServoMotor<component-servo-motor>` (connects to a :ref:`ServoMotor Port<servomotor-port>`)

@@ -8,6 +8,8 @@ Button
 .. note::
    This is a :ref:`Digital Component<digital-component>` which connects to a :ref:`Digital Port<digital-port>` `[D0-D7]`.
 
+.. literalinclude:: ../../examples/pma/button.py
+
 .. autoclass:: pitop.pma.Button
    :inherited-members: gpiozero.Button
    :exclude-members: pin_factory
@@ -23,18 +25,22 @@ Buzzer
 .. note::
    This is a :ref:`Digital Component<digital-component>` which connects to a :ref:`Digital Port<digital-port>` `[D0-D7]`.
 
+.. literalinclude:: ../../examples/pma/buzzer.py
+
 .. autoclass:: pitop.pma.Buzzer
    :inherited-members: gpiozero.Buzzer
    :exclude-members: pin_factory
 
 
-.. _component-motorencoder:
+.. _component-encoder-motor:
 
-MotorEncoder
+Encoder Motor
 -------------------------------
 
 .. note::
    This is a :ref:`Motor Component<motor-component>` which connects to a :ref:`MotorEncoder Port<motor-port>` `[M0-M3]`.
+
+.. literalinclude:: ../../examples/pma/encoder_motor.py
 
 .. autoclass:: pitop.pma.EncoderMotor
     :exclude-members: MMK_STANDARD_GEAR_RATIO, MAX_DC_MOTOR_RPM
@@ -50,20 +56,24 @@ LED
 .. note::
    This is a :ref:`Digital Component<digital-component>` which connects to a :ref:`Digital Port<digital-port>` `[D0-D7]`.
 
+.. literalinclude:: ../../examples/pma/led.py
+
 .. autoclass:: pitop.pma.LED
    :inherited-members: gpiozero.LED
    :exclude-members: pin_factory
 
 
-.. _component-lightsensor:
+.. _component-light-sensor:
 
-LightSensor
+Light Sensor
 -------------------------------
 
 .. image:: ../_static/pma/foundation_kit/components/light_sensor.jpg
 
 .. note::
    This is a :ref:`Analog Component<analog-component>` which connects to a :ref:`Analog Port<analog-port>` `[A0-A3]`.
+
+.. literalinclude:: ../../examples/pma/light_sensor.py
 
 .. autoclass:: pitop.pma.LightSensor
 
@@ -78,24 +88,28 @@ Potentiometer
 .. note::
    This is a :ref:`Analog Component<analog-component>` which connects to a :ref:`Analog Port<analog-port>` `[A0-A3]`.
 
+.. literalinclude:: ../../examples/pma/potentiometer.py
+
 .. autoclass:: pitop.pma.Potentiometer
 
 
-.. _component-servomotor:
+.. _component-servo-motor:
 
-ServoMotor
+Servo Motor
 -------------------------------
 
 .. note::
    This is a :ref:`Motor Component<motor-component>` which connects to a :ref:`ServoMotor Port<servomotor-port>` `[S0-S3]`.
 
+.. literalinclude:: ../../examples/pma/servo_motor.py
+
 .. autoclass:: pitop.pma.ServoMotor
     :exclude-members: ANGLE_RANGE, SPEED_RANGE, MIN_PULSE_WIDTH_MICRO_S, MAX_PULSE_WIDTH_MICRO_S, REGISTER_MIN_PULSE_WIDTH, REGISTER_MAX_PULSE_WIDTH, REGISTER_PWM_FREQUENCY, PWM_FREQUENCY, PWM_PERIOD, DUTY_REGISTER_RANGE, SERVO_LOWER_DUTY, SERVO_UPPER_DUTY, RegisterTypes
 
 
-.. _component-soundsensor:
+.. _component-sound-sensor:
 
-SoundSensor
+Sound Sensor
 -------------------------------
 
 .. image:: ../_static/pma/foundation_kit/components/sound_sensor.jpg
@@ -103,18 +117,21 @@ SoundSensor
 .. note::
    This is a :ref:`Analog Component<analog-component>` which connects to a :ref:`Analog Port<analog-port>` `[A0-A3]`.
 
+.. literalinclude:: ../../examples/pma/sound_sensor.py
+
 .. autoclass:: pitop.pma.SoundSensor
 
+.. _component-ultrasonic-sensor:
 
-.. _component-ultrasonic:
-
-UltrasonicSensor
+Ultrasonic Sensor
 -------------------------------
 
 .. image:: ../_static/pma/foundation_kit/components/ultrasonic_sensor.jpg
 
 .. note::
    This is a :ref:`Analog Component<analog-component>` which connects to a :ref:`Analog Port<analog-port>` `[A0-A3]`.
+
+.. literalinclude:: ../../examples/pma/ultrasonic_sensor.py
 
 .. autoclass:: pitop.pma.UltrasonicSensor
     :exclude-members: ECHO_LOCK

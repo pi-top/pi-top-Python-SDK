@@ -1,6 +1,11 @@
 =====================================================
-Examples - API: Advanced
+Recipes
 =====================================================
+
+PMA: Using a Button to Control an LED
+-------------------------------------
+
+.. literalinclude:: ../examples/pma/button_led.py
 
 Adding Motion Detection to a USB Camera
 ---------------------------------------

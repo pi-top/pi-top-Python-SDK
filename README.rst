@@ -82,9 +82,9 @@ modules available in the library:
         oled.draw_multiline_text(str(distance))
         sleep(0.1)
 
-Check out the `Basic API Examples`_ chapter of the documentation for ideas on how to get started.
+Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
 
-.. _Basic API Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
+.. _API Recipes: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/recipes_api.html
 
 
 This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
