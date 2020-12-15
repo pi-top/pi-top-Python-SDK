@@ -29,7 +29,7 @@ class Battery:
             self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_critical)
 
         def on_state_changed(parameters):
-            charging_state, capacity, time_remaining, wattage = parameters
+            charging_state, capacity, time_remaining, wattage = parameters()
 
             if charging_state == 2:
                 self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_full)

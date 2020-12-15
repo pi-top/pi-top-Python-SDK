@@ -73,7 +73,7 @@ class OLED:
             pass
 
     def is_active(self):
-        _device_is_active()
+        return _device_is_active()
 
     def set_control_to_pi(self):
         _set_control_to_pi()

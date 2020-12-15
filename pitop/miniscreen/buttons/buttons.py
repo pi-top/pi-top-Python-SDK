@@ -1,3 +1,4 @@
+from pitopcommon.singleton import Singleton
 from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message
@@ -18,6 +19,7 @@ class Button:
         self.when_released = None
 
 
+@Singleton
 class Buttons:
     """
     Instantiates a single instance for each of the four button types up, down,
@@ -43,13 +45,38 @@ class Buttons:
 
         self.exclusive_mode = True
         self.lock = None
-        self.__configure_locks()
+        self.__configure_lock()
+
+    def __setup_subscribe_client(self):
+        def set_button_state(button, pressed):
+            button.is_pressed = pressed
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                button.when_pressed if button.is_pressed else button.when_released
+            )
+
+        self.__ptdm_subscribe_client = PTDMSubscribeClient()
+        self.__ptdm_subscribe_client.initialise(
+            {
+                Message.PUB_V3_BUTTON_UP_PRESSED: lambda: set_button_state(self.up, pressed=True),
+                Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(self.up, pressed=False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(self.down, pressed=True),
+                Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(self.down, pressed=False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(self.select, pressed=True),
+                Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(self.select, pressed=False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(self.cancel, pressed=True),
+                Message.PUB_V3_BUTTON_CANCEL_RELEASED: lambda: set_button_state(self.cancel, pressed=False),
+            }
+        )
+        self.__ptdm_subscribe_client.start_listening()
 
     def _set_exclusive_mode(self, exclusive):
         self.exclusive_mode = exclusive
-        self.__configure_locks()
+        self.__configure_lock()
 
-    def __configure_locks(self):
+    def __configure_lock(self):
         if self.exclusive_mode:
             # UUID makes this lock single-purpose
             #
@@ -60,38 +87,16 @@ class Buttons:
             self.lock = PTLock(f"pt-buttons-{str(self.uuid)}", _single_purpose=True)
             self.lock.acquire()
         else:
-            if self.lock is not None:
-                self.lock.release()
-                self.lock = None
+            self.__clean_up_lock()
 
-    def __setup_subscribe_client(self):
-        def set_button_state(button, pressed_state):
-            button.is_pressed = pressed_state
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
-                button.when_pressed if button.is_pressed else button.when_released
-            )
-
-        self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise(
-            {
-                Message.PUB_V3_BUTTON_UP_PRESSED: lambda: set_button_state(self.up, True),
-                Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(self.up, False),
-                # ----------------------------------------------------------------------------------
-                Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(self.down, True),
-                Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(self.down, False),
-                # ----------------------------------------------------------------------------------
-                Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(self.select, True),
-                Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(self.select, False),
-                # ----------------------------------------------------------------------------------
-                Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(self.cancel, True),
-                Message.PUB_V3_BUTTON_CANCEL_RELEASED: lambda: set_button_state(self.cancel, False),
-            }
-        )
-        self.__ptdm_subscribe_client.start_listening()
-
-    def __clean_up(self):
+    def __clean_up_lock(self):
         if self.lock is not None:
             self.lock.release()
+            del self.lock
+            self.lock = None
+
+    def __clean_up(self):
+        self.__clean_up_lock()
 
         try:
             self.__ptdm_subscribe_client.stop_listening()
@@ -99,7 +104,7 @@ class Buttons:
             pass
 
 
-buttons = Buttons()
+buttons = Buttons.instance()
 
 
 def UpButton():
