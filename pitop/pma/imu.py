@@ -5,6 +5,21 @@ import weakref
 import math
 from operator import itemgetter
 # from .common import ImuCalibration
+from dataclasses import dataclass
+
+
+@dataclass
+class Vector:
+    x: float
+    y: float
+    z: float
+
+
+@dataclass
+class Orientation:
+    roll: float
+    pitch: float
+    yaw: float
 
 
 class Imu:
