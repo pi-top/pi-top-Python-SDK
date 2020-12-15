@@ -26,7 +26,7 @@ class ServoMotor:
     def __init__(self, port, zero_point=0):
         self._controller = ServoController(port)
         self._min_angle = self._HARDWARE_MIN_ANGLE
-        self._max_angle = self._HARDWARE_MIN_ANGLE
+        self._max_angle = self._HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self._zero_point = zero_point
         self._target_speed = 0
