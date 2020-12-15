@@ -32,7 +32,9 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
+
+autosectionlabel_prefix_document = True
 
 # Extension options
 # TODO v2 of sphinx-common: `None` -> `True`

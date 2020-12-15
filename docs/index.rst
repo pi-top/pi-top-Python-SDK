@@ -20,9 +20,7 @@ Supports all pi-top peripherals:
 Status: Active Development
 --------------------------
 
-This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
-
-Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+This SDK is currently in active development. Please be patient while we work towards v1.0.0!
 
 Backwards Compatibility
 =======================
@@ -34,7 +32,6 @@ About
 -----
 
 This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
-
 with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
 to interact with your pi-top using the terminal.
 
@@ -96,6 +93,8 @@ Table of Contents
     :numbered:
 
     getting_started
+    getting_started_pma
+    overview
     cli_tools
     examples_cli
     examples_api_basic
@@ -103,8 +102,12 @@ Table of Contents
     api_miniscreen
     api_pma
     api_camera
-    api_keyboard
+    api_battery
+    api_display
+    api_protoplus
     api_pulse
+    api_system
+    api_keyboard
     more
 
 ------------------

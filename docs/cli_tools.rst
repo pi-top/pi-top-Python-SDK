@@ -72,8 +72,7 @@ Where:
     Report all the information available about the battery (charging state, capacity, time remaining
     and wattage)
 
-Example
-~~~~~~~~~~~~~~~~~
+Example:
 
 .. code-block:: bash
 
@@ -143,8 +142,7 @@ Using `pi-top display brightness` without arguments will return the current brig
 Note that the `brightness_value` range differs for different devices: for pi-top [3] is from 0-16; pi-top [1] and CEED is 0-10.
 
 
-Example
-~~~~~~~~~~~~~~~~~
+Example:
 
 .. code-block:: bash
 
@@ -223,8 +221,8 @@ hub
 peripherals
     Get information about attached pi-top peripherals
 
-Example
-~~~~~~~~~~~~~~~~~
+
+Example:
 
 .. code-block:: bash
 
@@ -281,8 +279,8 @@ text
 --font-size FONT_SIZE
     set the font size
 
-Example
-~~~~~~~~~~~~~~~~~
+
+Example:
 
 .. code-block:: bash
 
