@@ -7,13 +7,15 @@ Build-Depends:
  dh-sequence-python3,
 # Required by pybuild
  dh-python,
- python3-all,
+ python3-all-dev,
  python3-setuptools,
 # Required until we can use dh-sequence-sphinxdoc (Bullseye)
  python3-sphinx,
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
+# Required for building the docs (see rules file)
+ python3-pip,
 Standards-Version: 4.5.0
 Homepage: https://pi-top.com
 
