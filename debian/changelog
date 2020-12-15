@@ -1,3 +1,9 @@
+py-pitop-sdk (0.3.4) buster; urgency=medium
+
+  * Add missing return statement in OLED API
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 22:38:05 -0300
+
 py-pitop-sdk (0.3.3) buster; urgency=medium
 
   * Breaks with python3-pt-oled (<< 2.0.0)
