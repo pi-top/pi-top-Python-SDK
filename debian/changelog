@@ -1,3 +1,9 @@
+py-pitop-sdk (0.3.7) buster; urgency=medium
+
+  * Fix display callback API
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 15 Dec 2020 19:22:56 -0300
+
 py-pitop-sdk (0.3.6) buster; urgency=medium
 
   * Remove pi-topPULSE config methods
