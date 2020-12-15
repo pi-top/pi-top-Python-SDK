@@ -11,7 +11,9 @@ The Foundation & Expansion Plates and all the parts included in the Foundation &
 
 The component interfaces have been provided for simple use of everyday components, and are intended for general use with the devices they represent.
 
-For more information about pi-top Makers Architecture, check our `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_
+See :ref:`getting_started_pma:Getting Started with pi-top Maker Architecture` for useful information to get started with using PMA.
+
+For even more information about pi-top Makers Architecture, check out the pi-top `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_
 
 .. toctree::
     :maxdepth: 3

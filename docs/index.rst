@@ -20,9 +20,7 @@ Supports all pi-top peripherals:
 Status: Active Development
 --------------------------
 
-This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
-
-Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+This SDK is currently in active development. Please be patient while we work towards v1.0.0!
 
 Backwards Compatibility
 =======================
@@ -95,6 +93,7 @@ Table of Contents
     :numbered:
 
     getting_started
+    getting_started_pma
     overview
     cli_tools
     examples_cli
