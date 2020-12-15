@@ -19,14 +19,17 @@ class OrientationRegisterTypes:
     PITCH = 1
     YAW = 2
 
+
 class MagCalRegisterTypes:
     HARD = 0
     SOFT = 1
+
 
 class MagCalHardTypes:
     X = 0
     Y = 1
     Z = 2
+
 
 class MagCalSoftTypes:
     XX = 0
@@ -35,6 +38,7 @@ class MagCalSoftTypes:
     XY = 3
     XZ = 4
     YZ = 5
+
 
 ImuEnableRegisters = {
     RegisterTypes.ACC: 0x90,
