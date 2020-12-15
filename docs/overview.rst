@@ -1,10 +1,3 @@
-.. TODO: link to API page for each section
-
-.. * :ref:`Battery<API - Battery>`.
-.. * :ref:`Display<API - Display>`.
-.. * :ref:`pi-topPROTO+ (protoplus)<API - pi-topPROTO+>`.
-.. * :ref:`System<API - System>`.
-
 =================
 Overview
 =================
@@ -27,13 +20,13 @@ Interacting with onboard pi-top [4] hardware
 
 pi-top [4] supports the following API sections for its onboard hardware:
 
-* Battery
+* :ref:`Battery<api_battery:API - pi-top Battery>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_miniscreen:API - pi-top [4] Miniscreen>`
-* System
+* :ref:`System<api_system:API - pi-top System>`
 
 pi-top [4] does not support the following API sections:
 
-* Display
+* :ref:`Display<api_display:API - pi-top Display>`
 
 This is due to the fact that pi-top [4] has no attached display, and the pi-top [4] official display's brightness is handled in hardware with physical brightness buttons, and the backlight is handled by DPMS (the operating system's internal screen blanking functionality).
 
@@ -50,7 +43,7 @@ The pi-topPULSE can be used as a Raspberry Pi HAT with a pi-top [4]. The USB cam
 
 pi-top [4] does not support the following API sections:
 
-* pi-topPROTO+
+* :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 
 This is due to the fact that pi-topPROTO+ makes use of the legacy 'modular rail', which has no way of connecting to a pi-top [4].
 
@@ -65,9 +58,9 @@ Interacting with onboard pi-top laptop hardware
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for their onboard hardware:
 
-* Battery
-* Display
-* System
+* :ref:`Battery<api_battery:API - pi-top Battery>`
+* :ref:`Display<api_display:API - pi-top Display>`
+* :ref:`System<api_system:API - pi-top System>`
 
 pi-top laptops does not support the following API sections:
 
@@ -80,7 +73,7 @@ Using peripherals with a pi-top laptop
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for use with peripherals:
 
-* pi-topPROTO+
+* :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
 * :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
 
@@ -103,12 +96,12 @@ Interacting with onboard pi-topCEED hardware
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for their onboard hardware:
 
-* Display
-* System
+* :ref:`Display<api_display:API - pi-top Display>`
+* :ref:`System<api_system:API - pi-top System>`
 
 pi-top laptops does not support the following API sections:
 
-* Battery
+* :ref:`Battery<api_battery:API - pi-top Battery>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_miniscreen:API - pi-top [4] Miniscreen>`
 
 This is due to the fact that pi-topCEED does not include a battery or the pi-top [4]'s miniscreen.
@@ -118,7 +111,7 @@ Using peripherals with a pi-topCEED
 
 pi-topCEED supports the following API sections for use with peripherals:
 
-* pi-topPROTO+
+* :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
 * :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
 

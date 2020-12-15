@@ -102,8 +102,12 @@ Table of Contents
     api_miniscreen
     api_pma
     api_camera
-    api_keyboard
+    api_battery
+    api_display
+    api_protoplus
     api_pulse
+    api_system
+    api_keyboard
     more
 
 ------------------
