@@ -110,4 +110,4 @@ jobs:
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
           # Package uses latest packaging syntax and Lintian opts/tags
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
-          pre_run_command: "apt install python3-pip; pip3 install ."
+          pre_run_command: "apt install python3-pip && pip3 install ."
