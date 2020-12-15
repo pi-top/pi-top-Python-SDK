@@ -2,7 +2,7 @@ py-pitop-sdk (0.3.8) buster; urgency=medium
 
   * Update docs - add overview page, add placeholders for all API subsystems
 
- -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 19:23:06 +0000
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 22:40:55 +0000
 
 py-pitop-sdk (0.3.7) buster; urgency=medium
 
