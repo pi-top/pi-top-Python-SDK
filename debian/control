@@ -49,6 +49,8 @@ Depends:
 Recommends:
 # Preferred OLED font
  fonts-fs-me-pro,
+# Required for OLED examples
+ pt-project-files,
 Suggests:
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
