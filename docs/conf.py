@@ -118,7 +118,7 @@ autodoc_mock_imports = [
     'PyV4L2Camera',
     'PIL',
     'pynput',
-    'smbus2',
+    'smbus',
     'zmq',
     # gpiozero dependencies
     'RPi',

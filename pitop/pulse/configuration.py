@@ -1,7 +1,3 @@
-# configuration.py (pi-topPULSE)
-# Copyright (C) 2017  CEED ltd.
-#
-
 from math import pow
 from smbus import SMBus
 from pitopcommon.logger import PTLogger
