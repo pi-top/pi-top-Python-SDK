@@ -1,3 +1,10 @@
+py-pitop-sdk (0.4.0) buster; urgency=medium
+
+  * Add missing pages to docs
+  * Update examples and mocking in docs as necessary
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 16:19:20 +0000
+
 py-pitop-sdk (0.3.9) buster; urgency=medium
 
   * Reorganize examples in docs
