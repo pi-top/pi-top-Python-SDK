@@ -12,6 +12,7 @@ import time
 import matplotlib.pyplot as plt
 from scipy import linalg
 from pitopcommon.logger import PTLogger
+import atexit
 from mpl_toolkits import mplot3d  # don't delete, actually required for "3d" plot type
 
 
@@ -39,8 +40,7 @@ class ImuCalibration:
         self._field_strength = None
         self._test_data = None
         self._save_data_name = None
-
-        weakref.finalize(self.imu_controller, self.imu_controller.cleanup)
+        atexit.register(self.imu_controller.cleanup)
 
     @property
     def mag_data(self):
