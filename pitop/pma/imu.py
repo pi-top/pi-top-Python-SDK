@@ -94,8 +94,8 @@ class Imu:
         """
         acc_data = self.accelerometer
         x, y, z = list(getattr(acc_data, field.name) for field in fields(acc_data))
-        roll = math.degrees(math.atan2(x, math.sqrt(y ** 2 + z ** 2)))
-        pitch = math.degrees(math.atan2(-y, math.sqrt(x ** 2 + z ** 2)))
+        roll = -math.degrees(math.atan2(x, math.sqrt(y ** 2 + z ** 2)))
+        pitch = -math.degrees(math.atan2(-y, math.sqrt(x ** 2 + z ** 2)))
 
         orientation = Orientation()
         orientation.roll = roll
