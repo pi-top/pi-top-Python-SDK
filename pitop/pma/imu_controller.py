@@ -6,7 +6,6 @@ from .plate_interface import PlateInterface
 from pitopcommon.logger import PTLogger
 import numpy as np
 
-g = 9.807
 
 class ImuController:
     """
@@ -14,7 +13,7 @@ class ImuController:
     """
     _ORIENTATION_DATA_SCALE = 100.0
     _MAG_SIGNED_RANGE = 4900.0
-    _16BIT_SIGNED_RANGE = 2**15
+    _16BIT_SIGNED_RANGE = 2 ** 15
     _HARD_IRON_SCALE_FACTOR = 10.0
     _SOFT_IRON_SCALE_FACTOR = 1000.0
 
@@ -28,7 +27,9 @@ class ImuController:
         self._gyro_enable = False
         self._mag_enable = False
         self._orientation_enable = False
+        self._acc_scaler = None
         self.acc_scaler = 2
+        self._gyro_scaler = None
         self.gyro_scaler = 250
         self._mag_cal_error_count = 0
 
@@ -121,7 +122,7 @@ class ImuController:
 
         imu_acc_raw = self._get_raw_data(RegisterTypes.ACC)
 
-        imu_acc_scaled = tuple([axis * g / (self._16BIT_SIGNED_RANGE / float(self._acc_scaler)) for axis in imu_acc_raw])
+        imu_acc_scaled = tuple([axis / (self._16BIT_SIGNED_RANGE / float(self._acc_scaler)) for axis in imu_acc_raw])
 
         return imu_acc_scaled
 
@@ -199,8 +200,8 @@ class ImuController:
 
         # check that the writes were successful
         hard_iron_offset_read, soft_iron_matrix_read = self.read_mag_cal_params()
-        equal_hard = np.allclose(hard_iron_offset_read, hard_iron_offset, atol=1/self._HARD_IRON_SCALE_FACTOR)
-        equal_soft = np.allclose(soft_iron_matrix_read, soft_iron_matrix, atol=1/self._SOFT_IRON_SCALE_FACTOR)
+        equal_hard = np.allclose(hard_iron_offset_read, hard_iron_offset, atol=1 / self._HARD_IRON_SCALE_FACTOR)
+        equal_soft = np.allclose(soft_iron_matrix_read, soft_iron_matrix, atol=1 / self._SOFT_IRON_SCALE_FACTOR)
         if not equal_hard or not equal_soft:
             self._mag_cal_error_count += 1
             if self._mag_cal_error_count > 5:
