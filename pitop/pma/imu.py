@@ -4,6 +4,7 @@ import math
 from .common.imu_calibration import ImuCalibration
 from dataclasses import astuple, dataclass, fields
 from abc import ABC
+import atexit
 
 
 @dataclass
@@ -44,7 +45,7 @@ class Imu:
         self.imu_controller = ImuController()
         self.imu_controller.acc_scaler = 2
         self.imu_controller.gyro_scaler = 250
-        weakref.finalize(self.imu_controller, self.imu_controller.cleanup)
+        atexit.register(self.imu_controller.cleanup)
 
     @property
     def orientation_radians(self):
