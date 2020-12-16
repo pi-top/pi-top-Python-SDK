@@ -1,5 +1,5 @@
 =====================================
-API - pi-top Camera
+API - USB Camera
 =====================================
 
 This module provides a Camera class for using a USB Camera attached to your
@@ -11,7 +11,7 @@ The module also provides a mock 'File System Camera' which reads it's frames
 from a directory of images for working without camera hardware in situations
 such as testing.
 
-.. literalinclude:: ../examples/camera/camera_capture_video.py
+.. literalinclude:: ../../examples/camera/camera_capture_video.py
 
 By default, Camera frames are provided as instances of the Pillow module
 :class:`PIL.Image.Image` class, which provides various methods for working with
@@ -27,17 +27,17 @@ format uses raw, BGR-ordered pixels in a NumPy :class:`numpy.ndarray` object.
 Using a USB Camera to Access Image Data
 -------------------------------------------------------------------------------
 
-.. literalinclude:: ../examples/camera/camera_loop_print_first_pixel.py
+.. literalinclude:: ../../examples/camera/camera_loop_print_first_pixel.py
 
 Using a USB Camera to Capture Video
 -------------------------------------------------------------------------------
 
-.. literalinclude:: ../examples/camera/camera_capture_video.py
+.. literalinclude:: ../../examples/camera/camera_capture_video.py
 
 Convert USB Camera image to grayscale
 -------------------------------------------------------------------------------
 
-.. literalinclude:: ../examples/camera/camera_opencv_processing.py
+.. literalinclude:: ../../examples/camera/camera_opencv_processing.py
 
 ----------------------
 Camera

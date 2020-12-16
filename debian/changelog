@@ -1,3 +1,11 @@
+py-pitop-sdk (0.4.1) buster; urgency=medium
+
+  * 'pi-top Keyboard' --> 'Keyboard Input'
+  * 'pi-top Camera' --> 'USB Camera'
+  * Move to "helpers" section in the docs
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 19:26:07 +0000
+
 py-pitop-sdk (0.4.0) buster; urgency=medium
 
   * Add missing pages to docs

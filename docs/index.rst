@@ -101,10 +101,9 @@ Table of Contents
     api_general
     api_miniscreen
     api_pma
-    api_camera
     api_protoplus
     api_pulse
-    api_keyboard
+    api_helpers
     more
 
 ------------------

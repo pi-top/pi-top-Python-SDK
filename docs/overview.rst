@@ -36,7 +36,6 @@ Physical computing with pi-top [4]
 pi-top [4] supports the following API sections for physical computing:
 
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera>`
 * :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
 
 The pi-topPULSE can be used as a Raspberry Pi HAT with a pi-top [4]. The USB camera library can be used with any USB camera, and - whilst technically can be used with any Raspberry Pi/pi-top, was designed with the pi-top [4] and PMA in mind.
@@ -75,7 +74,6 @@ pi-top laptops (Original pi-top and pi-top [3]) support the following API sectio
 
 * :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera>`
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
@@ -113,7 +111,6 @@ pi-topCEED supports the following API sections for use with peripherals:
 
 * :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera>`
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
@@ -129,5 +126,8 @@ This is due to the fact that PMA is only available for pi-top [4].
 Additional helper modules/classes
 ----------------------------------------
 
-The pi-top SDK provides some helpful modules/classes to get the most out of your pi-top.
-Check out :ref:`the Keyboard module<api_keyboard:API - pi-top Keyboard>` to use your computer keyboard as an input device, similar to a PMA button.
+The pi-top SDK provides some :ref:`helpful modules/classes<api_helpers:API - Helpers>` to get the most out of your pi-top.
+
+Check out the :ref:`USB Camera (camera)<api_helpers/camera:API - USB Camera>` module to easily add computer vision to your physical computing projects.
+
+Check out the :ref:`keyboard<api_helpers/keyboard:API - Keyboard Input>` module to use your computer keyboard as an input device, similar to a PMA button.
