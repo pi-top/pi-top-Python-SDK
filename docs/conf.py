@@ -115,9 +115,9 @@ autodoc_mock_imports = [
     'pitopcommon.ptdm',
     'pitopcommon.smbus_device',
     'pitopcommon.sys_config',
-    'PyV4L2Camera',
     'PIL',
     'pynput',
+    'PyV4L2Camera',
     'smbus',
     'zmq',
     # gpiozero dependencies

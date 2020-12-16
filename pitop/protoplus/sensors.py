@@ -67,6 +67,14 @@ class DistanceSensor():
         distance = self._get_distance_from_pulse_time(pulse_duration)
         return distance
 
+    @property
+    def raw_distance(self):
+        return self.get_raw_distance()
+
+    @property
+    def distance(self):
+        return self.get_distance()
+
     def get_raw_distance(self):
         return self._measure_distance()
 
