@@ -1,25 +1,42 @@
-#!/usr/bin/env python3
-
 from .imu_controller import ImuController
 import weakref
 import math
-from operator import itemgetter
-# from .common import ImuCalibration
-from dataclasses import dataclass
+from .common.imu_calibration import ImuCalibration
+from dataclasses import astuple, dataclass, fields
+from abc import ABC
 
 
 @dataclass
-class Vector:
-    x: float
-    y: float
-    z: float
+class BaseDataType(ABC):
+
+    def __add__(self, other):
+        return self.__class__(*(getattr(self, dim.name)+getattr(other, dim.name) for dim in fields(self)))
+
+    def __sub__(self, other):
+        return self.__class__(*(getattr(self, dim.name)-getattr(other, dim.name) for dim in fields(self)))
+
+    def __mul__(self, other):
+        return self.__class__(*(getattr(self, dim.name)*other for dim in fields(self)))
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __iter__(self):
+        return iter(astuple(self))
 
 
 @dataclass
-class Orientation:
-    roll: float
-    pitch: float
-    yaw: float
+class Vector3D(BaseDataType):
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+
+
+@dataclass
+class Orientation(BaseDataType):
+    roll: float = 0.0
+    pitch: float = 0.0
+    yaw: float = 0.0
 
 
 class Imu:
@@ -33,31 +50,31 @@ class Imu:
     def orientation_radians(self):
         """
         Gets the current orientation in radians using the aircraft principal axes of pitch, roll and yaw.
-        :return: A dictionary object indexed by the strings pitch, roll and yaw. The values are Floats representing the
-            angle of the axis in radians.
-        :rtype: dict
+        :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
+        representing the angle of the axis in radians.
+        :rtype: Orientation()
         """
-        data = self.orientation_degrees
-        for key, value in data.items():
-            data[key] = math.radians(value)
-        return data
+        orientation_degrees = self.orientation_degrees
+        orientation_radians = orientation_degrees * math.pi / 180.0
+
+        return orientation_radians
 
     @property
     def orientation_degrees(self):
         """
         Gets the current orientation in degrees using the aircraft principal axes of pitch, roll and yaw.
-        :return: A dictionary object indexed by the strings pitch, roll and yaw. The values are Floats representing the
-            angle of the axis in degrees.
-        :rtype: dict
+        :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
+        representing the angle of the axis in degrees.
+        :rtype: Orientation()
         """
         roll, pitch, yaw = self.imu_controller.orientation_data
 
-        data = {
-            'roll': roll,
-            'pitch': pitch,
-            'yaw': yaw
-        }
-        return data
+        orientation = Orientation()
+        orientation.roll = roll
+        orientation.pitch = pitch
+        orientation.yaw = yaw
+
+        return orientation
 
     @property
     def orientation(self):
@@ -70,85 +87,97 @@ class Imu:
     def accelerometer_orientation(self):
         """
         Calculates roll and pitch orientations using only accelerometer data.
-        :return: A dictionary object indexed by the strings pitch and roll. The values are Floats representing the angle
-            of the axis in degrees.
-        :rtype: dict
+        :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
+                representing the angle of the axis in degrees. Yaw is always zero for this method.
+        :rtype: Orientation()
         """
         acc_data = self.accelerometer
-        x, y, z = itemgetter('x', 'y', 'z')(acc_data)
+        x, y, z = list(getattr(acc_data, field.name) for field in fields(acc_data))
         roll = math.degrees(math.atan2(x, math.sqrt(y**2 + z**2)))
         pitch = math.degrees(math.atan2(-y, math.sqrt(x**2 + z**2)))
 
-        data = {
-            'roll': roll,
-            'pitch': pitch
-        }
+        orientation = Orientation()
+        orientation.roll = roll
+        orientation.pitch = pitch
 
-        return data
+        return orientation
 
     @property
     def accelerometer(self):
         """
-        Gets the x, y and z axis gyroscope data
-        :return: A dictionary object indexed by the strings x, y and z. A dictionary object indexed by the strings x, y
-            and z. The values are Floats representing the acceleration intensity of the axis in Gs.
-        :rtype: dict
+        Gets the x, y and z axis accelerometer data.
+        :return: A :class:`Vector3D` object with attributes x, y and z. The values are Floats representing the
+                acceleration intensity of the axis in Gs.
+        :rtype: Vector3D()
         """
         x, y, z = self.imu_controller.accelerometer_raw
 
-        data = {
-            'x': x,
-            'y': y,
-            'z': z
-        }
+        acc_vector = Vector3D()
+        acc_vector.x = x
+        acc_vector.y = y
+        acc_vector.z = z
 
-        return data
+        return acc_vector
 
     @property
     def gyroscope(self):
         """
         Gets the x, y and z axis gyroscope data.
-        :return: A dictionary object indexed by the strings x, y and z. A dictionary object indexed by the strings x, y
-            and z. The values are Floats representing the rotational intensity of the axis in radians per second.
-        :rtype: dict
+        :return: A :class:`Vector3D` object with attributes x, y and z. The values are Floats representing the
+                rotational intensity of the axis in degrees per second.
+        :rtype: Vector3D()
         """
         x, y, z = self.imu_controller.gyroscope_raw
 
-        data = {
-            'x': x,
-            'y': y,
-            'z': z
-        }
+        gyro_vector = Vector3D()
+        gyro_vector.x = x
+        gyro_vector.y = y
+        gyro_vector.z = z
 
-        return data
+        return gyro_vector
 
     @property
     def magnetometer(self):
         """
         Gets the x, y and z axis magnetometer data.
-        :return: A dictionary object indexed by the strings x, y and z. The values are Floats representing the magnetic
+        :return: A :class:`Vector3D` object with attributes x, y and z. The values are Floats representing the magnetic
             intensity of the axis in microteslas (µT).
-        :rtype: dict
+        :rtype: Vector3D()
         """
         x, y, z = self.imu_controller.magnetometer_raw
 
-        data = {
-            'x': x,
-            'y': y,
-            'z': z
-        }
+        mag_vector = Vector3D()
+        mag_vector.x = x
+        mag_vector.y = y
+        mag_vector.z = z
 
-        return data
+        return mag_vector
+
+    @staticmethod
+    def calibrate_magnetometer():
+        """
+        Runs an interactive magnetometer calibration tool to find both hard iron and soft iron offset parameters. These
+        parameters are then automatically programmed into the Expansion Plate which are stored in non-volatile memory
+        (meaning they will persist even when the Expansion Plate is power-cycled).
+
+        You should run this tool whenever you are using the magnetometer data directly or are using any of the
+        orientation methods in this class - the MCU uses a fusion algorithm and if the magnetometer data is not
+        calibrated correctly for the specific use case then the results may be poor.
+
+        After this method completes it will show two plots, one showing the raw data with a least squares ellipsoid fit
+        overlay, and the other showing the calibrated data with a field strength unit sphere.
+        """
+        imu_cal = ImuCalibration()
+        imu_cal.calibrate_magnetometer()
+        imu_cal.plot_graphs()
 
     @property
     def acc_mag_orientation(self):
         """
         Calculates roll, pitch and yaw orientations using accelerometer and magnetometer data.
-        :return: A dictionary object indexed by the strings roll, pitch and yaw. The values are Floats representing the
-            angle of the axis in degrees.
-        :rtype: dict
+        :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
+                representing the angle of the axis in degrees.
+        :rtype: Orientation()
         """
+        # not implemented yet
         return
-
-    def calibrate_magnetometer(self, hard_iron_offset, soft_iron_matrix):
-        pass

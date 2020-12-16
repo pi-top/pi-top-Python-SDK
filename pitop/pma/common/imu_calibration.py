@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from pitop.pma.imu_controller import ImuController
 from pitop.pma.imu import Imu
 from pitop.miniscreen.buttons import SelectButton
@@ -212,8 +210,8 @@ class ImuCalibration:
 
         while True:
             orientation = self.imu.accelerometer_orientation
-            roll = orientation['roll']
-            pitch = orientation['pitch']
+            roll = orientation.roll
+            pitch = orientation.pitch
             if roll_check(roll, pitch):
                 break
             else:
