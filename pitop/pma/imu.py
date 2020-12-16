@@ -10,13 +10,13 @@ from abc import ABC
 class BaseDataType(ABC):
 
     def __add__(self, other):
-        return self.__class__(*(getattr(self, dim.name)+getattr(other, dim.name) for dim in fields(self)))
+        return self.__class__(*(getattr(self, dim.name) + getattr(other, dim.name) for dim in fields(self)))
 
     def __sub__(self, other):
-        return self.__class__(*(getattr(self, dim.name)-getattr(other, dim.name) for dim in fields(self)))
+        return self.__class__(*(getattr(self, dim.name) - getattr(other, dim.name) for dim in fields(self)))
 
     def __mul__(self, other):
-        return self.__class__(*(getattr(self, dim.name)*other for dim in fields(self)))
+        return self.__class__(*(getattr(self, dim.name) * other for dim in fields(self)))
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -93,8 +93,8 @@ class Imu:
         """
         acc_data = self.accelerometer
         x, y, z = list(getattr(acc_data, field.name) for field in fields(acc_data))
-        roll = math.degrees(math.atan2(x, math.sqrt(y**2 + z**2)))
-        pitch = math.degrees(math.atan2(-y, math.sqrt(x**2 + z**2)))
+        roll = math.degrees(math.atan2(x, math.sqrt(y ** 2 + z ** 2)))
+        pitch = math.degrees(math.atan2(-y, math.sqrt(x ** 2 + z ** 2)))
 
         orientation = Orientation()
         orientation.roll = roll
@@ -144,6 +144,8 @@ class Imu:
             intensity of the axis in microteslas (µT).
         :rtype: Vector3D()
         """
+        # TODO: calibrate data here based on programmed values in MCU, or create MCU register to set if we want
+        #  calibrated or uncalibrated data returned
         x, y, z = self.imu_controller.magnetometer_raw
 
         mag_vector = Vector3D()
