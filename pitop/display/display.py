@@ -147,7 +147,7 @@ class Display:
         return self.__get_state(
             state_str="get pi-top display backlight state",
             message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
-        )
+        ) == "1"
 
     @backlight.setter
     def backlight(self, value):
@@ -164,4 +164,4 @@ class Display:
         return self.__get_state(
             state_str="get pi-top display lid open state",
             message_id=Message.REQ_GET_LID_OPEN_STATE,
-        )
+        ) == "1"

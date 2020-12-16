@@ -13,7 +13,7 @@ class Battery:
         self.when_critical = None
         self.when_charging = None
         self.when_discharging = None
-        self.when_capacity_changed = None
+        # self.when_capacity_changed = None
         self.when_full = None
 
         self.__ptdm_subscribe_client = None
@@ -63,26 +63,26 @@ class Battery:
         return response.parameters()
 
     @property
-    def charging(self):
+    def is_charging(self):
         __charging_state, _, _, _ = Battery.get_full_state()
         return __charging_state != "0"
 
     @property
-    def full(self):
+    def is_full(self):
         __charging_state, _, _, _ = Battery.get_full_state()
         return __charging_state == "2"
 
     @property
     def capacity(self):
         _, __capacity, _, _ = Battery.get_full_state()
-        return __capacity
+        return int(__capacity)
 
     @property
     def time_remaining(self):
         _, _, __time_remaining, _ = Battery.get_full_state()
-        return __time_remaining
+        return int(__time_remaining)
 
     @property
     def wattage(self):
         _, _, _, __wattage = Battery.get_full_state()
-        return __wattage
+        return int(__wattage)
