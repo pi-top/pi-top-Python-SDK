@@ -1,5 +1,5 @@
 =====================================
-API - pi-top Keyboard Input Component
+API - pi-top Keyboard
 =====================================
 
 This module has been designed to allow a programmer to utilise keyboard input in the same way as

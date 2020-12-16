@@ -26,3 +26,24 @@ PMA (with Robotics Kit): Rover
 ------------------------------
 
 .. literalinclude:: ../examples/pma/encoder_motor_rover.py
+
+pi-topPULSE: Fancy Light Show!
+------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-fancy_demo.py
+
+
+pi-topPULSE: Show battery level
+-------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-battery.py
+
+pi-topPULSE: Show CPU temperature
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-cpu_temp.py
+
+pi-topPULSE: Show CPU usage
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-cpu_usage.py

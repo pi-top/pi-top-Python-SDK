@@ -20,13 +20,13 @@ Interacting with onboard pi-top [4] hardware
 
 pi-top [4] supports the following API sections for its onboard hardware:
 
-* :ref:`Battery<api_battery:API - pi-top Battery>`
+* :ref:`Battery<api_general/battery:API - pi-top Battery>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_miniscreen:API - pi-top [4] Miniscreen>`
-* :ref:`System<api_system:API - pi-top System>`
+* :ref:`System<api_general/system:API - pi-top System>`
 
 pi-top [4] does not support the following API sections:
 
-* :ref:`Display<api_display:API - pi-top Display>`
+* :ref:`Display<api_general/display:API - pi-top Display>`
 
 This is due to the fact that pi-top [4] has no attached display, and the pi-top [4] official display's brightness is handled in hardware with physical brightness buttons, and the backlight is handled by DPMS (the operating system's internal screen blanking functionality).
 
@@ -36,7 +36,7 @@ Physical computing with pi-top [4]
 pi-top [4] supports the following API sections for physical computing:
 
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
+* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera>`
 * :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
 
 The pi-topPULSE can be used as a Raspberry Pi HAT with a pi-top [4]. The USB camera library can be used with any USB camera, and - whilst technically can be used with any Raspberry Pi/pi-top, was designed with the pi-top [4] and PMA in mind.
@@ -58,9 +58,9 @@ Interacting with onboard pi-top laptop hardware
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for their onboard hardware:
 
-* :ref:`Battery<api_battery:API - pi-top Battery>`
-* :ref:`Display<api_display:API - pi-top Display>`
-* :ref:`System<api_system:API - pi-top System>`
+* :ref:`Battery<api_general/battery:API - pi-top Battery>`
+* :ref:`Display<api_general/display:API - pi-top Display>`
+* :ref:`System<api_general/system:API - pi-top System>`
 
 pi-top laptops does not support the following API sections:
 
@@ -75,7 +75,7 @@ pi-top laptops (Original pi-top and pi-top [3]) support the following API sectio
 
 * :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
+* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera>`
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
@@ -96,12 +96,12 @@ Interacting with onboard pi-topCEED hardware
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for their onboard hardware:
 
-* :ref:`Display<api_display:API - pi-top Display>`
-* :ref:`System<api_system:API - pi-top System>`
+* :ref:`Display<api_general/display:API - pi-top Display>`
+* :ref:`System<api_general/system:API - pi-top System>`
 
 pi-top laptops does not support the following API sections:
 
-* :ref:`Battery<api_battery:API - pi-top Battery>`
+* :ref:`Battery<api_general/battery:API - pi-top Battery>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_miniscreen:API - pi-top [4] Miniscreen>`
 
 This is due to the fact that pi-topCEED does not include a battery or the pi-top [4]'s miniscreen.
@@ -113,7 +113,7 @@ pi-topCEED supports the following API sections for use with peripherals:
 
 * :ref:`pi-topPROTO+ (protoplus)<api_protoplus:API - pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pulse:API - pi-topPULSE>`
-* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera Input Component>`
+* :ref:`USB Camera (camera)<api_camera:API - pi-top Camera>`
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
@@ -130,4 +130,4 @@ Additional helper modules/classes
 ----------------------------------------
 
 The pi-top SDK provides some helpful modules/classes to get the most out of your pi-top.
-Check out :ref:`the Keyboard module<api_keyboard:API - pi-top Keyboard Input Component>` to use your computer keyboard as an input device, similar to a PMA button.
+Check out :ref:`the Keyboard module<api_keyboard:API - pi-top Keyboard>` to use your computer keyboard as an input device, similar to a PMA button.

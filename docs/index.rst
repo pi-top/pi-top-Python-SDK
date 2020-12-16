@@ -63,7 +63,7 @@ modules available in the library:
 
 Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
 
-.. _API Recipes: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/recipes_api.html
+.. _API Recipes: ./recipes_api.html
 
 
 This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
@@ -82,7 +82,7 @@ A 'pt' alias is also provided for quicker typing:
 
 Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
 
-.. _CLI Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
+.. _CLI Examples: ./examples_cli.html
 
 -----------------
 Table of Contents
@@ -98,14 +98,12 @@ Table of Contents
     cli_tools
     examples_cli
     recipes_api
+    api_general
     api_miniscreen
     api_pma
     api_camera
-    api_battery
-    api_display
     api_protoplus
     api_pulse
-    api_system
     api_keyboard
     more
 
