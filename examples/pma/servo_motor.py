@@ -1,4 +1,4 @@
-from pitop.pma import ServoMotor, ServoMotorState
+from pitop.pma import ServoMotor
 from time import sleep
 
 servo = ServoMotor("S0")
