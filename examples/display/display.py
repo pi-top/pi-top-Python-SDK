@@ -7,7 +7,7 @@ display = Display()
 print(f"Display brightness: {display.brightness}")
 print(f"Display blanking timeout: {display.blanking_timeout}")
 print(f"Display backlight is on: {display.backlight}")
-print(f"Display lid is open: {display.lid}")
+print(f"Display lid is open: {display.lid_is_open}")
 
 # Change the brightness levels incrementally
 display.increment_brightness()
@@ -54,5 +54,5 @@ def do_lid_opened_thing():
 
 # Another way to react to display events is to poll
 while True:
-    if display.lid:
+    if display.lid_is_open:
         do_lid_opened_thing()

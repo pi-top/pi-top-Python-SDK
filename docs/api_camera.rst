@@ -1,5 +1,5 @@
 =====================================
-API - pi-top Camera Input Component
+API - pi-top Camera
 =====================================
 
 This module provides a Camera class for using a USB Camera attached to your

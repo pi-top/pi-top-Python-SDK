@@ -160,7 +160,7 @@ class Display:
         )
 
     @property
-    def lid(self):
+    def lid_is_open(self):
         return self.__get_state(
             state_str="get pi-top display lid open state",
             message_id=Message.REQ_GET_LID_OPEN_STATE,
