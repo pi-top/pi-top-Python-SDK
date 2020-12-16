@@ -19,15 +19,15 @@ def do_critical_battery_thing():
 
 
 def do_full_battery_thing():
-    print("Battery is low!")
+    print("Battery is full!")
 
 
 def do_charging_battery_thing():
-    print("Battery is low!")
+    print("Battery is charging!")
 
 
 def do_discharging_battery_thing():
-    print("Battery is low!")
+    print("Battery is discharging!")
 
 
 # To invoke a function when the battery changes state, you can assign the function to various 'when_' data members
