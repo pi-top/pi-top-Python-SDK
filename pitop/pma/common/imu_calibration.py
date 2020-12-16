@@ -1,9 +1,7 @@
 from pitop.pma.imu_controller import ImuController
-from pitop.pma.imu import Imu
 from pitop.miniscreen.buttons import SelectButton
 from pitop.pma.common.math_functions.ellipsoid_functions import least_squares_ellipsoid_fit, \
     get_ellipsoid_geometric_params, plot_ellipsoid
-import weakref
 import math
 import numpy as np
 import warnings
@@ -24,7 +22,6 @@ class ImuCalibration:
 
     def __init__(self):
         self.imu_controller = ImuController()
-        self.imu = Imu()
         self._select_button = SelectButton()
         self.imu_controller.acc_enable = True
         self.imu_controller.gyro_enable = True
@@ -209,13 +206,18 @@ class ImuCalibration:
             roll_check = check_z_axis
 
         while True:
-            orientation = self.imu.accelerometer_orientation
-            roll = orientation.roll
-            pitch = orientation.pitch
+            roll, pitch = self.accelerometer_orientation
             if roll_check(roll, pitch):
                 break
             else:
                 time.sleep(self._SLEEP_TIME)
+
+    def accelerometer_orientation(self):
+        x, y, z = self.imu_controller.accelerometer_raw
+        roll = math.degrees(math.atan2(x, math.sqrt(y ** 2 + z ** 2)))
+        pitch = math.degrees(math.atan2(-y, math.sqrt(x ** 2 + z ** 2)))
+
+        return roll, pitch
 
     def _poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")

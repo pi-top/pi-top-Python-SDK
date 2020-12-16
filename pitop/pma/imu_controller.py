@@ -70,7 +70,7 @@ class ImuController:
 
     @property
     def orientation_enable(self):
-        return self._mag_enable
+        return self._orientation_enable
 
     @orientation_enable.setter
     def orientation_enable(self, enable: bool):
