@@ -1,6 +1,5 @@
 from pitopcommon.logger import PTLogger
-import weakref
-
+import atexit
 from .servo_controller import ServoController, ServoHardwareSpecs
 from dataclasses import dataclass
 
@@ -33,13 +32,12 @@ class ServoMotor:
 
     def __init__(self, port, zero_point=0):
         self._controller = ServoController(port)
-        self._current_state = ServoMotorState()
         self._target_state = ServoMotorState()
         self._min_angle = self._HARDWARE_MIN_ANGLE
         self._max_angle = self._HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self._zero_point = zero_point
-        weakref.finalize(self._controller, self._controller.cleanup)
+        atexit.register(self._controller.cleanup)
 
     @property
     def zero_point(self):
@@ -90,9 +88,10 @@ class ServoMotor:
             return None, None
 
         angle, speed = self._controller.get_current_angle_and_speed()
-        self._current_state.angle = angle
-        self._current_state.speed = speed
-        return self._current_state
+        current_state = ServoMotorState()
+        current_state.angle = angle
+        current_state.speed = speed
+        return current_state
 
     @state.setter
     def state(self, target_state: ServoMotorState):

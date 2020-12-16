@@ -19,7 +19,6 @@ sleep(1)
 # Scan back and forward by setting speed only and reading current angle
 STOP_ANGLE = 80
 TARGET_SPEED = 25
-target_state = ServoMotorState()
 
 print("Setting target speed to ", -TARGET_SPEED)
 servo.target_speed = -TARGET_SPEED
