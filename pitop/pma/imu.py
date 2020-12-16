@@ -1,7 +1,6 @@
 from .imu_controller import ImuController
-import weakref
 import math
-from .common.imu_calibration import ImuCalibration
+from .common import ImuCalibration
 from dataclasses import astuple, dataclass, fields
 from abc import ABC
 import atexit
