@@ -2,11 +2,22 @@
 API - pi-topPULSE
 ======================================================
 
-.. image:: _static/peripherals/pi-topPULSE.jpg
-
 **Note:** This information is provided for interest only.
 We recommend that you use pi-topOS or install the SDK via `apt`,
 to ensure that all of this is configured for you.
+
+Using the LED matrix
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/led-demo.py
+
+Using the microphone
+---------------------------------
+
+.. literalinclude:: ../examples/pulse/mic-demo.py
+
+
+.. image:: _static/peripherals/pi-topPULSE.jpg
 
 ------------------------------------------------------
 Manual Configuration
