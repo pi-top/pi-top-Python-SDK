@@ -1,3 +1,9 @@
+py-pitop-sdk (0.3.9) buster; urgency=medium
+
+  * Reorganize examples in docs
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 16 Dec 2020 00:53:33 -0300
+
 py-pitop-sdk (0.3.8) buster; urgency=medium
 
   * Update docs - add overview page, add placeholders for all API subsystems
