@@ -3,7 +3,7 @@ API - Helpers
 ======================================
 
 
-The pi-top SDK provides some :ref:`helpful modules/classes<api_helpers:API - Helpers>` to get the most out of your pi-top.
+The pi-top SDK provides some helpful modules/classes to get the most out of your pi-top:
 
 .. toctree::
     :maxdepth: 1
