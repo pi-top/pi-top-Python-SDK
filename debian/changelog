@@ -3,6 +3,7 @@ py-pitop-sdk (0.4.1) buster; urgency=medium
   * 'pi-top Keyboard' --> 'Keyboard Input'
   * 'pi-top Camera' --> 'USB Camera'
   * Move to "helpers" section in the docs
+  * Add events to PMA Ultrasonic Sensor example
 
  -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 19:26:07 +0000
 
