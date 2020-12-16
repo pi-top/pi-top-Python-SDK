@@ -5,7 +5,7 @@ from unittest import (
 )
 from sys import modules
 from unittest.mock import Mock
-from time import sleep
+from time import sleep, perf_counter
 
 modules["io"] = Mock()
 modules["cv2"] = Mock()
@@ -14,6 +14,7 @@ modules["PyV4L2Camera.camera"] = Mock()
 modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
+modules["pitop.camera.pil_opencv_conversion"] = Mock()
 
 # import after applying mocks
 from pitop.camera.core import (  # noqa: E402
@@ -52,7 +53,6 @@ class CameraTestCase(TestCase):
         self.assertIsInstance(c._process_image_thread, Thread)
         self.assertTrue(c._process_image_thread.is_alive())
 
-    @skip
     def test_stops_background_thread_by_changing_an_attribute(self):
         c = Camera()
         c._continue_processing = False
@@ -66,6 +66,28 @@ class CameraTestCase(TestCase):
         c._camera.is_opened.return_value = False
         sleep(1)
         self.assertFalse(c._process_image_thread.is_alive())
+
+    def test_current_frame_opencv(self):
+        c = Camera(4)
+        frame = c.current_frame(format='OpenCV')
+        self.assertIsInstance(frame, Mock)
+
+    def test_current_frame_does_not_block(self):
+        c = Camera(4)
+        start = perf_counter()
+        c.current_frame()
+        c.current_frame()
+        end = perf_counter()
+        self.assertTrue(end - start < 0.01)
+
+    def test_get_frame_does_block(self):
+        c = Camera(4)
+        c._new_frame_event.clear()
+        start = perf_counter()
+        c.get_frame()
+        c.get_frame()
+        end = perf_counter()
+        self.assertTrue(end - start > 0.01)
 
     def test_capture_image_registers_action_on_frame_handler(self):
         c = Camera()

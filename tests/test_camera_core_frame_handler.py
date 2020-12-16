@@ -84,6 +84,7 @@ class FrameHandlerTestCase(TestCase):
         generic_action_args = {
             "callback_on_frame": callback,
             "frame_interval": 1,
+            "format": 'OpenCV',
         }
         args = {
             CaptureActions.DETECT_MOTION: motion_detector_args,

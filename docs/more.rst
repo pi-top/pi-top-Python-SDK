@@ -8,4 +8,5 @@ More Information
     more/faq
     more/contributing
     more/references
+    more/reqs
     more/license

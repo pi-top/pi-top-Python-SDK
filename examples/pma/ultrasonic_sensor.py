@@ -1,8 +1,13 @@
 from pitop.pma import UltrasonicSensor
 from time import sleep
 
-distance_sensor = UltrasonicSensor("D3")
+distance_sensor = UltrasonicSensor("D3", threshold_distance=0.2)
+
+# Set up functions to print when an object crosses 'threshold_distance'
+distance_sensor.when_in_range = lambda: print('in range')
+distance_sensor.when_out_of_range = lambda: print('out of range')
+
 while True:
-    # Returns reading of the distance in meters how far an object is in front of the sensor
+    # Print the distance (in meters) to an object in front of the sensor
     print(distance_sensor.distance)
     sleep(0.1)

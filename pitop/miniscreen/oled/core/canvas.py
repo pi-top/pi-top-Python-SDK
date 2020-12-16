@@ -1,6 +1,6 @@
 from os.path import isfile
 from .image_helper import (
-    process_pil_image,
+    process_pil_image_frame,
 )
 from PIL import ImageFont, ImageDraw
 from numpy import reshape
@@ -49,7 +49,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        image_data = process_pil_image(image)
+        image_data = process_pil_image_frame(image,
+                                             size=self.__oled_device.size,
+                                             mode=self.__oled_device.mode)
         self.draw.bitmap(xy, image_data, 1)
         return self.get_pixels()
 

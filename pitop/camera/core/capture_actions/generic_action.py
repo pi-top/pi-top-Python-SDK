@@ -1,6 +1,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
 
+from pitop.camera.pil_opencv_conversion import pil_to_opencv
 from .capture_action_base import CaptureActionBase
 
 
@@ -13,11 +14,12 @@ class GenericAction(CaptureActionBase):
     :param int frame_interval: The callback will run every frame_interval frames, decreasing the frame rate of processing.
     """
 
-    def __init__(self, callback_on_frame, frame_interval):
+    def __init__(self, callback_on_frame, frame_interval, format='PIL'):
         self._generic_action_callback = callback_on_frame
         self._event_executor = ThreadPoolExecutor()
         self._frame_interval = frame_interval
         self._elapsed_frames = 0
+        self._format = format
 
         callback_signature = signature(callback_on_frame)
         self.callback_has_argument = len(callback_signature.parameters) > 0
@@ -26,6 +28,9 @@ class GenericAction(CaptureActionBase):
         self.stop()
 
     def process(self, frame):
+        if self._format.lower() == 'opencv':
+            frame = pil_to_opencv(frame)
+
         if self._elapsed_frames % self._frame_interval == 0:
             if self.callback_has_argument:
                 self._event_executor.submit(self._generic_action_callback, frame)

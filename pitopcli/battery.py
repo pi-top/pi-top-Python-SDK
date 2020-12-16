@@ -5,7 +5,7 @@ from .cli_base import CliBaseClass
 
 
 class BatteryCLI(CliBaseClass):
-    parser_help = 'Get battery information from a pi-top.'
+    parser_help = 'Get battery information from a pi-top'
     cli_name = "battery"
 
     def __init__(self, args) -> None:
@@ -17,7 +17,7 @@ class BatteryCLI(CliBaseClass):
             self.print_battery_state()
             return 0
         except Exception as e:
-            print(f"Error getting battery info: {e}")
+            print(f"Error on pitop-battery.run: {e}")
             return 1
 
     def print_battery_state(self) -> None:

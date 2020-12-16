@@ -1,8 +1,9 @@
-import time
-from math import floor, pi
-
 from .parameters import BrakingType, ForwardDirection, Direction
 from .encoder_motor_controller import EncoderMotorController
+
+import time
+from math import floor, pi
+import atexit
 
 
 class EncoderMotor:
@@ -55,6 +56,8 @@ class EncoderMotor:
 
         self._prev_time_dist_cnt = time.time()
         self._previous_reading_odometer = 0
+
+        atexit.register(self.stop)
 
     @property
     def forward_direction(self):
@@ -236,7 +239,6 @@ class EncoderMotor:
         Returns a boolean value, :data:`True` if the motor is torque-limited and :data:`False` if it is not.
         """
 
-        # TODO: Add functionality, maybe this should run a loop and call a callback function passed by user?
         return False
 
     @property

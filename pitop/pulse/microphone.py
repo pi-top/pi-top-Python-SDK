@@ -1,24 +1,26 @@
-# microphone.py (pi-topPULSE)
-# Copyright (C) 2017  CEED ltd.
-#
+from pitop.pulse import configuration
 
 from pitopcommon.logger import PTLogger
-from binascii import hexlify
-from binascii import unhexlify
+
+from binascii import (
+    hexlify,
+    unhexlify
+)
 from tempfile import mkstemp
-from os import close
-from os import path
-from os import remove
-from os import rename
-from os import stat
+from os import (
+    close,
+    path,
+    remove,
+    rename,
+    stat,
+)
 import serial
 import signal
 from struct import pack
 from sys import exit
 from threading import Thread
 from time import sleep
-# local
-from ptpulse import configuration
+
 
 _bitrate = 8
 _continue_writing = False

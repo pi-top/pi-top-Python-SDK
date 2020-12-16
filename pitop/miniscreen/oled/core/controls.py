@@ -22,7 +22,7 @@ spi_transfer_size = 4096
 
 
 def __set_controls(controlled_by_pi):
-    message = Message.from_parts(Message.REQ_SET_CONTROL, [str(int(controlled_by_pi))])
+    message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))])
 
     with PTDMRequestClient() as request_client:
         request_client.send_message(message)
@@ -33,9 +33,8 @@ def __setup_device():
 
     if _exclusive_mode:
         lock.acquire()
-        atexit.register(lock.release())
+        atexit.register(reset_device)
 
-    # TODO: Read from hub via request client
     spi_port = 1
 
     # Always use CE1
@@ -55,7 +54,7 @@ def __setup_device():
             gpio_RST=None,
             gpio=None,
         ),
-        rotate=2
+        rotate=0
     )
 
 
@@ -73,7 +72,6 @@ def _set_exclusive_mode(val: bool):
 
 
 def device_is_active():
-
     if (_exclusive_mode is True and _device is not None):
         # We already have the device, so no-one else can
         return False
@@ -84,6 +82,8 @@ def device_is_active():
 def reset_device():
     global _device
     _device = None
+    if lock.is_locked():
+        lock.release()
 
 
 def get_device():

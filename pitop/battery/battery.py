@@ -3,7 +3,6 @@ from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message,
 )
-from pitopcommon.lock import PTLock
 
 import atexit
 
@@ -14,16 +13,13 @@ class Battery:
         self.when_critical = None
         self.when_charging = None
         self.when_discharging = None
-        self.when_capacity_changed = None
+        # self.when_capacity_changed = None
         self.when_full = None
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
 
         atexit.register(self.__clean_up)
-
-        self.lock = PTLock("pt-battery")
-        self.lock.acquire()
 
     def __setup_subscribe_client(self):
         def on_low_battery():
@@ -33,7 +29,7 @@ class Battery:
             self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_critical)
 
         def on_state_changed(parameters):
-            charging_state, capacity, time_remaining, wattage = parameters
+            charging_state, capacity, time_remaining, wattage = parameters()
 
             if charging_state == 2:
                 self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_full)
@@ -52,7 +48,6 @@ class Battery:
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):
-        self.lock.release()
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
@@ -67,18 +62,27 @@ class Battery:
 
         return response.parameters()
 
-    def charging_state(self):
+    @property
+    def is_charging(self):
         __charging_state, _, _, _ = Battery.get_full_state()
-        return __charging_state
+        return __charging_state != "0"
 
+    @property
+    def is_full(self):
+        __charging_state, _, _, _ = Battery.get_full_state()
+        return __charging_state == "2"
+
+    @property
     def capacity(self):
         _, __capacity, _, _ = Battery.get_full_state()
-        return __capacity
+        return int(__capacity)
 
+    @property
     def time_remaining(self):
         _, _, __time_remaining, _ = Battery.get_full_state()
-        return __time_remaining
+        return int(__time_remaining)
 
+    @property
     def wattage(self):
         _, _, _, __wattage = Battery.get_full_state()
-        return __wattage
+        return int(__wattage)
