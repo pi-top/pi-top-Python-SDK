@@ -35,7 +35,6 @@ def __setup_device():
         lock.acquire()
         atexit.register(reset_device)
 
-    # TODO: Read from hub via request client
     spi_port = 1
 
     # Always use CE1

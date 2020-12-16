@@ -155,7 +155,6 @@ def reset_device_state(enable):
 
 
 def enable_device():
-    # TODO - add support for requesting from ptdm
     PTLogger.info(
         "'enable_device' function has been moved to pt-device-manager, and is handled automatically."
     )
@@ -163,7 +162,6 @@ def enable_device():
 
 
 def disable_device():
-    # TODO - add support for requesting from ptdm
     PTLogger.info(
         "'disable_device' function has been moved to pt-device-manager, and is handled automatically."
     )

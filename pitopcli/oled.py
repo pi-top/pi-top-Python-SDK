@@ -17,10 +17,6 @@ class OledCLI(CliBaseClass):
         self.args = args
         self.validate_args()
 
-        # TODO: add support for 'give/take control to/from hub'
-        # REQ_GET_OLED_CONTROL = 125
-        # REQ_SET_OLED_CONTROL = 126
-
     def validate_args(self) -> None:
         if self.args.oled_subcommand is None:
             raise PitopCliInvalidArgument

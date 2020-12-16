@@ -152,7 +152,6 @@ __entry_points__ = {
         # 'pi-top' longhand/easy-to-remember command
         "pi-top=pitopcli.pitop:main",
         # Deprecated console scripts:
-        # see <TODO: LINK TO WIKI PAGE RE: DEPRECATION OF CLI>
         "pt-battery=pitopcli.battery:main",
         "pt-brightness=pitopcli.display:brightness",
         "pt-devices=pitopcli.devices:main",
