@@ -43,11 +43,6 @@ for r in (
     # (replace '~' with '+')
     # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
     ("~", "+"),
-
-    # Convert from Debian epoch version format to PEP 440 epoch version format:
-    # (replace ':'' with '!')
-    # See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
-    (":", "!"),
 ):
     python_version = python_version.replace(*r)
 
@@ -159,7 +154,7 @@ __entry_points__ = {
         # Deprecated console scripts:
         # see <TODO: LINK TO WIKI PAGE RE: DEPRECATION OF CLI>
         "pt-battery=pitopcli.battery:main",
-        "pt-brightness=pitopcli.brightness:main",
+        "pt-brightness=pitopcli.display:brightness",
         "pt-devices=pitopcli.devices:main",
         "pt-host=pitopcli.devices:host",
         "pt-oled=pitopcli.oled:main",

@@ -1,3 +1,4 @@
+from pitopcommon.singleton import Singleton
 from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message
@@ -8,20 +9,18 @@ import atexit
 from uuid import uuid1
 
 
-class CaseButton:
+class Button:
     def __init__(self, button_type):
-        #: Returns a string representing which button it is.
+        # State parameters
         self.type = button_type
-        self.is_pressed = False  #: Returns True is button is pressed.
-        self.when_pressed = (
-            None
-        )  #: If a method is assigned to this data member it will be invoked when the button is pressed.
-        self.when_released = (
-            None
-        )  #: If a method is assigned to this data member it will be invoked when the button is released.
+        self.is_pressed = False
+        # Event-based functions
+        self.when_pressed = None
+        self.when_released = None
 
 
-class CaseButtons:
+@Singleton
+class Buttons:
     """
     Instantiates a single instance for each of the four button types up, down,
     select and cancel.
@@ -32,10 +31,10 @@ class CaseButtons:
     CANCEL = "CANCEL"
 
     def __init__(self):
-        self.up = CaseButton(self.UP)
-        self.down = CaseButton(self.DOWN)
-        self.select = CaseButton(self.SELECT)
-        self.cancel = CaseButton(self.CANCEL)
+        self.up = Button(self.UP)
+        self.down = Button(self.DOWN)
+        self.select = Button(self.SELECT)
+        self.cancel = Button(self.CANCEL)
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -44,72 +43,74 @@ class CaseButtons:
 
         self.uuid = uuid1()
 
-        self.lock = PTLock(f"pt-buttons-{str(self.uuid)}.lock")
-        self.lock.acquire()
+        self.exclusive_mode = True
+        self.lock = None
+        self.__configure_lock()
 
     def __setup_subscribe_client(self):
-        def set_up_button_pressed():
-            self.up.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.up.when_pressed)
-
-        def set_down_button_pressed():
-            self.down.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.down.when_pressed)
-
-        def set_select_button_pressed():
-            self.select.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.select.when_pressed)
-
-        def set_cancel_button_pressed():
-            self.cancel.is_pressed = True
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.cancel.when_pressed)
-
-        def set_up_button_released():
-            self.up.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.up.when_released)
-
-        def set_down_button_released():
-            self.down.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.down.when_released)
-
-        def set_select_button_released():
-            self.select.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.select.when_released)
-
-        def set_cancel_button_released():
-            self.cancel.is_pressed = False
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.cancel.when_released)
+        def set_button_state(button, pressed):
+            button.is_pressed = pressed
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                button.when_pressed if button.is_pressed else button.when_released
+            )
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise(
             {
-                Message.PUB_V3_BUTTON_UP_PRESSED: set_up_button_pressed,
-                Message.PUB_V3_BUTTON_DOWN_PRESSED: set_down_button_pressed,
-                Message.PUB_V3_BUTTON_SELECT_PRESSED: set_select_button_pressed,
-                Message.PUB_V3_BUTTON_CANCEL_PRESSED: set_cancel_button_pressed,
-                Message.PUB_V3_BUTTON_UP_RELEASED: set_up_button_released,
-                Message.PUB_V3_BUTTON_DOWN_RELEASED: set_down_button_released,
-                Message.PUB_V3_BUTTON_SELECT_RELEASED: set_select_button_released,
-                Message.PUB_V3_BUTTON_CANCEL_RELEASED: set_cancel_button_released,
+                Message.PUB_V3_BUTTON_UP_PRESSED: lambda: set_button_state(self.up, pressed=True),
+                Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(self.up, pressed=False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(self.down, pressed=True),
+                Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(self.down, pressed=False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(self.select, pressed=True),
+                Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(self.select, pressed=False),
+                # ----------------------------------------------------------------------------------
+                Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(self.cancel, pressed=True),
+                Message.PUB_V3_BUTTON_CANCEL_RELEASED: lambda: set_button_state(self.cancel, pressed=False),
             }
         )
         self.__ptdm_subscribe_client.start_listening()
 
+    def _set_exclusive_mode(self, exclusive):
+        self.exclusive_mode = exclusive
+        self.__configure_lock()
+
+    def __configure_lock(self):
+        if self.exclusive_mode:
+            # UUID makes this lock single-purpose
+            #
+            # This is actually just a hack workaround to let pt-sys-oled know that
+            # the buttons are in use. In an ideal world, there would be a way
+            # to ask pt-device-manager how many things are registered to listen
+            # for particular events
+            self.lock = PTLock(f"pt-buttons-{str(self.uuid)}", _single_purpose=True)
+            self.lock.acquire()
+        else:
+            self.__clean_up_lock()
+
+    def __clean_up_lock(self):
+        if self.lock is not None:
+            self.lock.release()
+            del self.lock
+            self.lock = None
+
     def __clean_up(self):
-        self.lock.release()
+        self.__clean_up_lock()
+
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
             pass
 
 
-buttons = CaseButtons()
+buttons = Buttons.instance()
 
 
 def UpButton():
     """
     :return: A button object for the up button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.up
 
@@ -117,7 +118,7 @@ def UpButton():
 def DownButton():
     """
     :return: A button object for the down button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.down
 
@@ -125,7 +126,7 @@ def DownButton():
 def SelectButton():
     """
     :return: A button object for the select button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.select
 
@@ -133,6 +134,6 @@ def SelectButton():
 def CancelButton():
     """
     :return: A button object for the cancel button.
-    :rtype: CaseButton
+    :rtype: Button
     """
     return buttons.cancel

@@ -1,12 +1,11 @@
 #!/usr/bin/python3
 from time import sleep
 from os.path import isfile
-from PIL import ImageSequence
 
 from pitopcommon.formatting import is_url
 
 from pitop.miniscreen import OLED
-from .cli_base import CliBaseClass
+from .cli_base import CliBaseClass, PitopCliInvalidArgument
 
 
 class OledCLI(CliBaseClass):
@@ -15,9 +14,15 @@ class OledCLI(CliBaseClass):
 
     def __init__(self, args) -> None:
         self.args = args
+        self.validate_args()
+
         # TODO: add support for 'give/take control to/from hub'
         # REQ_GET_OLED_CONTROL = 125
         # REQ_SET_OLED_CONTROL = 126
+
+    def validate_args(self) -> None:
+        if self.args.oled_subcommand is None:
+            raise PitopCliInvalidArgument
 
     def run(self) -> int:
         def is_animated(image):
@@ -37,13 +42,7 @@ class OledCLI(CliBaseClass):
 
                 skip_timeout = False
                 if isfile(self.args.text) or is_url(self.args.text):
-                    oled.set_max_fps(10)
-                    img = oled.get_raw_image(self.args.text)
-                    skip_timeout = is_animated(img)
-
-                    for i in range(self.args.loop):
-                        for frame in ImageSequence.Iterator(img):
-                            oled.draw_image(frame)
+                    oled.play_animated_image_file(self.args.text)
                 else:
                     oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
 
