@@ -7,11 +7,13 @@ from .potentiometer import Potentiometer  # noqa: F401
 from .sound_sensor import SoundSensor  # noqa: F401
 from .ultrasonic_sensor import UltrasonicSensor  # noqa: F401
 
-# Expansion Kit
-from .joystick import Joystick  # noqa: F401
+# Robotics Kit
 from .encoder_motor import EncoderMotor  # noqa: F401
 from .servo_motor import ServoMotor  # noqa: F401
-from .servo_motor import ServoMotorState
+from .servo_motor import ServoMotorState  # noqa: F401
+
+# Other
+from .joystick import Joystick  # noqa: F401
 
 from .parameters import (  # noqa: F401
     ForwardDirection,
