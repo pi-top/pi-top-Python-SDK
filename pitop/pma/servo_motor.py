@@ -141,8 +141,8 @@ class ServoMotor:
         Returns the current angle that the servo motor is at.
         :return: float value of the current angle of the servo motor in degrees.
         .. note::
-            If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
-             current angle and current speed at the same time.
+        If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
+        current angle and current speed at the same time.
         """
         return self.state.angle
 
@@ -152,8 +152,8 @@ class ServoMotor:
         Returns the current speed the servo motor is at.
         :return: float value of the current speed of the servo motor in deg/s.
         .. note::
-            If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
-             current angle and current speed at the same time.
+        If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
+        current angle and current speed at the same time.
         """
         return self.state.speed
 
