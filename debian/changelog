@@ -1,3 +1,9 @@
+py-pitop-sdk (0.6.2) buster; urgency=medium
+
+  * Set DISPLAY environment variable to plot IMU data
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 19:46:24 -0300
+
 py-pitop-sdk (0.6.1) buster; urgency=medium
 
   * Add missing init file

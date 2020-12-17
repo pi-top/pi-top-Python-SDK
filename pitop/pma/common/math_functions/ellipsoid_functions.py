@@ -1,4 +1,7 @@
 import numpy as np
+from os import environ
+if not environ.get('DISPLAY'):
+    environ['DISPLAY'] = ":0"
 
 
 def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):
