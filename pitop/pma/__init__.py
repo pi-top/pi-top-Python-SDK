@@ -15,9 +15,6 @@ from .servo_motor import (
     ServoMotorState
 )
 
-# Other
-# from .joystick import Joystick
-
 from .parameters import (
     ForwardDirection,
     Direction,
