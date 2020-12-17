@@ -35,7 +35,7 @@ while current_angle > -STOP_ANGLE:
     current_state = servo.state
     current_angle = current_state.angle
     current_speed = current_state.speed
-    print("current_angle: {} | current_speed: {}".format(current_angle, current_speed))
+    print(f"current_angle: {current_angle} | current_speed: {current_speed}")
     sleep(0.05)
 
 print("Setting target speed to ", TARGET_SPEED)
@@ -45,5 +45,5 @@ while current_angle < STOP_ANGLE:
     current_state = servo.state
     current_angle = current_state.angle
     current_speed = current_state.speed
-    print("current_angle: {} | current_speed: {}".format(current_angle, current_speed))
+    print(f"current_angle: {current_angle} | current_speed: {current_speed}")
     sleep(0.05)

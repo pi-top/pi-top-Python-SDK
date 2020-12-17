@@ -177,7 +177,7 @@ class EncoderMotor:
         dc_motor_rotations = int(round(total_rotations * self.MMK_STANDARD_GEAR_RATIO) * self._forward_direction * direction)
 
         if not (-self.MAX_DC_MOTOR_RPM <= dc_motor_rpm <= self.MAX_DC_MOTOR_RPM):
-            raise ValueError("DC motor RPM value must be between {} and {} (inclusive)".format(-self.MAX_DC_MOTOR_RPM, self.MAX_DC_MOTOR_RPM))
+            raise ValueError(f"DC motor RPM value must be between {-self.MAX_DC_MOTOR_RPM} and {self.MAX_DC_MOTOR_RPM} (inclusive)")
 
         if dc_motor_rotations == 0:
             self._motor_core.set_rpm_control(dc_motor_rpm)

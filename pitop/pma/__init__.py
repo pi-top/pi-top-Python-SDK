@@ -8,6 +8,7 @@ from .sound_sensor import SoundSensor
 from .ultrasonic_sensor import UltrasonicSensor
 
 # Robotics Kit
+from .imu import IMU
 from .encoder_motor import EncoderMotor
 from .servo_motor import (
     ServoMotor,
@@ -15,7 +16,7 @@ from .servo_motor import (
 )
 
 # Other
-from .joystick import Joystick
+# from .joystick import Joystick
 
 from .parameters import (
     ForwardDirection,

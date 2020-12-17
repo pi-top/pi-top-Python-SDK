@@ -4,5 +4,5 @@ from time import sleep
 joystick = Joystick("A0")
 
 while True:
-    print("x: {}, y: {}".format(joystick.value[0], joystick.value[1]))
+    print(f"x: {joystick.value[0]}, y: {joystick.value[1]}")
     sleep(0.1)
