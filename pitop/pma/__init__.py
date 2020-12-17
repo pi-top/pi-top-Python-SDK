@@ -11,6 +11,7 @@ from .ultrasonic_sensor import UltrasonicSensor  # noqa: F401
 from .joystick import Joystick  # noqa: F401
 from .encoder_motor import EncoderMotor  # noqa: F401
 from .servo_motor import ServoMotor  # noqa: F401
+from .imu import Imu  # noqa: F401
 
 from .parameters import (  # noqa: F401
     ForwardDirection,
