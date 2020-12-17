@@ -1,6 +1,5 @@
 from .imu_controller import ImuController
 import math
-from .common import ImuCalibration
 from dataclasses import astuple, dataclass, fields
 from abc import ABC
 import atexit
@@ -154,32 +153,3 @@ class Imu:
         mag_vector.z = z
 
         return mag_vector
-
-    @staticmethod
-    def calibrate_magnetometer():
-        """
-        Runs an interactive magnetometer calibration tool to find both hard iron and soft iron offset parameters. These
-        parameters are then automatically programmed into the Expansion Plate which are stored in non-volatile memory
-        (meaning they will persist even when the Expansion Plate is power-cycled).
-
-        You should run this tool whenever you are using the magnetometer data directly or are using any of the
-        orientation methods in this class - the MCU uses a fusion algorithm and if the magnetometer data is not
-        calibrated correctly for the specific use case then the results may be poor.
-
-        After this method completes it will show two plots, one showing the raw data with a least squares ellipsoid fit
-        overlay, and the other showing the calibrated data with a field strength unit sphere.
-        """
-        imu_cal = ImuCalibration()
-        imu_cal.calibrate_magnetometer()
-        imu_cal.plot_graphs()
-
-    @property
-    def acc_mag_orientation(self):
-        """
-        Calculates roll, pitch and yaw orientations using accelerometer and magnetometer data.
-        :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
-                representing the angle of the axis in degrees.
-        :rtype: Orientation()
-        """
-        # not implemented yet
-        return
