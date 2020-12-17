@@ -1,3 +1,9 @@
+py-pitop-sdk (0.6.1) buster; urgency=medium
+
+  * Add missing init file
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 19:18:03 -0300
+
 py-pitop-sdk (0.6.0) buster; urgency=medium
 
   * Add IMU CLI
