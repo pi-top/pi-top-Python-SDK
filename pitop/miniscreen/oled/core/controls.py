@@ -3,13 +3,18 @@ import atexit
 from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.lock import PTLock
 
-import RPi.GPIO as GPIO
 from luma.core.interface.serial import spi
 from luma.oled.device import sh1106
 
+try:
+    import RPi.GPIO as GPIO
+    # Suppress warning in Luma serial class
+    GPIO.setwarnings(False)
+except RuntimeError:
+    # This can only be run on Raspberry Pi
+    # and is only required for reducing logging
+    pass
 
-# Suppress warning in Luma serial class
-GPIO.setwarnings(False)
 
 _device = None
 _exclusive_mode = True
