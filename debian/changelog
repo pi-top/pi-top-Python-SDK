@@ -1,3 +1,9 @@
+py-pitop-sdk (0.4.2) buster; urgency=medium
+
+  * Initial IMU implementation
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 10:22:58 -0300
+
 py-pitop-sdk (0.4.1) buster; urgency=medium
 
   * 'pi-top Keyboard' --> 'Keyboard Input'
