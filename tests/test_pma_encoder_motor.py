@@ -1,3 +1,9 @@
+from pitop.pma.encoder_motor import EncoderMotor
+from pitop.pma.parameters import (
+    BrakingType,
+    ForwardDirection,
+    Direction
+)
 from unittest import TestCase, skip
 from sys import modules
 from unittest.mock import Mock
@@ -11,14 +17,6 @@ modules["pitopcommon.smbus_device"] = Mock()
 modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
-
-# import after applying mocks
-from pitop.pma.parameters import (  # noqa: E402
-    BrakingType,
-    ForwardDirection,
-    Direction
-)
-from pitop.pma.encoder_motor import EncoderMotor  # noqa: E402
 
 
 @skip

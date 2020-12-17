@@ -1,3 +1,11 @@
+from pitop.camera import Camera
+from pitop.camera.core import (
+    FrameHandler,
+    CaptureActions,
+    UsbCamera,
+    FileSystemCamera,
+    CameraTypes
+)
 from threading import Thread
 from unittest import (
     TestCase,
@@ -15,16 +23,6 @@ modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
 modules["pitop.camera.pil_opencv_conversion"] = Mock()
-
-# import after applying mocks
-from pitop.camera.core import (  # noqa: E402
-    FrameHandler,
-    CaptureActions,
-    UsbCamera,
-    FileSystemCamera,
-    CameraTypes
-)
-from pitop.camera import Camera  # noqa: E402
 
 
 class CameraTestCase(TestCase):

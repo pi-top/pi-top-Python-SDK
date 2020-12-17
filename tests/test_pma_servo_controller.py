@@ -1,3 +1,8 @@
+from pitop.pma.servo_controller import ServoController
+from pitop.pma.common.servo_motor_registers import (
+    ServoMotorS0,
+    ServoMotorSetup
+)
 from unittest import TestCase, skip
 from sys import modules
 from unittest.mock import Mock
@@ -11,17 +16,6 @@ modules["pitopcommon.smbus_device"] = Mock()
 modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
-
-# import after applying mocks
-from pitop.pma.common.servo_motor_registers import (  # noqa: E402
-    ServoControlRegisters,
-    ServoRegisterTypes,
-    ServoMotorS0,
-    ServoMotorSetup)
-from pitop.pma.servo_controller import (  # noqa: E402
-    ServoController, interp, split_into_bytes
-)
-from pitopcommon.bitwise_ops import join_bytes  # noqa: E402
 
 
 @skip
@@ -87,79 +81,6 @@ class ServoControllerTestCase(TestCase):
 
         self.assertEquals(controller.pwm_frequency(), pwm_frequency_value)
         read_unsigned_byte_mock.assert_called_with(ServoMotorSetup.REGISTER_PWM_FREQUENCY)
-
-    def test_control_mode_0_read_write(self):
-        """
-        Registers read/written when s when using control mode 0 methods
-        """
-        target_speed = 70
-        speed_setting = round(target_speed * 10)
-
-        interp_return_value = 44
-        interp.return_value = interp_return_value
-
-        speed_in_bytes = split_into_bytes(interp_return_value, 2, signed=True, little_endian=True) + \
-            split_into_bytes(speed_setting, 2, signed=True, little_endian=True)
-        speed_read = join_bytes(speed_in_bytes)
-
-        for servo_port_registers in ServoControlRegisters:
-            port_name = servo_port_registers.name
-            registers = servo_port_registers.value
-            speed_register = registers[ServoRegisterTypes.SPEED]
-
-            # create instance
-            controller = ServoController(port=port_name)
-            controller.control_mode = Mock()
-            controller.control_mode.return_value = ServoControlModes.MODE_0
-
-            # setup r/w mocks
-            write_word_mock = controller._mcu_device.write_word = Mock()
-            read_signed_word_mock = controller._mcu_device.read_signed_word = Mock()
-            read_signed_word_mock.return_value = speed_read
-
-            # test
-            controller.set_target_speed(target_speed)
-            write_word_mock.assert_called_with(speed_register, speed_setting, little_endian=True, signed=True)
-
-            self.assertEquals(controller.get_target_speed(), round(speed_read / 10, 1))
-            read_signed_word_mock.assert_called_with(speed_register, little_endian=True)
-
-    def test_control_mode_1_read_write(self):
-        """
-        Registers read/written when s when using control mode 1 methods
-        """
-        target_angle = 30
-        target_speed = 70
-
-        interp_return_value = 40
-        interp.return_value = interp_return_value
-        speed_setting = int(round(target_speed * 10))
-
-        angle_and_speed_in_bytes = split_into_bytes(interp_return_value, 2, signed=True, little_endian=True) + \
-            split_into_bytes(speed_setting, 2, signed=True, little_endian=True)
-        angle_and_speed_read = join_bytes(angle_and_speed_in_bytes)
-
-        for servo_port_registers in ServoControlRegisters:
-            port_name = servo_port_registers.name
-            registers = servo_port_registers.value
-            angle_and_speed_register = registers[ServoRegisterTypes.ANGLE_AND_SPEED]
-
-            # create instance
-            controller = ServoController(port=port_name)
-            controller.control_mode = Mock()
-            controller.control_mode.return_value = ServoControlModes.MODE_1
-
-            # setup r/w mocks
-            write_n_bytes_mock = controller._mcu_device.write_n_bytes = Mock()
-            read_signed_word_mock = controller._mcu_device.read_signed_word = Mock()
-            read_signed_word_mock.return_value = angle_and_speed_read
-
-            # test
-            controller.set_target_angle(target_angle, target_speed)
-            write_n_bytes_mock.assert_called_with(angle_and_speed_register, angle_and_speed_in_bytes)
-
-            self.assertEquals(controller.get_target_angle(), interp_return_value)
-            read_signed_word_mock.assert_called_with(angle_and_speed_register, little_endian=True)
 
     def test_set_target_speed_fails_on_invalid_value(self):
         """

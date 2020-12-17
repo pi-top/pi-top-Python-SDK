@@ -1,5 +1,5 @@
-from .oled import OLED  # noqa: F401
-from .buttons import (  # noqa: F401
+from .oled import OLED
+from .buttons import (
     Buttons,
     UpButton,
     DownButton,

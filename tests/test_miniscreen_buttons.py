@@ -1,3 +1,4 @@
+from pitop.miniscreen.buttons import UpButton
 from unittest.mock import MagicMock
 from unittest import TestCase, main
 from sys import modules
@@ -12,9 +13,6 @@ modules["RPi"] = MagicMock()
 modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
-
-# import after applying mocks
-from pitop.miniscreen.buttons import UpButton  # noqa: E402
 
 
 class PTButtonsCase(TestCase):
