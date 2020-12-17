@@ -129,7 +129,7 @@ Ultrasonic Sensor
 .. image:: ../_static/pma/foundation_kit/components/ultrasonic_sensor.jpg
 
 .. note::
-   This is a :ref:`Analog Component<analog-component>` which connects to a :ref:`Analog Port<analog-port>` `[A0-A3]`.
+   This is a :ref:`Digital Component<digital-component>` which connects to a :ref:`Digital Port<digital-port>` `[D0-D7]`.
 
 .. literalinclude:: ../../examples/pma/ultrasonic_sensor.py
 

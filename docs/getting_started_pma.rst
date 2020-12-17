@@ -26,7 +26,7 @@ This change in voltage can be read by a Raspberry Pi directly.
 
 Analog components use analog electric signals; analog signals are continuous and can have infinite values in a determined range.
 Raspberry Pi can't directly read these signals since it's a digital component. To be able to manage analog signals, the Foundation and Expansion plates include
-an Analog to Digital Converter (DAC). This device converts the analog signal from the component into a digital signal that can be interpreted by the Raspberry Pi.
+an Analog to Digital Converter (ADC). This device converts the analog signal from the component into a digital signal that can be interpreted by the Raspberry Pi.
 
 Ports and Pins
 ----------------------------------------
