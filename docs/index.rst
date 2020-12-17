@@ -61,28 +61,10 @@ modules available in the library:
         sleep(0.1)
 
 
-Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
+Check out the :ref:`API Recipes<recipes_api:Recipes>` chapter of the documentation for ideas on how to get started.
 
-.. _API Recipes: ./recipes_api.html
-
-
-This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
-
-.. code-block:: bash
-
-    $ pi-top oled write "Hey! I'm a $(pt devices hub)"
-
-
-A 'pt' alias is also provided for quicker typing:
-
-.. code-block:: bash
-
-    $ pt oled write "Hey! I'm a $(pt devices hub)"
-
-
-Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
-
-.. _CLI Examples: ./examples_cli.html
+The SDK also contains a Command Line Interface (CLI).
+See the :ref:`'pi-top' command<cli_tools:'pi-top' Command>` for more information.
 
 -----------------
 Table of Contents
@@ -96,7 +78,6 @@ Table of Contents
     getting_started_pma
     overview
     cli_tools
-    examples_cli
     recipes_api
     api_general
     api_miniscreen

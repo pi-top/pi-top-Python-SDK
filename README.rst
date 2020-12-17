@@ -95,10 +95,9 @@ A 'pt' alias is also provided for quicker typing:
 
     $ pt oled write "Hey! I'm a $(pt devices hub)"
 
+Check out the `CLI`_ chapter of the documentation for ideas on how to get started.
 
-Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
-
-.. _CLI Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
+.. _CLI: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
 
 ------------
 Installation

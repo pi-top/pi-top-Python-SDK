@@ -4,8 +4,8 @@ from time import sleep
 
 # Setup the motors for the rover configuration
 
-motor_left = EncoderMotor("M3", ForwardDirection.COUNTER_CLOCKWISE)
-motor_right = EncoderMotor("M4", ForwardDirection.CLOCKWISE)
+motor_left = EncoderMotor("M0", ForwardDirection.COUNTER_CLOCKWISE)
+motor_right = EncoderMotor("M3", ForwardDirection.CLOCKWISE)
 
 motor_left.braking_type = BrakingType.COAST
 motor_right.braking_type = BrakingType.COAST
