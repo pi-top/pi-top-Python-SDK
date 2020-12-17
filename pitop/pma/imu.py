@@ -38,7 +38,7 @@ class Orientation(BaseDataType):
     yaw: float = 0.0
 
 
-class Imu:
+class IMU:
     def __init__(self):
         self.imu_controller = ImuController()
         self.imu_controller.acc_scaler = 2

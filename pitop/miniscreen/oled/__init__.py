@@ -1,1 +1,1 @@
-from .oled import OLED  # noqa: F401
+from .oled import OLED

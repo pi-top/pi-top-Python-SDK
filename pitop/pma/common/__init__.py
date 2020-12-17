@@ -1,1 +1,4 @@
-from .utils import get_pin_for_port, type_check  # noqa: F401
+from .utils import (
+    get_pin_for_port,
+    type_check,
+)

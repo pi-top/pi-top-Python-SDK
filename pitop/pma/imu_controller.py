@@ -80,7 +80,7 @@ class ImuController:
 
     def _data_scale_config_write(self, register_type: int, scaler: int):
         if scaler not in ScaleMappings[register_type].keys():
-            raise ValueError("Valid values for scalers are: {}".format(list(ScaleMappings[register_type].keys())))
+            raise ValueError(f"Valid values for scalers are: {list(ScaleMappings[register_type].keys())}")
         byte = ScaleMappings[register_type][scaler]
         self._mcu_device.write_byte(self._config_registers[register_type], byte)
 

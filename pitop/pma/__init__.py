@@ -1,19 +1,21 @@
 # Foundation Kit
-from .button import Button  # noqa: F401
-from .buzzer import Buzzer  # noqa: F401
-from .led import LED  # noqa: F401
-from .light_sensor import LightSensor  # noqa: F401
-from .potentiometer import Potentiometer  # noqa: F401
-from .sound_sensor import SoundSensor  # noqa: F401
-from .ultrasonic_sensor import UltrasonicSensor  # noqa: F401
+from .button import Button
+from .buzzer import Buzzer
+from .led import LED
+from .light_sensor import LightSensor
+from .potentiometer import Potentiometer
+from .sound_sensor import SoundSensor
+from .ultrasonic_sensor import UltrasonicSensor
 
-# Expansion Kit
-from .joystick import Joystick  # noqa: F401
-from .encoder_motor import EncoderMotor  # noqa: F401
-from .servo_motor import ServoMotor  # noqa: F401
-from .imu import Imu  # noqa: F401
+# Robotics Kit
+from .imu import IMU
+from .encoder_motor import EncoderMotor
+from .servo_motor import (
+    ServoMotor,
+    ServoMotorState
+)
 
-from .parameters import (  # noqa: F401
+from .parameters import (
     ForwardDirection,
     Direction,
     BrakingType

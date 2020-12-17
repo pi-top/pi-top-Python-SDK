@@ -1,4 +1,4 @@
-from .buttons import (  # noqa: F401
+from .buttons import (
     Buttons,
     UpButton,
     DownButton,

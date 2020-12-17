@@ -1,8 +1,8 @@
-from pitop.pma import Imu
+from pitop.pma import IMU
 from time import sleep
 from dataclasses import fields
 
-imu = Imu()
+imu = IMU()
 
 while True:
     acc = imu.accelerometer
@@ -18,9 +18,9 @@ while True:
     orientation_accelerometer = imu.accelerometer_orientation
     roll_acc, pitch_acc, _ = list(getattr(orientation_accelerometer, field.name) for field in fields(orientation_accelerometer))
 
-    print("acc: {}, {}, {}".format(acc_x, acc_y, acc_z))
-    print("gyro: {}, {}, {}".format(gyro_x, gyro_y, gyro_z))
-    print("mag: {}, {}, {}".format(mag_x, mag_y, mag_z))
-    print("orientation_fusion: {}, {}, {}".format(roll, pitch, yaw))
-    print("orientation_accelerometer: {}, {}".format(roll_acc, pitch_acc))
+    print(f"acc: {acc_x}, {acc_y}, {acc_z}")
+    print(f"gyro: {gyro_x}, {gyro_y}, {gyro_z}")
+    print(f"mag: {mag_x}, {mag_y}, {mag_z}")
+    print(f"orientation_fusion: {roll}, {pitch}, {yaw}")
+    print(f"orientation_accelerometer: {roll_acc}, {pitch_acc}")
     sleep(0.1)
