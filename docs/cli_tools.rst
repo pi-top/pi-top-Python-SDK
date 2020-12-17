@@ -10,22 +10,28 @@ Utility to interact with pi-top hardware.
 
 .. code-block:: bash
 
-    pi-top [-h] {brightness,devices,host,battery,oled} ...
+    pi-top [-h] {battery,devices,display,help,imu,oled} ...
 
 Where:
 
 -h, --help
     Show a help message and exits
 
-{brightness,devices,host,battery,oled}
+{battery,devices,display,help,imu,oled}
     battery:
         Get battery information from a pi-top
 
-    brightness:
-        Query and change the device's screen brightness
-
     devices:
         Get information about device and attached pi-top hardware
+
+    display:
+        Communicate and control the device's display
+
+    help:
+        Find help for your device
+
+    imu:
+        Expansion Plate IMU utilities
 
     oled:
         Quickly display text in pi-top [4]'s OLED screen
@@ -255,6 +261,33 @@ Example:
 
     pi@pi-top:~ $ pt devices hub --name-only
     pi-top [4]
+
+
+pi-top imu
+==================
+
+Utility to calibrate the IMU included in the Expansion Plate.
+
+.. code-block:: bash
+
+    pi-top imu calibrate [-h] [-p PATH]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-p PATH, --path PATH
+    Directory for storing calibration graph data
+
+
+Example:
+
+.. code-block:: bash
+
+    pi-top imu calibrate --path /tmp
+
+
 
 pi-top oled
 ==================
