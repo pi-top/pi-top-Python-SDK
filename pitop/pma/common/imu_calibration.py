@@ -2,15 +2,30 @@ from pitop.pma.imu_controller import ImuController
 from pitop.miniscreen.buttons import SelectButton
 from pitop.pma.common.math_functions.ellipsoid_functions import least_squares_ellipsoid_fit, \
     get_ellipsoid_geometric_params, plot_ellipsoid
-import math
+from math import (
+    atan2,
+    degrees,
+    sqrt,
+)
 import numpy as np
-import warnings
-import threading
-import time
+from warnings import (
+    catch_warnings,
+    filterwarnings,
+)
+from threading import (
+    Event,
+    Thread,
+)
+from time import (
+    sleep,
+    time,
+)
 import matplotlib.pyplot as plt
-from scipy import linalg
+from scipy.linalg import sqrtm
 from pitopcommon.logger import PTLogger
 import atexit
+
+# Enables "add_subplot(projection='3d')"
 from mpl_toolkits import mplot3d  # noqa: F401
 
 
@@ -115,56 +130,56 @@ class ImuCalibration:
 
     def _get_test_data(self):
         imu_controller = ImuController()
-        thread_event = threading.Event()
-        mag_poll_thread = threading.Thread(target=self._poll_magnetometer_data, args=[thread_event, imu_controller, ],
-                                           daemon=True)
+        thread_event = Event()
+        mag_poll_thread = Thread(target=self._poll_magnetometer_data, args=[thread_event, imu_controller, ],
+                                 daemon=True)
         mag_poll_thread.start()
 
-        time.sleep(1)
+        sleep(1)
 
         print("Hold the pi-top flat in the air so roll and pitch angles are zero.")
         self._orientation_check(axis='z')
-        time.sleep(1)
+        sleep(1)
         print("Now rotate the pi-top 360 degrees whilst keeping it flat.")
         self._rotation_check(axis='z')
         print("Done!")
-        time.sleep(1)
+        sleep(1)
 
         print("Now turn the pi-top on it's side so the roll angle is +90 or -90 degrees.")
         self._orientation_check(axis='x')
-        time.sleep(1)
+        sleep(1)
         print("Now rotate the pi-top 360 degrees whilst keeping it on its side.")
         self._rotation_check(axis='x')
         print("Done!")
-        time.sleep(1)
+        sleep(1)
 
         print("Now turn the pi-top on it's other side so the pitch angle is +90 or -90 degrees.")
         self._orientation_check(axis='y')
-        time.sleep(1)
+        sleep(1)
         print("Now rotate the pi-top 360 degrees whilst keeping it on its side.")
         self._rotation_check(axis='y')
         print("Done!")
-        time.sleep(1)
+        sleep(1)
 
         print("Now rotate/spin the pi-top in as many directions as possible, press the circle button when finished.")
-        time.sleep(1)
+        sleep(1)
         while True:
             if self._select_button.is_pressed:
                 break
-            time.sleep(0.05)
+            sleep(0.05)
         print("Done!")
-        time.sleep(1)
+        sleep(1)
 
         thread_event.set()
         mag_poll_thread.join()
 
-        time.sleep(1)
+        sleep(1)
 
     def _rotation_check(self, axis: str):
-        prev_time = time.time()
+        prev_time = time()
         degrees_rotated = 0
         while abs(degrees_rotated) < 360.0:
-            current_time = time.time()
+            current_time = time()
             dt = current_time - prev_time
             if dt > (1 / self._GYRO_POLL_FREQUENCY):
                 x, y, z = self.imu_controller.gyroscope_raw
@@ -177,7 +192,7 @@ class ImuCalibration:
                 # print("degrees_rotated: {}".format(degrees_rotated))
                 prev_time = current_time
             else:
-                time.sleep(self._SLEEP_TIME)
+                sleep(self._SLEEP_TIME)
 
     def _orientation_check(self, axis: str):
         if axis not in ('x', 'y', 'z'):
@@ -210,23 +225,23 @@ class ImuCalibration:
             if roll_check(roll, pitch):
                 break
             else:
-                time.sleep(self._SLEEP_TIME)
+                sleep(self._SLEEP_TIME)
 
     def accelerometer_orientation(self):
         x, y, z = self.imu_controller.accelerometer_raw
-        roll = math.degrees(math.atan2(x, math.sqrt(y ** 2 + z ** 2)))
-        pitch = math.degrees(math.atan2(-y, math.sqrt(x ** 2 + z ** 2)))
+        roll = degrees(atan2(x, sqrt(y ** 2 + z ** 2)))
+        pitch = degrees(atan2(-y, sqrt(x ** 2 + z ** 2)))
 
         return roll, pitch
 
     def _poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")
-        time.sleep(1)
-        prev_time = time.time()
+        sleep(1)
+        prev_time = time()
         error_tolerance = 0.01
         error_count = 0
         while not thread_event.is_set():
-            current_time = time.time()
+            current_time = time()
             if current_time - prev_time > (1 / self._MAG_POLL_FREQUENCY):
                 x, y, z = imu_controller.magnetometer_raw
                 if abs(x) < error_tolerance and abs(y) < error_tolerance and abs(z) < error_tolerance:
@@ -242,7 +257,7 @@ class ImuCalibration:
                 self._mag_measurements = np.append(self._mag_measurements, [mag_median], axis=0)
                 prev_time = current_time
             else:
-                time.sleep(self._SLEEP_TIME)
+                sleep(self._SLEEP_TIME)
 
     @staticmethod
     def _running_median(old_array, new_data):
@@ -269,7 +284,7 @@ class ImuCalibration:
 
         correction_vector = 0.5 * beta_vector[0:3]
 
-        field_strength = math.sqrt(beta_vector[3] + np.sum(np.square(correction_vector)))
+        field_strength = sqrt(beta_vector[3] + np.sum(np.square(correction_vector)))
 
         return field_strength
 
@@ -286,17 +301,17 @@ class ImuCalibration:
         hard_iron_offset = None
         soft_iron_matrix = None
 
-        with warnings.catch_warnings():
-            warnings.filterwarnings('error')
+        with catch_warnings():
+            filterwarnings('error')
             try:
                 Minv = np.linalg.inv(M)
-                soft_iron_matrix = np.real(field_strength / np.sqrt(np.dot(n.T, np.dot(Minv, n)) - d) * linalg.sqrtm(M))
+                soft_iron_matrix = np.real(field_strength / np.sqrt(np.dot(n.T, np.dot(Minv, n)) - d) * sqrtm(M))
                 hard_iron_offset = -np.dot(Minv, n)
             except Warning as e:
                 PTLogger.error("Calibration error: {}".format(e))
                 if self._test_data is None:
                     PTLogger.info("Starting calibration process again...")
-                    time.sleep(3)
+                    sleep(3)
                     self.calibrate_magnetometer(test_data=self._test_data, save_data_name=self._save_data_name)
                 else:
                     PTLogger.info("Please try again with different test data.")
