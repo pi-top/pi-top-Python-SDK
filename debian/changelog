@@ -1,3 +1,9 @@
+py-pitop-sdk (0.6.0) buster; urgency=medium
+
+  * Add IMU CLI
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 13:55:57 -0300
+
 py-pitop-sdk (0.5.1) buster; urgency=medium
 
   * Update docs links

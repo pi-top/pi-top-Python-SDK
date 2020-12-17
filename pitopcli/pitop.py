@@ -8,6 +8,7 @@ from .cli_base import PitopCliException, PitopCliInvalidArgument
 from .display import DisplayCLI
 from .devices import DeviceCLI
 from .help import HelpCLI
+from .imu import ImuCLI
 from .oled import OledCLI
 
 
@@ -16,6 +17,7 @@ lookup_dict = {
     "devices": DeviceCLI,
     "display": DisplayCLI,
     "help": HelpCLI,
+    "imu": ImuCLI,
     "oled": OledCLI
 }
 
