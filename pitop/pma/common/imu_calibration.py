@@ -331,10 +331,3 @@ class ImuCalibration:
         mag_measurements_cal = np.hstack((np.array([x_cal]).T, np.array([y_cal]).T, np.array([z_cal]).T))
 
         return mag_measurements_cal
-
-
-if __name__ == "__main__":
-    calibrator = ImuCalibration()
-    with open('mag_data_9.npy', 'rb') as f:
-        mag_data = np.load(f)
-    calibrator.calibrate_magnetometer(mag_data)
