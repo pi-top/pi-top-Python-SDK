@@ -1,6 +1,3 @@
-from enum import Enum
-
-
 class RegisterTypes:
     ACC = 0
     GYRO = 1

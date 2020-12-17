@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from scipy import linalg
 from pitopcommon.logger import PTLogger
 import atexit
-from mpl_toolkits import mplot3d  # don't delete, actually required for "3d" plot type
+from mpl_toolkits import mplot3d  # noqa: F401
 
 
 class ImuCalibration:
