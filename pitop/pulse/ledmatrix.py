@@ -1,22 +1,24 @@
-# ledmatrix.py (pi-topPULSE)
-# Copyright (C) 2017  CEED ltd.
-#
+from pitop.pulse import configuration
 
 from pitopcommon.logger import PTLogger
+
 from copy import deepcopy
-from math import ceil
-from math import radians
-from math import sin
-from math import cos
+from math import (
+    ceil,
+    radians,
+    sin,
+    cos,
+)
 from os import path
-from serial import serialutil
-from serial import Serial
+from serial import (
+    serialutil,
+    Serial
+)
 import signal
 from sys import exit
 from time import sleep
 from threading import Timer
-# local
-from ptpulse import configuration
+
 
 _initialised = False
 
@@ -132,9 +134,7 @@ def _initialise():
 
             _initialised = True
         else:
-            PTLogger.info(
-                "Error: pi-topPULSE is not initialised. Call ptpulse.configuration.initialise() ptpulse.configuration.enable_device()")
-            exit()
+            PTLogger.error("Error: pi-topPULSE not initialised by pt-device-manager")
 
 
 def _signal_handler(signal, frame):

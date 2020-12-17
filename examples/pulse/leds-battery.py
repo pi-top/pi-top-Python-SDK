@@ -1,9 +1,7 @@
-#!/usr/bin/python3
-
-from time import sleep
-
 from pitop.pulse import ledmatrix
 from pitop.battery import Battery
+
+from time import sleep
 
 
 def draw_battery_outline():  # Draw the naked battery

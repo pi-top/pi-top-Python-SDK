@@ -20,9 +20,7 @@ Supports all pi-top peripherals:
 Status: Active Development
 --------------------------
 
-This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
-
-Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+This SDK is currently in active development. Please be patient while we work towards v1.0.0!
 
 Backwards Compatibility
 =======================
@@ -45,11 +43,6 @@ Build Status: Latest
 .. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
     :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
     :alt: Documentation Status
-
-.. # TODO - add coverage report
-.. image: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
-..     :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
-..     :alt: Coverage
 
 -----
 About
@@ -84,9 +77,9 @@ modules available in the library:
         oled.draw_multiline_text(str(distance))
         sleep(0.1)
 
-Check out the `Basic API Examples`_ chapter of the documentation for ideas on how to get started.
+Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
 
-.. _Basic API Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
+.. _API Recipes: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/recipes_api.html
 
 
 This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:

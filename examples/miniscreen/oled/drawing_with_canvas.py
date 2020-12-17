@@ -15,7 +15,8 @@ oled.draw()
 
 print("Drawing an image")
 canvas.clear()
-demo_image = Image.open("demo.png")
+# Image provided by 'pt-project-files'
+demo_image = Image.open("/usr/share/pt-project-files/images/rocket.gif")
 canvas.image(canvas.top_left(), demo_image)
 oled.draw()
 

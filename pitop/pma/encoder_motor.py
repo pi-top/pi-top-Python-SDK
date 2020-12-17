@@ -239,7 +239,6 @@ class EncoderMotor:
         Returns a boolean value, :data:`True` if the motor is torque-limited and :data:`False` if it is not.
         """
 
-        # TODO: Add functionality, maybe this should run a loop and call a callback function passed by user?
         return False
 
     @property

@@ -4,6 +4,7 @@ from PIL import Image, ImageSequence
 oled = OLED()
 oled.set_max_fps(10)
 
+# Image provided by 'pt-project-files'
 rocket = Image.open("/usr/share/pt-project-files/images/rocket.gif")
 
 while True:
