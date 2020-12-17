@@ -66,7 +66,7 @@ class ImuCalibration:
 
     def calibrate_magnetometer(self, test_data=None, save_data_name=None, update_mcu=True):
         print("Starting magnetometer calibration")
-        
+
         self._test_data = test_data
         self._save_data_name = save_data_name
         if test_data is None:
@@ -177,7 +177,7 @@ class ImuCalibration:
 
         print("Now rotate/spin the pi-top in as many directions as possible.")
         sleep(1)
-        input("Press any key when finished") 
+        input("Press any key when finished")
         print("Done!")
         sleep(1)
 

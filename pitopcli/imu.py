@@ -1,10 +1,6 @@
 #! /usr/bin/python3
 
-import argparse
-from pitop.system import (
-    device_type,
-    pitop_peripherals,
-)
+from pitop.system import device_type
 
 from .cli_base import CliBaseClass, PitopCliInvalidArgument
 from .imu_calibration import ImuCalibration
@@ -29,7 +25,7 @@ class ImuCLI(CliBaseClass):
         # Check if device is a pi-top[4]
         is_pi_four = device_type() == DeviceName.pi_top_4.value
         if not is_pi_four:
-            print(f"This CLI only runs on a pi-top [4].", file=stderr)
+            print("This CLI only runs on a pi-top [4].", file=stderr)
             return 1
 
         # Check if Expansion Plate is connected
@@ -40,16 +36,16 @@ class ImuCLI(CliBaseClass):
         except Exception:
             expansion_plate_connected = False
         if not expansion_plate_connected:
-            print(f"No Expansion Plate detected - unable to calibrate IMU.", file=stderr)
+            print("No Expansion Plate detected - unable to calibrate IMU.", file=stderr)
             return 1
-        
+
         if self.args.imu_subcommand == "calibrate":
             if self.args.path and not path.isdir(self.args.path):
                 print(f"{self.args.path} is not a valid directory")
                 return 1
-            
+
             imu_cal = ImuCalibration()
-            imu_cal.calibrate_magnetometer()            
+            imu_cal.calibrate_magnetometer()
             imu_cal.plot_graphs(self.args.path)
         else:
             raise PitopCliInvalidArgument("oops")
@@ -61,9 +57,9 @@ class ImuCLI(CliBaseClass):
         subparser = parser.add_subparsers(title="IMU utility",
                                           description=cls.parser_help,
                                           dest="imu_subcommand")
-        
+
         calibrate_parser = subparser.add_parser("calibrate", help="Calibrate the magnetometer")
         calibrate_parser.add_argument("-p", "--path",
-                                 type=str,
-                                 help="Directory for storing calibration graph data"
-                                 )
+                                      type=str,
+                                      help="Directory for storing calibration graph data"
+                                      )
