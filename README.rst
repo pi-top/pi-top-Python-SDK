@@ -79,7 +79,7 @@ modules available in the library:
 
 Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
 
-.. _API Recipes: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/recipes_api.html
+.. _API Recipes: https://docs.pi-top.com/python-sdk/latest/recipes_api.html
 
 
 This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
@@ -97,7 +97,7 @@ A 'pt' alias is also provided for quicker typing:
 
 Check out the `CLI`_ chapter of the documentation for ideas on how to get started.
 
-.. _CLI: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
+.. _CLI: https://docs.pi-top.com/python-sdk/latest/examples_cli.html
 
 ------------
 Installation
@@ -107,7 +107,7 @@ The pi-top Python SDK is installed out of the box with pi-topOS, which is availa
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
-.. _Getting Started: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
+.. _Getting Started: https://docs.pi-top.com/python-sdk/latest/getting_started.html
 
 -------------
 Documentation
@@ -115,7 +115,7 @@ Documentation
 
 Comprehensive documentation is available here_.
 
-.. _here: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
+.. _here: https://docs.pi-top.com/python-sdk/latest/getting_started.html
 
 -------------
 Development

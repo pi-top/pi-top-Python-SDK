@@ -18,7 +18,7 @@ class HelpCLI(CliBaseClass):
     parser_help = "Find help for your device"
     cli_name = 'docs'
 
-    ONLINE_URI = "https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/"
+    ONLINE_URI = "https://docs.pi-top.com/python-sdk/"
     LOCAL_URI = "/usr/share/doc/python3-pitop/html/index.html"
     KNOWLEDGE_BASE_URI = "https://knowledgebase.pi-top.com/"
     FORUM_URI = "https://forum.pi-top.com/"
