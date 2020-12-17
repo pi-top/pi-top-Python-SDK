@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 from os import get_terminal_size
 
 from pitopcommon.command_runner import run_command, run_command_background

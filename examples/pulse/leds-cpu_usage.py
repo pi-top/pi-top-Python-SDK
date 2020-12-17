@@ -1,20 +1,13 @@
-#! /usr/bin/python3
+from pitop.pulse import ledmatrix
 
-# Display the cpu usage of the 4 cores on the pi-topPULSE led matrix
-#
-# for Raspberry Pi 3
-#
-# by @rricharz
-
-from ptpulse import ledmatrix
 import time
 
-lastWork = [0, 0, 0, 0]
-lastIdle = [0, 0, 0, 0]
+last_work = [0, 0, 0, 0]
+last_idle = [0, 0, 0, 0]
 
 
-def getCpuRates():
-    global lastWork, lastIdle
+def get_cpu_rates():
+    global last_work, last_idle
     rate = [0, 0, 0, 0]
     f = open("/proc/stat", "r")
     line = ""
@@ -25,18 +18,18 @@ def getCpuRates():
         splitline = line.split()
         work = int(splitline[1]) + int(splitline[2]) + int(splitline[3])
         idle = int(splitline[4])
-        diffWork = work - lastWork[i]
-        diffIdle = idle - lastIdle[i]
-        rate[i] = float(diffWork) / float(diffIdle+diffWork)
-        lastWork[i] = work
-        lastIdle[i] = idle
+        diff_work = work - last_work[i]
+        diff_idle = idle - last_idle[i]
+        rate[i] = float(diff_work) / float(diff_idle+diff_work)
+        last_work[i] = work
+        last_idle[i] = idle
     f.close()
     return rate
 
 
 ledmatrix.rotation(0)
 while True:
-    rate = getCpuRates()
+    rate = get_cpu_rates()
     ledmatrix.clear()
     for i in range(0, 4):
         level = int(6.99 * rate[i])

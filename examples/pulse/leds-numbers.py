@@ -1,23 +1,5 @@
-#! /usr/bin/python3
-
-# Display the cpu temperature in degree C on the pi-topPULSE led matrix
-#
-# based on the script to display digits on the sense hat
-# by yaab-arduino.blogspot.ch
-# adapted for the pi-topPULSE by @rricharz
-# cpu temperature code added by @rricharz
-#
-
-from ptpulse import ledmatrix
+from pitop.pulse import ledmatrix
 import time
-
-
-def getCpuTemperature():
-    tempFile = open("/sys/class/thermal/thermal_zone0/temp")
-    cpu_temp = tempFile.read()
-    tempFile.close()
-    return int(int(cpu_temp) / 1000)
-
 
 OFFSET_LEFT = 0
 OFFSET_TOP = 2
@@ -54,26 +36,12 @@ def show_number(val, r, g, b):
     show_digit(units, OFFSET_LEFT+4, OFFSET_TOP, r, g, b)
 
 
-###########################################################
-# MAIN
-###########################################################
-
 ledmatrix.rotation(0)
 ledmatrix.clear()
 
-lastTemperature = -1
-
-while True:
-    temperature = getCpuTemperature()
-    if temperature != lastTemperature:
-        if temperature < 60:
-            show_number(temperature, 0, 255, 0)
-        elif temperature < 70:
-            show_number(temperature, 255, 255, 0)
-        else:
-            show_number(temperature, 255, 0, 0)
-        lastemperature = temperature
-    time.sleep(2)
+for i in range(0, 100):
+    show_number(i, 255, 255, 0)
+    time.sleep(0.5)
 
 ledmatrix.clear()
 ledmatrix.show()

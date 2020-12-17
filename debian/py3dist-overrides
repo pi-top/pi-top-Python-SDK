@@ -7,4 +7,5 @@ pynput python3-pynput
 python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera
 rpi.gpio python3-rpi.gpio
+smbus python3-smbus
 zmq python3-zmq

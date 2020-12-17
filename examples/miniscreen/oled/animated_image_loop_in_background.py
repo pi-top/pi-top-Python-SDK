@@ -6,6 +6,7 @@ oled = OLED()
 oled.set_max_fps(10)
 
 # Set image to loop
+# Image provided by 'pt-project-files'
 image = Image.open("/usr/share/pt-project-files/images/rocket.gif")
 
 # run animation loop in background by setting `background` to True

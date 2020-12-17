@@ -21,7 +21,7 @@ class Display:
 
     def __setup_subscribe_client(self):
         def on_brightness_changed(parameters):
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_brightness_changed, parameters[0])
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_brightness_changed, parameters()[0])
 
         def on_screen_blanked():
             self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_screen_blanked)
@@ -147,7 +147,7 @@ class Display:
         return self.__get_state(
             state_str="get pi-top display backlight state",
             message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
-        )
+        ) == "1"
 
     @backlight.setter
     def backlight(self, value):
@@ -160,8 +160,8 @@ class Display:
         )
 
     @property
-    def lid(self):
+    def lid_is_open(self):
         return self.__get_state(
             state_str="get pi-top display lid open state",
             message_id=Message.REQ_GET_LID_OPEN_STATE,
-        )
+        ) == "1"

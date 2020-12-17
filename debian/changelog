@@ -1,3 +1,46 @@
+py-pitop-sdk (0.4.1) buster; urgency=medium
+
+  * 'pi-top Keyboard' --> 'Keyboard Input'
+  * 'pi-top Camera' --> 'USB Camera'
+  * Move to "helpers" section in the docs
+  * Add events to PMA Ultrasonic Sensor example
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 19:26:07 +0000
+
+py-pitop-sdk (0.4.0) buster; urgency=medium
+
+  * Add missing pages to docs
+  * Update examples and mocking in docs as necessary
+  * Add pt-project-files as recommended dependency
+  * Remove TODOs
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 16:19:20 +0000
+
+py-pitop-sdk (0.3.9) buster; urgency=medium
+
+  * Reorganize examples in docs
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 16 Dec 2020 00:53:33 -0300
+
+py-pitop-sdk (0.3.8) buster; urgency=medium
+
+  * Update docs - add overview page, add placeholders for all API subsystems
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 22:40:55 +0000
+
+py-pitop-sdk (0.3.7) buster; urgency=medium
+
+  * Fix display callback API
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 15 Dec 2020 19:22:56 -0300
+
+py-pitop-sdk (0.3.6) buster; urgency=medium
+
+  * Remove pi-topPULSE config methods
+  * Fix common lib mocking to support inclusion of Singleton internal methods
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 19:23:06 +0000
+
 py-pitop-sdk (0.3.5) buster; urgency=medium
 
   * Add missing return statement in OLED API
