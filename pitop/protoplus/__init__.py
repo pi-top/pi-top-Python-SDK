@@ -1,2 +1,2 @@
-from .adc import ADCProbe  # noqa: F401
-from .sensors import DistanceSensor  # noqa: F401
+from .adc import ADCProbe
+from .sensors import DistanceSensor

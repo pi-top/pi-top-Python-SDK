@@ -1,9 +1,9 @@
-from .device import (  # noqa: F401
+from .device import (
     device_info,
     device_firmware,
     device_type,
 )
-from .peripherals import (  # noqa: F401
+from .peripherals import (
     legacy_pitop_peripherals,
     upgradable_pitop_peripherals,
     touchscreen_is_connected,

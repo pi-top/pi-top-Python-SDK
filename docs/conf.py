@@ -16,7 +16,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
 
 sys.path.insert(0, PARENT)
-import setup as _setup  # noqa
+import setup as _setup  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 

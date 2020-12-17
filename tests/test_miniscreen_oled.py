@@ -1,3 +1,4 @@
+from pitop.miniscreen.oled import OLED
 from unittest.mock import MagicMock
 from unittest import TestCase, skip
 from sys import modules, path as spath
@@ -21,9 +22,6 @@ modules["RPi"] = MagicMock()
 modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
-
-# import after applying mocks
-from pitop.miniscreen.oled import OLED  # noqa: E402
 
 
 @skip
