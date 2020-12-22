@@ -1,65 +1,87 @@
-from pitopcommon.firmware_device import FirmwareDevice
-from pitopcommon.ptdm import PTDMRequestClient, Message
 from pitopcommon.command_runner import run_command
 from pitopcommon.common_ids import FirmwareDeviceID, PeripheralID
 from pitopcommon.common_names import PeripheralName
-
-from subprocess import getstatusoutput
+from pitopcommon.firmware_device import FirmwareDevice
+from pitopcommon.ptdm import PTDMRequestClient, Message
 
 
 def legacy_pitop_peripherals():
+    """Returns a list with the status of legacy peripheral devices.
+
+    Returns:
+        list: list of dictionaries with the status of legacy peripherals
+    """
     peripherals = []
 
-    # Get legacy peripheral devices from pt-device-manager
-    for id in range(5):
-        message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
+    for peripheral_enum in PeripheralID:
+        if peripheral_enum == PeripheralID.unknown:
+            continue
+
+        peripheral_id = peripheral_enum.value
+        human_readable_name = PeripheralName[peripheral_enum.name].value
+
+        message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [peripheral_id])
 
         with PTDMRequestClient() as request_client:
-            request_client.send_message(message)
+            response = request_client.send_message(message)
 
-        peripheral_id = PeripheralID(id)
-        p_enabled = (message.parameters()[0] == '1')
+        p_enabled = (response.parameters()[0] == '1')
         peripherals.append({
-            "name": PeripheralName[peripheral_id.name].value,
+            "name": human_readable_name,
             "connected": p_enabled})
 
     return peripherals
 
 
+def __get_fw_device_status(device_enum):
+    """ Returns a dictionary with the status of the given device enum """
+    human_readable_name = device_enum.name.replace(
+        "_", " ").title().replace("Pt4", "pi-top [4]")
+
+    peripheral = {
+        "name": human_readable_name,
+        "fw_version": None,
+        "connected": False
+    }
+
+    try:
+        fw_device = FirmwareDevice(device_enum)
+        peripheral["fw_version"] = fw_device.get_fw_version()
+        peripheral["connected"] = True
+    except Exception:
+        pass
+
+    return peripheral
+
+
 def upgradable_pitop_peripherals():
+    """Returns a list with the status of legacy peripheral devices.
+
+    Returns:
+        list: list of dictionaries with the status of upgradable peripherals
+    """
     peripherals = []
 
-    for device_enum, device_info in FirmwareDevice.device_info.items():
+    for device_enum, _ in FirmwareDevice.device_info.items():
         if device_enum is FirmwareDeviceID.pt4_hub:
             continue
-        device_str = device_enum.name
-
-        device_address = device_info.get("i2c_addr")
-
-        if getstatusoutput(f"pt-i2cdetect {device_address}"):
-            try:
-                fw_device = FirmwareDevice(device_enum)
-                human_readable_name = device_str.replace(
-                    "_", " ").title().replace("Pt4", "pi-top [4]")
-
-                peripheral = {
-                    "name": human_readable_name,
-                    "fw_version": fw_device.get_fw_version(),
-                    "connected": True
-                }
-                peripherals.append(peripheral)
-            except Exception:
-                pass
+        peripherals.append(__get_fw_device_status(device_enum))
 
     return peripherals
 
 
 def usb_pitop_peripherals():
+    """Returns a list with the status of USB pi-top peripherals.
+
+    Returns:
+        list: list of dictionaries with the status of USB peripherals
+    """
     return [{'name': 'pi-top Touchscreen', 'connected': touchscreen_is_connected()},
             {'name': 'pi-top Keyboard', 'connected': pitop_keyboard_is_connected()}]
 
 
 def touchscreen_is_connected():
+    """Checks if pi-top touchscreen is connected to the device"""
     resp = run_command("lsusb", timeout=3)
     for line in resp.split("\n"):
         fields = line.split(" ")
@@ -73,6 +95,7 @@ def touchscreen_is_connected():
 
 
 def pitop_keyboard_is_connected():
+    """Checks if pi-top keyboard is connected to the device"""
     resp = run_command("lsusb", timeout=3)
     for line in resp.split("\n"):
         fields = line.split(" ")
@@ -86,4 +109,9 @@ def pitop_keyboard_is_connected():
 
 
 def pitop_peripherals():
+    """Returns a list with the status of all pi-top peripherals
+
+    Returns:
+        list: list of dictionaries with the status of pi-top peripherals
+    """
     return upgradable_pitop_peripherals() + usb_pitop_peripherals() + legacy_pitop_peripherals()

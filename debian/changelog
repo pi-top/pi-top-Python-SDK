@@ -1,3 +1,9 @@
+py-pitop-sdk (0.7.0) buster; urgency=medium
+
+  * Fix detection of legacy peripherals
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 22 Dec 2020 17:34:37 -0300
+
 py-pitop-sdk (0.6.2) buster; urgency=medium
 
   * Set DISPLAY environment variable to plot IMU data
