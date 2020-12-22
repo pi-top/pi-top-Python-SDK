@@ -15,10 +15,10 @@ def legacy_pitop_peripherals():
         message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [id])
 
         with PTDMRequestClient() as request_client:
-            request_client.send_message(message)
+            response = request_client.send_message(message)
 
         peripheral_id = PeripheralID(id)
-        p_enabled = (message.parameters()[0] == '1')
+        p_enabled = (response.parameters()[0] == '1')
         peripherals.append({
             "name": PeripheralName[peripheral_id.name].value,
             "connected": p_enabled})
