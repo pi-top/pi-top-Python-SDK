@@ -6,6 +6,11 @@ from pitopcommon.ptdm import PTDMRequestClient, Message
 
 
 def legacy_pitop_peripherals():
+    """Returns a list with the status of legacy peripheral devices.
+
+    Returns:
+        list: list of dictionaries with the status of legacy peripherals
+    """
     peripherals = []
 
     for peripheral_enum in PeripheralID:
@@ -29,6 +34,7 @@ def legacy_pitop_peripherals():
 
 
 def __get_fw_device_status(device_enum):
+    """ Returns a dictionary with the status of the given device enum """
     human_readable_name = device_enum.name.replace(
         "_", " ").title().replace("Pt4", "pi-top [4]")
 
@@ -44,11 +50,16 @@ def __get_fw_device_status(device_enum):
         peripheral["connected"] = True
     except Exception:
         pass
-    
+
     return peripheral
 
 
 def upgradable_pitop_peripherals():
+    """Returns a list with the status of legacy peripheral devices.
+
+    Returns:
+        list: list of dictionaries with the status of upgradable peripherals
+    """
     peripherals = []
 
     for device_enum, _ in FirmwareDevice.device_info.items():
@@ -60,11 +71,17 @@ def upgradable_pitop_peripherals():
 
 
 def usb_pitop_peripherals():
+    """Returns a list with the status of USB pi-top peripherals.
+
+    Returns:
+        list: list of dictionaries with the status of USB peripherals
+    """
     return [{'name': 'pi-top Touchscreen', 'connected': touchscreen_is_connected()},
             {'name': 'pi-top Keyboard', 'connected': pitop_keyboard_is_connected()}]
 
 
 def touchscreen_is_connected():
+    """Checks if pi-top touchscreen is connected to the device"""
     resp = run_command("lsusb", timeout=3)
     for line in resp.split("\n"):
         fields = line.split(" ")
@@ -78,6 +95,7 @@ def touchscreen_is_connected():
 
 
 def pitop_keyboard_is_connected():
+    """Checks if pi-top keyboard is connected to the device"""
     resp = run_command("lsusb", timeout=3)
     for line in resp.split("\n"):
         fields = line.split(" ")
@@ -91,4 +109,9 @@ def pitop_keyboard_is_connected():
 
 
 def pitop_peripherals():
+    """Returns a list with the status of all pi-top peripherals
+
+    Returns:
+        list: list of dictionaries with the status of pi-top peripherals
+    """
     return upgradable_pitop_peripherals() + usb_pitop_peripherals() + legacy_pitop_peripherals()
