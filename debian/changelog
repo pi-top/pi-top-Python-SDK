@@ -1,6 +1,6 @@
 py-pitop-sdk (0.7.0) buster; urgency=medium
 
-  * Refactor system.peripherals API
+  * Fix detection of legacy peripherals
 
  -- Jorge Capona <jorge@pi-top.com>  Tue, 22 Dec 2020 17:34:37 -0300
 
