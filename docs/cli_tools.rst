@@ -10,7 +10,7 @@ Utility to interact with pi-top hardware.
 
 .. code-block:: bash
 
-    pi-top [-h] {battery,devices,display,help,imu,oled} ...
+    pi-top [-h] {battery,devices,display,support,imu,oled} ...
 
 Where:
 
@@ -27,8 +27,8 @@ Where:
     display:
         Communicate and control the device's display
 
-    help:
-        Find help for your device
+    support:
+        Find support resources
 
     imu:
         Expansion Plate IMU utilities
@@ -296,7 +296,7 @@ Display text directly into pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
-    pi-top oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
+    pi-top oled draw [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
 
 Where:
 
@@ -317,4 +317,31 @@ Example:
 
 .. code-block:: bash
 
-    pi-top oled "hey there!" --timeout 5
+    pi-top oled draw "hey there!" --timeout 5
+
+
+pi-top support
+==================
+
+Find resources to learn how to use your device and get help if needed.
+
+.. code-block:: bash
+
+    pi-top support
+
+
+Example:
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pi-top support
+    DOCS ==========================================
+    [ ✓ ] pi-top Python SDK documentation: online version, recommended
+      https://docs.pi-top.com/python-sdk/
+    [ ✓ ] pi-top Python SDK documentation: offline version
+      /usr/share/doc/python3-pitop/html/index.html
+    OTHER ========================================
+    [ ✓ ] Knowledge Base: Find answers to commonly asked questions
+      https://knowledgebase.pi-top.com/
+    [ ✓ ] Forum: Discuss and search through support topics.
+      https://forum.pi-top.com/
