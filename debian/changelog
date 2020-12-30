@@ -1,3 +1,9 @@
+py-pitop-sdk (0.8.0) buster; urgency=medium
+
+  * Rename 'help' CLI to 'support'
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 30 Dec 2020 17:14:44 -0300
+
 py-pitop-sdk (0.7.0) buster; urgency=medium
 
   * Fix detection of legacy peripherals

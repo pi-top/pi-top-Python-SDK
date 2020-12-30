@@ -14,9 +14,9 @@ class StdoutFormat:
     GREEN = '\033[92m'
 
 
-class HelpCLI(CliBaseClass):
-    parser_help = "Find help for your device"
-    cli_name = 'docs'
+class SupportCLI(CliBaseClass):
+    parser_help = "Find resources to learn how to use your device and get help if needed."
+    cli_name = 'support'
 
     ONLINE_URI = "https://docs.pi-top.com/python-sdk/"
     LOCAL_URI = "/usr/share/doc/python3-pitop/html/index.html"
@@ -92,7 +92,7 @@ class HelpCLI(CliBaseClass):
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
-        subparser = parser.add_subparsers(title="pi-top help",
+        subparser = parser.add_subparsers(title="pi-top support",
                                           description=cls.parser_help,
                                           dest="help_subcommand")
 
