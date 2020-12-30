@@ -15,7 +15,7 @@ class StdoutFormat:
 
 
 class SupportCLI(CliBaseClass):
-    parser_help = "Find support resources to use your device"
+    parser_help = "Find resources to learn how to use your device and get help if needed."
     cli_name = 'support'
 
     ONLINE_URI = "https://docs.pi-top.com/python-sdk/"
