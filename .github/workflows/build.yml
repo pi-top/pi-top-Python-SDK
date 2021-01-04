@@ -48,7 +48,7 @@ jobs:
           path: debian/changelog
 
 
-  python-package:
+  python:
     # Does not require patch-src to have actually run
     # But does need to wait for it if it has
     if: ${{ always() }}
@@ -76,7 +76,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel
+          pip install setuptools wheel twine
 
       - name: Build
         # Create source distribution (sdist) and wheel (bdist_wheel)
@@ -90,7 +90,16 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "${{ github.workspace }}/dist"
 
-  debian-package:
+      - name: Publish to PyPI
+        if: github.event_name == 'release'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose --repository testpypi dist/*
+        # twine upload --verbose dist/*
+
+  debian:
     if: github.event_name == 'release'
     runs-on: ubuntu-20.04
     strategy:
@@ -130,51 +139,4 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "${{ github.workspace }}/artifacts"
 
-  python-publish:
-    if: github.event_name == 'release'
-    needs: [ python-package ]
-    # needs: [ python-package, debian-package ]
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Download Python distribution artifacts
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "${{ github.workspace }}/dist"
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install twine
-
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose --repository testpypi dist/*
-        # twine upload --verbose dist/*
-
-  # debian-publish:
-  #   if: github.event_name == 'release'
-  #   needs: [ python-package, debian-package ]
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: GitHub Environment Variables Action
-  #       uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-  #     - name: Download Debian distribution artifacts
-  #       uses: "actions/download-artifact@v2"
-  #       with:
-  #           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-  #           path: "${{ github.workspace }}/dist"
-
-  #     # TODO: publish to APT server
+      # TODO: publish to APT server
