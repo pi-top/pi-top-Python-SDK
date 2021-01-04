@@ -49,6 +49,9 @@ jobs:
 
 
   python-package:
+    # Does not require patch-src to have actually run
+    # But does need to wait for it if it has
+    if: ${{ always() }}
     needs: patch-src
     runs-on: ubuntu-20.04
     steps:
@@ -88,7 +91,6 @@ jobs:
 
   debian-package:
     if: github.event_name == 'release'
-    needs: patch-src
     runs-on: ubuntu-20.04
     strategy:
       matrix:
