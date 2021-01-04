@@ -47,12 +47,55 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
           path: debian/changelog
 
+  debian:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        target_arch: ["armhf", "arm64"]
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download patched changelog
+        if: github.event_name != 'release'
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
+            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
+
+      - name: Build Debian package
+        uses: pi-top/action-debian-package@v0.2.0
+        with:
+          source_directory: "./"
+          artifacts_directory: "./artifacts"
+
+          docker_image: "pitop/deb-build:latest"
+          distribution: "buster-backports"
+          target_architecture: ${{ matrix.target_arch }}
+
+          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
+          # Package uses latest packaging syntax and Lintian opts/tags
+          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
+
+      - name: Upload Debian package artifacts
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          path: "${{ github.workspace }}/artifacts"
+
+      # TODO: publish to APT server
 
   python:
     # Does not require patch-src to have actually run
     # But does need to wait for it if it has
     if: ${{ always() }}
-    needs: patch-src
+    # Python building will not catch errors, but Debian building will
+    # so we wait for that to complete before continuing
+    needs: [ patch-src, debian ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -96,47 +139,4 @@ jobs:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
-          twine upload --verbose --repository testpypi dist/*
-        # twine upload --verbose dist/*
-
-  debian:
-    if: github.event_name == 'release'
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        target_arch: ["armhf", "arm64"]
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download patched changelog
-        if: github.event_name != 'release'
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
-
-      - name: Build Debian package
-        uses: pi-top/action-debian-package@v0.2.0
-        with:
-          source_directory: "./"
-          artifacts_directory: "./artifacts"
-
-          docker_image: "pitop/deb-build:latest"
-          distribution: "buster-backports"
-          target_architecture: ${{ matrix.target_arch }}
-
-          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
-          # Package uses latest packaging syntax and Lintian opts/tags
-          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
-
-      - name: Upload Debian package artifacts
-        uses: "actions/upload-artifact@v2"
-        with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-          path: "${{ github.workspace }}/artifacts"
-
-      # TODO: publish to APT server
+          twine upload --verbose dist/*
