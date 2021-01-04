@@ -82,7 +82,7 @@ class OLED:
         _set_control_to_hub()
 
     # Only intended to be used by pt-sys-oled
-    def _set_exclusive_mode(self, val: bool):
+    def __set_exclusive_mode(self, val: bool):
         _set_exclusive_mode(val)
 
     def set_max_fps(self, max_fps):
@@ -182,7 +182,7 @@ class OLED:
 
         self.draw()
 
-    def _draw_text_base(self, text_func, text, font_size, xy):
+    def __draw_text_base(self, text_func, text, font_size, xy):
         self.canvas.clear()
 
         if font_size is not None:

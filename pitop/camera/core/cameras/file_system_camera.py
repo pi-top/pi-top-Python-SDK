@@ -34,7 +34,7 @@ class FileSystemCamera:
         self._load_images()
         self._load_frame(self._current_index)
 
-    def _load_images(self, starts_with: str = "", ends_with: str = ""):
+    def __load_images(self, starts_with: str = "", ends_with: str = ""):
         self._images_arr = []
 
         with os.scandir(self.path) as it:
@@ -52,7 +52,7 @@ class FileSystemCamera:
         self._current_index = 0
         self._load_frame(self._current_index)
 
-    def _advance(self):
+    def __advance(self):
         index = min(self._current_index + 1, len(self._images_arr) - 1)
         if index == self._current_index:
             return
@@ -60,7 +60,7 @@ class FileSystemCamera:
         self._current_index = index
         self._load_frame(self._current_index)
 
-    def _load_frame(self, index: int):
+    def __load_frame(self, index: int):
         if 0 <= index < len(self._images_arr):
             self._current_image = self._images_arr[index]
 

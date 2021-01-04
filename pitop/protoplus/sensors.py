@@ -17,14 +17,14 @@ class DistanceSensor():
         self.echo_gpio_pin = echo_gpio_pin
         self._setup()
 
-    def _setup(self):
+    def __setup(self):
         GPIO.setwarnings(False)
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.trigger_gpio_pin, GPIO.OUT)
         GPIO.setup(self.echo_gpio_pin, GPIO.IN)
 
-    def _send_pulse(self):
+    def __send_pulse(self):
 
         GPIO.output(self.trigger_gpio_pin, False)
         sleep(0.03)
@@ -32,7 +32,7 @@ class DistanceSensor():
         sleep(0.00001)
         GPIO.output(self.trigger_gpio_pin, False)
 
-    def _get_pulse_time(self):
+    def __get_pulse_time(self):
 
         timeout = time() + 0.02  # 0.02s timeout
         pulse_start = time()
@@ -53,13 +53,13 @@ class DistanceSensor():
         pulse_duration = pulse_end - pulse_start
         return pulse_duration
 
-    def _get_distance_from_pulse_time(self, pulse_duration):
+    def __get_distance_from_pulse_time(self, pulse_duration):
 
         pulse_duration_one_way = pulse_duration / 2
         distance = round(pulse_duration_one_way * speed_of_sound, 2)
         return distance
 
-    def _measure_distance(self):
+    def __measure_distance(self):
 
         self._send_pulse()
         pulse_duration = self._get_pulse_time()

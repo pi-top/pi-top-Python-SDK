@@ -66,7 +66,7 @@ def __setup_device():
 ##############################
 # Only intended to be used by pt-sys-oled
 ##############################
-def _set_exclusive_mode(val: bool):
+def __set_exclusive_mode(val: bool):
     global _exclusive_mode
     _exclusive_mode = val
     reset_device()

@@ -21,7 +21,7 @@ class KeyPressListener:
             on_press=self._on_press, on_release=self._on_release)
         self.listener.start()
 
-    def _on_press(self, key):
+    def __on_press(self, key):
         received_key = None
         try:
             received_key = key.char
@@ -35,7 +35,7 @@ class KeyPressListener:
             if self.pressed_method is not None:
                 self.pressed_method()
 
-    def _on_release(self, key):
+    def __on_release(self, key):
         self._key_pressed = False
         received_key = None
         try:

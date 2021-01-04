@@ -182,7 +182,7 @@ class Camera:
 
         self._frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
 
-    def _process_camera_output(self):
+    def __process_camera_output(self):
         while self._camera and self._continue_processing is True:
             try:
                 self._frame_handler.frame = self._camera.get_frame()

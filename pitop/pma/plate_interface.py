@@ -27,7 +27,7 @@ class PlateInterface:
         # Return the SMBusDevice instance
         return self._device_mcu
 
-    def _connect_mcu(self):
+    def __connect_mcu(self):
         if self._mcu_connected:
             PTLogger.debug("Already connected to MCU")
             return
@@ -45,7 +45,7 @@ class PlateInterface:
         self._heartbeat_thread = Thread(target=self._heartbeat_thread_loop, daemon=True)
         self._heartbeat_thread.start()
 
-    def _disconnect_mcu(self):
+    def __disconnect_mcu(self):
         if self._mcu_connected is False:
             return
 
@@ -60,7 +60,7 @@ class PlateInterface:
         if self._device_mcu is not None:
             self._device_mcu.disconnect()
 
-    def _send_heartbeat(self):
+    def __send_heartbeat(self):
         PTLogger.debug("Sending heartbeat")
         try:
             self._device_mcu.write_byte(PlateRegisters.REGISTER_HEARTBEAT,
@@ -69,7 +69,7 @@ class PlateInterface:
             self._mcu_connected = False
             raise IOError("Error communicating with Foundation/Expansion plate. Make sure it's connected to your pi-top.") from None
 
-    def _heartbeat_thread_loop(self):
+    def __heartbeat_thread_loop(self):
         while self._mcu_connected:
 
             with self._mcu_thread_lock:

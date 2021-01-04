@@ -39,7 +39,7 @@ class ImuController:
         self.mag_enable = False
         self.orientation_enable = False
 
-    def _set_imu_config(self, imu_function: int, enable: bool):
+    def __set_imu_config(self, imu_function: int, enable: bool):
         self._mcu_device.write_word(self._enable_registers[imu_function], int(enable), little_endian=True, signed=False)
 
     @property
@@ -78,13 +78,13 @@ class ImuController:
         self._set_imu_config(RegisterTypes.ORIENTATION, enable)
         self._orientation_enable = enable
 
-    def _data_scale_config_write(self, register_type: int, scaler: int):
+    def __data_scale_config_write(self, register_type: int, scaler: int):
         if scaler not in ScaleMappings[register_type].keys():
             raise ValueError(f"Valid values for scalers are: {list(ScaleMappings[register_type].keys())}")
         byte = ScaleMappings[register_type][scaler]
         self._mcu_device.write_byte(self._config_registers[register_type], byte)
 
-    def _data_scale_config_read(self, register_type: int):
+    def __data_scale_config_read(self, register_type: int):
         byte = self._mcu_device.read_unsigned_byte(self._config_registers[register_type])
         scaler = next(key for key, value in ScaleMappings[register_type].items() if value == byte)
         return scaler
@@ -213,28 +213,28 @@ class ImuController:
         else:
             self._mag_cal_error_count = 0
 
-    def _read_imu_data(self, data_register: int):
+    def __read_imu_data(self, data_register: int):
         return self._mcu_device.read_signed_word(data_register, little_endian=True)
 
-    def _get_raw_data(self, data_type: int):
+    def __get_raw_data(self, data_type: int):
         x = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.X])
         y = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.Y])
         z = self._read_imu_data(self._data_registers[data_type][RawRegisterTypes.Z])
 
         return x, y, z
 
-    def _write_mag_cal(self, word, register_type, calibration_type):
+    def __write_mag_cal(self, word, register_type, calibration_type):
         self._mcu_device.write_word(self._mag_cal_registers[register_type][calibration_type], word, little_endian=True,
                                     signed=True)
 
-    def _read_mag_cal_hard(self):
+    def __read_mag_cal_hard(self):
         data = []
         for register_key, register_value in self._mag_cal_registers[MagCalRegisterTypes.HARD].items():
             data.append(self._mcu_device.read_signed_word(register_value, little_endian=True))
         x, y, z = data
         return x, y, z
 
-    def _read_mag_cal_soft(self):
+    def __read_mag_cal_soft(self):
         data = []
         for register_key, register_value in self._mag_cal_registers[MagCalRegisterTypes.SOFT].items():
             data.append(self._mcu_device.read_signed_word(register_value, little_endian=True))

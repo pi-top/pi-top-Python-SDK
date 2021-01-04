@@ -45,15 +45,15 @@ class ADCBase:
         return value / number_of_samples
 
     # input voltage / output voltage (%)
-    def _read(self, channel):
+    def __read(self, channel):
         read_address = 0x30 + channel
         return self._read_register(read_address)
 
     # peak detection
-    def _read_peak(self, channel):
+    def __read_peak(self, channel):
         read_address = 0x18 + channel
         return self._read_register(read_address)
 
     # read 16 bits register
-    def _read_register(self, read_address):
+    def __read_register(self, read_address):
         return self._adc_device.read_unsigned_word(read_address, little_endian=True)

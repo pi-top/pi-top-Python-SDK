@@ -109,7 +109,7 @@ _pixel_map = deepcopy(_empty_map)
 #######################
 
 
-def _initialise():
+def __initialise():
     """INTERNAL. Initialise the matrix."""
 
     global _initialised
@@ -137,7 +137,7 @@ def _initialise():
             PTLogger.error("Error: pi-topPULSE not initialised by pt-device-manager")
 
 
-def _signal_handler(signal, frame):
+def __signal_handler(signal, frame):
     """INTERNAL. Handles signals from the OS to exit."""
 
     PTLogger.info("\nQuitting...")
@@ -147,7 +147,7 @@ def _signal_handler(signal, frame):
     exit(0)
 
 
-def _get_avg_colour():
+def __get_avg_colour():
     """INTERNAL. Get the average color of the matrix."""
 
     total_rgb = [0, 0, 0]
@@ -164,7 +164,7 @@ def _get_avg_colour():
     return avg_rgb
 
 
-def _write(data):
+def __write(data):
     """INTERNAL. Write data to the matrix."""
 
     PTLogger.debug('{s0:<4}{s1:<4}{s2:<4}{s3:<4}{s4:<4}{s5:<4}{s6:<4}{s7:<4}{s8:<4}{s9:<4}{s10:<4}'.format(
@@ -173,7 +173,7 @@ def _write(data):
     sleep(0.002)
 
 
-def _get_gamma_corrected_value(original_value):
+def __get_gamma_corrected_value(original_value):
     """INTERNAL. Converts a brightness value from 0-255
     to the value that produces an approximately linear
     scaling to the human eye."""
@@ -181,7 +181,7 @@ def _get_gamma_corrected_value(original_value):
     return _gamma_correction_arr[original_value]
 
 
-def _scale_pixel_to_brightness(original_value):
+def __scale_pixel_to_brightness(original_value):
     """INTERNAL. Multiplies intended brightness of
     a pixel by brightness scaling factor to generate
     an adjusted value."""
@@ -193,7 +193,7 @@ def _scale_pixel_to_brightness(original_value):
     return int_new_brightness
 
 
-def _get_rotated_pixel_map():
+def __get_rotated_pixel_map():
     """INTERNAL. Get a rotated copy of the current in-memory pixel map."""
 
     rotated_pixel_map = deepcopy(_pixel_map)
@@ -211,35 +211,35 @@ def _get_rotated_pixel_map():
     return rotated_pixel_map
 
 
-def _brightness_correct(original_value):
+def __brightness_correct(original_value):
     """INTERNAL. Correct a single color for brightness."""
 
-    brightness_scaled = _scale_pixel_to_brightness(original_value)
-    new_value = _get_gamma_corrected_value(brightness_scaled)
+    brightness_scaled = __scale_pixel_to_brightness(original_value)
+    new_value = __get_gamma_corrected_value(brightness_scaled)
 
     return new_value
 
 
-def _adjust_r_g_b_for_brightness_correction(r, g, b):
+def __adjust_r_g_b_for_brightness_correction(r, g, b):
     """INTERNAL. Correct LED for brightness."""
 
-    r = _brightness_correct(r)
-    g = _brightness_correct(g)
-    b = _brightness_correct(b)
+    r = __brightness_correct(r)
+    g = __brightness_correct(g)
+    b = __brightness_correct(b)
 
     return r, g, b
 
 
-def _sync_with_device():
+def __sync_with_device():
     """INTERNAL. Send the sync frame to tell the device that LED
     data is expected."""
 
-    _initialise()
+    __initialise()
     PTLogger.debug("Sync data:")
-    _write(_sync)
+    __write(_sync)
 
 
-def _rgb_to_bytes_to_send(rgb):
+def __rgb_to_bytes_to_send(rgb):
     """INTERNAL. Format the LED data in the device-specific layout."""
 
     # Create three 5-bit colour vals, splitting the green bits
@@ -262,7 +262,7 @@ def _rgb_to_bytes_to_send(rgb):
     return byte0, byte1
 
 
-def _timer_method():
+def __timer_method():
     """INTERNAL. Run by the timer on each tick."""
 
     global _running
@@ -273,7 +273,7 @@ def _timer_method():
         sleep(_update_rate)
 
 
-def _flip(direction):
+def __flip(direction):
     """INTERNAL. Flip the pixel map."""
 
     global _pixel_map
@@ -292,7 +292,7 @@ def _flip(direction):
     _pixel_map = flipped_pixel_map
 
 
-def _set_show_state(enabled):
+def __set_show_state(enabled):
     """INTERNAL."""
 
     global _show_enabled
@@ -303,16 +303,16 @@ def _set_show_state(enabled):
         _temp_disable_t.start()
 
 
-def _enable_show_state():
+def __enable_show_state():
     """INTERNAL."""
 
-    _set_show_state(True)
+    __set_show_state(True)
 
 
-def _disable_show_state():
+def __disable_show_state():
     """INTERNAL."""
 
-    _set_show_state(True)
+    __set_show_state(True)
 
 
 #######################
@@ -359,13 +359,13 @@ def rotation(new_rotation=0):
 def flip_h():
     """Flips the grid horizontally."""
 
-    _flip("h")
+    __flip("h")
 
 
 def flip_v():
     """Flips the grid vertically."""
 
-    _flip("v")
+    __flip("v")
 
 
 def get_shape():
@@ -394,7 +394,7 @@ def set_pixel(x, y, r, g, b):
 
     global _pixel_map
 
-    new_r, new_g, new_b = _adjust_r_g_b_for_brightness_correction(r, g, b)
+    new_r, new_g, new_b = __adjust_r_g_b_for_brightness_correction(r, g, b)
     _pixel_map[y][x] = [new_r, new_g, new_b]
 
 
@@ -405,7 +405,7 @@ def set_all(r, g, b):
 
     for x in range(_w):
         for y in range(_h):
-            new_r, new_g, new_b = _adjust_r_g_b_for_brightness_correction(
+            new_r, new_g, new_b = __adjust_r_g_b_for_brightness_correction(
                 r, g, b)
             _pixel_map[x][y][0] = new_r
             _pixel_map[x][y][1] = new_g
@@ -434,7 +434,7 @@ def show():
     while not _show_enabled:
         if wait_counter >= wait_counter_length:
             # Timer hasn't reset for some reason - force override
-            _enable_show_state()
+            __enable_show_state()
             break
         else:
             sleep(pause_length)
@@ -443,12 +443,12 @@ def show():
     if attempt_to_show_early:
         PTLogger.debug("pi-topPULSE LEDs re-enabled.")
 
-    _sync_with_device()
+    __sync_with_device()
 
-    rotated_pixel_map = _get_rotated_pixel_map()
-    avg_rgb = _get_avg_colour()
+    rotated_pixel_map = __get_rotated_pixel_map()
+    avg_rgb = __get_avg_colour()
 
-    _initialise()
+    __initialise()
 
     PTLogger.debug("LED data:")
     # For each col
@@ -460,19 +460,19 @@ def show():
         for y in range(_h + 1):
             if y == _h:
                 # Ambient lighting bytes
-                byte0, byte1 = _rgb_to_bytes_to_send(avg_rgb)
+                byte0, byte1 = __rgb_to_bytes_to_send(avg_rgb)
             else:
-                byte0, byte1 = _rgb_to_bytes_to_send(rotated_pixel_map[x][y])
+                byte0, byte1 = __rgb_to_bytes_to_send(rotated_pixel_map[x][y])
 
             pixel_map_buffer += chr(byte0)
             pixel_map_buffer += chr(byte1)
 
         # Write col to LED matrix
         arr = bytearray(pixel_map_buffer, 'Latin_1')
-        _write(arr)
+        __write(arr)
 
         # Prevent another write if it's too fast
-        _disable_show_state()
+        __disable_show_state()
 
 
 def clear():
@@ -662,8 +662,8 @@ def stop():
 # INITIALISATION #
 ##################
 
-_signal = signal.signal(signal.SIGINT, _signal_handler)
-_auto_refresh_timer = Timer(_update_rate, _timer_method)
-_temp_disable_t = Timer(_max_freq, _enable_show_state)
+_signal = signal.signal(signal.SIGINT, __signal_handler)
+_auto_refresh_timer = Timer(_update_rate, __timer_method)
+_temp_disable_t = Timer(_max_freq, __enable_show_state)
 
 clear()

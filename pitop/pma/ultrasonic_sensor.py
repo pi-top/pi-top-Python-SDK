@@ -143,14 +143,14 @@ class UltrasonicSensor(SmoothedInputDevice):
         """
         return super(UltrasonicSensor, self).pin
 
-    def _echo_changed(self, ticks, level):
+    def __echo_changed(self, ticks, level):
         if level:
             self._echo_rise = ticks
         else:
             self._echo_fall = ticks
             self._echo.set()
 
-    def _read(self):
+    def __read(self):
         # Wait up to 50ms for the echo pin to fall to low (the maximum echo
         # pulse is 35ms so this gives some leeway); if it doesn't something is
         # horribly wrong (most likely at the hardware level)

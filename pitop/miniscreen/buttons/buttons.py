@@ -72,7 +72,7 @@ class Buttons:
         )
         self.__ptdm_subscribe_client.start_listening()
 
-    def _set_exclusive_mode(self, exclusive):
+    def __set_exclusive_mode(self, exclusive):
         self.exclusive_mode = exclusive
         self.__configure_lock()
 

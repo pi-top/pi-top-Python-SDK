@@ -26,17 +26,18 @@ class ADCProbe():
 
     def read_all(self):
 
-        if (self._connect() is False):
+        if (self.__connect() is False):
             print("Could not connect to device")
             return self._error_array
 
+        # TODO: use a proper public method here
         results = self._device._read_data(self._channel_count)
         data_read_len = len(results)
         self._disconnect()
 
         if (data_read_len != self._channel_count):
-            print("Bad read from device. Expected " +
-                  str(self._channel_count) + " bytes, received: " + data_read_len)
+            print("Bad read from device. "
+                  f"Expected {str(self._channel_count)} bytes, received {str(data_read_len)} bytes.")
             return self._error_array
 
         for i in range(self._channel_count):
@@ -58,7 +59,7 @@ class ADCProbe():
                   "\t| " + str(results[3]) + "\t| " + str(results[4]) + "\t| " + str(results[5]) + "\t|")
             sleep(delay)
 
-    def _connect(self):
+    def __connect(self):
 
         try:
             self._device = I2CDevice(
@@ -71,7 +72,7 @@ class ADCProbe():
 
         return True
 
-    def _disconnect(self):
+    def __disconnect(self):
 
         if (self._device is not None):
             self._device.disconnect()

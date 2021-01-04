@@ -269,7 +269,7 @@ class Canvas:
         """
         return self.__oled_device.bounding_box
 
-    def _get_corner(self, pos1, pos2):
+    def __get_corner(self, pos1, pos2):
         """
         Gets corner of bounding box.
 
@@ -346,7 +346,7 @@ class Canvas:
     # Font config methods
     ##################################################
 
-    def _update_font(self):
+    def __update_font(self):
         """
         Updates font
         """
@@ -356,7 +356,7 @@ class Canvas:
             )
         self._font = ImageFont.truetype(self._font_path, size=self.font_size)
 
-    def _check_for_and_get_font(self):
+    def __check_for_and_get_font(self):
         """
         Checks if the font is set. if the font is not set raise exception.
         :return: font or raise exception if _font = None
@@ -367,7 +367,7 @@ class Canvas:
             )
         return self._font
 
-    def _init_font(self):
+    def __init_font(self):
         """
         Initialize font to primary or fall back font.
         """
@@ -460,7 +460,7 @@ class Canvas:
     # Image helper methods
     ##################################################
 
-    def _pil_image_to_pix_arr(self, pil_img):
+    def __pil_image_to_pix_arr(self, pil_img):
         """
         Calculates the pixel array of a image
         :param pil_img:
@@ -470,7 +470,7 @@ class Canvas:
         pixels = reshape(pixels, (self.get_width(), self.get_height()))
         return pixels
 
-    def _convert_to_1bit(self, pil_image):
+    def __convert_to_1bit(self, pil_image):
         """
         Converts an image into a 1bit image
         :param pil_image:

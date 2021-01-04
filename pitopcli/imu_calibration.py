@@ -142,7 +142,7 @@ class ImuCalibration:
         plt.savefig(path_to_file)
         print(f"Calibration data was save to {path_to_file}")
 
-    def _get_test_data(self):
+    def __get_test_data(self):
         imu_controller = ImuController()
         thread_event = Event()
         mag_poll_thread = Thread(target=self._poll_magnetometer_data, args=[thread_event, imu_controller, ],
@@ -186,7 +186,7 @@ class ImuCalibration:
 
         sleep(1)
 
-    def _rotation_check(self, axis: str):
+    def __rotation_check(self, axis: str):
         prev_time = time()
         degrees_rotated = 0
         while abs(degrees_rotated) < 360.0:
@@ -205,7 +205,7 @@ class ImuCalibration:
             else:
                 sleep(self._SLEEP_TIME)
 
-    def _orientation_check(self, axis: str):
+    def __orientation_check(self, axis: str):
         if axis not in ('x', 'y', 'z'):
             raise ValueError("axis value must me 'x', 'y' or 'z'.")
 
@@ -245,7 +245,7 @@ class ImuCalibration:
 
         return roll, pitch
 
-    def _poll_magnetometer_data(self, thread_event, imu_controller):
+    def __poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")
         sleep(1)
         prev_time = time()
@@ -271,12 +271,12 @@ class ImuCalibration:
                 sleep(self._SLEEP_TIME)
 
     @staticmethod
-    def _running_median(old_array, new_data):
+    def __running_median(old_array, new_data):
         new_array = np.append(np.delete(old_array, 0, 0), [new_data], axis=0)
         new_median = np.median(new_array, axis=0)
         return new_array, new_median
 
-    def _get_field_strength(self):
+    def __get_field_strength(self):
         # from  https://www.nxp.com/docs/en/application-note/AN4246.pdf
         squared_measurements = np.square(self._mag_measurements)
 
@@ -299,7 +299,7 @@ class ImuCalibration:
 
         return field_strength
 
-    def _get_ellipse_parameters(self):
+    def __get_ellipse_parameters(self):
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]
@@ -308,7 +308,7 @@ class ImuCalibration:
 
         return M, n, d
 
-    def _get_calibration_matrices(self, M, n, d, field_strength):
+    def __get_calibration_matrices(self, M, n, d, field_strength):
         hard_iron_offset = None
         soft_iron_matrix = None
 
@@ -330,7 +330,7 @@ class ImuCalibration:
 
         return hard_iron_offset, soft_iron_matrix
 
-    def _calibrate_mag_data(self):
+    def __calibrate_mag_data(self):
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]

@@ -27,7 +27,7 @@ class PongGameState:
         self.ball_dx = 1 if randint(0, 1) == 0 else -1
         self.ball_dy = 1 if randint(0, 1) == 0 else -1
 
-    def _adjust_ball_y_velocity(self, change):
+    def __adjust_ball_y_velocity(self, change):
 
         if (self.ball_dy >= -1 and (self.ball_dy <= 1)):
             self.ball_dy += change
@@ -80,12 +80,12 @@ class PongGameState:
 
         return self.NO_RESULT
 
-    def _move_left_bat(self, movement):
+    def __move_left_bat(self, movement):
 
         if (self.bat_left_y + movement >= 0 and ((self.bat_left_y + self.bat_left_size + movement) < 7)):
             self.bat_left_y += movement
 
-    def _move_right_bat(self, movement):
+    def __move_right_bat(self, movement):
 
         if (self.bat_right_y + movement >= 0 and ((self.bat_right_y + self.bat_right_size + movement) < 7)):
             self.bat_right_y += movement
