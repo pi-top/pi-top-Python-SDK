@@ -8,13 +8,13 @@ on:
 
 jobs:
   patch-src:
+    if: github.event_name != 'release'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Debian Docker container for changelog patching
-        if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
           docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
@@ -23,7 +23,6 @@ jobs:
           docker exec chglog git config --global user.email "https://github.com/pi-top/pi-top-Python-SDK"
 
       - name: Patch changelog (snapshot)
-        if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
           docker exec chglog gbp dch --verbose --auto --git-author --ignore-branch --snapshot
@@ -36,7 +35,6 @@ jobs:
       #     docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
 
       - name: Show updated changelog
-        if: github.event_name != 'release'
         run: |
           cat debian/changelog
 
@@ -89,6 +87,7 @@ jobs:
             path: "${{ github.workspace }}/dist"
 
   debian-package:
+    if: github.event_name == 'release'
     needs: patch-src
     runs-on: ubuntu-20.04
     strategy:
@@ -128,7 +127,9 @@ jobs:
           path: "${{ github.workspace }}/artifacts"
 
   python-publish:
-    needs: [ python-package, debian-package ]
+    if: github.event_name == 'release'
+    needs: [ python-package ]
+    # needs: [ python-package, debian-package ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -151,7 +152,6 @@ jobs:
           pip install twine
 
       - name: Publish to PyPI
-        if: github.event_name == 'release'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -160,6 +160,7 @@ jobs:
         # twine upload --verbose dist/*
 
   # debian-publish:
+  #   if: github.event_name == 'release'
   #   needs: [ python-package, debian-package ]
   #   runs-on: ubuntu-20.04
   #   steps:
