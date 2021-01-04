@@ -34,6 +34,10 @@ Build Status: Latest
 .. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Build,%20Test%20and%20Publish
    :alt: GitHub Workflow Status
 
+
+.. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
+    :alt: GitHub tag (latest by date)
+
 .. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
     :alt: GitHub release (latest by date)
 
