@@ -28,10 +28,12 @@ jobs:
         run: |
           docker exec chglog gbp dch --verbose --auto --git-author --ignore-branch --snapshot
 
-      - name: Patch changelog (release)
-        if: github.event_name == 'release'
-        run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
+      # Release changelogs are currently handled manually
+      #
+      # - name: Patch changelog (release)
+      #   if: github.event_name == 'release'
+      #   run: |
+      #     docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
 
       - name: Show updated changelog
         if: github.event_name != 'release'
