@@ -4,7 +4,11 @@ pi-top Python SDK (Preview)
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
-.. External links are required for the images to show on PyPI
+.. ###############################################
+.. # NOTE: THESE ARE EXTERNAL LINKS, AS THEY ARE #
+.. # REQUIRED FOR THE IMAGES TO SHOW ON PYPI     #
+.. ###############################################
+
 Supports all pi-top devices:
 
 .. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/devices.jpg
