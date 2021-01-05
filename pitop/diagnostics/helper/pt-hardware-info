@@ -3,7 +3,7 @@ from math import ceil
 from math import floor
 from datetime import datetime
 
-from ptcommon.i2c_device import I2CDevice
+from pitopcommon.i2c_device import I2CDevice
 
 
 def int_to_hex(value, no_of_bytes=8):
