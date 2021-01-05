@@ -33,6 +33,15 @@ def __set_controls(controlled_by_pi):
         request_client.send_message(message)
 
 
+def get_spi_port_used():
+    message = Message.from_parts(Message.REQ_GET_OLED_SPI_IN_USE, [])
+
+    with PTDMRequestClient() as request_client:
+        response = request_client.send_message(message)
+
+    return int(response.parameters()[0])
+
+
 def __setup_device():
     global _device
 
@@ -40,7 +49,7 @@ def __setup_device():
         lock.acquire()
         atexit.register(reset_device)
 
-    spi_port = 1
+    spi_port = get_spi_port_used()
 
     # Always use CE1
     if spi_port == 1:
