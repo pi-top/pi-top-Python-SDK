@@ -53,7 +53,7 @@ class OLED:
 
     def __setup_subscribe_client(self):
         def on_control_changed(parameters):
-            controller = int(parameters[0])
+            controller = int(parameters()[0])
 
             if controller == 1:
                 self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_pi_takes_control)

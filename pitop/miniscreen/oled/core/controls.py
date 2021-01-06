@@ -62,7 +62,7 @@ def __setup_device():
             port=spi_port,
             device=spi_device,
             bus_speed_hz=spi_bus_speed_hz,
-            cs_high=spi_cs_high,
+            # cs_high=spi_cs_high,
             transfer_size=spi_transfer_size,
             gpio_DC=gpio_DC_pin,
             gpio_RST=None,
