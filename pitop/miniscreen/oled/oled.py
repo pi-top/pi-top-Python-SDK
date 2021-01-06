@@ -60,9 +60,13 @@ class OLED:
             else:
                 self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_hub_takes_control)
 
+        def on_spi_port_changed(parameters):
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.reset)
+
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
             Message.PUB_OLED_CONTROL_CHANGED: on_control_changed,
+            Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_port_changed,
         })
         self.__ptdm_subscribe_client.start_listening()
 
