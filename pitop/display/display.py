@@ -21,7 +21,7 @@ class Display:
 
     def __setup_subscribe_client(self):
         def on_brightness_changed(parameters):
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_brightness_changed, parameters()[0])
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_brightness_changed, parameters[0])
 
         def on_screen_blanked():
             self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_screen_blanked)
@@ -68,7 +68,7 @@ class Display:
             state_str
         )
 
-        return response.parameters()[0]
+        return response.parameters[0]
 
     def __set_state(
         self,

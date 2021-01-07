@@ -101,7 +101,7 @@ class OledDeviceController:
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        return int(response.parameters()[0])
+        return int(response.parameters[0])
 
     @spi_bus.setter
     def spi_bus(self, bus):

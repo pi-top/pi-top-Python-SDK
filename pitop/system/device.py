@@ -12,7 +12,7 @@ def __device_id():
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
 
-    parameters = response.parameters()
+    parameters = response.parameters
     device_id = int(parameters[0])
     return device_id
 
