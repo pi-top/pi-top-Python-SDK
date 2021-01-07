@@ -17,7 +17,7 @@ except RuntimeError:
     pass
 
 
-class OledControls:
+class OledDeviceController:
     SPI_DEVICE = 0
     SPI_BUS_SPEED_HZ = 8000000
     SPI_TRANSFER_SIZE = 4096
@@ -26,23 +26,6 @@ class OledControls:
         self._device = None
         self._exclusive_mode = True
         self.lock = PTLock("pt-oled")
-
-    @property
-    def spi_bus(self):
-        message = Message.from_parts(Message.REQ_GET_OLED_SPI_BUS)
-        with PTDMRequestClient() as request_client:
-            response = request_client.send_message(message)
-
-        return int(response.parameters()[0])
-
-    @spi_bus.setter
-    def spi_bus(self, bus):
-        if self.spi_bus == bus:
-            return
-
-        message = Message.from_parts(Message.REQ_SET_OLED_SPI_BUS, [str(bus)])
-        with PTDMRequestClient() as request_client:
-            request_client.send_message(message)
 
     def __set_controls(self, controlled_by_pi):
         message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))])
@@ -112,22 +95,19 @@ class OledControls:
     def set_control_to_hub(self):
         self.__set_controls(controlled_by_pi=False)
 
+    @property
+    def spi_bus(self):
+        message = Message.from_parts(Message.REQ_GET_OLED_SPI_BUS)
+        with PTDMRequestClient() as request_client:
+            response = request_client.send_message(message)
 
-# global instance
-oled_controller = OledControls()
+        return int(response.parameters()[0])
 
-##############################
-# Deprecated methods
-##############################
+    @spi_bus.setter
+    def spi_bus(self, bus):
+        if self.spi_bus == bus:
+            return
 
-
-def get_device_instance():
-    return oled_controller.get_device()
-
-
-def device_reserved():
-    return oled_controller.device_is_active()
-
-
-def reset_device_instance():
-    oled_controller.reset_device()
+        message = Message.from_parts(Message.REQ_SET_OLED_SPI_BUS, [str(bus)])
+        with PTDMRequestClient() as request_client:
+            request_client.send_message(message)
