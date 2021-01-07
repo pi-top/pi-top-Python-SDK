@@ -25,23 +25,24 @@ class OLED:
     """
 
     def __init__(self):
-        self._visible = False
         self.controller = OledDeviceController()
         self.device = self.controller.get_device()
         self.image = Image.new(self.device.mode,
                                self.device.size)
         self.canvas = Canvas(self.device, self.image)
         self.fps_regulator = FPS_Regulator()
-        self.__previous_frame = None
-        self.__auto_play_thread = None
-
-        self.reset()
 
         self.when_pi_takes_control = None
         self.when_hub_takes_control = None
 
+        self.__visible = False
+        self.__previous_frame = None
+        self.__auto_play_thread = None
+
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
+
+        self.reset()
 
         atexit.register(self.__clean_up)
 
@@ -100,7 +101,7 @@ class OLED:
         been called).
         """
         self.device.hide()
-        self._visible = False
+        self.__visible = False
 
     def show(self):
         """
@@ -109,7 +110,7 @@ class OLED:
         has not been called)
         """
         self.device.show()
-        self._visible = True
+        self.__visible = True
 
     def is_hidden(self):
         """
@@ -117,7 +118,7 @@ class OLED:
         :return: whether the the screen is in low power mode
         :rtype: bool
         """
-        return self._visible
+        return self.__visible
 
     def reset(self):
         """
