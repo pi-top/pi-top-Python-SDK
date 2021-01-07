@@ -55,7 +55,7 @@ class OledControls:
             self.lock.acquire()
             atexit.register(self.reset_device)
 
-        spi_port = self.spi_port
+        spi_port = self.spi_bus
 
         # Always use CE1
         if spi_port == 1:
@@ -80,7 +80,7 @@ class OledControls:
     # Only intended to be used by pt-sys-oled
     ##############################
 
-    def _set_exclusive_mode(self, val: bool):
+    def set_exclusive_mode(self, val: bool):
         self._exclusive_mode = val
         self.reset_device()
 
