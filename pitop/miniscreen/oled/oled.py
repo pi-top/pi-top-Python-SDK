@@ -52,21 +52,21 @@ class OLED:
         atexit.register(self.__clean_up)
 
     def __setup_subscribe_client(self):
+        def invoke(func):
+            return self.__ptdm_subscribe_client.invoke_callback_func_if_exists(func)
+
         def on_control_changed(parameters):
             controller = int(parameters()[0])
 
             if controller == 1:
-                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_pi_takes_control)
+                invoke(self.when_pi_takes_control)
             else:
-                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_hub_takes_control)
-
-        def on_spi_port_changed(parameters):
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.reset)
+                invoke(self.when_hub_takes_control)
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
             Message.PUB_OLED_CONTROL_CHANGED: on_control_changed,
-            Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_port_changed,
+            Message.PUB_OLED_SPI_BUS_CHANGED: lambda: invoke(self.reset)
         })
         self.__ptdm_subscribe_client.start_listening()
 
