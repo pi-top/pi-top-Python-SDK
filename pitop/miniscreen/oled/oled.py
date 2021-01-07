@@ -35,6 +35,8 @@ class OLED:
         self.when_pi_takes_control = None
         self.when_hub_takes_control = None
 
+        self.when_spi_bus_changes = None
+
         self.__visible = False
         self.__previous_frame = None
         self.__auto_play_thread = None
@@ -57,10 +59,18 @@ class OLED:
                 if callable(self.when_hub_takes_control):
                     self.when_hub_takes_control()
 
+        def on_spi_bus_changed(parameters):
+            spi_bus = int(parameters[0])
+
+            self.reset()
+
+            if callable(self.when_spi_bus_changes):
+                self.when_spi_bus_changes(spi_bus)
+
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
             Message.PUB_OLED_CONTROL_CHANGED: on_control_changed,
-            Message.PUB_OLED_SPI_BUS_CHANGED: lambda: self.reset
+            Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_bus_changed
         })
         self.__ptdm_subscribe_client.start_listening()
 
