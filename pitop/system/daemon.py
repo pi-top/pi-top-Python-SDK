@@ -11,14 +11,14 @@ def ping():
 
 
 def set_oled_spi_port(port):
-    message = Message.from_parts(Message.REQ_SET_OLED_SPI_IN_USE, [str(port)])
+    message = Message.from_parts(Message.REQ_SET_OLED_SPI_BUS, [str(port)])
 
     with PTDMRequestClient() as request_client:
         request_client.send_message(message)
 
 
 def get_oled_spi_port():
-    message = Message.from_parts(Message.REQ_GET_OLED_SPI_IN_USE, [])
+    message = Message.from_parts(Message.REQ_GET_OLED_SPI_BUS, [])
 
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
