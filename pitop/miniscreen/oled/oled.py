@@ -1,12 +1,5 @@
-from .core.controls import (
-    device_is_active as _device_is_active,
-    reset_device as _reset_device,
-    get_device as _get_device,
-    set_control_to_pi as _set_control_to_pi,
-    set_control_to_hub as _set_control_to_hub,
-    _set_exclusive_mode
-)
 from .core.canvas import Canvas
+from .core.controls import oled_controller
 from .core.fps_regulator import FPS_Regulator
 from .core.image_helper import (
     get_pil_image_from_path,
@@ -33,7 +26,7 @@ class OLED:
 
     def __init__(self):
         self._visible = False
-        self.device = _get_device()
+        self.device = oled_controller.get_device()
         self.image = Image.new(self.device.mode,
                                self.device.size)
         self.canvas = Canvas(self.device, self.image)
@@ -77,17 +70,17 @@ class OLED:
             pass
 
     def is_active(self):
-        return _device_is_active()
+        return oled_controller.device_is_active()
 
     def set_control_to_pi(self):
-        _set_control_to_pi()
+        oled_controller.set_control_to_pi()
 
     def set_control_to_hub(self):
-        _set_control_to_hub()
+        oled_controller.set_control_to_hub()
 
     # Only intended to be used by pt-sys-oled
     def _set_exclusive_mode(self, val: bool):
-        _set_exclusive_mode(val)
+        oled_controller.set_exclusive_mode(val)
 
     def set_max_fps(self, max_fps):
         """
@@ -134,8 +127,8 @@ class OLED:
         self.set_control_to_pi()
         self.canvas.clear()
 
-        _reset_device()
-        self.device = _get_device()
+        oled_controller.reset_device()
+        self.device = oled_controller.get_device()
 
         self.device.display(self.image)
         self.device.contrast(255)
