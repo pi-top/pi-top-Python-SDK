@@ -46,6 +46,12 @@ class OledCLI(CliBaseClass):
                 if not skip_timeout:
                     sleep(self.args.timeout)
 
+            elif self.args.oled_subcommand == "spi":
+                if self.args.spi_bus:
+                    oled.controller.spi_bus = self.args.spi_bus
+                else:
+                    print(oled.controller.spi_bus)
+
             else:
                 print("Functionality not available yet")
 
@@ -59,6 +65,12 @@ class OledCLI(CliBaseClass):
         subparser = parser.add_subparsers(title="OLED screen utilities",
                                           description="Set of utilities to use pi-top [4]'s OLED screen",
                                           dest="oled_subcommand")
+
+        parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
+        parser_capture.add_argument("--force", "-f",
+                                    help="Force the hub to give control of the OLED to the Pi",
+                                    action="store_true"
+                                    )
 
         parser_draw = subparser.add_parser("draw", help="Draw text and images into the OLED")
         parser_draw.add_argument("--force", "-f",
@@ -84,11 +96,12 @@ class OledCLI(CliBaseClass):
                                  help="Set the text to write to screen",
                                  )
 
-        parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
-        parser_capture.add_argument("--force", "-f",
-                                    help="Force the hub to give control of the OLED to the Pi",
-                                    action="store_true"
-                                    )
+        parser_spi = subparser.add_parser("spi", help="Set SPI bus that is used by OLED")
+        parser_spi.add_argument("spi_bus",
+                                help="SPI buts to be used by OLED. Valid options: {0, 1}",
+                                type=int,
+                                choices=[0, 1],
+                                nargs='?')
 
 
 def main():
