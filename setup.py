@@ -134,13 +134,6 @@ __entry_points__ = {
         "pt=pitopcli.pitop:main",
         # 'pi-top' longhand/easy-to-remember command
         "pi-top=pitopcli.pitop:main",
-        # Deprecated console scripts:
-        # (https://github.com/pi-top/pi-top-Python-SDK-Deprecation-Support)
-        "pt-battery=pitopcli.battery:main",
-        "pt-brightness=pitopcli.display:brightness",
-        "pt-devices=pitopcli.devices:main",
-        "pt-host=pitopcli.devices:host",
-        "pt-oled=pitopcli.oled:main",
     ]
 }
 
