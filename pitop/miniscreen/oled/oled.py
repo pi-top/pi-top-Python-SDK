@@ -32,8 +32,8 @@ class OLED:
                                self.device.size)
         self.canvas = Canvas(self.device, self.image)
         self.fps_regulator = FPS_Regulator()
-        self._previous_frame = None
-        self.auto_play_thread = None
+        self.__previous_frame = None
+        self.__auto_play_thread = None
 
         self.reset()
 
@@ -242,10 +242,10 @@ class OLED:
         """
         self.fps_regulator.stop_timer()
         paint_to_screen = False
-        if self._previous_frame is None:
+        if self.__previous_frame is None:
             paint_to_screen = True
         else:
-            prev_pix = self._previous_frame.get_pixels()
+            prev_pix = self.__previous_frame.get_pixels()
             current_pix = self.canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
@@ -254,7 +254,7 @@ class OLED:
             self.device.display(self.image)
 
         self.fps_regulator.start_timer()
-        self._previous_frame = Canvas(self.device, deepcopy(self.image))
+        self.__previous_frame = Canvas(self.device, deepcopy(self.image))
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
@@ -283,9 +283,9 @@ class OLED:
         """
         self.__kill_thread = False
         if background is True:
-            self.auto_play_thread = Thread(
+            self.__auto_play_thread = Thread(
                 target=self.__auto_play, args=(image, loop))
-            self.auto_play_thread.start()
+            self.__auto_play_thread.start()
         else:
             self.__auto_play(image)
 
@@ -293,9 +293,9 @@ class OLED:
         """
         Stop background animation started using `start()`, if currently running.
         """
-        if self.auto_play_thread is not None:
+        if self.__auto_play_thread is not None:
             self.__kill_thread = True
-            self.auto_play_thread.join()
+            self.__auto_play_thread.join()
 
     def __auto_play(self, image, loop=False):
         while True:
