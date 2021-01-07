@@ -21,27 +21,16 @@ class Display:
 
     def __setup_subscribe_client(self):
         def on_brightness_changed(parameters):
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_brightness_changed, parameters[0])
-
-        def on_screen_blanked():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_screen_blanked)
-
-        def on_screen_unblanked():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_screen_unblanked)
-
-        def on_lid_closed():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_lid_closed)
-
-        def on_lid_opened():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_lid_opened)
+            if callable(self.when_brightness_changed):
+                self.when_brightness_changed(int(parameters[0]))
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
             Message.PUB_BRIGHTNESS_CHANGED: on_brightness_changed,
-            Message.PUB_SCREEN_BLANKED: on_screen_blanked,
-            Message.PUB_SCREEN_UNBLANKED: on_screen_unblanked,
-            Message.PUB_LID_CLOSED: on_lid_closed,
-            Message.PUB_LID_OPENED: on_lid_opened,
+            Message.PUB_SCREEN_BLANKED: self.when_screen_blanked,
+            Message.PUB_SCREEN_UNBLANKED: self.when_screen_unblanked,
+            Message.PUB_LID_CLOSED: self.when_lid_closed,
+            Message.PUB_LID_OPENED: self.when_lid_opened,
         })
 
         self.__ptdm_subscribe_client.start_listening()
@@ -68,7 +57,7 @@ class Display:
             state_str
         )
 
-        return response.parameters[0]
+        return int(response.parameters[0])
 
     def __set_state(
         self,
@@ -147,7 +136,7 @@ class Display:
         return self.__get_state(
             state_str="get pi-top display backlight state",
             message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
-        ) == "1"
+        ) == 1
 
     @backlight.setter
     def backlight(self, value):
@@ -164,4 +153,4 @@ class Display:
         return self.__get_state(
             state_str="get pi-top display lid open state",
             message_id=Message.REQ_GET_LID_OPEN_STATE,
-        ) == "1"
+        ) == 1

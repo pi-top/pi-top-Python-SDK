@@ -7,4 +7,4 @@ def ping():
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
 
-    return response.parameters[0]
+    return int(response.parameters[0]) == 1
