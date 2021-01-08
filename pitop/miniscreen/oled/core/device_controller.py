@@ -39,19 +39,13 @@ class OledDeviceController:
             self.lock.acquire()
             atexit.register(self.reset_device)
 
-        # Always use CE1
-        if self.__spi_bus == 1:
-            gpio_DC_pin = 17
-        else:
-            gpio_DC_pin = 7
-
         self.__device = sh1106(
             serial_interface=spi(
                 port=self.__spi_bus,
                 device=self.SPI_DEVICE,
                 bus_speed_hz=self.SPI_BUS_SPEED_HZ,
                 transfer_size=self.SPI_TRANSFER_SIZE,
-                gpio_DC=gpio_DC_pin,
+                gpio_DC=17 if self.__spi_bus == 1 else 7,  # Always use CE1
                 gpio_RST=None,
                 gpio=None,
             ),
