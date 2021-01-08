@@ -26,10 +26,11 @@ class OLED:
 
     def __init__(self):
         self.controller = OledDeviceController()
-        self.device = self.controller.get_device()
-        self.image = Image.new(self.device.mode,
-                               self.device.size)
-        self.canvas = Canvas(self.device, self.image)
+
+        device = self.controller.get_device()
+        self.image = Image.new(device.mode,
+                               device.size)
+        self.canvas = Canvas(device, self.image)
         self.fps_regulator = FPS_Regulator()
 
         self.when_pi_takes_control = None
@@ -47,6 +48,10 @@ class OLED:
         self.reset()
 
         atexit.register(self.__clean_up)
+
+    @property
+    def device(self):
+        return self.controller.get_device()
 
     def __setup_subscribe_client(self):
         def on_control_changed(parameters):
