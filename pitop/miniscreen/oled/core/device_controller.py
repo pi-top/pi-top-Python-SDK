@@ -23,7 +23,7 @@ class OledDeviceController:
     SPI_TRANSFER_SIZE = 4096
 
     def __init__(self):
-        self.__spi_bus = None
+        self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
         self.__exclusive_mode = True
         self.lock = PTLock("pt-oled")
@@ -39,17 +39,15 @@ class OledDeviceController:
             self.lock.acquire()
             atexit.register(self.reset_device)
 
-        spi_port = self.spi_bus
-
         # Always use CE1
-        if spi_port == 1:
+        if self.__spi_bus == 1:
             gpio_DC_pin = 17
         else:
             gpio_DC_pin = 7
 
         self.__device = sh1106(
             serial_interface=spi(
-                port=spi_port,
+                port=self.__spi_bus,
                 device=self.SPI_DEVICE,
                 bus_speed_hz=self.SPI_BUS_SPEED_HZ,
                 transfer_size=self.SPI_TRANSFER_SIZE,
@@ -59,6 +57,14 @@ class OledDeviceController:
             ),
             rotate=0
         )
+
+    def __get_spi_bus_from_ptdm(self):
+        message = Message.from_parts(Message.REQ_GET_OLED_SPI_BUS)
+
+        with PTDMRequestClient() as request_client:
+            response = request_client.send_message(message)
+
+        return int(response.parameters[0])
 
     ##############################
     # Only intended to be used by pt-sys-oled
@@ -98,20 +104,12 @@ class OledDeviceController:
 
     @property
     def spi_bus(self):
-        if self.__spi_bus is not None:
-            return self.__spi_bus
-
-        message = Message.from_parts(Message.REQ_GET_OLED_SPI_BUS)
-
-        with PTDMRequestClient() as request_client:
-            response = request_client.send_message(message)
-
-        self.__spi_bus = int(response.parameters[0])
-
         return self.__spi_bus
 
     @spi_bus.setter
     def spi_bus(self, bus):
+        assert bus in range(0, 1)
+
         if self.__spi_bus == bus:
             return
 
@@ -119,3 +117,6 @@ class OledDeviceController:
 
         with PTDMRequestClient() as request_client:
             request_client.send_message(message)
+
+        self.__spi_bus == bus
+        self.reset_device()
