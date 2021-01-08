@@ -50,6 +50,14 @@ class OLED:
         atexit.register(self.__clean_up)
 
     @property
+    def spi_bus(self):
+        return self.controller.spi_bus
+
+    @spi_bus.setter
+    def spi_bus(self, bus):
+        self.controller.spi_bus = bus
+
+    @property
     def device(self):
         return self.controller.get_device()
 
@@ -144,7 +152,6 @@ class OLED:
         self.canvas.clear()
 
         self.controller.reset_device()
-        self.device = self.controller.get_device()
 
         self.device.display(self.image)
         self.device.contrast(255)
