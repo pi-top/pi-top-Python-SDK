@@ -21,10 +21,9 @@ class OLED:
     def __init__(self):
         self.controller = OledDeviceController()
 
-        __d = self.controller.get_device()
-        self.image = Image.new(__d.mode,
-                               __d.size)
-        self.canvas = Canvas(__d, self.image)
+        self.image = Image.new(self.device.mode,
+                               self.device.size)
+        self.canvas = Canvas(self.device, self.image)
         self.fps_regulator = FPS_Regulator()
 
         self.__visible = False
