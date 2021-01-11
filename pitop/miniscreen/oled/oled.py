@@ -128,7 +128,7 @@ class OLED:
     def contrast(self, new_contrast_value):
         assert new_contrast_value in range(0, 256)
 
-        self.__oled.device.contrast(new_contrast_value)
+        self.device.contrast(new_contrast_value)
 
     def wake(self):
         self.contrast(255)
