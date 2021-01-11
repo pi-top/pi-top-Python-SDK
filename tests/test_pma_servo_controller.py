@@ -1,12 +1,11 @@
-from pitop.pma.servo_controller import ServoController
+from unittest.mock import Mock
+from sys import modules
+from unittest import TestCase, skip
 from pitop.pma.common.servo_motor_registers import (
     ServoMotorS0,
     ServoMotorSetup
 )
-from unittest import TestCase, skip
-from sys import modules
-from unittest.mock import Mock
-
+from pitop.pma.servo_controller import ServoController
 modules["io"] = Mock()
 modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()

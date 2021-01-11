@@ -1,9 +1,9 @@
-from pitop.miniscreen.oled import OLED
-from unittest.mock import MagicMock
-from unittest import TestCase, skip
-from sys import modules, path as spath
-from os import path, environ
 from PIL import Image
+from os import path, environ
+from sys import modules, path as spath
+from unittest import TestCase, skip
+from unittest.mock import MagicMock
+from pitop.miniscreen.oled import OLED
 root = path.dirname(path.dirname(path.abspath(__file__)))
 spath.append(root)
 
