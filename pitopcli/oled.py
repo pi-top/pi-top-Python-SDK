@@ -31,10 +31,10 @@ class OledCLI(CliBaseClass):
         try:
             oled = OLED()
 
-            if self.args.force:
-                oled.set_control_to_pi()
-
             if self.args.oled_subcommand == "draw":
+                if self.args.force:
+                    oled.set_control_to_pi()
+
                 print("Press Ctrl + C to exit.")
 
                 skip_timeout = False
@@ -47,10 +47,10 @@ class OledCLI(CliBaseClass):
                     sleep(self.args.timeout)
 
             elif self.args.oled_subcommand == "spi":
-                if self.args.spi_bus:
-                    oled.controller.spi_bus = self.args.spi_bus
+                if self.args.spi_bus is not None:
+                    oled.spi_bus = self.args.spi_bus
                 else:
-                    print(oled.controller.spi_bus)
+                    print(oled.spi_bus)
 
             else:
                 print("Functionality not available yet")
