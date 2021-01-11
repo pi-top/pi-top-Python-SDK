@@ -21,16 +21,30 @@ class OLED:
     def __init__(self):
         self.controller = OledDeviceController(self.reset)
 
-        self.image = Image.new(self.device.mode,
-                               self.device.size)
-        self.canvas = Canvas(self.device, self.image)
-        self.fps_regulator = FPS_Regulator()
+        self.__image = None
+        self.__canvas = None
+
+        self.image = Image.new(
+            self.device.mode,
+            self.device.size
+        )
+
+        self.__fps_regulator = FPS_Regulator()
 
         self.__visible = False
         self.__previous_frame = None
         self.__auto_play_thread = None
 
         self.reset()
+
+    @property
+    def image(self):
+        return self.__image
+
+    @image.setter
+    def image(self, image):
+        self.__image = image
+        self.__canvas = Canvas(self.device, self.__image)
 
     @property
     def spi_bus(self):
@@ -43,6 +57,22 @@ class OLED:
     @property
     def device(self):
         return self.controller.get_device()
+
+    @property
+    def size(self):
+        return self.device.size
+
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
+
+    @property
+    def mode(self):
+        return self.device.mode
 
     def is_active(self):
         return self.controller.device_is_active()
@@ -65,7 +95,7 @@ class OLED:
 
         :param int max_fps: The maximum frames that can be rendered per second
         """
-        self.fps_regulator.set_max_fps(max_fps)
+        self.__fps_regulator.set_max_fps(max_fps)
 
     def hide(self):
         """
@@ -86,13 +116,25 @@ class OLED:
         self.device.show()
         self.__visible = True
 
+    @property
     def is_hidden(self):
         """
         Returns whether the device is currently in low power state
         :return: whether the the screen is in low power mode
         :rtype: bool
         """
-        return self.__visible
+        return not self.__visible
+
+    def contrast(self, new_contrast_value):
+        assert new_contrast_value in range(0, 256)
+
+        self.__oled.device.contrast(new_contrast_value)
+
+    def wake(self):
+        self.contrast(255)
+
+    def sleep(self):
+        self.contrast(0)
 
     def reset(self):
         """
@@ -100,11 +142,11 @@ class OLED:
         currently rendering information to the screen) and clears the screen.
         """
         self.set_control_to_pi()
-        self.canvas.clear()
+        self.__canvas.clear()
 
         self.controller.reset_device()
 
-        self.device.display(self.image)
+        self.device.display(self.__image)
         self.device.contrast(255)
 
         self.show()
@@ -146,25 +188,25 @@ class OLED:
             the screen.
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.__canvas.top_left()
 
-        self.canvas.clear()
-        self.canvas.image(xy, image)
+        self.__canvas.clear()
+        self.__canvas.image(xy, image)
 
         self.draw()
 
     def _draw_text_base(self, text_func, text, font_size, xy):
-        self.canvas.clear()
+        self.__canvas.clear()
 
         if font_size is not None:
-            previous_font_size = self.canvas.font_size
-            self.canvas.set_font_size(font_size)
+            previous_font_size = self.__canvas.font_size
+            self.__canvas.set_font_size(font_size)
 
         text_func(xy, text, fill=1, spacing=0, align="left")
         self.draw()
 
         if font_size is not None:
-            self.canvas.set_font_size(previous_font_size)
+            self.__canvas.set_font_size(previous_font_size)
 
     def draw_text(self, text, xy=None, font_size=None):
         """
@@ -181,9 +223,9 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.__canvas.top_left()
 
-        self._draw_text_base(self.canvas.text, text, font_size, xy)
+        self._draw_text_base(self.__canvas.text, text, font_size, xy)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -201,9 +243,9 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.__canvas.top_left()
 
-        self._draw_text_base(self.canvas.multiline_text, text, font_size, xy)
+        self._draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
 
     def draw(self):
         """
@@ -214,21 +256,21 @@ class OLED:
         the *canvas* object to draw composite objects and then render them
         to screen in a single frame.
         """
-        self.fps_regulator.stop_timer()
+        self.__fps_regulator.stop_timer()
         paint_to_screen = False
         if self.__previous_frame is None:
             paint_to_screen = True
         else:
             prev_pix = self.__previous_frame.get_pixels()
-            current_pix = self.canvas.get_pixels()
+            current_pix = self.__canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
 
         if paint_to_screen:
-            self.device.display(self.image)
+            self.device.display(self.__image)
 
-        self.fps_regulator.start_timer()
-        self.__previous_frame = Canvas(self.device, deepcopy(self.image))
+        self.__fps_regulator.start_timer()
+        self.__previous_frame = Canvas(self.device, deepcopy(self.__image))
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
