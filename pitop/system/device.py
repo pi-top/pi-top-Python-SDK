@@ -19,7 +19,7 @@ def __device_id():
 
 def __device_name(device_id):
     device_lookup = {
-        DeviceID.unknown.value:  "Unknown",
+        DeviceID.unknown.value: "Unknown",
         DeviceID.pi_top.value: "Original pi-top",
         DeviceID.pi_top_ceed.value: "pi-topCEED",
         DeviceID.pi_top_3.value: "pi-top [3]",

@@ -1,11 +1,8 @@
-from pitop.miniscreen.buttons import UpButton
-from unittest import TestCase, main
 from sys import modules
 from unittest.mock import MagicMock
 
 modules["request_client"] = MagicMock()
 modules["threading"] = MagicMock()
-modules["zmq"] = MagicMock()
 modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()
@@ -13,6 +10,9 @@ modules["RPi"] = MagicMock()
 modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
+
+from unittest import TestCase, main
+from pitop.miniscreen.buttons import UpButton
 
 
 class PTButtonsCase(TestCase):

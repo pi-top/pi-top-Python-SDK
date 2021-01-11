@@ -1,3 +1,16 @@
+from unittest.mock import Mock
+from sys import modules
+
+modules["io"] = Mock()
+modules["gpiozero"] = Mock()
+modules["gpiozero.exc"] = Mock()
+modules["cv2"] = Mock()
+modules["numpy"] = Mock()
+modules["pitopcommon.smbus_device"] = Mock()
+modules["pitopcommon.logger"] = Mock()
+modules["pitopcommon.singleton"] = Mock()
+modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
 from pitopcommon.bitwise_ops import join_bytes
 from pitop.pma.encoder_motor_controller import (
     EncoderMotorController,
@@ -12,17 +25,6 @@ from pitop.pma.common.encoder_motor_registers import (
 from pitop.pma.parameters import BrakingType
 from unittest import TestCase, skip
 from unittest.mock import patch
-from unittest.mock import Mock
-from sys import modules
-modules["io"] = Mock()
-modules["gpiozero"] = Mock()
-modules["gpiozero.exc"] = Mock()
-modules["cv2"] = Mock()
-modules["numpy"] = Mock()
-modules["pitopcommon.smbus_device"] = Mock()
-modules["pitopcommon.logger"] = Mock()
-modules["pitopcommon.singleton"] = Mock()
-modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 
 @skip

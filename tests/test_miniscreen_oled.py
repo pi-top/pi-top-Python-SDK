@@ -1,8 +1,3 @@
-from pitop.miniscreen.oled import OLED
-from unittest import TestCase, skip
-from sys import path
-from PIL import Image
-from os import environ
 from sys import modules
 from unittest.mock import MagicMock
 
@@ -15,12 +10,17 @@ mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
-modules["zmq"] = MagicMock()
 modules["numpy"] = MagicMock()
 modules["RPi"] = MagicMock()
 modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
+
+from pitop.miniscreen.oled import OLED
+from unittest import TestCase, skip
+from sys import path
+from PIL import Image
+from os import environ
 
 
 root = path.dirname(path.dirname(path.abspath(__file__)))
@@ -149,4 +149,4 @@ class OLEDTestCase(TestCase):
         self.oled.reset()
         self.oled.fps_regulator.set_max_fps(max_fps)
         max_sleep_time = self.oled.fps_regulator.max_sleep_time
-        self.assertEqual(max_sleep_time, 1/max_fps)
+        self.assertEqual(max_sleep_time, 1 / max_fps)
