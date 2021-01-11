@@ -50,12 +50,9 @@ class Buttons:
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed):
             button.is_pressed = pressed
-            if button.is_pressed:
-                if callable(button.when_pressed):
-                    button.when_pressed()
-            else:
-                if callable(button.when_released):
-                    button.when_released()
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                button.when_pressed if button.is_pressed else button.when_released
+            )
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise(

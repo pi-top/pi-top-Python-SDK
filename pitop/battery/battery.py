@@ -22,25 +22,27 @@ class Battery:
         atexit.register(self.__clean_up)
 
     def __setup_subscribe_client(self):
+        def on_low_battery():
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_low)
+
+        def on_critical_battery():
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_critical)
 
         def on_state_changed(parameters):
-            charging_state = int(parameters[0])
+            charging_state, capacity, time_remaining, wattage = parameters
 
             if charging_state == 2:
-                if callable(self.when_full):
-                    self.when_full()
+                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_full)
 
             if charging_state == 0:
-                if callable(self.when_discharging):
-                    self.when_discharging()
+                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_discharging)
             else:
-                if callable(self.when_charging):
-                    self.when_charging()
+                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_charging)
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
-            Message.PUB_LOW_BATTERY_WARNING: lambda: self.when_low,
-            Message.PUB_CRITICAL_BATTERY_WARNING: lambda: self.when_critical,
+            Message.PUB_LOW_BATTERY_WARNING: on_low_battery,
+            Message.PUB_CRITICAL_BATTERY_WARNING: on_critical_battery,
             Message.PUB_BATTERY_STATE_CHANGED: on_state_changed,
         })
         self.__ptdm_subscribe_client.start_listening()
