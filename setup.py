@@ -107,8 +107,6 @@ __requires__ = [
     "luma.oled",
     "luma.core",
     "monotonic",
-    # Communication with the device manager
-    "zmq",
 
     ##########
     # Proto+ #

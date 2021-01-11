@@ -5,7 +5,6 @@ from sys import modules
 
 modules["request_client"] = MagicMock()
 modules["threading"] = MagicMock()
-modules["zmq"] = MagicMock()
 modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()

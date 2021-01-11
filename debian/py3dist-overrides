@@ -10,4 +10,3 @@ pyv4l2camera python3-pyv4l2camera
 rpi.gpio python3-rpi.gpio
 scipy python3-scipy
 smbus python3-smbus
-zmq python3-zmq
