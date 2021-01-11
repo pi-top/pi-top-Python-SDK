@@ -34,7 +34,7 @@ def update_battery_state(charging_state, capacity):
         cap = 5
 
     if cap > 0:
-        for y in range(1, cap+1):
+        for y in range(1, cap + 1):
             ledmatrix.set_pixel(2, y, r, g, b)
             ledmatrix.set_pixel(3, y, r, g, b)
             ledmatrix.set_pixel(4, y, r, g, b)
@@ -44,13 +44,13 @@ def update_battery_state(charging_state, capacity):
         if (capacity < 50) and (charging_state == 0):
             # blinking warning
             for i in range(1, 3):
-                for y in range(cap+1, 6):
+                for y in range(cap + 1, 6):
                     ledmatrix.set_pixel(2, y, 0, 0, 0)
                     ledmatrix.set_pixel(3, y, 0, 0, 0)
                     ledmatrix.set_pixel(4, y, 0, 0, 0)
                 ledmatrix.show()
                 sleep(0.4)
-                for y in range(cap+1, 6):
+                for y in range(cap + 1, 6):
                     ledmatrix.set_pixel(2, y, 255, 0, 0)
                     ledmatrix.set_pixel(3, y, 255, 0, 0)
                     ledmatrix.set_pixel(4, y, 255, 0, 0)
@@ -58,7 +58,7 @@ def update_battery_state(charging_state, capacity):
                 sleep(0.4)
 
         else:
-            for y in range(cap+1, 6):
+            for y in range(cap + 1, 6):
                 ledmatrix.set_pixel(2, y, 0, 0, 0)
                 ledmatrix.set_pixel(3, y, 0, 0, 0)
                 ledmatrix.set_pixel(4, y, 0, 0, 0)

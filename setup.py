@@ -107,8 +107,6 @@ __requires__ = [
     "luma.oled",
     "luma.core",
     "monotonic",
-    # Communication with the device manager
-    "zmq",
 
     ##########
     # Proto+ #
@@ -123,9 +121,9 @@ __requires__ = [
 ]
 
 __extra_requires__ = {
-    "computer_vision":  ["opencv"],
-    "doc":              ["sphinx"],
-    "test":             ["pytest", "coverage", "mock"],
+    "computer_vision": ["opencv"],
+    "doc": ["sphinx"],
+    "test": ["pytest", "coverage", "mock"],
 }
 
 __entry_points__ = {

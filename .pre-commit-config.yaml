@@ -14,7 +14,16 @@ repos:
     rev: v1.5.4
     hooks:
     - id: autopep8
-      args: ["-i", "--max-line-length=150"]
+      name: autopep8 - all checks, no tests
+      args: ["-i", "--max-line-length=150", "--exclude", "tests/*"]
+
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: v1.5.4
+    hooks:
+    - id: autopep8
+      # Default: E226,E24,W50,W690
+      name: autopep8 - ignore import checks, include tests
+      args: ["-i", "--max-line-length=150", "--ignore", "E226,E24,W50,W690,E402"]
 
 -   repo: https://gitlab.com/PyCQA/flake8
     rev: 3.8.4

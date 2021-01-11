@@ -1,3 +1,17 @@
+py-pitop-sdk (0.10.0) buster; urgency=medium
+
+  * Use parameters property, not function
+  * Remove unused zmq dependency (handled in common lib)
+  * OLED uses controller class
+  * Add additional top-level OLED properties for size and mode
+  * Add additional top-level OLED functions for contrast
+  * Canvas and FPS regulators are now private
+  * Add 'pi-top oled spi' command for changing SPI bus
+  * Fix test imports
+  * Some misc syntax fixes
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 11 Jan 2021 14:09:42 -0300
+
 py-pitop-sdk (0.9.0) buster; urgency=medium
 
   * Migrate deprecated CLIs to python3-pitop-migr
