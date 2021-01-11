@@ -112,5 +112,5 @@ class OledDeviceController:
         with PTDMRequestClient() as request_client:
             request_client.send_message(message)
 
-        self.__spi_bus == bus
+        self.__spi_bus = bus
         self.reset_device()
