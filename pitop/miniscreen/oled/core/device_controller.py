@@ -1,7 +1,11 @@
 import atexit
 
 from pitopcommon.lock import PTLock
-from pitopcommon.ptdm import PTDMRequestClient, Message
+from pitopcommon.ptdm import (
+    Message,
+    PTDMRequestClient,
+    PTDMSubscribeClient,
+)
 
 from luma.core.interface.serial import spi
 from luma.oled.device import sh1106
@@ -27,6 +31,28 @@ class OledDeviceController:
         self.__device = None
         self.__exclusive_mode = True
         self.lock = PTLock("pt-oled")
+
+        self.__ptdm_subscribe_client = None
+        self.__setup_subscribe_client()
+
+        atexit.register(self.__clean_up)
+
+    def __setup_subscribe_client(self):
+        def on_spi_bus_changed(parameters):
+            self.__spi_bus = int(parameters[0])
+            self.reset()
+
+        self.__ptdm_subscribe_client = PTDMSubscribeClient()
+        self.__ptdm_subscribe_client.initialise({
+            Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_bus_changed
+        })
+        self.__ptdm_subscribe_client.start_listening()
+
+    def __clean_up(self):
+        try:
+            self.__ptdm_subscribe_client.stop_listening()
+        except Exception:
+            pass
 
     def __set_controls(self, controlled_by_pi):
         message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))])
@@ -102,6 +128,9 @@ class OledDeviceController:
 
     @spi_bus.setter
     def spi_bus(self, bus):
+        '''
+        Request SPI bus change from pi-top device manager
+        '''
         assert bus in range(0, 1)
 
         if self.__spi_bus == bus:
@@ -112,5 +141,9 @@ class OledDeviceController:
         with PTDMRequestClient() as request_client:
             request_client.send_message(message)
 
-        self.__spi_bus = bus
-        self.reset_device()
+        # Wait for publish event from ptdm to update.
+        #
+        # Internal state of SPI bus is handled via subscribe client.
+        # When the subscribe client receives an SPI bus change event,
+        # the device manager has finished configuration. The response
+        # received here simply shows that it has acknowledged the request.

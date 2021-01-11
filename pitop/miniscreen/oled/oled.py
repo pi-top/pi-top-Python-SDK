@@ -6,12 +6,6 @@ from .core.image_helper import (
     process_pil_image_frame,
 )
 
-from pitopcommon.ptdm import (
-    PTDMSubscribeClient,
-    Message,
-)
-
-import atexit
 from copy import deepcopy
 from PIL import Image, ImageSequence
 from threading import Thread
@@ -27,27 +21,17 @@ class OLED:
     def __init__(self):
         self.controller = OledDeviceController()
 
-        device = self.controller.get_device()
-        self.image = Image.new(device.mode,
-                               device.size)
-        self.canvas = Canvas(device, self.image)
+        __d = self.controller.get_device()
+        self.image = Image.new(__d.mode,
+                               __d.size)
+        self.canvas = Canvas(__d, self.image)
         self.fps_regulator = FPS_Regulator()
-
-        self.when_pi_takes_control = None
-        self.when_hub_takes_control = None
-
-        self.when_spi_bus_changes = None
 
         self.__visible = False
         self.__previous_frame = None
         self.__auto_play_thread = None
 
-        self.__ptdm_subscribe_client = None
-        self.__setup_subscribe_client()
-
         self.reset()
-
-        atexit.register(self.__clean_up)
 
     @property
     def spi_bus(self):
@@ -60,38 +44,6 @@ class OLED:
     @property
     def device(self):
         return self.controller.get_device()
-
-    def __setup_subscribe_client(self):
-        def on_control_changed(parameters):
-            controller = int(parameters[0])
-
-            if controller == 1:
-                if callable(self.when_pi_takes_control):
-                    self.when_pi_takes_control()
-            else:
-                if callable(self.when_hub_takes_control):
-                    self.when_hub_takes_control()
-
-        def on_spi_bus_changed(parameters):
-            spi_bus = int(parameters[0])
-
-            self.reset()
-
-            if callable(self.when_spi_bus_changes):
-                self.when_spi_bus_changes(spi_bus)
-
-        self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise({
-            Message.PUB_OLED_CONTROL_CHANGED: on_control_changed,
-            Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_bus_changed
-        })
-        self.__ptdm_subscribe_client.start_listening()
-
-    def __clean_up(self):
-        try:
-            self.__ptdm_subscribe_client.stop_listening()
-        except Exception:
-            pass
 
     def is_active(self):
         return self.controller.device_is_active()
