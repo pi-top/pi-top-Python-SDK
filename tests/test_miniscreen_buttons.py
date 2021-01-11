@@ -1,7 +1,8 @@
-from sys import modules
-from unittest import TestCase, main
-from unittest.mock import MagicMock
 from pitop.miniscreen.buttons import UpButton
+from unittest import TestCase, main
+from sys import modules
+from unittest.mock import MagicMock
+
 modules["request_client"] = MagicMock()
 modules["threading"] = MagicMock()
 modules["zmq"] = MagicMock()

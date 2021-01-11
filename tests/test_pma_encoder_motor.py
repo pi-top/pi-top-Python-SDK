@@ -1,13 +1,14 @@
-from math import pi
-from unittest.mock import Mock
-from sys import modules
-from unittest import TestCase, skip
+from pitop.pma.encoder_motor import EncoderMotor
 from pitop.pma.parameters import (
     BrakingType,
     ForwardDirection,
     Direction
 )
-from pitop.pma.encoder_motor import EncoderMotor
+from unittest import TestCase, skip
+from math import pi
+from unittest.mock import Mock
+from sys import modules
+
 modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
 modules["cv2"] = Mock()

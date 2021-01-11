@@ -1,18 +1,19 @@
-from unittest.mock import Mock, patch
-from sys import modules
-from unittest import TestCase, skip
-from pitop.pma.parameters import BrakingType
+from pitopcommon.bitwise_ops import join_bytes
+from pitop.pma.encoder_motor_controller import (
+    EncoderMotorController,
+    split_into_bytes
+)
 from pitop.pma.common.encoder_motor_registers import (
     MotorControlRegisters,
     MotorRegisterTypes,
     MotorControlModes,
     EncoderMotorM1
 )
-from pitop.pma.encoder_motor_controller import (
-    EncoderMotorController,
-    split_into_bytes
-)
-from pitopcommon.bitwise_ops import join_bytes
+from pitop.pma.parameters import BrakingType
+from unittest import TestCase, skip
+from unittest.mock import patch
+from unittest.mock import Mock
+from sys import modules
 modules["io"] = Mock()
 modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()

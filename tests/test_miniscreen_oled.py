@@ -1,11 +1,10 @@
-from PIL import Image
-from os import path, environ
-from sys import modules, path as spath
-from unittest import TestCase, skip
-from unittest.mock import MagicMock
 from pitop.miniscreen.oled import OLED
-root = path.dirname(path.dirname(path.abspath(__file__)))
-spath.append(root)
+from unittest import TestCase, skip
+from sys import path
+from PIL import Image
+from os import environ
+from sys import modules
+from unittest.mock import MagicMock
 
 mock_sys_info = modules["pitopcommon.sys_info"] = MagicMock()
 mock_sys_info.is_pi = MagicMock(return_value=False)
@@ -22,6 +21,9 @@ modules["RPi"] = MagicMock()
 modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
+
+
+root = path.dirname(path.dirname(path.abspath(__file__)))
 
 
 @skip
