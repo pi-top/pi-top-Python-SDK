@@ -18,9 +18,8 @@ modules["luma.oled.device"] = MagicMock()
 
 from pitop.miniscreen.oled import OLED
 from unittest import TestCase, skip
-from sys import path
 from PIL import Image
-from os import environ
+from os import environ, path
 
 
 root = path.dirname(path.dirname(path.abspath(__file__)))
