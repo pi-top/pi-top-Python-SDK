@@ -19,7 +19,7 @@ class OLED:
     """
 
     def __init__(self):
-        self.controller = OledDeviceController()
+        self.controller = OledDeviceController(self.reset)
 
         self.image = Image.new(self.device.mode,
                                self.device.size)

@@ -26,7 +26,8 @@ class OledDeviceController:
     SPI_BUS_SPEED_HZ = 8000000
     SPI_TRANSFER_SIZE = 4096
 
-    def __init__(self):
+    def __init__(self, device_reset_func):
+        self.__device_reset_func = device_reset_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
         self.__exclusive_mode = True
@@ -40,7 +41,7 @@ class OledDeviceController:
     def __setup_subscribe_client(self):
         def on_spi_bus_changed(parameters):
             self.__spi_bus = int(parameters[0])
-            self.reset_device()
+            self.__device_reset_func()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
