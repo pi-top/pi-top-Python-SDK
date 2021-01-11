@@ -132,7 +132,7 @@ class OledDeviceController:
         '''
         Request SPI bus change from pi-top device manager
         '''
-        assert bus in range(0, 1)
+        assert bus in range(0, 2)
 
         if self.__spi_bus == bus:
             return
