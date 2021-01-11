@@ -1,4 +1,4 @@
-py-pitop-sdk (0.9.1) buster; urgency=medium
+py-pitop-sdk (0.10.0) buster; urgency=medium
 
   * Use parameters property, not function
   * Remove unused zmq dependency (handled in common lib)
@@ -6,7 +6,9 @@ py-pitop-sdk (0.9.1) buster; urgency=medium
   * Add additional top-level OLED properties for size and mode
   * Add additional top-level OLED functions for contrast
   * Canvas and FPS regulators are now private
-  * Add pi-top oled spi command for changing SPI bus
+  * Add 'pi-top oled spi' command for changing SPI bus
+  * Fix test imports
+  * Some misc syntax fixes
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 11 Jan 2021 14:09:42 -0300
 
