@@ -125,7 +125,7 @@ Documentation
 
 Comprehensive documentation is available here_.
 
-.. _here: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/
+.. _here: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
 
 -------------
 Development
