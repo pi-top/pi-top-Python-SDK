@@ -70,7 +70,7 @@ jobs:
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/debian/changelog"
+            path: "${{ github.workspace }}/debian"
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.0
@@ -119,7 +119,7 @@ jobs:
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/debian/changelog"
+            path: "${{ github.workspace }}/debian"
 
       - name: Set up Python
         uses: actions/setup-python@v2
