@@ -116,7 +116,8 @@ The pi-top Python SDK is installed out of the box with pi-topOS, which is availa
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
-.. _Getting Started: https://docs.pi-top.com/python-sdk/latest/getting_started.html
+.. _Getting Started: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
+
 
 -------------
 Documentation
@@ -124,7 +125,7 @@ Documentation
 
 Comprehensive documentation is available here_.
 
-.. _here: https://docs.pi-top.com/python-sdk/latest/getting_started.html
+.. _here: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
 
 -------------
 Development
