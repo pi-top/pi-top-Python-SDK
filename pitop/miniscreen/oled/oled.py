@@ -136,7 +136,7 @@ class OLED:
     def sleep(self):
         self.contrast(0)
 
-    def reset(self):
+    def reset(self, reset_controller=True):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
@@ -144,7 +144,8 @@ class OLED:
         self.set_control_to_pi()
         self.__canvas.clear()
 
-        self.controller.reset_device()
+        if reset_controller:
+            self.controller.reset_device()
 
         self.device.display(self.__image)
         self.device.contrast(255)
