@@ -1,3 +1,9 @@
+py-pitop-sdk (0.10.1) buster; urgency=medium
+
+  * Fix recursion issue when reseting OLED
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 12 Jan 2021 10:46:11 -0300
+
 py-pitop-sdk (0.10.0) buster; urgency=medium
 
   * Use parameters property, not function
