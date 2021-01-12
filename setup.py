@@ -92,9 +92,6 @@ __requires__ = [
     "Pillow",
     # Camera communication
     "PyV4L2Camera",
-    # IMU Calibration
-    "matplotlib",
-    "scipy",
 
     ############
     # Keyboard #
