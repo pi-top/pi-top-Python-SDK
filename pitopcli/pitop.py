@@ -2,8 +2,9 @@
 
 from argparse import ArgumentParser
 
-from .battery import BatteryCLI
 from .cli_base import PitopCliException, PitopCliInvalidArgument
+
+from .battery import BatteryCLI
 from .display import DisplayCLI
 from .devices import DeviceCLI
 from .support import SupportCLI
