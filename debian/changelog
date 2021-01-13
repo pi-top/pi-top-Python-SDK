@@ -1,6 +1,7 @@
 py-pitop-sdk (0.10.2) buster; urgency=medium
 
-  * Add event to know when user stops using the OLED
+  * Add events to know when user starts/stops using the OLED
+  * Improve CLI handling
 
  -- Jorge Capona <jorge@pi-top.com>  Wed, 13 Jan 2021 13:40:11 -0300
 
