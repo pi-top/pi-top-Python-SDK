@@ -401,5 +401,5 @@ class OLED:
         self.__file_monitor_thread.start()
 
     def __cleanup(self):
-        if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_active():
+        if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
