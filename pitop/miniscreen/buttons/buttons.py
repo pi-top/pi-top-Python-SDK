@@ -104,15 +104,12 @@ class Buttons:
             pass
 
 
-buttons = Buttons.instance()
-
-
 def UpButton():
     """
     :return: A button object for the up button.
     :rtype: Button
     """
-    return buttons.up
+    return Buttons.instance().up
 
 
 def DownButton():
@@ -120,7 +117,7 @@ def DownButton():
     :return: A button object for the down button.
     :rtype: Button
     """
-    return buttons.down
+    return Buttons.instance().down
 
 
 def SelectButton():
@@ -128,7 +125,7 @@ def SelectButton():
     :return: A button object for the select button.
     :rtype: Button
     """
-    return buttons.select
+    return Buttons.instance().select
 
 
 def CancelButton():
@@ -136,4 +133,4 @@ def CancelButton():
     :return: A button object for the cancel button.
     :rtype: Button
     """
-    return buttons.cancel
+    return Buttons.instance().cancel
