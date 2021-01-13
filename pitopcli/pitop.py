@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
-from sys import exit
 
 from .battery import BatteryCLI
 from .cli_base import PitopCliException, PitopCliInvalidArgument
@@ -53,16 +52,17 @@ def run(args):
             obj = cls(args)
             exit_code = obj.run()
     except PitopCliException:
-        exit_code = 1
+        pass
     except PitopCliInvalidArgument:
-        exit_code = 1
         if cls:
-            print(cls.parser.print_help())
+            print(
+                cls.parser.print_help()
+            )
     except Exception as e:
         print(f"Error on pitop.run: {e}")
-        exit_code = 1
+        pass
 
-    exit(exit_code)
+    return exit_code
 
 
 def main():
@@ -70,9 +70,6 @@ def main():
     args = parser.parse_args()
     if args.subcommand is None:
         parser.print_help()
-        exit(1)
-    run(args)
+        return 1
 
-
-if __name__ == "__main__":
-    main()
+    return run(args)
