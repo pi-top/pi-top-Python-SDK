@@ -45,18 +45,16 @@ def get_parser():
 def run(args):
     """Executes the command according to the provided arguments"""
     exit_code = 1
-    cls = None
+    cli = None
     try:
-        cls = lookup_dict.get(args.subcommand)
-        if cls:
-            obj = cls(args)
-            exit_code = obj.run()
+        cli = lookup_dict.get(args.subcommand)
+        exit_code = cli(args).run()
     except PitopCliException:
         pass
     except PitopCliInvalidArgument:
-        if cls:
+        if cli:
             print(
-                cls.parser.print_help()
+                cli.parser.print_help()
             )
     except Exception as e:
         print(f"Error on pitop.run: {e}")
