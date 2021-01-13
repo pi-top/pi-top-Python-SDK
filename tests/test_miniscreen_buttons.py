@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 modules["request_client"] = MagicMock()
 modules["threading"] = MagicMock()
+modules["pyinotify"] = MagicMock()
 modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()
