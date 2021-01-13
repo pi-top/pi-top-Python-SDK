@@ -35,16 +35,20 @@ class OledCLI(CliBaseClass):
                 if self.args.force:
                     oled.set_control_to_pi()
 
-                print("Press Ctrl + C to exit.")
+                try:
+                    print("Press Ctrl + C to exit.")
 
-                skip_timeout = False
-                if isfile(self.args.text) or is_url(self.args.text):
-                    oled.play_animated_image_file(self.args.text)
-                else:
-                    oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
+                    skip_timeout = False
+                    if isfile(self.args.text) or is_url(self.args.text):
+                        oled.play_animated_image_file(self.args.text)
+                    else:
+                        oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
 
-                if not skip_timeout:
-                    sleep(self.args.timeout)
+                    if not skip_timeout:
+                        sleep(self.args.timeout)
+
+                except KeyboardInterrupt:
+                    pass
 
             elif self.args.oled_subcommand == "spi":
                 if self.args.spi_bus is not None:
