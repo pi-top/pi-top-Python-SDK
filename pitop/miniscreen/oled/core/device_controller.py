@@ -26,11 +26,11 @@ class OledDeviceController:
     SPI_BUS_SPEED_HZ = 8000000
     SPI_TRANSFER_SIZE = 4096
 
-    def __init__(self, device_reset_func):
+    def __init__(self, device_reset_func, exclusive_mode):
         self.__device_reset_func = device_reset_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
-        self.__exclusive_mode = True
+        self.__exclusive_mode = exclusive_mode
         self.lock = PTLock("pt-oled")
 
         self.__ptdm_subscribe_client = None

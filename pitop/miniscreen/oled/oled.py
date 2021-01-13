@@ -27,8 +27,8 @@ class OLED:
 
     LOCK_FILE_PATH = "/tmp/pt-oled.lock"
 
-    def __init__(self):
-        self.controller = OledDeviceController(self.reset)
+    def __init__(self, exclusive_mode=True):
+        self.controller = OledDeviceController(self.reset, exclusive_mode)
 
         self.__image = None
         self.__canvas = None
