@@ -13,7 +13,7 @@ modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
 from unittest import TestCase, main
-from pitop.miniscreen.buttons import UpButton
+from pitop.miniscreen import UpButton
 
 
 class PTButtonsCase(TestCase):

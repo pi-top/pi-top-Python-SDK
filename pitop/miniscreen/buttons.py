@@ -27,11 +27,7 @@ class Singleton(type):
 
     def __call__(cls, *args, **kwargs):
         if cls.instance is None:
-            print("Creating NEW Singleton instance")
             cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
-        else:
-            print("Using EXISTING Singleton instance")
-
         return cls.instance
 
 

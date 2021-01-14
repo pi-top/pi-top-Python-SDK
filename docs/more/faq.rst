@@ -22,24 +22,11 @@ Note: epoch version
 ---------------------------------------------------------------------------------------
 I was using an older version of the Python libraries. How can I update to use this SDK?
 ---------------------------------------------------------------------------------------
-Check out the `Python SDK Deprecation`_ GitHub repository for more information about this.
+Check out the `Python SDK Migration`_ GitHub repository for more information about this.
 
-.. _Python SDK Deprecation: https://github.com/pi-top/pi-top-Python-SDK-Deprecation-Support
+.. _Python SDK Migration: https://github.com/pi-top/pi-top-Python-SDK-Migration-Support
 
-In short,
-
-PMA: PMA prefix is now dropped.
-Buttons: PT prefix is now dropped. 'PTButtons' is now 'Buttons'.
-
-Everything else should be updatable with a Find and Replace:
-
-ptbuttons -> pitop.miniscreen.buttons
-ptoled -> pitop.miniscreen.oled
-ptpma -> pitop.pma
-ptpulse -> pitop.pulse
-ptprotoplus -> pitop.protoplus
-
-Beyond this, check out the examples to see how to use the new components.
+You may also find it helpful to check out the examples to see how to use the new components.
 
 .. _faq-lost-oled-menu:
 
