@@ -29,7 +29,7 @@ class ServoController:
             raise Exception("Invalid port. Servo motors must be connected to ports S1-S4")
 
         self.registers = ServoControlRegisters[port].value
-        self.__mcu_device = PlateInterface.instance().get_device_mcu()
+        self.__mcu_device = PlateInterface.get_device_mcu()
 
         self.__lower_duty_cycle = 0
         self.__upper_duty_cycle = 0

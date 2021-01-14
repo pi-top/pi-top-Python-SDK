@@ -1,10 +1,8 @@
 from .core.canvas import Canvas
 from .core.device_controller import OledDeviceController
 from .core.fps_regulator import FPS_Regulator
-from .core.image_helper import (
-    get_pil_image_from_path,
-    process_pil_image_frame,
-)
+
+from pitopcommon.formatting import is_url
 
 from atexit import register
 from copy import deepcopy
@@ -18,6 +16,7 @@ from pyinotify import (
 )
 from threading import Thread
 from time import sleep
+from urllib.request import urlopen
 
 
 class OLED:
@@ -32,13 +31,11 @@ class OLED:
     def __init__(self, _exclusive_mode=True):
         self.controller = OledDeviceController(self.reset, _exclusive_mode)
 
-        self.__image = None
-        self.__canvas = None
-
-        self.image = Image.new(
+        self.__image = Image.new(
             self.device.mode,
             self.device.size
         )
+        self.__canvas = None
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -161,17 +158,10 @@ class OLED:
         if reset_controller:
             self.controller.reset_device()
 
-        self.device.display(self.__image)
+        self.__send_image_to_device()
         self.device.contrast(255)
 
         self.show()
-
-    def __process_image_frame(self, image):
-        return process_pil_image_frame(
-            image,
-            self.device.size,
-            self.device.mode
-        )
 
     def draw_image_file(self, file_path_or_url, xy=None):
         """
@@ -185,9 +175,9 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        image = get_pil_image_from_path(file_path_or_url)
-        self.draw_image(self.__process_image_frame(image), xy)
+        self.draw_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
+    # TODO: add 'size' parameter for images being rendered to canvas
     def draw_image(self, image, xy=None):
         """
         Render a static image to the screen from a file or URL at a given position.
@@ -262,6 +252,10 @@ class OLED:
 
         self.__draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
 
+    def __send_image_to_device(self):
+        # Applies dithering as part of conversion to 1-bit mode
+        self.device.display(self.__image.convert(self.device.mode))
+
     def draw(self):
         """
         Draws what is on the current canvas to the screen as a single frame.
@@ -276,13 +270,14 @@ class OLED:
         if self.__previous_frame is None:
             paint_to_screen = True
         else:
+            # TODO: find a faster way of checking if pixel data has changed
             prev_pix = self.__previous_frame.get_pixels()
             current_pix = self.__canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
 
         if paint_to_screen:
-            self.device.display(self.__image)
+            self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
         self.__previous_frame = Canvas(self.device, deepcopy(self.__image))
@@ -297,7 +292,7 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
-        image = get_pil_image_from_path(file_path_or_url)
+        image = self.__get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
 
     def play_animated_image(self, image, background=False, loop=False):
@@ -335,9 +330,7 @@ class OLED:
                 if self.__kill_thread:
                     break
 
-                self.draw_image(
-                    self.__process_image_frame(frame)
-                )
+                self.draw_image(frame)
                 # Wait for animated image's frame length
                 sleep(
                     float(frame.info["duration"] / 1000)  # ms to s
@@ -346,6 +339,22 @@ class OLED:
             if self.__kill_thread or not loop:
                 self.reset()
                 break
+
+    def __get_pil_image_from_path(self, file_path_or_url):
+        if is_url(file_path_or_url):
+            image_path = urlopen(file_path_or_url)
+        else:
+            image_path = file_path_or_url
+
+        image = Image.open(image_path)
+
+        # Verify on deep copy to avoid needing to close and
+        # re-open after verifying...
+        test_image = image.copy()
+        # Raise exception if there's an issue with the image
+        test_image.verify()
+
+        return image
 
     @property
     def _when_user_starts_using_oled(self):

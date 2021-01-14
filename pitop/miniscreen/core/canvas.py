@@ -1,8 +1,9 @@
 from os.path import isfile
-from .image_helper import (
-    process_pil_image_frame,
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageFont,
 )
-from PIL import ImageFont, ImageDraw
 from numpy import reshape
 
 
@@ -13,13 +14,28 @@ class Canvas:
     """
 
     def __init__(self, oled_device, image):
-        self.pil_image = image
+        # Image object to be used to draw to device
+        self.image = image
+
+        # Internal draw object derived from PIL image
+        # Used by drawing functions - they directly affect the image
+        self.__draw = ImageDraw.Draw(self.image)
+
         self.__oled_device = oled_device
-        self.draw = ImageDraw.Draw(self.pil_image)
+
         self.font_size = 30
         self.__font = None
         self.__font_path = None
         self.__init_font()
+
+    ##################################################
+    # Processing commands
+    ##################################################
+    def process_image(self, image_to_process):
+        image = Image.new("RGB", self.device.size, "black")
+        image.paste(image_to_process.resize(self.device.size))
+
+        return image.convert(self.device.mode)
 
     ##################################################
     # Rendering commands
@@ -32,9 +48,10 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.rectangle(self.get_bounding_box(), 0)
+        self.__draw.rectangle(self.get_bounding_box(), 0)
         return self.get_pixels()
 
+    # TODO: add 'size' parameter for images being rendered to canvas
     def image(self, xy, image):
         """
         Renders an image to the canvas at a given position.
@@ -49,10 +66,8 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        image_data = process_pil_image_frame(image,
-                                             size=self.__oled_device.size,
-                                             mode=self.__oled_device.mode)
-        self.draw.bitmap(xy, image_data, 1)
+
+        self.__draw.bitmap(xy, self.process_image(image), 1)
         return self.get_pixels()
 
     def text(self, xy, text, fill=1, spacing=0, align="left"):
@@ -70,7 +85,7 @@ class Canvas:
         :return: Current pixel map as 2D array
         """
 
-        self.draw.text(
+        self.__draw.text(
             xy=xy,
             text=text,
             fill=fill,
@@ -120,7 +135,7 @@ class Canvas:
 
         text = draw_word_wrap(text)
 
-        self.draw.multiline_text(
+        self.__draw.multiline_text(
             xy=xy,
             text=text,
             fill=fill,
@@ -145,7 +160,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.arc(xy, start, end, fill)
+        self.__draw.arc(xy, start, end, fill)
         return self.get_pixels()
 
     def chord(self, xy, start, end, fill=1, outline=1):
@@ -163,7 +178,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.chord(xy, start, end, fill, outline)
+        self.__draw.chord(xy, start, end, fill, outline)
         return self.get_pixels()
 
     def ellipse(self, xy, fill=1, outline=1):
@@ -177,7 +192,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.ellipse(xy, fill, outline)
+        self.__draw.ellipse(xy, fill, outline)
         return self.get_pixels()
 
     def line(self, xy, fill=1, width=1):
@@ -191,7 +206,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.line(xy, fill, width)
+        self.__draw.line(xy, fill, width)
         return self.get_pixels()
 
     def pieslice(self, xy, start, end, fill=1, outline=1):
@@ -209,7 +224,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.pieslice(xy, start, end, fill, outline)
+        self.__draw.pieslice(xy, start, end, fill, outline)
         return self.get_pixels()
 
     def point(self, xy, fill=1):
@@ -222,7 +237,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.point(xy, fill)
+        self.__draw.point(xy, fill)
         return self.get_pixels()
 
     def polygon(self, xy, fill=1):
@@ -239,7 +254,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.polygon(xy, fill)
+        self.__draw.polygon(xy, fill)
         return self.get_pixels()
 
     def rectangle(self, xy, fill=1):
@@ -253,7 +268,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.rectangle(xy, fill)
+        self.__draw.rectangle(xy, fill)
         return self.get_pixels()
 
     ##################################################
@@ -437,7 +452,7 @@ class Canvas:
         :return: int
         """
 
-        return self.draw.textsize(
+        return self.__draw.textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
@@ -452,7 +467,7 @@ class Canvas:
         :return: int
         """
 
-        return self.draw.multiline_textsize(
+        return self.__draw.multiline_textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
@@ -471,14 +486,6 @@ class Canvas:
         pixels = reshape(pixels, (self.get_width(), self.get_height()))
         return pixels
 
-    def __convert_to_1bit(self, pil_image):
-        """
-        Converts an image into a 1bit image
-        :param pil_image:
-        :return: monochrome image
-        """
-        return pil_image.convert("1").point(lambda x: 0 if x == 0 else 1, "1")
-
     def get_pixels(self):
         """
         Gets the pixel array of the current canvas state.
@@ -486,7 +493,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        return self._pil_image_to_pix_arr(self.pil_image)
+        return self._pil_image_to_pix_arr(self.image)
 
     def get_pixel(self, xy):
         """
@@ -496,7 +503,7 @@ class Canvas:
         :return: The value of the pixel specified
         :rtype: int
         """
-        return self._pil_image_to_pix_arr(self.pil_image)[xy[0], xy[1]]
+        return self._pil_image_to_pix_arr(self.image)[xy[0], xy[1]]
 
     def save(self, file_path, format=None):
         """
@@ -505,4 +512,4 @@ class Canvas:
         :param string file_path: The file path to write the data
         :param string format: The image file format to use to encode the image
         """
-        self.__convert_to_1bit(self.pil_image).save(file_path, format)
+        self.image.save(file_path, format)
