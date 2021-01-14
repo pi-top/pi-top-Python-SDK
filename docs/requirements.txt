@@ -1,3 +1,3 @@
 gpiozero
-# Common library is required for understanding internals of Singleton
+# Required to understand Singletons
 pitopcommon
