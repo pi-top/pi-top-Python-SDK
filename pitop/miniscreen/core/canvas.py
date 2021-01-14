@@ -17,9 +17,9 @@ class Canvas:
         self.__oled_device = oled_device
         self.draw = ImageDraw.Draw(self.pil_image)
         self.font_size = 30
-        self._font = None
-        self._font_path = None
-        self._init_font()
+        self.__font = None
+        self.__font_path = None
+        self.__init_font()
 
     ##################################################
     # Rendering commands
@@ -74,7 +74,7 @@ class Canvas:
             xy=xy,
             text=text,
             fill=fill,
-            font=self._check_for_and_get_font(),
+            font=self.__check_for_and_get_font(),
             anchor=None,
             spacing=spacing,
             align=align,
@@ -124,7 +124,7 @@ class Canvas:
             xy=xy,
             text=text,
             fill=fill,
-            font=self._check_for_and_get_font(),
+            font=self.__check_for_and_get_font(),
             anchor=None,
             spacing=spacing,
             align=align,
@@ -269,7 +269,7 @@ class Canvas:
         """
         return self.__oled_device.bounding_box
 
-    def _get_corner(self, pos1, pos2):
+    def __get_corner(self, pos1, pos2):
         """
         Gets corner of bounding box.
 
@@ -286,7 +286,7 @@ class Canvas:
         :return: The top-left coordinates of the canvas bounding box as a tuple
         :rtype: tuple
         """
-        return self._get_corner(0, 1)
+        return self.__get_corner(0, 1)
 
     def top_right(self):
         """
@@ -295,7 +295,7 @@ class Canvas:
         :return: The top-right coordinates of the canvas bounding box as a tuple
         :rtype: tuple
         """
-        return self._get_corner(2, 1)
+        return self.__get_corner(2, 1)
 
     def bottom_left(self):
         """
@@ -304,7 +304,7 @@ class Canvas:
         :return: The bottom-left coordinates of the canvas bounding box as a tuple
         :rtype: tuple
         """
-        return self._get_corner(0, 3)
+        return self.__get_corner(0, 3)
 
     def bottom_right(self):
         """
@@ -313,7 +313,7 @@ class Canvas:
         :return: The bottom-right coordinates of the canvas bounding box as a tuple
         :rtype: tuple
         """
-        return self._get_corner(2, 3)
+        return self.__get_corner(2, 3)
 
     def get_size(self):
         """
@@ -346,28 +346,28 @@ class Canvas:
     # Font config methods
     ##################################################
 
-    def _update_font(self):
+    def __update_font(self):
         """
         Updates font
         """
-        if self._font_path is None:
+        if self.__font_path is None:
             raise Exception(
                 "No font path set - call set_font_path(font_path)"
             )
-        self._font = ImageFont.truetype(self._font_path, size=self.font_size)
+        self.__font = ImageFont.truetype(self.__font_path, size=self.font_size)
 
-    def _check_for_and_get_font(self):
+    def __check_for_and_get_font(self):
         """
         Checks if the font is set. if the font is not set raise exception.
         :return: font or raise exception if _font = None
         """
-        if self._font is None:
+        if self.__font is None:
             raise Exception(
                 "No font set - call set_font_path(font_path) before using text functions"
             )
-        return self._font
+        return self.__font
 
-    def _init_font(self):
+    def __init_font(self):
         """
         Initialize font to primary or fall back font.
         """
@@ -386,7 +386,7 @@ class Canvas:
         :return: The path to the font file
         :rtype: string
         """
-        return self._font_path
+        return self.__font_path
 
     def set_font_path(self, font_path):
         """
@@ -403,10 +403,10 @@ class Canvas:
         :param string font_path: The path to the font file
         :param int font_size: The font size to use
         """
-        self._font_path = font_path
+        self.__font_path = font_path
         if font_size is not None:
             self.font_size = font_size
-        self._update_font()
+        self.__update_font()
 
     def get_font_size(self):
         """
@@ -424,7 +424,7 @@ class Canvas:
         :param int font_size: The font size to use
         """
         self.font_size = font_size
-        self._update_font()
+        self.__update_font()
 
     def textsize(self, text, spacing=4):
         """
@@ -438,7 +438,7 @@ class Canvas:
         """
 
         return self.draw.textsize(
-            text=text, font=self._check_for_and_get_font(), spacing=spacing
+            text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
     def multiline_textsize(self, text, spacing=4):
@@ -453,13 +453,14 @@ class Canvas:
         """
 
         return self.draw.multiline_textsize(
-            text=text, font=self._check_for_and_get_font(), spacing=spacing
+            text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
     ##################################################
     # Image helper methods
     ##################################################
 
+    # Semi-private: used in OLED test
     def _pil_image_to_pix_arr(self, pil_img):
         """
         Calculates the pixel array of a image
@@ -470,7 +471,7 @@ class Canvas:
         pixels = reshape(pixels, (self.get_width(), self.get_height()))
         return pixels
 
-    def _convert_to_1bit(self, pil_image):
+    def __convert_to_1bit(self, pil_image):
         """
         Converts an image into a 1bit image
         :param pil_image:
@@ -504,4 +505,4 @@ class Canvas:
         :param string file_path: The file path to write the data
         :param string format: The image file format to use to encode the image
         """
-        self._convert_to_1bit(self.pil_image).save(file_path, format)
+        self.__convert_to_1bit(self.pil_image).save(file_path, format)

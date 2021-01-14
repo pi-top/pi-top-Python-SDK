@@ -20,7 +20,7 @@ class ADCBase:
     def __init__(self, port_name, pin_number=1):
         self.is_current = False
         self.channel = get_pin_for_port(port_name, pin_number)
-        self._adc_device = PlateInterface.instance().get_device_mcu()
+        self.__adc_device = PlateInterface.instance().get_device_mcu()
 
     def read(self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False):
         """
@@ -37,23 +37,23 @@ class ADCBase:
         value = 0
         for i in range(0, number_of_samples):
             if peak_detection:
-                value += self._read_peak(self.channel)
+                value += self.__read_peak(self.channel)
             else:
-                value += self._read(self.channel)
+                value += self.__read(self.channel)
             if i != number_of_samples - 1:
                 time.sleep(delay_between_samples)
         return value / number_of_samples
 
     # input voltage / output voltage (%)
-    def _read(self, channel):
+    def __read(self, channel):
         read_address = 0x30 + channel
-        return self._read_register(read_address)
+        return self.__read_register(read_address)
 
     # peak detection
-    def _read_peak(self, channel):
+    def __read_peak(self, channel):
         read_address = 0x18 + channel
-        return self._read_register(read_address)
+        return self.__read_register(read_address)
 
     # read 16 bits register
-    def _read_register(self, read_address):
-        return self._adc_device.read_unsigned_word(read_address, little_endian=True)
+    def __read_register(self, read_address):
+        return self.__adc_device.read_unsigned_word(read_address, little_endian=True)

@@ -17,10 +17,10 @@ class CaptureActionBase(ABC):
     def stop(self):
         pass
 
-    def _get_output_filename(self, directory, extension):
+    def __get_output_filename(self, directory, extension):
         return path.join(directory, "output_" + strftime("%Y-%m-%d-%H-%M-%S") + "." + extension)
 
-    def _create_output_directory(self):
+    def __create_output_directory(self):
         output_directory = path.join(str(Path.home()), "Camera")
 
         if not path.isdir(output_directory):
