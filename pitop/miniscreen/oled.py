@@ -22,9 +22,10 @@ except ImportError:
 from urllib.request import urlopen
 
 
-# Adapted from luma.core.spritesheet
 class FPS_Regulator(object):
     """
+    Adapted from ``luma.core.spritesheet``
+
     Implements a variable sleep mechanism to give the appearance of a consistent
     frame rate. Using a fixed-time sleep will cause animations to be jittery
     (looking like they are speeding up or slowing down, depending on what other
@@ -133,11 +134,11 @@ class OLED:
             self.device.size
         )
         self.__canvas = Canvas(self.device, self.__image)
+        self.__previous_canvas = Canvas(self.device, deepcopy(self.__image))
 
         self.__fps_regulator = FPS_Regulator()
 
         self.__visible = False
-        self.__previous_frame = None
         self.__auto_play_thread = None
 
         # Lock file monitoring - used by pt-sys-oled
@@ -148,6 +149,11 @@ class OLED:
         self.reset()
 
         register(self.__cleanup)
+
+    @property
+    def image(self):
+        # Return the last image that was sent to the display
+        return self.__previous_canvas.image
 
     @property
     def spi_bus(self):
@@ -354,11 +360,11 @@ class OLED:
         """
         self.__fps_regulator.stop_timer()
         paint_to_screen = False
-        if self.__previous_frame is None:
+        if self.__previous_canvas is None:
             paint_to_screen = True
         else:
             # TODO: find a faster way of checking if pixel data has changed
-            prev_pix = self.__previous_frame.get_pixels()
+            prev_pix = self.__previous_canvas.get_pixels()
             current_pix = self.__canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
@@ -367,7 +373,7 @@ class OLED:
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
-        self.__previous_frame = Canvas(self.device, deepcopy(self.__image))
+        self.__previous_canvas = Canvas(self.device, deepcopy(self.__image))
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
