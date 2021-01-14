@@ -1,7 +1,10 @@
 py-pitop-sdk (0.10.2) buster; urgency=medium
 
-  * Add events to know when user starts/stops using the OLED
-  * Improve CLI handling
+  * Monitor OLED lock files using inotify to add events for user using the OLED
+  * Improve miniscreen button importing to speed miniscreen imports
+  * Handle Ctrl+C in OLED CLI
+  * CLI main function returns exit code for entry point script
+  * Drop '_set_exclusive_mode' for miniscreen objects in favour of constructor argument
 
  -- Jorge Capona <jorge@pi-top.com>  Wed, 13 Jan 2021 13:40:11 -0300
 
