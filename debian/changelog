@@ -1,4 +1,4 @@
-py-pitop-sdk (0.10.2) buster; urgency=medium
+py-pitop-sdk (0.11.0) buster; urgency=medium
 
   * Monitor OLED lock files using inotify to add events for user using the OLED
   * Improve miniscreen button importing to speed miniscreen imports
