@@ -16,9 +16,9 @@ class KeyPressListener:
         self.key = key
         self.pressed_method = None
         self.released_method = None
-        self._key_pressed = False
+        self.__key_pressed = False
         self.listener = Listener(
-            on_press=self._on_press, on_release=self._on_release)
+            on_press=self.__on_press, on_release=self.__on_release)
         self.listener.start()
 
     def __on_press(self, key):
@@ -31,12 +31,12 @@ class KeyPressListener:
         if "Key." in received_key:
             received_key = received_key.replace("Key.", "")
         if received_key == self.key:
-            self._key_pressed = True
+            self.__key_pressed = True
             if self.pressed_method is not None:
                 self.pressed_method()
 
     def __on_release(self, key):
-        self._key_pressed = False
+        self.__key_pressed = False
         received_key = None
         try:
             received_key = key.char
@@ -85,7 +85,7 @@ class KeyPressListener:
         :return: True if the key is pressed, False otherwise
         :rtype: bool
         """
-        if self._key_pressed is True:
+        if self.__key_pressed is True:
             return True
         else:
             return False

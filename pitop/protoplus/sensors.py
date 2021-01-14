@@ -15,9 +15,9 @@ class DistanceSensor():
 
         self.trigger_gpio_pin = trigger_gpio_pin
         self.echo_gpio_pin = echo_gpio_pin
-        self._setup()
+        self.__setup()
 
-    def __setup(self):
+    def ___setup(self):
         GPIO.setwarnings(False)
 
         GPIO.setmode(GPIO.BCM)
@@ -61,10 +61,10 @@ class DistanceSensor():
 
     def __measure_distance(self):
 
-        self._send_pulse()
-        pulse_duration = self._get_pulse_time()
+        self.__send_pulse()
+        pulse_duration = self.__get_pulse_time()
 
-        distance = self._get_distance_from_pulse_time(pulse_duration)
+        distance = self.__get_distance_from_pulse_time(pulse_duration)
         return distance
 
     @property
@@ -76,7 +76,7 @@ class DistanceSensor():
         return self.get_distance()
 
     def get_raw_distance(self):
-        return self._measure_distance()
+        return self.__measure_distance()
 
     def get_distance(self):
         distance_set = []
@@ -85,13 +85,13 @@ class DistanceSensor():
         while range > 10:
             distance_set = []
 
-            distance_set.append(self._measure_distance())
+            distance_set.append(self.__measure_distance())
             sleep(0.1)
 
-            distance_set.append(self._measure_distance())
+            distance_set.append(self.__measure_distance())
             sleep(0.1)
 
-            distance_set.append(self._measure_distance())
+            distance_set.append(self.__measure_distance())
             sleep(0.1)
 
             range = max(distance_set) - min(distance_set)

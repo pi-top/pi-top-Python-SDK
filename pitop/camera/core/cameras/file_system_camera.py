@@ -24,18 +24,18 @@ class FileSystemCamera:
             raise FileExistsError(f"Provided path {path} doesn't exist")
 
         self.path = path
-        self._images_arr = []
-        self._current_index = 0
-        self._current_image = None
+        self.__images_arr = []
+        self.__current_index = 0
+        self.__current_image = None
 
         self.__file_starts_with = file_starts_with
         self.__file_ends_with = file_ends_with
 
-        self._load_images()
-        self._load_frame(self._current_index)
+        self.__load_images()
+        self.__load_frame(self.__current_index)
 
     def __load_images(self, starts_with: str = "", ends_with: str = ""):
-        self._images_arr = []
+        self.__images_arr = []
 
         with os.scandir(self.path) as it:
             for file_path in it:
@@ -44,32 +44,32 @@ class FileSystemCamera:
 
                 try:
                     image_obj = FsImage(file_path.path)
-                    self._images_arr.append(image_obj)
+                    self.__images_arr.append(image_obj)
                 except Exception:
                     continue
 
     def reset(self):
-        self._current_index = 0
-        self._load_frame(self._current_index)
+        self.__current_index = 0
+        self.__load_frame(self.__current_index)
 
     def __advance(self):
-        index = min(self._current_index + 1, len(self._images_arr) - 1)
-        if index == self._current_index:
+        index = min(self.__current_index + 1, len(self.__images_arr) - 1)
+        if index == self.__current_index:
             return
 
-        self._current_index = index
-        self._load_frame(self._current_index)
+        self.__current_index = index
+        self.__load_frame(self.__current_index)
 
     def __load_frame(self, index: int):
-        if 0 <= index < len(self._images_arr):
-            self._current_image = self._images_arr[index]
+        if 0 <= index < len(self.__images_arr):
+            self.__current_image = self.__images_arr[index]
 
     def current_frame_source(self):
-        return self._current_image.path
+        return self.__current_image.path
 
     def is_opened(self):
-        return self._current_image is not None
+        return self.__current_image is not None
 
     def get_frame(self):
-        self._advance()
-        return self._current_image.data
+        self.__advance()
+        return self.__current_image.data

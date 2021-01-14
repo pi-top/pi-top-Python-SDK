@@ -57,10 +57,10 @@ class PongGameState:
 
             if (self.ball_y == self.bat_left_y):
                 self.ball_dx *= -1
-                self._adjust_ball_y_velocity(1)
+                self.__adjust_ball_y_velocity(1)
             elif (self.ball_y == self.bat_left_y + self.bat_left_size):
                 self.ball_dx *= -1
-                self._adjust_ball_y_velocity(-1)
+                self.__adjust_ball_y_velocity(-1)
             elif (self.ball_y >= self.bat_left_y and self.ball_y <= self.bat_left_y + self.bat_left_size):
                 self.ball_dx *= -1
 
@@ -68,10 +68,10 @@ class PongGameState:
 
             if (self.ball_y == self.bat_right_y):
                 self.ball_dx *= -1
-                self._adjust_ball_y_velocity(1)
+                self.__adjust_ball_y_velocity(1)
             elif (self.ball_y == self.bat_right_y + self.bat_right_size):
                 self.ball_dx *= -1
-                self._adjust_ball_y_velocity(-1)
+                self.__adjust_ball_y_velocity(-1)
             elif (self.ball_y >= self.bat_right_y and self.ball_y <= self.bat_right_y + self.bat_right_size):
                 self.ball_dx *= -1
 
@@ -94,14 +94,14 @@ class PongGameState:
 
         if (self.ball_dx < 0):
             if (self.ball_y > self.bat_left_y + (self.bat_left_size / 2)):
-                self._move_left_bat(1)
+                self.__move_left_bat(1)
             elif (self.ball_y < self.bat_left_y + (self.bat_left_size / 2)):
-                self._move_left_bat(-1)
+                self.__move_left_bat(-1)
         elif (self.ball_dx > 0):
             if (self.ball_y > self.bat_right_y + (self.bat_right_size / 2)):
-                self._move_right_bat(1)
+                self.__move_right_bat(1)
             elif (self.ball_y < self.bat_right_y + (self.bat_right_size / 2)):
-                self._move_right_bat(-1)
+                self.__move_right_bat(-1)
 
 
 def draw_bats():

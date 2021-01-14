@@ -45,17 +45,16 @@ class EncoderMotor:
 
     MMK_STANDARD_GEAR_RATIO = 41.8
     MAX_DC_MOTOR_RPM = 4800
-    _wheel_diameter = 0.075
 
     def __init__(self, port_name, forward_direction, braking_type=BrakingType.COAST, wheel_diameter=0.064):
 
-        self._port_name = port_name
-        self._motor_core = EncoderMotorController(self._port_name, braking_type.value)
-        self.forward_direction = forward_direction
-        self.wheel_diameter = wheel_diameter
+        self.__port_name = port_name
+        self.__motor_core = EncoderMotorController(self.__port_name, braking_type.value)
+        self.__forward_direction = forward_direction
+        self.__wheel_diameter = wheel_diameter
 
-        self._prev_time_dist_cnt = time.time()
-        self._previous_reading_odometer = 0
+        self.__prev_time_dist_cnt = time.time()
+        self.__previous_reading_odometer = 0
 
         atexit.register(self.stop)
 
@@ -71,11 +70,11 @@ class EncoderMotor:
         :param forward_direction:
             The direction that corresponds to forward motion.
         """
-        return ForwardDirection(self._forward_direction)
+        return ForwardDirection(self.__forward_direction)
 
     @forward_direction.setter
     def forward_direction(self, forward_direction):
-        self._forward_direction = forward_direction
+        self.__forward_direction = forward_direction
 
     @property
     def braking_type(self):
@@ -91,12 +90,12 @@ class EncoderMotor:
         :param braking_type:
             The braking type of the motor.
         """
-        return BrakingType(self._motor_core.braking_type())
+        return BrakingType(self.__motor_core.braking_type())
 
     @braking_type.setter
     def braking_type(self, braking_type):
 
-        self._motor_core.set_braking_type(braking_type.value)
+        self.__motor_core.set_braking_type(braking_type.value)
 
     def set_power(self, power, direction=Direction.FORWARD):
         """
@@ -122,9 +121,9 @@ class EncoderMotor:
         if not (-1.0 <= power <= 1.0):
             raise ValueError("Power value must be between -1.0 and +1.0 (inclusive)")
 
-        power_mapping = int(round(power * 1000) * self._forward_direction * direction)
+        power_mapping = int(round(power * 1000) * self.__forward_direction * direction)
 
-        self._motor_core.set_power(power_mapping)
+        self.__motor_core.set_power(power_mapping)
 
     def power(self):
         """
@@ -135,7 +134,7 @@ class EncoderMotor:
         If this is not the case, returns None.
         """
 
-        power = self._motor_core.power()
+        power = self.__motor_core.power()
         if power:
             return power / 1000.0
         return None
@@ -173,18 +172,18 @@ class EncoderMotor:
         :param total_rotations:
             Total number of rotations to be execute. Set to 0 to run indefinitely.
         """
-        dc_motor_rpm = int(round(target_rpm * self.MMK_STANDARD_GEAR_RATIO) * self._forward_direction * direction)
-        dc_motor_rotations = int(round(total_rotations * self.MMK_STANDARD_GEAR_RATIO) * self._forward_direction * direction)
+        dc_motor_rpm = int(round(target_rpm * self.MMK_STANDARD_GEAR_RATIO) * self.__forward_direction * direction)
+        dc_motor_rotations = int(round(total_rotations * self.MMK_STANDARD_GEAR_RATIO) * self.__forward_direction * direction)
 
         if not (-self.MAX_DC_MOTOR_RPM <= dc_motor_rpm <= self.MAX_DC_MOTOR_RPM):
             raise ValueError(f"DC motor RPM value must be between {-self.MAX_DC_MOTOR_RPM} and {self.MAX_DC_MOTOR_RPM} (inclusive)")
 
         if dc_motor_rotations == 0:
-            self._motor_core.set_rpm_control(dc_motor_rpm)
+            self.__motor_core.set_rpm_control(dc_motor_rpm)
         else:
-            dc_motor_rotation_counter = self._motor_core.odometer()
+            dc_motor_rotation_counter = self.__motor_core.odometer()
             rotations_offset_to_send = int(dc_motor_rotations + dc_motor_rotation_counter)
-            self._motor_core.set_rpm_with_rotations(dc_motor_rpm, rotations_offset_to_send)
+            self.__motor_core.set_rpm_with_rotations(dc_motor_rpm, rotations_offset_to_send)
 
     def target_rpm(self):
         """
@@ -192,16 +191,16 @@ class EncoderMotor:
         using :class:`set_target_rpm` (motor is in control mode 1). If this is not the case, returns None.
         """
 
-        rpm = self._motor_core.rpm_control()
+        rpm = self.__motor_core.rpm_control()
         if rpm:
-            return rpm / self.MMK_STANDARD_GEAR_RATIO * self._forward_direction
+            return rpm / self.MMK_STANDARD_GEAR_RATIO * self.__forward_direction
         return None
 
     def stop(self):
         """
         Stop the motor in all circumstances.
         """
-        self._motor_core.stop()
+        self.__motor_core.stop()
 
     @property
     def current_rpm(self):
@@ -213,7 +212,7 @@ class EncoderMotor:
 
         """
 
-        dc_motor_rpm_actual = self._motor_core.tachometer() * self._forward_direction
+        dc_motor_rpm_actual = self.__motor_core.tachometer() * self.__forward_direction
         output_shaft_rpm_actual = dc_motor_rpm_actual / self.MMK_STANDARD_GEAR_RATIO
 
         return output_shaft_rpm_actual
@@ -227,7 +226,7 @@ class EncoderMotor:
         This value is a float with many decimal points of accuracy, so can be used to monitor even very small turns of the output shaft.
         """
 
-        dc_motor_rotation_counter = self._motor_core.odometer() * self._forward_direction
+        dc_motor_rotation_counter = self.__motor_core.odometer() * self.__forward_direction
         output_shaft_rotation_counter = round(dc_motor_rotation_counter / self.MMK_STANDARD_GEAR_RATIO, 1)
 
         return output_shaft_rotation_counter
@@ -269,15 +268,18 @@ class EncoderMotor:
         :param wheel_diameter:
             Wheel diameter in meters.
         """
-        return self._wheel_diameter
+        return self.__wheel_diameter
+
+    @property
+    def wheel_circumference(self):
+        return self.__wheel_diameter * pi
 
     @wheel_diameter.setter
     def wheel_diameter(self, wheel_diameter):
         if wheel_diameter <= 0.0:
             raise ValueError("Wheel diameter must be higher than 0")
 
-        self._wheel_diameter = wheel_diameter
-        self._wheel_circumference = self._wheel_diameter * pi
+        self.__wheel_diameter = wheel_diameter
 
     def set_target_speed(self, target_speed, direction=Direction.FORWARD, distance=0.0):
         """
@@ -293,7 +295,7 @@ class EncoderMotor:
 
         .. note::
             Note that for this method to move the wheel the expected :data:`distance`, the correct
-            :data:`wheel_circumference` value needs to be used.
+            :data:`wheel_diameter` value needs to be used.
 
         :type target_speed: int or float
         :param target_speed:
@@ -310,8 +312,8 @@ class EncoderMotor:
         if not (-self.max_speed <= target_speed <= self.max_speed):
             raise ValueError(f"Wheel speed value must be between {-self.max_speed} and {self.max_speed} (inclusive)")
 
-        rpm = 60.0 * (target_speed / self._wheel_circumference)
-        total_rotations = distance / self._wheel_circumference
+        rpm = 60.0 * (target_speed / self.wheel_circumference)
+        total_rotations = distance / self.wheel_circumference
 
         self.set_target_rpm(rpm, direction, total_rotations)
 
@@ -374,7 +376,7 @@ class EncoderMotor:
             Note that this value might differ from the target speed set through :class:`set_target_speed`.
         """
 
-        return (self.current_rpm / 60.0) * self._wheel_circumference
+        return (self.current_rpm / 60.0) * self.wheel_circumference
 
     @property
     def distance(self):
@@ -385,7 +387,7 @@ class EncoderMotor:
             Note that this value depends on using the correct :data:`wheel_circumference` value
         """
 
-        return self._wheel_circumference * self.rotation_counter
+        return self.wheel_circumference * self.rotation_counter
 
     @property
     def max_speed(self):
@@ -397,4 +399,4 @@ class EncoderMotor:
             Note that this value depends on using the correct :data:`wheel_circumference` value
         """
 
-        return self.max_rpm / 60.0 * self._wheel_circumference
+        return self.max_rpm / 60.0 * self.wheel_circumference

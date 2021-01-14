@@ -10,14 +10,14 @@ class ADCProbe():
 
     def __init__(self, i2c_device_name="/dev/i2c-1"):
 
-        self._i2c_device_name = i2c_device_name
-        self._device = None
-        self._error_array = [-1] * self._channel_count
+        self.__i2c_device_name = i2c_device_name
+        self.__device = None
+        self.__error_array = [-1] * self.__channel_count
 
     def read_value(self, channel):
 
-        if ((channel < 0) or (channel > self._channel_count)):
-            print("Invalid channel - use 0 to " + str(self._channel_count - 1))
+        if ((channel < 0) or (channel > self.__channel_count)):
+            print("Invalid channel - use 0 to " + str(self.__channel_count - 1))
             return -1
 
         results = self.read_all()
@@ -28,20 +28,20 @@ class ADCProbe():
 
         if (self.__connect() is False):
             print("Could not connect to device")
-            return self._error_array
+            return self.__error_array
 
         # TODO: use a proper public method here
-        results = self._device._read_data(self._channel_count)
+        results = self.__device._read_data(self.__channel_count)
         data_read_len = len(results)
-        self._disconnect()
+        self.__disconnect()
 
-        if (data_read_len != self._channel_count):
+        if (data_read_len != self.__channel_count):
             print("Bad read from device. "
-                  f"Expected {str(self._channel_count)} bytes, received {str(data_read_len)} bytes.")
-            return self._error_array
+                  f"Expected {str(self.__channel_count)} bytes, received {str(data_read_len)} bytes.")
+            return self.__error_array
 
-        for i in range(self._channel_count):
-            results[i] *= self._adc_ratio
+        for i in range(self.__channel_count):
+            results[i] *= self.__adc_ratio
             results[i] = int(results[i])
 
         return results
@@ -62,9 +62,9 @@ class ADCProbe():
     def __connect(self):
 
         try:
-            self._device = I2CDevice(
-                self._i2c_device_name, self._device_address)
-            self._device.connect()
+            self.__device = I2CDevice(
+                self.__i2c_device_name, self.__device_address)
+            self.__device.connect()
 
         except Exception as e:
             print("Unable to read from ADC over I2C: " + str(e))
@@ -74,5 +74,5 @@ class ADCProbe():
 
     def __disconnect(self):
 
-        if (self._device is not None):
-            self._device.disconnect()
+        if (self.__device is not None):
+            self.__device.disconnect()
