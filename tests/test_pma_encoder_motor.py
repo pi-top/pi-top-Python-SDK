@@ -29,7 +29,7 @@ class EncoderMotorTestCase(TestCase):
             forward_direction=ForwardDirection.CLOCKWISE,
             braking_type=BrakingType.COAST)
 
-        self.assertEquals(wheel.wheel_diameter, 0.064)
+        self.assertEquals(wheel.wheel_diameter, 0.075)
         self.assertEquals(round(wheel._wheel_circumference, 3), 0.201)
         self.assertEquals(wheel.forward_direction, ForwardDirection.CLOCKWISE)
 
@@ -37,7 +37,7 @@ class EncoderMotorTestCase(TestCase):
         """Max speed calculation based on max rpm"""
         EncoderMotor.max_rpm = Mock()
         EncoderMotor.max_rpm = 142
-        EncoderMotor._wheel_circumference = 0.064
+        EncoderMotor._wheel_circumference = 0.075
 
         wheel = EncoderMotor(
             port_name="M1",

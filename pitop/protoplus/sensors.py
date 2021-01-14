@@ -15,16 +15,16 @@ class DistanceSensor():
 
         self.trigger_gpio_pin = trigger_gpio_pin
         self.echo_gpio_pin = echo_gpio_pin
-        self._setup()
+        self.__setup()
 
-    def _setup(self):
+    def ___setup(self):
         GPIO.setwarnings(False)
 
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.trigger_gpio_pin, GPIO.OUT)
         GPIO.setup(self.echo_gpio_pin, GPIO.IN)
 
-    def _send_pulse(self):
+    def __send_pulse(self):
 
         GPIO.output(self.trigger_gpio_pin, False)
         sleep(0.03)
@@ -32,7 +32,7 @@ class DistanceSensor():
         sleep(0.00001)
         GPIO.output(self.trigger_gpio_pin, False)
 
-    def _get_pulse_time(self):
+    def __get_pulse_time(self):
 
         timeout = time() + 0.02  # 0.02s timeout
         pulse_start = time()
@@ -53,18 +53,18 @@ class DistanceSensor():
         pulse_duration = pulse_end - pulse_start
         return pulse_duration
 
-    def _get_distance_from_pulse_time(self, pulse_duration):
+    def __get_distance_from_pulse_time(self, pulse_duration):
 
         pulse_duration_one_way = pulse_duration / 2
         distance = round(pulse_duration_one_way * speed_of_sound, 2)
         return distance
 
-    def _measure_distance(self):
+    def __measure_distance(self):
 
-        self._send_pulse()
-        pulse_duration = self._get_pulse_time()
+        self.__send_pulse()
+        pulse_duration = self.__get_pulse_time()
 
-        distance = self._get_distance_from_pulse_time(pulse_duration)
+        distance = self.__get_distance_from_pulse_time(pulse_duration)
         return distance
 
     @property
@@ -76,7 +76,7 @@ class DistanceSensor():
         return self.get_distance()
 
     def get_raw_distance(self):
-        return self._measure_distance()
+        return self.__measure_distance()
 
     def get_distance(self):
         distance_set = []
@@ -85,13 +85,13 @@ class DistanceSensor():
         while range > 10:
             distance_set = []
 
-            distance_set.append(self._measure_distance())
+            distance_set.append(self.__measure_distance())
             sleep(0.1)
 
-            distance_set.append(self._measure_distance())
+            distance_set.append(self.__measure_distance())
             sleep(0.1)
 
-            distance_set.append(self._measure_distance())
+            distance_set.append(self.__measure_distance())
             sleep(0.1)
 
             range = max(distance_set) - min(distance_set)

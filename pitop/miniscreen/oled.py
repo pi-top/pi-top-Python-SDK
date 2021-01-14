@@ -210,8 +210,8 @@ class OLED:
 
         self.draw()
 
-    def _draw_text_base(self, text_func, text, font_size, xy):
-        self.__canvas.clear()
+    def __draw_text_base(self, text_func, text, font_size, xy):
+        self.canvas.clear()
 
         if font_size is not None:
             previous_font_size = self.__canvas.font_size
@@ -240,7 +240,7 @@ class OLED:
         if xy is None:
             xy = self.__canvas.top_left()
 
-        self._draw_text_base(self.__canvas.text, text, font_size, xy)
+        self.__draw_text_base(self.__canvas.text, text, font_size, xy)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -260,7 +260,7 @@ class OLED:
         if xy is None:
             xy = self.__canvas.top_left()
 
-        self._draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
+        self.__draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
 
     def draw(self):
         """
