@@ -24,7 +24,7 @@ class Battery:
 
     def __setup_subscribe_client(self):
         def on_state_changed(parameters):
-            charging_state = parameters[0]
+            charging_state = int(parameters[0])
 
             if charging_state not in range(0, 3):
                 PTLogger.warning("Invalid charging state from pi-top device manager")
