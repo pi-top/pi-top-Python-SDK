@@ -156,6 +156,11 @@ class OLED:
         return self.__previous_canvas.image
 
     @property
+    def canvas_image(self):
+        # Return the image that is being prepared for the display
+        return self.__image
+
+    @property
     def spi_bus(self):
         return self.controller.spi_bus
 
