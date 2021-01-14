@@ -42,7 +42,7 @@ class OledDeviceController:
         def on_spi_bus_changed(parameters):
             self.__spi_bus = int(parameters[0])
             self.reset_device()
-            self.__device_reset_func(False)
+            self.__device_reset_func(reset_controller=False)
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
