@@ -3,7 +3,7 @@ from time import sleep
 
 # Setup the motor
 
-motor = EncoderMotor("M3", ForwardDirection.COUNTER_CLOCKWISE)
+motor = EncoderMotor("M0", ForwardDirection.COUNTER_CLOCKWISE)
 motor.braking_type = BrakingType.COAST
 
 
