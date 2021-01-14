@@ -1,6 +1,14 @@
 #!/usr/bin/python3
 
-from os import get_terminal_size
+from netifaces import (
+    AF_LINK,
+    AF_INET,
+    AF_INET6,
+    ifaddresses,
+    interfaces,
+)
+from os import get_terminal_size, uname
+from time import asctime, gmtime
 
 from pitopcommon.command_runner import run_command, run_command_background
 from pitopcommon.current_session_info import get_first_display
@@ -22,15 +30,23 @@ class StdoutFormat:
     GREEN = '\033[92m'
 
     @classmethod
-    def print_header(cls, section_name):
-        print(f"{StdoutFormat.BOLD}{section_name}{StdoutFormat.ENDC} {'='*(get_terminal_size().columns - len(section_name) - 2)}")
+    def print_header(cls, header):
+        print(f"{StdoutFormat.BOLD}{header}{StdoutFormat.ENDC} {'='*(get_terminal_size().columns - len(header) - 2)}")
+
+    @classmethod
+    def print_section(cls, section):
+        print(f"- {StdoutFormat.BOLD}{section}{StdoutFormat.ENDC} {'-'*(get_terminal_size().columns - len(section) - 3)}")
+
+    @classmethod
+    def print_line(cls, content):
+        print(f"{content}")
 
     @classmethod
     def clickable_text(cls, text, url):
         return f"\u001b]8;;{url}\u001b\\{text}\u001b]8;;\u001b\\"
 
     @classmethod
-    def print_line(cls, title, text, url, status):
+    def print_checkbox_line(cls, title, text, url, status):
         print(f"[ {StdoutFormat.GREEN}{'✓' if status else ' '}{StdoutFormat.ENDC} ]", end=" ")
         print(f"{StdoutFormat.BOLD}{title}{StdoutFormat.ENDC}: {text}\n\t{cls.clickable_text(url, url) if status else url}", end=" ")
         print("")
@@ -42,46 +58,107 @@ class Links:
     KNOWLEDGE_BASE_URI = "https://knowledgebase.pi-top.com/"
     FORUM_URI = "https://forum.pi-top.com/"
 
-    @classmethod
-    def _is_doc_package_installed(cls):
+    def _is_doc_package_installed(self):
         try:
             run_command("dpkg -l python3-pitop-doc", timeout=3, check=True, log_errors=False)
             return True
         except Exception:
             return False
 
-    @classmethod
-    def get_docs_url(cls):
+    def get_docs_url(self):
         if is_connected_to_internet():
-            return cls.ONLINE_URI
-        elif cls._is_doc_package_installed():
-            return cls.LOCAL_URI
+            return self.ONLINE_URI
+        elif self._is_doc_package_installed():
+            return self.LOCAL_URI
         else:
             raise Exception(
                 "Not connected to internet and python3-pitop-doc not installed.\n" +
                 "Please, connect to the internet or install the documentation package via 'sudo apt install python3-pitop-doc'")
 
-    @classmethod
-    def print_docs(cls):
+    def print_docs(self):
         is_connected = is_connected_to_internet()
         StdoutFormat.print_header("DOCS")
-        StdoutFormat.print_line("pi-top Python SDK documentation", "online version, recommended", cls.ONLINE_URI, is_connected)
-        StdoutFormat.print_line("pi-top Python SDK documentation", "offline version", cls.LOCAL_URI, cls._is_doc_package_installed())
+        StdoutFormat.print_checkbox_line("pi-top Python SDK documentation", "online version, recommended", self.ONLINE_URI, is_connected)
+        StdoutFormat.print_checkbox_line("pi-top Python SDK documentation", "offline version", self.LOCAL_URI, self._is_doc_package_installed())
 
-    @classmethod
-    def print_other(cls):
+    def print_other(self):
         is_connected = is_connected_to_internet()
         StdoutFormat.print_header("OTHER")
-        StdoutFormat.print_line("Knowledge Base", "Find answers to commonly asked questions", cls.KNOWLEDGE_BASE_URI, is_connected)
-        StdoutFormat.print_line("Forum", "Discuss and search through support topics.", cls.FORUM_URI, is_connected)
+        StdoutFormat.print_checkbox_line("Knowledge Base", "Find answers to commonly asked questions", self.KNOWLEDGE_BASE_URI, is_connected)
+        StdoutFormat.print_checkbox_line("Forum", "Discuss and search through support topics.", self.FORUM_URI, is_connected)
 
-    @classmethod
-    def open_docs_in_browser(cls):
+    def open_docs_in_browser(self):
         display = get_first_display()
         if display is None:
             raise Exception("There isn't a display available to open the documentation.")
-        url = cls.get_docs_url()
+        url = self.get_docs_url()
         run_command_background(f"x-www-browser {url}")
+
+
+class HealthCheck:
+
+    RASPI_CONFIG_SETTINGS = ("get_can_expand",
+                             "get_hostname",
+                             "get_boot_cli",
+                             "get_autologin",
+                             "get_boot_wait",
+                             "get_boot_splash",
+                             "get_overscan",
+                             "get_camera",
+                             "get_ssh",
+                             "get_vnc",
+                             "get_spi",
+                             "get_i2c",
+                             "get_serial",
+                             "get_serial_hw",
+                             "get_onewire",
+                             "get_rgpio",
+                             "get_pi_type",
+                             "get_wifi_country")
+
+    NETWORK_ENUM_LOOKUP = {AF_LINK: 'LINK_LAYER',
+                           AF_INET: 'INTERNET_IPV4',
+                           AF_INET6: 'INTERNET_IPV6'}
+
+    def print_os_info(self):
+        StdoutFormat.print_section("OS INFORMATION")
+        self.print_machine_information()
+
+        StdoutFormat.print_section("raspi-config settings")
+        self.print_raspi_config_settings()
+
+        StdoutFormat.print_header("NETWORK SETTINGS")
+        self.print_network_settings()
+
+    def print_machine_information(self):
+        u = uname()
+        print(f"Kernel Name: {u.sysname}")
+        print(f"Hostname: {u.nodename}")
+        print(f"Kernel Version: {u.release}")
+        print(f"Kernel Release: {u.version}")
+        print(f"Platform: {u.machine}")
+
+    def print_raspi_config_settings(self):
+        def get_setting_value(setting):
+            return run_command(f"raspi-config nonint {setting}", timeout=5).strip()
+
+        for setting in self.RASPI_CONFIG_SETTINGS:
+            print(f" └ {setting} - {get_setting_value(setting)}")
+
+    def print_network_settings(self):
+        def print_interface_info(interface_name):
+            iface_info = ifaddresses(interface_name)
+            # get network layer, ipv4 and ipv6 info
+            for netiface_enum, section_name in self.NETWORK_ENUM_LOOKUP.items():
+                interface_info = iface_info.get(netiface_enum)
+                if interface_info:
+                    for v in interface_info:
+                        print(f" └ {section_name} - {v}")
+
+        interfaces_list = interfaces()
+        for iface in interfaces_list:
+            StdoutFormat.print_section(f"Interface: {iface}")
+            print_interface_info(iface)
 
 
 class SupportCLI(CliBaseClass):
@@ -94,20 +171,24 @@ class SupportCLI(CliBaseClass):
     def run(self) -> int:
 
         if self.args.help_subcommand == "links":
+            links = Links()
             if self.args.docs_subcommand == "docs":
                 if self.args.open:
-                    Links.open_docs_in_browser()
+                    links.open_docs_in_browser()
                 elif self.args.preferred:
-                    print(Links.get_docs_url())
+                    print(links.get_docs_url())
                 else:
-                    Links.print_docs()
+                    links.print_docs()
             elif self.args.docs_subcommand == "help":
-                Links.print_other()
+                links.print_other()
             else:
-                Links.print_docs()
-                Links.print_other()
+                links.print_docs()
+                links.print_other()
         elif self.args.help_subcommand == "health_check":
-            pass
+            hc = HealthCheck()
+            StdoutFormat.print_header("SYSTEM HEALTH CHECK")
+            StdoutFormat.print_line(f"Current time (GMT): {asctime(gmtime())}")
+            hc.print_os_info()
         return 0
 
     @classmethod
@@ -136,5 +217,5 @@ class SupportCLI(CliBaseClass):
         docs_subparser.add_parser("help", help="Places where to look for help")
 
         # pi-top support health_check
-        subparser.add_parser("System Health Check",
+        subparser.add_parser("health_check",
                              help="Perform a system verification to find possible issues")
