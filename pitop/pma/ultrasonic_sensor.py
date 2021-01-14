@@ -13,6 +13,9 @@ from .common import get_pin_for_port
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
+#
+# Note: all private member variables are semi-private to follow upstream gpiozero convention
+# and to override inherited functions
 class UltrasonicSensor(SmoothedInputDevice):
     ECHO_LOCK = Lock()
 

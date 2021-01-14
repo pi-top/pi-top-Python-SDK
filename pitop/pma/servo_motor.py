@@ -26,18 +26,18 @@ class ServoMotor:
     :param zero_point:
         A user-defined offset from 'true' zero.
     """
-    _HARDWARE_MIN_ANGLE = -ServoHardwareSpecs.ANGLE_RANGE / 2
-    _HARDWARE_MAX_ANGLE = ServoHardwareSpecs.ANGLE_RANGE / 2
-    _DEFAULT_SPEED = 50.0
+    __HARDWARE_MIN_ANGLE = -ServoHardwareSpecs.ANGLE_RANGE / 2
+    __HARDWARE_MAX_ANGLE = ServoHardwareSpecs.ANGLE_RANGE / 2
+    __DEFAULT_SPEED = 50.0
 
     def __init__(self, port, zero_point=0):
-        self._controller = ServoController(port)
-        self._target_state = ServoMotorState()
-        self._min_angle = self._HARDWARE_MIN_ANGLE
-        self._max_angle = self._HARDWARE_MAX_ANGLE
+        self.__controller = ServoController(port)
+        self.__target_state = ServoMotorState()
+        self.__min_angle = self.__HARDWARE_MIN_ANGLE
+        self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
-        self._zero_point = zero_point
-        atexit.register(self._controller.cleanup)
+        self.__zero_point = zero_point
+        atexit.register(self.__controller.cleanup)
 
     @property
     def zero_point(self):
@@ -53,17 +53,17 @@ class ServoMotor:
             to raise an exception.
         """
 
-        return self._zero_point
+        return self.__zero_point
 
     @zero_point.setter
     def zero_point(self, zero_position):
-        if not (self._HARDWARE_MIN_ANGLE <= zero_position <= self._HARDWARE_MAX_ANGLE):
-            raise ValueError(f"Value must be from {self._HARDWARE_MIN_ANGLE} to {self._HARDWARE_MAX_ANGLE} degrees "
+        if not (self.__HARDWARE_MIN_ANGLE <= zero_position <= self.__HARDWARE_MAX_ANGLE):
+            raise ValueError(f"Value must be from {self.__HARDWARE_MIN_ANGLE} to {self.__HARDWARE_MAX_ANGLE} degrees "
                              f"(inclusive)")
 
-        self._zero_point = zero_position
-        self._min_angle = self._HARDWARE_MIN_ANGLE - self._zero_point
-        self._max_angle = self._HARDWARE_MAX_ANGLE - self._zero_point
+        self.__zero_point = zero_position
+        self.__min_angle = self.__HARDWARE_MIN_ANGLE - self.__zero_point
+        self.__max_angle = self.__HARDWARE_MAX_ANGLE - self.__zero_point
 
     @property
     def angle_range(self):
@@ -75,7 +75,7 @@ class ServoMotor:
             The maximum and minimum angles depend on the zero-point setting.
         """
 
-        return self._min_angle, self._max_angle
+        return self.__min_angle, self.__max_angle
 
     @property
     def state(self):
@@ -87,7 +87,7 @@ class ServoMotor:
             PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve angle or speed.")
             return None, None
 
-        angle, speed = self._controller.get_current_angle_and_speed()
+        angle, speed = self.__controller.get_current_angle_and_speed()
         current_state = ServoMotorState()
         current_state.angle = angle
         current_state.speed = speed
@@ -122,17 +122,17 @@ class ServoMotor:
         angle = target_state.angle
         speed = target_state.speed
 
-        if not (self._min_angle <= angle <= self._max_angle):
-            raise ValueError(f"Angle value must be from {self._min_angle} to {self._max_angle} degrees (inclusive)")
+        if not (self.__min_angle <= angle <= self.__max_angle):
+            raise ValueError(f"Angle value must be from {self.__min_angle} to {self.__max_angle} degrees (inclusive)")
         else:
-            self._target_state.angle = angle
+            self.__target_state.angle = angle
 
         if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
             raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
         else:
-            self._target_state.speed = speed
+            self.__target_state.speed = speed
 
-        self._controller.set_target_angle(angle + self._zero_point, speed)
+        self.__controller.set_target_angle(angle + self.__zero_point, speed)
         self.__has_set_angle = True
 
     @property
@@ -165,7 +165,7 @@ class ServoMotor:
         """
         if not self.__has_set_angle:
             PTLogger.warning("You should initialise the servo motor with an angle first, e.g. using .target_angle = 0")
-        return self._target_state.angle
+        return self.__target_state.angle
 
     @target_angle.setter
     def target_angle(self, angle):
@@ -176,7 +176,7 @@ class ServoMotor:
         """
         target_state = ServoMotorState()
         target_state.angle = angle
-        target_state.speed = self._DEFAULT_SPEED
+        target_state.speed = self.__DEFAULT_SPEED
         self.state = target_state
 
     @property
@@ -185,7 +185,7 @@ class ServoMotor:
         Returns the last target speed that has been set.
         :return: float value of the target speed of the servo motor in deg/s.
         """
-        return self._target_state.speed
+        return self.__target_state.speed
 
     @target_speed.setter
     def target_speed(self, speed):
@@ -206,7 +206,7 @@ class ServoMotor:
         if not self.__has_set_angle:
             PTLogger.warning("You should initialise the servo motor with an angle first, e.g. using .target_angle = 0")
 
-        angle_setting = self._min_angle if speed < 0 else self._max_angle
+        angle_setting = self.__min_angle if speed < 0 else self.__max_angle
 
         target_state = ServoMotorState()
         target_state.angle = angle_setting
