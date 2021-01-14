@@ -45,6 +45,7 @@ class OLED:
         self.__previous_frame = None
         self.__auto_play_thread = None
 
+        # Lock file monitoring - used by pt-sys-oled
         self.__file_monitor_thread = None
         self.__when_user_stops_using_oled = None
         self.__when_user_starts_using_oled = None
@@ -350,53 +351,50 @@ class OLED:
                 break
 
     @property
-    def when_user_starts_using_oled(self):
+    def _when_user_starts_using_oled(self):
         return self.__when_user_starts_using_oled
 
-    @when_user_starts_using_oled.setter
-    def when_user_starts_using_oled(self, callback):
+    @_when_user_starts_using_oled.setter
+    def _when_user_starts_using_oled(self, callback):
         if not callable(callback):
             raise ValueError("Callback must be callable")
 
-        if self.__when_user_starts_using_oled is not None:
-            self.__file_monitor_thread.join(0)
-
         self.__when_user_starts_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
         self.__start_lockfile_monitoring_thread()
 
     @property
-    def when_user_stops_using_oled(self):
+    def _when_user_stops_using_oled(self):
         return self.__when_user_stops_using_oled
 
-    @when_user_stops_using_oled.setter
-    def when_user_stops_using_oled(self, callback):
+    @_when_user_stops_using_oled.setter
+    def _when_user_stops_using_oled(self, callback):
         if not callable(callback):
             raise ValueError("Callback must be callable")
 
-        if self.__when_user_stops_using_oled is not None:
-            self.__file_monitor_thread.join(0)
-
         self.__when_user_stops_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
         self.__start_lockfile_monitoring_thread()
 
-    def __start_lockfile_monitoring(self):
-        eh = ProcessEvent()
-        events_to_watch = 0
-        if self.__when_user_stops_using_oled:
-            eh.process_IN_CLOSE_WRITE = lambda event: self.__when_user_stops_using_oled()
-            events_to_watch = events_to_watch | IN_CLOSE_WRITE
-        if self.__when_user_starts_using_oled:
-            eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
-            events_to_watch = events_to_watch | IN_OPEN
-
-        wm = WatchManager()
-        wm.add_watch(self.LOCK_FILE_PATH, events_to_watch)
-        notifier = Notifier(wm, eh)
-        notifier.loop()
-
     def __start_lockfile_monitoring_thread(self):
+
+        def start_lockfile_monitoring():
+            eh = ProcessEvent()
+            events_to_watch = 0
+            if self.__when_user_stops_using_oled:
+                eh.process_IN_CLOSE_WRITE = lambda event: self.__when_user_stops_using_oled()
+                events_to_watch = events_to_watch | IN_CLOSE_WRITE
+            if self.__when_user_starts_using_oled:
+                eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
+                events_to_watch = events_to_watch | IN_OPEN
+
+            wm = WatchManager()
+            wm.add_watch(self.LOCK_FILE_PATH, events_to_watch)
+            notifier = Notifier(wm, eh)
+            notifier.loop()
+
         self.__cleanup()
-        self.__file_monitor_thread = Thread(target=self.__start_lockfile_monitoring)
+        self.__file_monitor_thread = Thread(target=start_lockfile_monitoring)
         self.__file_monitor_thread.daemon = True
         self.__file_monitor_thread.start()
 
