@@ -3,7 +3,7 @@ from pitopcommon.ptdm import (
     Message
 )
 from pitopcommon.lock import PTLock
-from pitopcommon.singeton import Singleton
+from pitopcommon.singleton import Singleton
 
 import atexit
 from uuid import uuid1
