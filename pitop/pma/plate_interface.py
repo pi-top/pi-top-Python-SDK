@@ -7,8 +7,7 @@ from pitopcommon.singleton import Singleton
 from .common.plate_registers import PlateRegisters
 
 
-@Singleton
-class PlateInterface:
+class PlateInterface(metaclass=Singleton):
 
     def __init__(self):
 

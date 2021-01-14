@@ -3,6 +3,7 @@ from pitopcommon.ptdm import (
     Message
 )
 from pitopcommon.lock import PTLock
+from pitopcommon.singeton import Singleton
 
 import atexit
 from uuid import uuid1
@@ -16,19 +17,6 @@ class Button:
         # Event-based functions
         self.when_pressed = None
         self.when_released = None
-
-
-# TODO - integrate into common lib
-# This is used to allow creating an instance without `.instance()`, and with arguments
-class Singleton(type):
-    def __init__(cls, name, bases, dic):
-        super(Singleton, cls).__init__(name, bases, dic)
-        cls.instance = None
-
-    def __call__(cls, *args, **kwargs):
-        if cls.instance is None:
-            cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls.instance
 
 
 class Buttons(metaclass=Singleton):
