@@ -89,14 +89,6 @@ class OledDeviceController:
         return int(response.parameters[0])
 
     ##############################
-    # Only intended to be used by pt-sys-oled
-    ##############################
-
-    def set_exclusive_mode(self, val: bool):
-        self.__exclusive_mode = val
-        self.reset_device()
-
-    ##############################
     # Public methods
     ##############################
 

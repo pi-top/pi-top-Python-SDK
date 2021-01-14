@@ -30,7 +30,7 @@ class Buttons:
     SELECT = "SELECT"
     CANCEL = "CANCEL"
 
-    def __init__(self):
+    def __init__(self, _exclusive_mode=True):
         self.up = Button(self.UP)
         self.down = Button(self.DOWN)
         self.select = Button(self.SELECT)
@@ -43,7 +43,7 @@ class Buttons:
 
         self.uuid = uuid1()
 
-        self.exclusive_mode = True
+        self.exclusive_mode = _exclusive_mode
         self.lock = None
         self.__configure_lock()
 

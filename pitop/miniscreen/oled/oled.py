@@ -28,8 +28,9 @@ class OLED:
 
     LOCK_FILE_PATH = "/tmp/pt-oled.lock"
 
-    def __init__(self, exclusive_mode=True):
-        self.controller = OledDeviceController(self.reset, exclusive_mode)
+    # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
+    def __init__(self, _exclusive_mode=True):
+        self.controller = OledDeviceController(self.reset, _exclusive_mode)
 
         self.__image = None
         self.__canvas = None
@@ -99,10 +100,6 @@ class OLED:
 
     def set_control_to_hub(self):
         self.controller.set_control_to_hub()
-
-    # Only intended to be used by pt-sys-oled
-    def _set_exclusive_mode(self, val: bool):
-        self.controller.set_exclusive_mode(val)
 
     def set_max_fps(self, max_fps):
         """
