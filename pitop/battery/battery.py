@@ -17,6 +17,8 @@ class Battery:
         # self.when_capacity_changed = None
         self.when_full = None
 
+        self.__previous_charging_state = Battery.get_full_state()[0]
+
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
 
@@ -29,6 +31,12 @@ class Battery:
             if charging_state not in range(0, 3):
                 PTLogger.warning("Invalid charging state from pi-top device manager")
                 return
+
+            if charging_state == self.__previous_charging_state:
+                PTLogger.debug("Charging state has not changed - doing nothing...")
+                return
+
+            self.__previous_charging_state = charging_state
 
             funcs_to_invoke = {
                 2: self.when_full,
