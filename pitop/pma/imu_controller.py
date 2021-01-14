@@ -26,7 +26,7 @@ class ImuController:
         self.__enable_registers = ImuRegisters.ENABLE
         self.__config_registers = ImuRegisters.CONFIG
         self.__mag_cal_registers = ImuRegisters.MAGCAL
-        self.__mcu_device = PlateInterface.instance().get_device_mcu()
+        self.__mcu_device = PlateInterface().get_device_mcu()
         self.__acc_enable = False
         self.__gyro_enable = False
         self.__mag_enable = False

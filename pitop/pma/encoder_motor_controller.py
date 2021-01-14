@@ -20,7 +20,7 @@ class EncoderMotorController:
         if port not in MotorControlRegisters.__members__:
             raise Exception("Invalid port. Motors must be connected to ports M0-M3")
 
-        self.__mcu_device = PlateInterface.instance().get_device_mcu()
+        self.__mcu_device = PlateInterface().get_device_mcu()
         self.registers = MotorControlRegisters[port].value
         self.set_braking_type(braking_type)
 
