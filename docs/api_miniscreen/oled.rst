@@ -77,16 +77,13 @@ Prim's algorithm
 OLED class
 ---------------------
 
-.. automodule:: pitop.miniscreen.oled
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. autoclass:: pitop.miniscreen.OLED
 
 ---------------------
 Canvas class
 ---------------------
 
-.. automodule:: pitop.miniscreen.oled.core.canvas
+.. automodule:: pitop.miniscreen.core.canvas
     :members:
     :undoc-members:
     :show-inheritance:

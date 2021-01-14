@@ -20,7 +20,7 @@ jobs:
           docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
           docker start chglog
           docker exec chglog git config --global user.name "GitHub Build Action"
-          docker exec chglog git config --global user.email "https://github.com/pi-top/pi-top-Python-SDK"
+          docker exec chglog git config --global user.email "https://github.com/${{ env.GITHUB_REPOSITORY_NAME }}"
 
       - name: Patch changelog (snapshot)
         # '--ignore-branch' for testing on feature branch
@@ -60,12 +60,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Delete unpatched changelog
+        if: github.event_name != 'release'
+        run: |
+          rm ${{ github.workspace }}/debian/changelog
+
       - name: Download patched changelog
         if: github.event_name != 'release'
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
+            path: "${{ github.workspace }}/debian"
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.0
@@ -84,7 +89,7 @@ jobs:
       - name: Upload Debian package artifacts
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
           path: "${{ github.workspace }}/artifacts"
 
       # TODO: publish to APT server
@@ -104,12 +109,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Delete unpatched changelog
+        if: github.event_name != 'release'
+        run: |
+          rm ${{ github.workspace }}/debian/changelog
+
       - name: Download patched changelog
         if: github.event_name != 'release'
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
+            path: "${{ github.workspace }}/debian"
 
       - name: Set up Python
         uses: actions/setup-python@v2

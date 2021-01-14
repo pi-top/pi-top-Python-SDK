@@ -1,26 +1,21 @@
-from .core.controls import (
-    device_is_active as _device_is_active,
-    reset_device as _reset_device,
-    get_device as _get_device,
-    set_control_to_pi as _set_control_to_pi,
-    set_control_to_hub as _set_control_to_hub,
-    _set_exclusive_mode
-)
 from .core.canvas import Canvas
+from .core.device_controller import OledDeviceController
 from .core.fps_regulator import FPS_Regulator
 from .core.image_helper import (
     get_pil_image_from_path,
     process_pil_image_frame,
 )
 
-from pitopcommon.ptdm import (
-    PTDMSubscribeClient,
-    Message,
-)
-
-import atexit
+from atexit import register
 from copy import deepcopy
 from PIL import Image, ImageSequence
+from pyinotify import (
+    IN_CLOSE_WRITE,
+    IN_OPEN,
+    Notifier,
+    ProcessEvent,
+    WatchManager,
+)
 from threading import Thread
 from time import sleep
 
@@ -31,59 +26,80 @@ class OLED:
     for simple rendering of text or images to the screen.
     """
 
-    def __init__(self):
-        self._visible = False
-        self.device = _get_device()
-        self.image = Image.new(self.device.mode,
-                               self.device.size)
-        self.canvas = Canvas(self.device, self.image)
-        self.fps_regulator = FPS_Regulator()
-        self._previous_frame = None
-        self.auto_play_thread = None
+    LOCK_FILE_PATH = "/tmp/pt-oled.lock"
+
+    # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
+    def __init__(self, _exclusive_mode=True):
+        self.controller = OledDeviceController(self.reset, _exclusive_mode)
+
+        self.__image = None
+        self.__canvas = None
+
+        self.image = Image.new(
+            self.device.mode,
+            self.device.size
+        )
+
+        self.__fps_regulator = FPS_Regulator()
+
+        self.__visible = False
+        self.__previous_frame = None
+        self.__auto_play_thread = None
+
+        # Lock file monitoring - used by pt-sys-oled
+        self.__file_monitor_thread = None
+        self.__when_user_stops_using_oled = None
+        self.__when_user_starts_using_oled = None
 
         self.reset()
 
-        self.when_pi_takes_control = None
-        self.when_hub_takes_control = None
+        register(self.__cleanup)
 
-        self.__ptdm_subscribe_client = None
-        self.__setup_subscribe_client()
+    @property
+    def image(self):
+        return self.__image
 
-        atexit.register(self.__clean_up)
+    @image.setter
+    def image(self, image):
+        self.__image = image
+        self.__canvas = Canvas(self.device, self.__image)
 
-    def __setup_subscribe_client(self):
-        def on_control_changed(parameters):
-            controller = int(parameters[0])
+    @property
+    def spi_bus(self):
+        return self.controller.spi_bus
 
-            if controller == 1:
-                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_pi_takes_control)
-            else:
-                self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_hub_takes_control)
+    @spi_bus.setter
+    def spi_bus(self, bus):
+        self.controller.spi_bus = bus
 
-        self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise({
-            Message.PUB_OLED_CONTROL_CHANGED: on_control_changed,
-        })
-        self.__ptdm_subscribe_client.start_listening()
+    @property
+    def device(self):
+        return self.controller.get_device()
 
-    def __clean_up(self):
-        try:
-            self.__ptdm_subscribe_client.stop_listening()
-        except Exception:
-            pass
+    @property
+    def size(self):
+        return self.device.size
+
+    @property
+    def width(self):
+        return self.size[0]
+
+    @property
+    def height(self):
+        return self.size[1]
+
+    @property
+    def mode(self):
+        return self.device.mode
 
     def is_active(self):
-        return _device_is_active()
+        return self.controller.device_is_active()
 
     def set_control_to_pi(self):
-        _set_control_to_pi()
+        self.controller.set_control_to_pi()
 
     def set_control_to_hub(self):
-        _set_control_to_hub()
-
-    # Only intended to be used by pt-sys-oled
-    def _set_exclusive_mode(self, val: bool):
-        _set_exclusive_mode(val)
+        self.controller.set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """
@@ -93,7 +109,7 @@ class OLED:
 
         :param int max_fps: The maximum frames that can be rendered per second
         """
-        self.fps_regulator.set_max_fps(max_fps)
+        self.__fps_regulator.set_max_fps(max_fps)
 
     def hide(self):
         """
@@ -103,7 +119,7 @@ class OLED:
         been called).
         """
         self.device.hide()
-        self._visible = False
+        self.__visible = False
 
     def show(self):
         """
@@ -112,28 +128,40 @@ class OLED:
         has not been called)
         """
         self.device.show()
-        self._visible = True
+        self.__visible = True
 
+    @property
     def is_hidden(self):
         """
         Returns whether the device is currently in low power state
         :return: whether the the screen is in low power mode
         :rtype: bool
         """
-        return self._visible
+        return not self.__visible
 
-    def reset(self):
+    def contrast(self, new_contrast_value):
+        assert new_contrast_value in range(0, 256)
+
+        self.device.contrast(new_contrast_value)
+
+    def wake(self):
+        self.contrast(255)
+
+    def sleep(self):
+        self.contrast(0)
+
+    def reset(self, reset_controller=True):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
         """
         self.set_control_to_pi()
-        self.canvas.clear()
+        self.__canvas.clear()
 
-        _reset_device()
-        self.device = _get_device()
+        if reset_controller:
+            self.controller.reset_device()
 
-        self.device.display(self.image)
+        self.device.display(self.__image)
         self.device.contrast(255)
 
         self.show()
@@ -149,7 +177,7 @@ class OLED:
         """
         Render a static image to the screen from a file or URL at a given position.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param str file_path_or_url: A file path or URL to the image
@@ -166,7 +194,7 @@ class OLED:
 
         The image should be provided as a PIL Image object.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param Image image: A PIL Image object to be rendered
@@ -175,31 +203,31 @@ class OLED:
             the screen.
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.__canvas.top_left()
 
-        self.canvas.clear()
-        self.canvas.image(xy, image)
+        self.__canvas.clear()
+        self.__canvas.image(xy, image)
 
         self.draw()
 
     def _draw_text_base(self, text_func, text, font_size, xy):
-        self.canvas.clear()
+        self.__canvas.clear()
 
         if font_size is not None:
-            previous_font_size = self.canvas.font_size
-            self.canvas.set_font_size(font_size)
+            previous_font_size = self.__canvas.font_size
+            self.__canvas.set_font_size(font_size)
 
         text_func(xy, text, fill=1, spacing=0, align="left")
         self.draw()
 
         if font_size is not None:
-            self.canvas.set_font_size(previous_font_size)
+            self.__canvas.set_font_size(previous_font_size)
 
     def draw_text(self, text, xy=None, font_size=None):
         """
         Renders a single line of text to the screen at a given position and size.
 
-        The helper methods in the pitop.miniscreen.oled.core.Canvas class can be used to specify the
+        The helper methods in the pitop.miniscreen.core.Canvas class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -210,16 +238,16 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.__canvas.top_left()
 
-        self._draw_text_base(self.canvas.text, text, font_size, xy)
+        self._draw_text_base(self.__canvas.text, text, font_size, xy)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         """
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -230,9 +258,9 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.__canvas.top_left()
 
-        self._draw_text_base(self.canvas.multiline_text, text, font_size, xy)
+        self._draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
 
     def draw(self):
         """
@@ -243,21 +271,21 @@ class OLED:
         the *canvas* object to draw composite objects and then render them
         to screen in a single frame.
         """
-        self.fps_regulator.stop_timer()
+        self.__fps_regulator.stop_timer()
         paint_to_screen = False
-        if self._previous_frame is None:
+        if self.__previous_frame is None:
             paint_to_screen = True
         else:
-            prev_pix = self._previous_frame.get_pixels()
-            current_pix = self.canvas.get_pixels()
+            prev_pix = self.__previous_frame.get_pixels()
+            current_pix = self.__canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
 
         if paint_to_screen:
-            self.device.display(self.image)
+            self.device.display(self.__image)
 
-        self.fps_regulator.start_timer()
-        self._previous_frame = Canvas(self.device, deepcopy(self.image))
+        self.__fps_regulator.start_timer()
+        self.__previous_frame = Canvas(self.device, deepcopy(self.__image))
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
@@ -286,9 +314,9 @@ class OLED:
         """
         self.__kill_thread = False
         if background is True:
-            self.auto_play_thread = Thread(
+            self.__auto_play_thread = Thread(
                 target=self.__auto_play, args=(image, loop))
-            self.auto_play_thread.start()
+            self.__auto_play_thread.start()
         else:
             self.__auto_play(image)
 
@@ -296,9 +324,9 @@ class OLED:
         """
         Stop background animation started using `start()`, if currently running.
         """
-        if self.auto_play_thread is not None:
+        if self.__auto_play_thread is not None:
             self.__kill_thread = True
-            self.auto_play_thread.join()
+            self.__auto_play_thread.join()
 
     def __auto_play(self, image, loop=False):
         while True:
@@ -318,3 +346,55 @@ class OLED:
             if self.__kill_thread or not loop:
                 self.reset()
                 break
+
+    @property
+    def _when_user_starts_using_oled(self):
+        return self.__when_user_starts_using_oled
+
+    @_when_user_starts_using_oled.setter
+    def _when_user_starts_using_oled(self, callback):
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.__when_user_starts_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.__start_lockfile_monitoring_thread()
+
+    @property
+    def _when_user_stops_using_oled(self):
+        return self.__when_user_stops_using_oled
+
+    @_when_user_stops_using_oled.setter
+    def _when_user_stops_using_oled(self, callback):
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.__when_user_stops_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.__start_lockfile_monitoring_thread()
+
+    def __start_lockfile_monitoring_thread(self):
+
+        def start_lockfile_monitoring():
+            eh = ProcessEvent()
+            events_to_watch = 0
+            if self.__when_user_stops_using_oled:
+                eh.process_IN_CLOSE_WRITE = lambda event: self.__when_user_stops_using_oled()
+                events_to_watch = events_to_watch | IN_CLOSE_WRITE
+            if self.__when_user_starts_using_oled:
+                eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
+                events_to_watch = events_to_watch | IN_OPEN
+
+            wm = WatchManager()
+            wm.add_watch(self.LOCK_FILE_PATH, events_to_watch)
+            notifier = Notifier(wm, eh)
+            notifier.loop()
+
+        self.__cleanup()
+        self.__file_monitor_thread = Thread(target=start_lockfile_monitoring)
+        self.__file_monitor_thread.daemon = True
+        self.__file_monitor_thread.start()
+
+    def __cleanup(self):
+        if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
+            self.__file_monitor_thread.join(0)
