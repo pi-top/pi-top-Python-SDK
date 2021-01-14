@@ -1,3 +1,4 @@
+from pitopcommon.logger import PTLogger
 from pitopcommon.ptdm import (
     PTDMRequestClient,
     PTDMSubscribeClient,
@@ -22,24 +23,28 @@ class Battery:
         atexit.register(self.__clean_up)
 
     def __setup_subscribe_client(self):
-        def invoke(func):
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(func)
-
         def on_state_changed(parameters):
-            charging_state, capacity, time_remaining, wattage = parameters
+            charging_state = parameters[0]
 
-            if charging_state == 2:
-                invoke(self.when_full)
+            if charging_state not in range(0, 3):
+                PTLogger.warning("Invalid charging state from pi-top device manager")
+                return
 
-            if charging_state == 0:
-                invoke(self.when_discharging)
-            else:
-                invoke(self.when_charging)
+            funcs_to_invoke = {
+                2: self.when_full,
+                1: self.when_charging,
+                0: self.when_discharging,
+            }
+
+            func = funcs_to_invoke[charging_state]
+
+            if callable(func):
+                func()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
-            Message.PUB_LOW_BATTERY_WARNING: lambda: invoke(self.when_low),
-            Message.PUB_CRITICAL_BATTERY_WARNING: lambda: invoke(self.when_critical),
+            Message.PUB_LOW_BATTERY_WARNING: lambda: self.when_low,
+            Message.PUB_CRITICAL_BATTERY_WARNING: lambda: self.when_critical,
             Message.PUB_BATTERY_STATE_CHANGED: on_state_changed,
         })
         self.__ptdm_subscribe_client.start_listening()
