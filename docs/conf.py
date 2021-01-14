@@ -119,6 +119,7 @@ autodoc_mock_imports = [
     'pitopcommon.sys_config',
     'PIL',
     'pynput',
+    'pyinotify',
     'PyV4L2Camera',
     'scipy',
     'serial',

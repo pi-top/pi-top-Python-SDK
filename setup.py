@@ -107,6 +107,7 @@ __requires__ = [
     "luma.oled",
     "luma.core",
     "monotonic",
+    "pyinotify",
 
     ##########
     # Proto+ #
