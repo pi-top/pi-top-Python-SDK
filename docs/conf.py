@@ -115,6 +115,7 @@ autodoc_mock_imports = [
     'pitopcommon.lock',
     'pitopcommon.logger',
     'pitopcommon.ptdm',
+    'pitopcommon.singleton',
     'pitopcommon.smbus_device',
     'pitopcommon.sys_config',
     'PIL',
