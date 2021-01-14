@@ -37,65 +37,66 @@ from pitopcommon.logger import PTLogger
 
 
 class ImuCalibration:
-    _MAG_POLL_FREQUENCY = 25.0  # Hz
-    _GYRO_POLL_FREQUENCY = 5.0  # Hz
-    _SLEEP_TIME = 0.005
-    _MAG_FILTER_SIZE = 5
+    __MAG_POLL_FREQUENCY = 25.0  # Hz
+    __GYRO_POLL_FREQUENCY = 5.0  # Hz
+    __SLEEP_TIME = 0.005
+    __MAG_FILTER_SIZE = 5
 
     def __init__(self):
         self.imu_controller = ImuController()
         self.imu_controller.acc_enable = True
         self.imu_controller.gyro_enable = True
         self.imu_controller.mag_enable = True
-        self._mag_measurements = np.zeros((1, 3), dtype=float)
-        self._mag_filter_array = np.zeros((self._MAG_FILTER_SIZE, 3), dtype=float)
-        self._hard_iron_offset = None
-        self._soft_iron_matrix = None
-        self._mag_measurements_calibrated = None
-        self._center = None
-        self._radii = None
-        self._rotation_matrix = None
-        self._field_strength = None
-        self._test_data = None
-        self._save_data_name = None
+
+        self.__mag_measurements = np.zeros((1, 3), dtype=float)
+        self.__mag_filter_array = np.zeros((self.__MAG_FILTER_SIZE, 3), dtype=float)
+        self.__hard_iron_offset = None
+        self.__soft_iron_matrix = None
+        self.__mag_measurements_calibrated = None
+        self.__center = None
+        self.__radii = None
+        self.__rotation_matrix = None
+        self.__field_strength = None
+        self.__test_data = None
+        self.__save_data_name = None
         atexit.register(self.imu_controller.cleanup)
 
     @property
     def mag_data(self):
-        return self._mag_measurements
+        return self.__mag_measurements
 
     def calibrate_magnetometer(self, test_data=None, save_data_name=None, update_mcu=True):
         print("Starting magnetometer calibration")
 
-        self._test_data = test_data
-        self._save_data_name = save_data_name
+        self.__test_data = test_data
+        self.__save_data_name = save_data_name
         if test_data is None:
-            self._get_test_data()
+            self.__get_test_data()
         else:
-            self._mag_measurements = test_data
+            self.__mag_measurements = test_data
 
         if save_data_name and test_data is None:
             print("Saving test data...")
             with open(save_data_name, 'wb') as f:
-                np.save(f, self._mag_measurements[self._MAG_FILTER_SIZE:])
+                np.save(f, self.__mag_measurements[self.__MAG_FILTER_SIZE:])
 
         print("Calculating calibration parameters...")
 
-        self._field_strength = self._get_field_strength()
+        self.__field_strength = self.__get_field_strength()
 
-        M, n, d = self._get_ellipse_parameters()
+        M, n, d = self.__get_ellipse_parameters()
 
-        self._center, self._radii, self._rotation_matrix = get_ellipsoid_geometric_params(M, n, d)
+        self.__center, self.__radii, self.__rotation_matrix = get_ellipsoid_geometric_params(M, n, d)
 
-        self._hard_iron_offset, self._soft_iron_matrix = self._get_calibration_matrices(M, n, d, self._field_strength)
+        self.__hard_iron_offset, self.__soft_iron_matrix = self.__get_calibration_matrices(M, n, d, self.__field_strength)
 
-        print("_hard_iron_offset: {}".format(self._hard_iron_offset))
-        print("_soft_iron_matrix: {}".format(self._soft_iron_matrix))
+        print("_hard_iron_offset: {}".format(self.__hard_iron_offset))
+        print("_soft_iron_matrix: {}".format(self.__soft_iron_matrix))
 
-        self._mag_measurements_calibrated = self._calibrate_mag_data()
+        self.__mag_measurements_calibrated = self.__calibrate_mag_data()
 
         if update_mcu:
-            self.imu_controller.write_mag_cal_params(self._hard_iron_offset, self._soft_iron_matrix)
+            self.imu_controller.write_mag_cal_params(self.__hard_iron_offset, self.__soft_iron_matrix)
 
     def plot_graphs(self, path_to_save_figure="/tmp/"):
         if path_to_save_figure and not path.isdir(path_to_save_figure):
@@ -106,9 +107,9 @@ class ImuCalibration:
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]
 
-        x_cal = self._mag_measurements_calibrated[:, 0]
-        y_cal = self._mag_measurements_calibrated[:, 1]
-        z_cal = self._mag_measurements_calibrated[:, 2]
+        x_cal = self.__mag_measurements_calibrated[:, 0]
+        y_cal = self.__mag_measurements_calibrated[:, 1]
+        z_cal = self.__mag_measurements_calibrated[:, 2]
 
         fig1 = plt.figure(1, figsize=(10, 10), dpi=80)
         fig1.suptitle('Raw Magnetometer Data with Least Squares Ellipsoid Fit', fontsize=16)
@@ -118,7 +119,7 @@ class ImuCalibration:
         ax1.set_ylabel('Y')
         ax1.set_zlabel('Z')
         ax1.scatter(x_uncal, y_uncal, z_uncal, color='r')
-        plot_ellipsoid(self._center, self._radii, self._rotation_matrix, ax=ax1, plotAxes=True)
+        plot_ellipsoid(self.__center, self.__radii, self.__rotation_matrix, ax=ax1, plotAxes=True)
 
         fig2 = plt.figure(2, figsize=(10, 10), dpi=80)
         fig2.suptitle('Calibrated Magnetometer Data with Field Strength Unit Sphere', fontsize=16)
@@ -132,9 +133,9 @@ class ImuCalibration:
         # # plot unit sphere
         u = np.linspace(0, 2 * np.pi, 100)
         v = np.linspace(0, np.pi, 100)
-        x = np.outer(np.cos(u), np.sin(v)) * self._field_strength
-        y = np.outer(np.sin(u), np.sin(v)) * self._field_strength
-        z = np.outer(np.ones(np.size(u)), np.cos(v)) * self._field_strength
+        x = np.outer(np.cos(u), np.sin(v)) * self.__field_strength
+        y = np.outer(np.sin(u), np.sin(v)) * self.__field_strength
+        z = np.outer(np.ones(np.size(u)), np.cos(v)) * self.__field_strength
         ax2.plot_wireframe(x, y, z, rstride=10, cstride=10, alpha=0.5)
         ax2.plot_surface(x, y, z, alpha=0.3, color='b')
 
@@ -142,36 +143,36 @@ class ImuCalibration:
         plt.savefig(path_to_file)
         print(f"Calibration data was save to {path_to_file}")
 
-    def _get_test_data(self):
+    def __get_test_data(self):
         imu_controller = ImuController()
         thread_event = Event()
-        mag_poll_thread = Thread(target=self._poll_magnetometer_data, args=[thread_event, imu_controller, ],
+        mag_poll_thread = Thread(target=self.__poll_magnetometer_data, args=[thread_event, imu_controller, ],
                                  daemon=True)
         mag_poll_thread.start()
 
         sleep(1)
 
         print("Hold the pi-top flat in the air so roll and pitch angles are zero.")
-        self._orientation_check(axis='z')
+        self.__orientation_check(axis='z')
         sleep(1)
         print("Now rotate the pi-top 360 degrees whilst keeping it flat.")
-        self._rotation_check(axis='z')
+        self.__rotation_check(axis='z')
         print("Done!")
         sleep(1)
 
         print("Now turn the pi-top on it's side so the roll angle is +90 or -90 degrees.")
-        self._orientation_check(axis='x')
+        self.__orientation_check(axis='x')
         sleep(1)
         print("Now rotate the pi-top 360 degrees whilst keeping it on its side.")
-        self._rotation_check(axis='x')
+        self.__rotation_check(axis='x')
         print("Done!")
         sleep(1)
 
         print("Now turn the pi-top on it's other side so the pitch angle is +90 or -90 degrees.")
-        self._orientation_check(axis='y')
+        self.__orientation_check(axis='y')
         sleep(1)
         print("Now rotate the pi-top 360 degrees whilst keeping it on its side.")
-        self._rotation_check(axis='y')
+        self.__rotation_check(axis='y')
         print("Done!")
         sleep(1)
 
@@ -186,13 +187,13 @@ class ImuCalibration:
 
         sleep(1)
 
-    def _rotation_check(self, axis: str):
+    def __rotation_check(self, axis: str):
         prev_time = time()
         degrees_rotated = 0
         while abs(degrees_rotated) < 360.0:
             current_time = time()
             dt = current_time - prev_time
-            if dt > (1 / self._GYRO_POLL_FREQUENCY):
+            if dt > (1 / self.__GYRO_POLL_FREQUENCY):
                 x, y, z = self.imu_controller.gyroscope_raw
                 if axis == 'x':
                     degrees_rotated += x * dt
@@ -203,9 +204,9 @@ class ImuCalibration:
                 # print("degrees_rotated: {}".format(degrees_rotated))
                 prev_time = current_time
             else:
-                sleep(self._SLEEP_TIME)
+                sleep(self.__SLEEP_TIME)
 
-    def _orientation_check(self, axis: str):
+    def __orientation_check(self, axis: str):
         if axis not in ('x', 'y', 'z'):
             raise ValueError("axis value must me 'x', 'y' or 'z'.")
 
@@ -236,7 +237,7 @@ class ImuCalibration:
             if roll_check(roll, pitch):
                 break
             else:
-                sleep(self._SLEEP_TIME)
+                sleep(self.__SLEEP_TIME)
 
     def accelerometer_orientation(self):
         x, y, z = self.imu_controller.accelerometer_raw
@@ -245,7 +246,7 @@ class ImuCalibration:
 
         return roll, pitch
 
-    def _poll_magnetometer_data(self, thread_event, imu_controller):
+    def __poll_magnetometer_data(self, thread_event, imu_controller):
         print("Polling mag data...")
         sleep(1)
         prev_time = time()
@@ -253,7 +254,7 @@ class ImuCalibration:
         error_count = 0
         while not thread_event.is_set():
             current_time = time()
-            if current_time - prev_time > (1 / self._MAG_POLL_FREQUENCY):
+            if current_time - prev_time > (1 / self.__MAG_POLL_FREQUENCY):
                 x, y, z = imu_controller.magnetometer_raw
                 if abs(x) < error_tolerance and abs(y) < error_tolerance and abs(z) < error_tolerance:
                     print("Read error, trying again...")
@@ -264,27 +265,27 @@ class ImuCalibration:
                         exit()
                     continue
                 new_mag_data = [x, y, z]
-                self._mag_filter_array, mag_median = self._running_median(self._mag_filter_array, new_mag_data)
-                self._mag_measurements = np.append(self._mag_measurements, [mag_median], axis=0)
+                self.__mag_filter_array, mag_median = self.__running_median(self.__mag_filter_array, new_mag_data)
+                self.__mag_measurements = np.append(self.__mag_measurements, [mag_median], axis=0)
                 prev_time = current_time
             else:
-                sleep(self._SLEEP_TIME)
+                sleep(self.__SLEEP_TIME)
 
     @staticmethod
-    def _running_median(old_array, new_data):
+    def __running_median(old_array, new_data):
         new_array = np.append(np.delete(old_array, 0, 0), [new_data], axis=0)
         new_median = np.median(new_array, axis=0)
         return new_array, new_median
 
-    def _get_field_strength(self):
+    def __get_field_strength(self):
         # from  https://www.nxp.com/docs/en/application-note/AN4246.pdf
-        squared_measurements = np.square(self._mag_measurements)
+        squared_measurements = np.square(self.__mag_measurements)
 
         matrix_y = np.sum(squared_measurements, axis=1)
 
-        rows, columns = self._mag_measurements.shape
+        rows, columns = self.__mag_measurements.shape
         ones = np.ones((rows, 1))
-        matrix_x = np.column_stack((self._mag_measurements, ones))
+        matrix_x = np.column_stack((self.__mag_measurements, ones))
 
         matrix_x_transpose = np.transpose(matrix_x)
 
@@ -299,7 +300,7 @@ class ImuCalibration:
 
         return field_strength
 
-    def _get_ellipse_parameters(self):
+    def __get_ellipse_parameters(self):
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]
@@ -308,7 +309,7 @@ class ImuCalibration:
 
         return M, n, d
 
-    def _get_calibration_matrices(self, M, n, d, field_strength):
+    def __get_calibration_matrices(self, M, n, d, field_strength):
         hard_iron_offset = None
         soft_iron_matrix = None
 
@@ -320,17 +321,17 @@ class ImuCalibration:
                 hard_iron_offset = -np.dot(Minv, n)
             except Warning as e:
                 PTLogger.error("Calibration error: {}".format(e))
-                if self._test_data is None:
+                if self.__test_data is None:
                     PTLogger.info("Starting calibration process again...")
                     sleep(3)
-                    self.calibrate_magnetometer(test_data=self._test_data, save_data_name=self._save_data_name)
+                    self.calibrate_magnetometer(test_data=self.__test_data, save_data_name=self.__save_data_name)
                 else:
                     PTLogger.info("Please try again with different test data.")
                     exit()
 
         return hard_iron_offset, soft_iron_matrix
 
-    def _calibrate_mag_data(self):
+    def __calibrate_mag_data(self):
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]
@@ -342,12 +343,12 @@ class ImuCalibration:
         error_squared_sum = 0
         for i in range(len(x_uncal)):
             h_actual = np.array([[x_uncal[i], y_uncal[i], z_uncal[i]]]).T
-            h_estimate = np.matmul(self._soft_iron_matrix, h_actual - self._hard_iron_offset)
+            h_estimate = np.matmul(self.__soft_iron_matrix, h_actual - self.__hard_iron_offset)
             x_cal[i] = h_estimate[0]
             y_cal[i] = h_estimate[1]
             z_cal[i] = h_estimate[2]
             magnitude = np.sqrt(np.dot(h_estimate.T, h_estimate))
-            error = (magnitude[0][0] - self._field_strength)
+            error = (magnitude[0][0] - self.__field_strength)
             error_squared = error ** 2
             error_sum += error
             error_squared_sum += error_squared
