@@ -24,9 +24,6 @@ class ServoController:
     Class used to read/write servo motor registers from the MCU
     """
 
-    __lower_duty_cycle = 0
-    __upper_duty_cycle = 0
-
     def __init__(self, port: str):
         if port not in ServoControlRegisters.__members__:
             raise Exception("Invalid port. Servo motors must be connected to ports S1-S4")
@@ -34,9 +31,8 @@ class ServoController:
         self.registers = ServoControlRegisters[port].value
         self.__mcu_device = PlateInterface.instance().get_device_mcu()
 
-        # TODO - verify
-        self.__lower_duty_cycle = None
-        self.__upper_duty_cycle = None
+        self.__lower_duty_cycle = 0
+        self.__upper_duty_cycle = 0
 
         self.set_pwm_frequency(ServoHardwareSpecs.PWM_FREQUENCY)
         self.set_min_pulse_width(ServoHardwareSpecs.MIN_PULSE_WIDTH_MICRO_S)
