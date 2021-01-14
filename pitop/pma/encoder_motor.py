@@ -46,7 +46,7 @@ class EncoderMotor:
     MMK_STANDARD_GEAR_RATIO = 41.8
     MAX_DC_MOTOR_RPM = 4800
 
-    def __init__(self, port_name, forward_direction, braking_type=BrakingType.COAST, wheel_diameter=0.064):
+    def __init__(self, port_name, forward_direction, braking_type=BrakingType.COAST, wheel_diameter=0.075):
 
         self.__port_name = port_name
         self.__motor_core = EncoderMotorController(self.__port_name, braking_type.value)
@@ -270,16 +270,16 @@ class EncoderMotor:
         """
         return self.__wheel_diameter
 
-    @property
-    def wheel_circumference(self):
-        return self.__wheel_diameter * pi
-
     @wheel_diameter.setter
     def wheel_diameter(self, wheel_diameter):
         if wheel_diameter <= 0.0:
             raise ValueError("Wheel diameter must be higher than 0")
 
         self.__wheel_diameter = wheel_diameter
+
+    @property
+    def wheel_circumference(self):
+        return self.wheel_diameter * pi
 
     def set_target_speed(self, target_speed, direction=Direction.FORWARD, distance=0.0):
         """
