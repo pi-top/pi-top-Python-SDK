@@ -26,7 +26,7 @@ class Battery:
             self.__ptdm_subscribe_client.invoke_callback_func_if_exists(func)
 
         def on_state_changed(parameters):
-            charging_state, capacity, time_remaining, wattage = parameters()
+            charging_state, capacity, time_remaining, wattage = parameters
 
             if charging_state == 2:
                 invoke(self.when_full)
@@ -57,7 +57,7 @@ class Battery:
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        return response.parameters()
+        return response.parameters
 
     @property
     def is_charging(self):

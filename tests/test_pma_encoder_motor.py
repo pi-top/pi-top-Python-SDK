@@ -1,13 +1,5 @@
-from pitop.pma.encoder_motor import EncoderMotor
-from pitop.pma.parameters import (
-    BrakingType,
-    ForwardDirection,
-    Direction
-)
-from unittest import TestCase, skip
-from sys import modules
 from unittest.mock import Mock
-from math import pi
+from sys import modules
 
 modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
@@ -17,6 +9,15 @@ modules["pitopcommon.smbus_device"] = Mock()
 modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
+from pitop.pma.encoder_motor import EncoderMotor
+from pitop.pma.parameters import (
+    BrakingType,
+    ForwardDirection,
+    Direction
+)
+from unittest import TestCase, skip
+from math import pi
 
 
 @skip
@@ -79,7 +80,7 @@ class EncoderMotorTestCase(TestCase):
         new_diameter = 0.5
         wheel.wheel_diameter = new_diameter
         self.assertNotEqual(wheel._wheel_circumference, initial_circumference)
-        self.assertEquals(wheel._wheel_circumference, new_diameter*pi)
+        self.assertEquals(wheel._wheel_circumference, new_diameter * pi)
 
     def test_wheel_diameter_cant_be_zero_or_negative(self):
         """Wheel diameter must be higher than zero"""

@@ -1,5 +1,5 @@
 from pitop.miniscreen import OLED
-from pitop.miniscreen.buttons import CancelButton
+from pitop.miniscreen import CancelButton
 from time import sleep
 
 oled = OLED()
