@@ -10,12 +10,16 @@ import atexit
 
 class Battery:
     def __init__(self):
+        # Battery capacity change events from ptdm
         self.when_low = None
         self.when_critical = None
+
+        # Battery full capacity as charging state change event from ptdm
+        self.when_full = None
+
+        # Internal battery charging state change events
         self.when_charging = None
         self.when_discharging = None
-        # self.when_capacity_changed = None
-        self.when_full = None
 
         self.__previous_charging_state = Battery.get_full_state()[0]
 
