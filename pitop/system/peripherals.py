@@ -25,7 +25,7 @@ def legacy_pitop_peripherals():
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        p_enabled = (response.parameters()[0] == '1')
+        p_enabled = (int(response.parameters[0]) == 1)
         peripherals.append({
             "name": human_readable_name,
             "connected": p_enabled})

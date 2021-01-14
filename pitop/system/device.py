@@ -12,14 +12,14 @@ def __device_id():
     with PTDMRequestClient() as request_client:
         response = request_client.send_message(message)
 
-    parameters = response.parameters()
+    parameters = response.parameters
     device_id = int(parameters[0])
     return device_id
 
 
 def __device_name(device_id):
     device_lookup = {
-        DeviceID.unknown.value:  "Unknown",
+        DeviceID.unknown.value: "Unknown",
         DeviceID.pi_top.value: "Original pi-top",
         DeviceID.pi_top_ceed.value: "pi-topCEED",
         DeviceID.pi_top_3.value: "pi-top [3]",

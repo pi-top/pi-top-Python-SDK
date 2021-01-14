@@ -29,22 +29,36 @@ class OledCLI(CliBaseClass):
                 return False
 
         try:
-            oled = OLED()
-
-            if self.args.force:
-                oled.set_control_to_pi()
-
             if self.args.oled_subcommand == "draw":
-                print("Press Ctrl + C to exit.")
+                # Do take control of OLED to draw
+                oled = OLED(_exclusive_mode=True)
 
-                skip_timeout = False
-                if isfile(self.args.text) or is_url(self.args.text):
-                    oled.play_animated_image_file(self.args.text)
+                if self.args.force:
+                    oled.set_control_to_pi()
+
+                try:
+                    print("Press Ctrl + C to exit.")
+
+                    skip_timeout = False
+                    if isfile(self.args.text) or is_url(self.args.text):
+                        oled.play_animated_image_file(self.args.text)
+                    else:
+                        oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
+
+                    if not skip_timeout:
+                        sleep(self.args.timeout)
+
+                except KeyboardInterrupt:
+                    pass
+
+            elif self.args.oled_subcommand == "spi":
+                # Do not take control of OLED just to change its internal state
+                oled = OLED(_exclusive_mode=False)
+
+                if self.args.spi_bus is not None:
+                    oled.spi_bus = self.args.spi_bus
                 else:
-                    oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
-
-                if not skip_timeout:
-                    sleep(self.args.timeout)
+                    print(oled.spi_bus)
 
             else:
                 print("Functionality not available yet")
@@ -59,6 +73,12 @@ class OledCLI(CliBaseClass):
         subparser = parser.add_subparsers(title="OLED screen utilities",
                                           description="Set of utilities to use pi-top [4]'s OLED screen",
                                           dest="oled_subcommand")
+
+        parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
+        parser_capture.add_argument("--force", "-f",
+                                    help="Force the hub to give control of the OLED to the Pi",
+                                    action="store_true"
+                                    )
 
         parser_draw = subparser.add_parser("draw", help="Draw text and images into the OLED")
         parser_draw.add_argument("--force", "-f",
@@ -84,11 +104,12 @@ class OledCLI(CliBaseClass):
                                  help="Set the text to write to screen",
                                  )
 
-        parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
-        parser_capture.add_argument("--force", "-f",
-                                    help="Force the hub to give control of the OLED to the Pi",
-                                    action="store_true"
-                                    )
+        parser_spi = subparser.add_parser("spi", help="Set SPI bus that is used by OLED")
+        parser_spi.add_argument("spi_bus",
+                                help="SPI buts to be used by OLED. Valid options: {0, 1}",
+                                type=int,
+                                choices=[0, 1],
+                                nargs='?')
 
 
 def main():

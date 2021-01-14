@@ -4,17 +4,22 @@ pi-top Python SDK (Preview)
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
+.. ###############################################
+.. # NOTE: THESE ARE EXTERNAL LINKS, AS THEY ARE #
+.. # REQUIRED FOR THE IMAGES TO SHOW ON PYPI     #
+.. ###############################################
+
 Supports all pi-top devices:
 
-.. image:: docs/_static/overview/devices.jpg
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/devices.jpg
 
 Supports pi-top Maker Architecture (PMA):
 
-.. image:: docs/_static/overview/pma.jpg
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/pma.jpg
 
 Supports all pi-top peripherals:
 
-.. image:: docs/_static/overview/peripherals.jpg
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/peripherals.jpg
 
 --------------------------
 Status: Active Development
@@ -33,6 +38,10 @@ Build Status: Latest
 
 .. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Build,%20Test%20and%20Publish
    :alt: GitHub Workflow Status
+
+
+.. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
+    :alt: GitHub tag (latest by date)
 
 .. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
     :alt: GitHub release (latest by date)
@@ -107,7 +116,8 @@ The pi-top Python SDK is installed out of the box with pi-topOS, which is availa
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
-.. _Getting Started: https://docs.pi-top.com/python-sdk/latest/getting_started.html
+.. _Getting Started: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
+
 
 -------------
 Documentation
@@ -115,7 +125,7 @@ Documentation
 
 Comprehensive documentation is available here_.
 
-.. _here: https://docs.pi-top.com/python-sdk/latest/getting_started.html
+.. _here: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
 
 -------------
 Development

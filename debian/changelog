@@ -1,3 +1,48 @@
+py-pitop-sdk (0.11.0) buster; urgency=medium
+
+  * Monitor OLED lock files using inotify to add events for user using the OLED
+  * Improve miniscreen button importing to speed miniscreen imports
+  * Handle Ctrl+C in OLED CLI
+  * CLI main function returns exit code for entry point script
+  * Drop '_set_exclusive_mode' for miniscreen objects in favour of constructor
+  argument
+  * Move 'miniscreen.buttons.buttons' to 'miniscreen.buttons'
+  * Move 'miniscreen.oled.oled' to 'miniscreen.oled'
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 13 Jan 2021 13:40:11 -0300
+
+py-pitop-sdk (0.10.1) buster; urgency=medium
+
+  * Fix recursion issue when resetting OLED
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 12 Jan 2021 10:46:11 -0300
+
+py-pitop-sdk (0.10.0) buster; urgency=medium
+
+  * Use parameters property, not function
+  * Remove unused zmq dependency (handled in common lib)
+  * OLED uses controller class
+  * Add additional top-level OLED properties for size and mode
+  * Add additional top-level OLED functions for contrast
+  * Canvas and FPS regulators are now private
+  * Add 'pi-top oled spi' command for changing SPI bus
+  * Fix test imports
+  * Some misc syntax fixes
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 11 Jan 2021 14:09:42 -0300
+
+py-pitop-sdk (0.9.0) buster; urgency=medium
+
+  * Migrate deprecated CLIs to python3-pitop-migr
+
+ -- Mike Roberts <mike@pi-top.com>  Thu, 07 Jan 2021 15:29:50 +0000
+
+py-pitop-sdk (0.8.1) buster; urgency=medium
+
+  * Update GitHub CI - only build on master; publish to PyPI on release
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 04 Jan 2021 13:36:22 +0000
+
 py-pitop-sdk (0.8.0) buster; urgency=medium
 
   * Rename 'help' CLI to 'support'

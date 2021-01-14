@@ -18,7 +18,4 @@ Note: when you write a program that interacts with the pi-top [4] buttons, you w
 Buttons
 --------
 
-.. automodule:: pitop.miniscreen.buttons
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. autoclass:: pitop.miniscreen.Buttons
