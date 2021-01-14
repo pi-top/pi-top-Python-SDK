@@ -29,9 +29,10 @@ class OledCLI(CliBaseClass):
                 return False
 
         try:
-            oled = OLED()
-
             if self.args.oled_subcommand == "draw":
+                # Do take control of OLED to draw
+                oled = OLED(_exclusive_mode=True)
+
                 if self.args.force:
                     oled.set_control_to_pi()
 
@@ -51,6 +52,9 @@ class OledCLI(CliBaseClass):
                     pass
 
             elif self.args.oled_subcommand == "spi":
+                # Do not take control of OLED just to change its internal state
+                oled = OLED(_exclusive_mode=False)
+
                 if self.args.spi_bus is not None:
                     oled.spi_bus = self.args.spi_bus
                 else:

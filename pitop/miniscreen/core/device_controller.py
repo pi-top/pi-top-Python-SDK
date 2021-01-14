@@ -26,11 +26,11 @@ class OledDeviceController:
     SPI_BUS_SPEED_HZ = 8000000
     SPI_TRANSFER_SIZE = 4096
 
-    def __init__(self, device_reset_func):
+    def __init__(self, device_reset_func, exclusive_mode):
         self.__device_reset_func = device_reset_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
-        self.__exclusive_mode = True
+        self.__exclusive_mode = exclusive_mode
         self.lock = PTLock("pt-oled")
 
         self.__ptdm_subscribe_client = None
@@ -42,7 +42,7 @@ class OledDeviceController:
         def on_spi_bus_changed(parameters):
             self.__spi_bus = int(parameters[0])
             self.reset_device()
-            self.__device_reset_func(False)
+            self.__device_reset_func(reset_controller=False)
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
@@ -87,14 +87,6 @@ class OledDeviceController:
             response = request_client.send_message(message)
 
         return int(response.parameters[0])
-
-    ##############################
-    # Only intended to be used by pt-sys-oled
-    ##############################
-
-    def set_exclusive_mode(self, val: bool):
-        self.__exclusive_mode = val
-        self.reset_device()
 
     ##############################
     # Public methods

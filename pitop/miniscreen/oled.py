@@ -6,8 +6,16 @@ from .core.image_helper import (
     process_pil_image_frame,
 )
 
+from atexit import register
 from copy import deepcopy
 from PIL import Image, ImageSequence
+from pyinotify import (
+    IN_CLOSE_WRITE,
+    IN_OPEN,
+    Notifier,
+    ProcessEvent,
+    WatchManager,
+)
 from threading import Thread
 from time import sleep
 
@@ -18,8 +26,11 @@ class OLED:
     for simple rendering of text or images to the screen.
     """
 
-    def __init__(self):
-        self.controller = OledDeviceController(self.reset)
+    LOCK_FILE_PATH = "/tmp/pt-oled.lock"
+
+    # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
+    def __init__(self, _exclusive_mode=True):
+        self.controller = OledDeviceController(self.reset, _exclusive_mode)
 
         self.__image = None
         self.__canvas = None
@@ -35,7 +46,14 @@ class OLED:
         self.__previous_frame = None
         self.__auto_play_thread = None
 
+        # Lock file monitoring - used by pt-sys-oled
+        self.__file_monitor_thread = None
+        self.__when_user_stops_using_oled = None
+        self.__when_user_starts_using_oled = None
+
         self.reset()
+
+        register(self.__cleanup)
 
     @property
     def image(self):
@@ -82,10 +100,6 @@ class OLED:
 
     def set_control_to_hub(self):
         self.controller.set_control_to_hub()
-
-    # Only intended to be used by pt-sys-oled
-    def _set_exclusive_mode(self, val: bool):
-        self.controller.set_exclusive_mode(val)
 
     def set_max_fps(self, max_fps):
         """
@@ -163,7 +177,7 @@ class OLED:
         """
         Render a static image to the screen from a file or URL at a given position.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param str file_path_or_url: A file path or URL to the image
@@ -180,7 +194,7 @@ class OLED:
 
         The image should be provided as a PIL Image object.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param Image image: A PIL Image object to be rendered
@@ -213,7 +227,7 @@ class OLED:
         """
         Renders a single line of text to the screen at a given position and size.
 
-        The helper methods in the pitop.miniscreen.oled.core.Canvas class can be used to specify the
+        The helper methods in the pitop.miniscreen.core.Canvas class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -233,7 +247,7 @@ class OLED:
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -332,3 +346,55 @@ class OLED:
             if self.__kill_thread or not loop:
                 self.reset()
                 break
+
+    @property
+    def _when_user_starts_using_oled(self):
+        return self.__when_user_starts_using_oled
+
+    @_when_user_starts_using_oled.setter
+    def _when_user_starts_using_oled(self, callback):
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.__when_user_starts_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.__start_lockfile_monitoring_thread()
+
+    @property
+    def _when_user_stops_using_oled(self):
+        return self.__when_user_stops_using_oled
+
+    @_when_user_stops_using_oled.setter
+    def _when_user_stops_using_oled(self, callback):
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.__when_user_stops_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.__start_lockfile_monitoring_thread()
+
+    def __start_lockfile_monitoring_thread(self):
+
+        def start_lockfile_monitoring():
+            eh = ProcessEvent()
+            events_to_watch = 0
+            if self.__when_user_stops_using_oled:
+                eh.process_IN_CLOSE_WRITE = lambda event: self.__when_user_stops_using_oled()
+                events_to_watch = events_to_watch | IN_CLOSE_WRITE
+            if self.__when_user_starts_using_oled:
+                eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
+                events_to_watch = events_to_watch | IN_OPEN
+
+            wm = WatchManager()
+            wm.add_watch(self.LOCK_FILE_PATH, events_to_watch)
+            notifier = Notifier(wm, eh)
+            notifier.loop()
+
+        self.__cleanup()
+        self.__file_monitor_thread = Thread(target=start_lockfile_monitoring)
+        self.__file_monitor_thread.daemon = True
+        self.__file_monitor_thread.start()
+
+    def __cleanup(self):
+        if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
+            self.__file_monitor_thread.join(0)
