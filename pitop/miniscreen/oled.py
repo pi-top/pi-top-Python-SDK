@@ -132,7 +132,7 @@ class OLED:
             self.device.mode,
             self.device.size
         )
-        self.__canvas = None
+        self.__canvas = Canvas(self.device, self.__image)
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -148,15 +148,6 @@ class OLED:
         self.reset()
 
         register(self.__cleanup)
-
-    @property
-    def image(self):
-        return self.__image
-
-    @image.setter
-    def image(self, image):
-        self.__image = image
-        self.__canvas = Canvas(self.device, self.__image)
 
     @property
     def spi_bus(self):
