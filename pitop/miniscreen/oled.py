@@ -253,8 +253,7 @@ class OLED:
         self.__draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
 
     def __send_image_to_device(self):
-        # Applies dithering as part of conversion to 1-bit mode
-        self.device.display(self.__image.convert(self.device.mode))
+        self.device.display(self.__image)
 
     def draw(self):
         """
