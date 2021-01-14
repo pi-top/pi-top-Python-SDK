@@ -74,20 +74,26 @@ class SupportCLI(CliBaseClass):
             print_line("Knowledge Base", "Find answers to commonly asked questions", self.KNOWLEDGE_BASE_URI, is_connected)
             print_line("Forum", "Discuss and search through support topics.", self.FORUM_URI, is_connected)
 
-        if self.args.help_subcommand == "docs":
-            if self.args.open:
-                display = get_first_display()
-                if display is None:
-                    raise Exception("There isn't a display available to open the documentation.")
-                url = self.__get_docs_url()
-                run_command_background(f"x-www-browser {url}")
-            elif self.args.preferred:
-                print(self.__get_docs_url())
+        def open_docs_in_browser():
+            display = get_first_display()
+            if display is None:
+                raise Exception("There isn't a display available to open the documentation.")
+            url = self.__get_docs_url()
+            run_command_background(f"x-www-browser {url}")
+
+        if self.args.help_subcommand == "links":
+            if self.args.docs_subcommand == "docs":
+                if self.args.open:
+                    open_docs_in_browser()
+                elif self.args.preferred:
+                    print(self.__get_docs_url())
+                else:
+                    print_docs()
+            elif self.args.docs_subcommand == "help":
+                print_other()
             else:
                 print_docs()
-        else:
-            print_docs()
-            print_other()
+                print_other()
         return 0
 
     @classmethod
@@ -96,7 +102,14 @@ class SupportCLI(CliBaseClass):
                                           description=cls.parser_help,
                                           dest="help_subcommand")
 
-        docs_parser = subparser.add_parser("docs", help="Find documentation")
+        # pi-top links
+        links_parser = subparser.add_parser("links", help="Find links to pi-top support pages")
+
+        # pi-top links docs
+        docs_subparser = links_parser.add_subparsers(title="Documentation",
+                                                     description="Links to find help and more information about your pi-top",
+                                                     dest="docs_subcommand")
+        docs_parser = docs_subparser.add_parser("docs", help="pi-top documentation")
         docs_parser.add_argument("--open", "-o",
                                  help="Open a browser with the documentation page",
                                  action="store_true"
@@ -105,3 +118,5 @@ class SupportCLI(CliBaseClass):
                                  help="Print the first available recommended URL to access the documentation",
                                  action="store_true"
                                  )
+        # pi-top links help
+        docs_subparser.add_parser("help", help="Places where to look for help")
