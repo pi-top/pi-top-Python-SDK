@@ -42,8 +42,6 @@ class Buttons(metaclass=Singleton):
     CANCEL = "CANCEL"
 
     def __init__(self, _exclusive_mode=True):
-        print(f"Creating buttons instance. _exclusive_mode: {_exclusive_mode}")
-
         self.up = Button(self.UP)
         self.down = Button(self.DOWN)
         self.select = Button(self.SELECT)
