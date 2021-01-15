@@ -17,6 +17,9 @@ class Canvas:
         # Image object to be used to draw to device
         self.image = image
 
+        # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.resize
+        self.resize_resampling_filter = Image.NEAREST
+
         # Internal draw object derived from PIL image
         # Used by drawing functions - they directly affect the image
         self.__draw = ImageDraw.Draw(self.image)
@@ -32,10 +35,19 @@ class Canvas:
     # Processing commands
     ##################################################
     def process_image(self, image_to_process):
-        image = Image.new("RGB", self.__oled_device.size, "black")
-        image.paste(image_to_process.resize(self.__oled_device.size))
+        image = Image.new(
+            self.__oled_device.mode,
+            self.__oled_device.size,
+            "black"
+        )
+        image.paste(
+            image_to_process.resize(
+                self.__oled_device.size,
+                resample=self.resize_resampling_filter
+            )
+        )
 
-        return image.convert(self.__oled_device.mode)
+        return image
 
     ##################################################
     # Rendering commands
