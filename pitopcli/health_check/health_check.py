@@ -1,4 +1,3 @@
-from os import uname
 from netifaces import (
     AF_LINK,
     AF_INET,
@@ -6,6 +5,8 @@ from netifaces import (
     ifaddresses,
     interfaces,
 )
+from os import path, uname
+from time import asctime, gmtime
 
 from ..formatter import StdoutFormat
 from .ptsoftware import PiTopSoftware
@@ -39,11 +40,18 @@ class HealthCheck:
                            AF_INET: 'IPv4',
                            AF_INET6: 'IPv6'}
 
-    def print_os_info(self):
+    def run(self):
+        StdoutFormat.print_header("SYSTEM HEALTH CHECK")
+        print(f"Current time (GMT): {asctime(gmtime())}")
         print("")
 
         StdoutFormat.print_section("OS Information")
-        self.print_machine_information()
+        print("")
+        self.print_uname_output()
+        print("")
+        self.print_if_pitopOS()
+        print("")
+        self.print_os_issue()
         print("")
 
         StdoutFormat.print_section("raspi-config Settings")
@@ -77,13 +85,37 @@ class HealthCheck:
         except Exception as e:
             print(f"{e}")
 
-    def print_machine_information(self):
+    def print_uname_output(self):
         u = uname()
-        print(f"Kernel Name: {u.sysname}")
-        print(f"Hostname: {u.nodename}")
-        print(f"Kernel Version: {u.release}")
-        print(f"Kernel Release: {u.version}")
-        print(f"Platform: {u.machine}")
+        StdoutFormat.print_subsection("General Information")
+        StdoutFormat.print_line(f"Kernel Name: {u.sysname}")
+        StdoutFormat.print_line(f"Hostname: {u.nodename}")
+        StdoutFormat.print_line(f"Kernel Version: {u.release}")
+        StdoutFormat.print_line(f"Kernel Release: {u.version}")
+        StdoutFormat.print_line(f"Platform: {u.machine}")
+
+    def print_if_pitopOS(self):
+        ptissue_path = "/etc/pt-issue"
+        if not path.exists(ptissue_path):
+            return
+        data = {}
+        with open(ptissue_path, 'r') as reader:
+            for line in reader.readlines():
+                content = line.split(":")
+                if len(content) == 2:
+                    data[content[0].strip()] = content[1].strip()
+        StdoutFormat.print_subsection("pi-topOS Information")
+        for k, v in data.items():
+            StdoutFormat.print_line(f"{k}: {v}")
+
+    def print_os_issue(self):
+        issue_path = "/etc/issue"
+        if not path.exists(issue_path):
+            return
+        with open(issue_path, 'r') as reader:
+            content = reader.read()
+        StdoutFormat.print_subsection("Content of /etc/issue")
+        print(f"{content.strip()}")
 
     def print_raspi_config_settings(self):
         def get_setting_value(setting):
@@ -93,7 +125,7 @@ class HealthCheck:
                 return "Error getting setting"
 
         for setting in self.RASPI_CONFIG_SETTINGS:
-            print(f" └ {StdoutFormat.bold(setting)}: {get_setting_value(setting)}")
+            StdoutFormat.print_line(f"{StdoutFormat.bold(setting)}: {get_setting_value(setting)}")
 
     def print_network_settings(self):
         def print_interface_info(interface_name):
@@ -102,8 +134,8 @@ class HealthCheck:
             for netiface_enum, section_name in self.NETWORK_ENUM_LOOKUP.items():
                 interface_info = iface_info.get(netiface_enum)
                 if interface_info:
-                    for v in interface_info:
-                        print(f" └ {section_name}: {v}")
+                    for info in interface_info:
+                        StdoutFormat.print_line(f"{section_name}: {info}")
 
         interfaces_list = interfaces()
         for iface in interfaces_list:

@@ -96,9 +96,8 @@ class PiTopSoftware:
                 longest_enabled = len(service.enabled())
 
         for service in services:
-            print(
-                " └ "
-                + StdoutFormat.bold(service.name().ljust(longest_service_name))
+            StdoutFormat.print_line(
+                StdoutFormat.bold(service.name().ljust(longest_service_name))
                 + "  "
                 + self.format_service(
                     service.load_state().ljust(longest_load_state)
@@ -125,14 +124,10 @@ class PiTopSoftware:
         for pkg in apt_cache:
             match = search(regex, pkg.name)
             if apt_cache[pkg.name].is_installed and match:
-                print(
-                    " └ "
-                    + StdoutFormat.bold(pkg.shortname)
-                    + " v"
-                    + pkg.installed.version)
+                StdoutFormat.print_line(f"{pkg.shortname} v{pkg.installed.version}")
 
     def print_apt_sources(self):
         sources_list_obj = apt_pkg.SourceList()
         sources_list_obj.read_main_list()
         for source in sources_list_obj.list:
-            print(f"{source.uri} {source.dist}")
+            print(f"  └ {source.uri} - {source.dist}")

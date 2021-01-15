@@ -17,6 +17,10 @@ class StdoutFormat:
         return f"{cls.BOLD}{text}{cls.ENDC}"
 
     @classmethod
+    def dim(cls, text):
+        return f"{cls.DIM}{text}{cls.ENDC}"
+
+    @classmethod
     def underline(cls, text):
         return f"{cls.UNDERLINE}{text}{cls.ENDC}"
 
@@ -28,15 +32,15 @@ class StdoutFormat:
 
     @classmethod
     def print_section(cls, section):
-        print(f"= {cls.bold(section)} {'='*(get_terminal_size().columns - len(section) - 3)}")
+        print(f"= {cls.dim(section)} {'='*(get_terminal_size().columns - len(section) - 3)}")
 
     @classmethod
     def print_subsection(cls, section):
-        print(f"- {cls.bold(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}")
+        print(f"{cls.dim(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}")
 
     @classmethod
     def print_line(cls, content):
-        print(f"{content}")
+        print(f"  {cls.DIM}└{cls.ENDC} {content}")
 
     @classmethod
     def clickable_text(cls, text, url):

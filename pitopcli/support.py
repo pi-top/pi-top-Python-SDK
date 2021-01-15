@@ -1,9 +1,6 @@
 #!/usr/bin/python3
-from time import asctime, gmtime
-
 from .cli_base import CliBaseClass
 from .health_check import HealthCheck, Links
-from .formatter import StdoutFormat
 
 
 class SupportCLI(CliBaseClass):
@@ -31,9 +28,7 @@ class SupportCLI(CliBaseClass):
                 links.print_other()
         elif self.args.help_subcommand == "health_check":
             hc = HealthCheck()
-            StdoutFormat.print_header("SYSTEM HEALTH CHECK")
-            StdoutFormat.print_line(f"Current time (GMT): {asctime(gmtime())}")
-            hc.print_os_info()
+            hc.run()
         return 0
 
     @classmethod
