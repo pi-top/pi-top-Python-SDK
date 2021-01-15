@@ -129,13 +129,14 @@ class OLED:
     def __init__(self, _exclusive_mode=True):
         self.controller = OledDeviceController(self.reset, _exclusive_mode)
 
-        self.__image = Image.new(
+        self.__image = None
+        self.__canvas = None
+        self.image_to_render = Image.new(
             self.device.mode,
             self.device.size
         )
-        self.__canvas = Canvas(self.device, self.__image)
         self.__rendered_canvas = None
-        self.update_rendered_canvas()
+        self.__update_rendered_canvas()
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -151,18 +152,24 @@ class OLED:
 
         register(self.__cleanup)
 
-    def update_rendered_canvas(self):
+    def __update_rendered_canvas(self):
         self.__rendered_canvas = Canvas(self.device, deepcopy(self.__image))
 
     @property
-    def image(self):
+    def last_rendered_image(self):
         # Return the last image that was sent to the display
         return self.__rendered_canvas.image
 
     @property
-    def canvas_image(self):
+    def image_to_render(self):
         # Return the image that is being prepared for the display
         return self.__image
+
+    @image_to_render.setter
+    def image_to_render(self, new_image_to_render):
+        # Set the image to display
+        self.__image = new_image_to_render
+        self.__canvas = Canvas(self.device, self.__image)
 
     @property
     def spi_bus(self):
@@ -382,7 +389,7 @@ class OLED:
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
-        self.update_rendered_canvas()
+        self.__update_rendered_canvas()
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
