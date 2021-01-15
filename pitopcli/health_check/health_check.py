@@ -50,9 +50,7 @@ class HealthCheck:
         self.print_uname_output()
         print("")
         self.print_if_pitopOS()
-        print("")
         self.print_os_issue()
-        print("")
 
         StdoutFormat.print_section("raspi-config Settings")
         self.print_raspi_config_settings()
@@ -107,6 +105,7 @@ class HealthCheck:
         StdoutFormat.print_subsection("pi-topOS Information")
         for k, v in data.items():
             StdoutFormat.print_line(f"{k}: {v}")
+        print("")
 
     def print_os_issue(self):
         issue_path = "/etc/issue"
@@ -116,6 +115,7 @@ class HealthCheck:
             content = reader.read()
         StdoutFormat.print_subsection("Content of /etc/issue")
         print(f"{content.strip()}")
+        print("")
 
     def print_raspi_config_settings(self):
         def get_setting_value(setting):
