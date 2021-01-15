@@ -8,7 +8,7 @@ from netifaces import (
 )
 
 from ..formatter import StdoutFormat
-from .ptsystemdservices import PtSystemdServices
+from .ptsoftware import PiTopSoftware
 
 from pitopcommon.command_runner import run_command
 
@@ -53,8 +53,15 @@ class HealthCheck:
         self.print_network_settings()
         print("")
 
-        StdoutFormat.print_section("pi-top Software Info")
-        PtSystemdServices().print_pt_systemd_status()
+        StdoutFormat.print_section("pi-top Software Information")
+        print("")
+        pt_sw = PiTopSoftware()
+        StdoutFormat.print_subsection("pi-top Systemd Services")
+        pt_sw.print_pt_systemd_status()
+        print("")
+
+        StdoutFormat.print_subsection("pi-top Installed Software")
+        pt_sw.print_pt_installed_software()
         print("")
 
     def print_machine_information(self):

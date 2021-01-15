@@ -1,4 +1,6 @@
+from apt import Cache
 from os import listdir
+from re import search
 from subprocess import check_output
 
 from ..formatter import StdoutFormat
@@ -37,7 +39,7 @@ class Service:
         return self._enabled
 
 
-class PtSystemdServices:
+class PiTopSoftware:
     def format_service(self, input_string):
         if input_string.strip(" \t\n\r") in ("loaded", "active", "enabled"):
             return StdoutFormat.GREEN + input_string + StdoutFormat.ENDC
@@ -114,3 +116,16 @@ class PtSystemdServices:
             if systemd_service_file.startswith("pt-"):
                 pt_service_names.append(systemd_service_file)
         return pt_service_names
+
+    def print_pt_installed_software(self):
+        regex = "^pt-|-pt-|pitop|pi-top"
+        apt_cache = Cache()
+
+        for pkg in apt_cache:
+            match = search(regex, pkg.name)
+            if apt_cache[pkg.name].is_installed and match:
+                print(
+                    " └ "
+                    + StdoutFormat.bold(pkg.shortname)
+                    + " v"
+                    + pkg.installed.version)
