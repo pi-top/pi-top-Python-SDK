@@ -173,7 +173,7 @@ class OLED:
         # Return the image that is being prepared for the display
         return self.canvases[self.__canvas_id].image
 
-    def should_redraw(self):
+    def should_redisplay(self):
         return self.last_displayed_image is None or self.__image_to_display_is_new()
 
     def __image_to_display_is_new(self):
@@ -427,7 +427,7 @@ class OLED:
         """
         self.__fps_regulator.stop_timer()
 
-        if force or self.should_redraw():
+        if force or self.should_redisplay():
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
