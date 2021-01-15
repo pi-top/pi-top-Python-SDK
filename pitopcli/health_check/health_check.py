@@ -9,6 +9,7 @@ from netifaces import (
 
 from ..formatter import StdoutFormat
 from .ptsoftware import PiTopSoftware
+from .hub_communication import HubCommunication
 
 from pitopcommon.command_runner import run_command
 
@@ -67,6 +68,14 @@ class HealthCheck:
         StdoutFormat.print_subsection("APT Sources")
         pt_sw.print_apt_sources()
         print("")
+
+        StdoutFormat.print_section("pi-top Hardware")
+        print("")
+        try:
+            hub = HubCommunication()
+            hub.print_hub_registers()
+        except Exception as e:
+            print(f"{e}")
 
     def print_machine_information(self):
         u = uname()
