@@ -64,6 +64,10 @@ class HealthCheck:
         pt_sw.print_pt_installed_software()
         print("")
 
+        StdoutFormat.print_subsection("APT Sources")
+        pt_sw.print_apt_sources()
+        print("")
+
     def print_machine_information(self):
         u = uname()
         print(f"Kernel Name: {u.sysname}")

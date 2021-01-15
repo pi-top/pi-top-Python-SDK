@@ -1,4 +1,5 @@
 from apt import Cache
+from aptsources import apt_pkg
 from os import listdir
 from re import search
 from subprocess import check_output
@@ -129,3 +130,9 @@ class PiTopSoftware:
                     + StdoutFormat.bold(pkg.shortname)
                     + " v"
                     + pkg.installed.version)
+
+    def print_apt_sources(self):
+        sources_list_obj = apt_pkg.SourceList()
+        sources_list_obj.read_main_list()
+        for source in sources_list_obj.list:
+            print(f"{source.uri} {source.dist}")
