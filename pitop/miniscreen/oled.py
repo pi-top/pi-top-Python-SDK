@@ -131,12 +131,12 @@ class OLED:
 
         self.__image = None
         self.__canvas = None
-        self.image_to_render = Image.new(
+        self.image_to_display = Image.new(
             self.device.mode,
             self.device.size
         )
-        self.__rendered_canvas = None
-        self.__update_rendered_canvas()
+        self.__displayed_canvas = None
+        self.__update_displayed_canvas()
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -152,23 +152,23 @@ class OLED:
 
         register(self.__cleanup)
 
-    def __update_rendered_canvas(self):
-        self.__rendered_canvas = Canvas(self.device, deepcopy(self.__image))
+    def __update_displayed_canvas(self):
+        self.__displayed_canvas = Canvas(self.device, deepcopy(self.__image))
 
     @property
-    def last_rendered_image(self):
+    def last_displayed_image(self):
         # Return the last image that was sent to the display
-        return self.__rendered_canvas.image
+        return self.__displayed_canvas.image
 
     @property
-    def image_to_render(self):
+    def image_to_display(self):
         # Return the image that is being prepared for the display
         return self.__image
 
-    @image_to_render.setter
-    def image_to_render(self, new_image_to_render):
+    @image_to_display.setter
+    def image_to_display(self, new_image_to_display):
         # Set the image to display
-        self.__image = new_image_to_render
+        self.__image = new_image_to_display
         self.__canvas = Canvas(self.device, self.__image)
 
     @property
@@ -222,7 +222,7 @@ class OLED:
         """
         The pi-top OLED display is put into low power mode. The previously
         shown image will re-appear when show() is given, even if the
-        internal frame buffer has been changed (so long as draw() has not
+        internal frame buffer has been changed (so long as display() has not
         been called).
         """
         self.device.hide()
@@ -231,7 +231,7 @@ class OLED:
     def show(self):
         """
         The pi-top OLED display comes out of low power mode showing the
-        previous image shown before hide() was called (so long as draw()
+        previous image shown before hide() was called (so long as display()
         has not been called)
         """
         self.device.show()
@@ -273,7 +273,7 @@ class OLED:
 
         self.show()
 
-    def draw_image_file(self, file_path_or_url, xy=None):
+    def display_image_file(self, file_path_or_url, xy=None):
         """
         Render a static image to the screen from a file or URL at a given position.
 
@@ -285,10 +285,10 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        self.draw_image(self.__get_pil_image_from_path(file_path_or_url), xy)
+        self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
     # TODO: add 'size' parameter for images being rendered to canvas
-    def draw_image(self, image, xy=None):
+    def display_image(self, image, xy=None):
         """
         Render a static image to the screen from a file or URL at a given position.
 
@@ -308,9 +308,9 @@ class OLED:
         self.__canvas.clear()
         self.__canvas.draw_image(xy, image)
 
-        self.draw()
+        self.display()
 
-    def __draw_text_base(self, text_func, text, font_size, xy):
+    def __display_text_base(self, text_func, text, font_size, xy):
         self.canvas.clear()
 
         if font_size is not None:
@@ -318,12 +318,12 @@ class OLED:
             self.__canvas.set_font_size(font_size)
 
         text_func(xy, text, fill=1, spacing=0, align="left")
-        self.draw()
+        self.display()
 
         if font_size is not None:
             self.__canvas.set_font_size(previous_font_size)
 
-    def draw_text(self, text, xy=None, font_size=None):
+    def display_text(self, text, xy=None, font_size=None):
         """
         Renders a single line of text to the screen at a given position and size.
 
@@ -340,9 +340,9 @@ class OLED:
         if xy is None:
             xy = self.__canvas.top_left()
 
-        self.__draw_text_base(self.__canvas.draw_text, text, font_size, xy)
+        self.__display_text_base(self.__canvas.display_text, text, font_size, xy)
 
-    def draw_multiline_text(self, text, xy=None, font_size=None):
+    def display_multiline_text(self, text, xy=None, font_size=None):
         """
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
@@ -360,14 +360,14 @@ class OLED:
         if xy is None:
             xy = self.__canvas.top_left()
 
-        self.__draw_text_base(self.__canvas.draw_multiline_text, text, font_size, xy)
+        self.__display_text_base(self.__canvas.display_multiline_text, text, font_size, xy)
 
     def __send_image_to_device(self):
         self.device.display(self.__image)
 
-    def draw(self):
+    def display(self):
         """
-        Draws what is on the current canvas to the screen as a single frame.
+        Displays what is on the current canvas to the screen as a single frame.
 
         This method does not need to be called when using the other `draw`
         functions in this class, but is used when the caller wants to use
@@ -376,11 +376,11 @@ class OLED:
         """
         self.__fps_regulator.stop_timer()
         paint_to_screen = False
-        if self.__rendered_canvas is None:
+        if self.__displayed_canvas is None:
             paint_to_screen = True
         else:
             # TODO: find a faster way of checking if pixel data has changed
-            prev_pix = self.__rendered_canvas.get_pixels()
+            prev_pix = self.__displayed_canvas.get_pixels()
             current_pix = self.__canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
@@ -389,7 +389,7 @@ class OLED:
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
-        self.__update_rendered_canvas()
+        self.__update_displayed_canvas()
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
@@ -439,7 +439,7 @@ class OLED:
                 if self.__kill_thread:
                     break
 
-                self.draw_image(frame)
+                self.display_image(frame)
                 # Wait for animated image's frame length
                 sleep(
                     float(frame.info["duration"] / 1000)  # ms to s
