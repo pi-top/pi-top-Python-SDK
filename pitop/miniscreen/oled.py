@@ -415,7 +415,7 @@ class OLED:
                 target=self.__auto_play, args=(image, loop))
             self.__auto_play_thread.start()
         else:
-            self.__auto_play(image)
+            self.__auto_play(image, loop)
 
     def stop_animated_image(self):
         """
