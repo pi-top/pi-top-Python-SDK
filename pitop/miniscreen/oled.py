@@ -173,7 +173,10 @@ class OLED:
         # Return the image that is being prepared for the display
         return self.canvases[self.__canvas_id].image
 
-    def image_to_display_is_new(self):
+    def should_redraw(self):
+        return self.last_displayed_image is None or self.__image_to_display_is_new()
+
+    def __image_to_display_is_new(self):
         # TODO: find a faster way of checking if pixel data has changed
         return (
             self.get_pixel_data(self.last_displayed_image) != self.get_pixel_data(self.image_to_display)
@@ -413,7 +416,7 @@ class OLED:
     def __send_image_to_device(self):
         self.device.display(self.image_to_display)
 
-    def display(self):
+    def display(self, force=False):
         """
         Displays what is on the current canvas to the screen as a single frame.
 
@@ -424,7 +427,7 @@ class OLED:
         """
         self.__fps_regulator.stop_timer()
 
-        if self.last_displayed_image is None or self.image_to_display_is_new():
+        if force or self.should_redraw():
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
