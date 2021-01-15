@@ -134,7 +134,8 @@ class OLED:
             self.device.size
         )
         self.__canvas = Canvas(self.device, self.__image)
-        self.__previous_canvas = Canvas(self.device, deepcopy(self.__image))
+        self.__rendered_canvas = None
+        self.update_rendered_canvas()
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -150,10 +151,13 @@ class OLED:
 
         register(self.__cleanup)
 
+    def update_rendered_canvas(self):
+        self.__rendered_canvas = Canvas(self.device, deepcopy(self.__image))
+
     @property
     def image(self):
         # Return the last image that was sent to the display
-        return self.__previous_canvas.image
+        return self.__rendered_canvas.image
 
     @property
     def canvas_image(self):
@@ -295,7 +299,7 @@ class OLED:
             xy = self.__canvas.top_left()
 
         self.__canvas.clear()
-        self.__canvas.image(xy, image)
+        self.__canvas.draw_image(xy, image)
 
         self.draw()
 
@@ -329,7 +333,7 @@ class OLED:
         if xy is None:
             xy = self.__canvas.top_left()
 
-        self.__draw_text_base(self.__canvas.text, text, font_size, xy)
+        self.__draw_text_base(self.__canvas.draw_text, text, font_size, xy)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -349,7 +353,7 @@ class OLED:
         if xy is None:
             xy = self.__canvas.top_left()
 
-        self.__draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
+        self.__draw_text_base(self.__canvas.draw_multiline_text, text, font_size, xy)
 
     def __send_image_to_device(self):
         self.device.display(self.__image)
@@ -365,11 +369,11 @@ class OLED:
         """
         self.__fps_regulator.stop_timer()
         paint_to_screen = False
-        if self.__previous_canvas is None:
+        if self.__rendered_canvas is None:
             paint_to_screen = True
         else:
             # TODO: find a faster way of checking if pixel data has changed
-            prev_pix = self.__previous_canvas.get_pixels()
+            prev_pix = self.__rendered_canvas.get_pixels()
             current_pix = self.__canvas.get_pixels()
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
@@ -378,7 +382,7 @@ class OLED:
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
-        self.__previous_canvas = Canvas(self.device, deepcopy(self.__image))
+        self.update_rendered_canvas()
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """

@@ -32,10 +32,10 @@ class Canvas:
     # Processing commands
     ##################################################
     def process_image(self, image_to_process):
-        image = Image.new("RGB", self.device.size, "black")
-        image.paste(image_to_process.resize(self.device.size))
+        image = Image.new("RGB", self.__oled_device.size, "black")
+        image.paste(image_to_process.resize(self.__oled_device.size))
 
-        return image.convert(self.device.mode)
+        return image.convert(self.__oled_device.mode)
 
     ##################################################
     # Rendering commands
@@ -52,7 +52,7 @@ class Canvas:
         return self.get_pixels()
 
     # TODO: add 'size' parameter for images being rendered to canvas
-    def image(self, xy, image):
+    def draw_image(self, xy, image):
         """
         Renders an image to the canvas at a given position.
 
@@ -70,7 +70,7 @@ class Canvas:
         self.__draw.bitmap(xy, self.process_image(image), 1)
         return self.get_pixels()
 
-    def text(self, xy, text, fill=1, spacing=0, align="left"):
+    def draw_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
         Draws a single line of text to the canvas.
 
@@ -96,7 +96,7 @@ class Canvas:
         )
         return self.get_pixels()
 
-    def multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
+    def draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
         Draws multi-line text to the canvas. Text that is too long for the screen
         will automatically wrap to the next line.
@@ -112,7 +112,7 @@ class Canvas:
         :return: Current pixel map as 2D array
         """
 
-        def draw_word_wrap(text):
+        def word_wrap(text):
             remaining = self.get_width()
             space_width, _ = self.textsize(" ")
             # use this list as a stack, push/popping each line
@@ -133,7 +133,7 @@ class Canvas:
                     remaining = remaining - (word_width + space_width)
             return "\n".join(output_text)
 
-        text = draw_word_wrap(text)
+        text = word_wrap(text)
 
         self.__draw.multiline_text(
             xy=xy,
@@ -146,7 +146,7 @@ class Canvas:
         )
         return self.get_pixels()
 
-    def arc(self, xy, start, end, fill=1):
+    def draw_arc(self, xy, start, end, fill=1):
         """
         Draws an arc (a portion of a circle outline) between the start and end angles, inside
         the given bounding box.
@@ -163,7 +163,7 @@ class Canvas:
         self.__draw.arc(xy, start, end, fill)
         return self.get_pixels()
 
-    def chord(self, xy, start, end, fill=1, outline=1):
+    def draw_chord(self, xy, start, end, fill=1, outline=1):
         """
         Same as arc(), but connects the end points with a straight line and
         can fill the enclosed space.
@@ -181,7 +181,7 @@ class Canvas:
         self.__draw.chord(xy, start, end, fill, outline)
         return self.get_pixels()
 
-    def ellipse(self, xy, fill=1, outline=1):
+    def draw_ellipse(self, xy, fill=1, outline=1):
         """
         Draws an ellipse inside the given bounding box.
 
@@ -195,7 +195,7 @@ class Canvas:
         self.__draw.ellipse(xy, fill, outline)
         return self.get_pixels()
 
-    def line(self, xy, fill=1, width=1):
+    def draw_line(self, xy, fill=1, width=1):
         """
         Draws a line between the coordinates in the **xy** list.
 
@@ -209,7 +209,7 @@ class Canvas:
         self.__draw.line(xy, fill, width)
         return self.get_pixels()
 
-    def pieslice(self, xy, start, end, fill=1, outline=1):
+    def draw_pieslice(self, xy, start, end, fill=1, outline=1):
         """
         Same as arc, but also draws straight lines between the end points and the
         center of the bounding box.
@@ -227,7 +227,7 @@ class Canvas:
         self.__draw.pieslice(xy, start, end, fill, outline)
         return self.get_pixels()
 
-    def point(self, xy, fill=1):
+    def draw_point(self, xy, fill=1):
         """
         Draws points (individual pixels) at the given coordinates.
 
@@ -240,7 +240,7 @@ class Canvas:
         self.__draw.point(xy, fill)
         return self.get_pixels()
 
-    def polygon(self, xy, fill=1):
+    def draw_polygon(self, xy, fill=1):
         """
         Draws a polygon.
 
@@ -257,7 +257,7 @@ class Canvas:
         self.__draw.polygon(xy, fill)
         return self.get_pixels()
 
-    def rectangle(self, xy, fill=1):
+    def draw_rectangle(self, xy, fill=1):
         """
         Draws a rectangle.
 
