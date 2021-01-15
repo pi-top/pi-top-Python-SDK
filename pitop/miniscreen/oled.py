@@ -450,12 +450,9 @@ class OLED:
                 break
 
     def __get_pil_image_from_path(self, file_path_or_url):
-        if is_url(file_path_or_url):
-            image_path = urlopen(file_path_or_url)
-        else:
-            image_path = file_path_or_url
-
-        image = Image.open(image_path)
+        image = Image.open(
+            urlopen(file_path_or_url) if is_url(file_path_or_url) else file_path_or_url
+        )
 
         # Verify on deep copy to avoid needing to close and
         # re-open after verifying...
