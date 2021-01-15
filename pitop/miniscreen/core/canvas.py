@@ -4,7 +4,6 @@ from PIL import (
     ImageDraw,
     ImageFont,
 )
-from numpy import reshape
 
 
 class Canvas:
@@ -61,7 +60,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.rectangle(self.get_bounding_box(), 0)
-        return self.get_pixels()
 
     # TODO: add 'size' parameter for images being rendered to canvas
     def draw_image(self, xy, image):
@@ -80,7 +78,6 @@ class Canvas:
         """
 
         self.__draw.bitmap(xy, self.process_image(image), 1)
-        return self.get_pixels()
 
     def draw_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
@@ -106,7 +103,6 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
-        return self.get_pixels()
 
     def draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
@@ -156,7 +152,6 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
-        return self.get_pixels()
 
     def draw_arc(self, xy, start, end, fill=1):
         """
@@ -173,7 +168,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.arc(xy, start, end, fill)
-        return self.get_pixels()
 
     def draw_chord(self, xy, start, end, fill=1, outline=1):
         """
@@ -191,7 +185,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.chord(xy, start, end, fill, outline)
-        return self.get_pixels()
 
     def draw_ellipse(self, xy, fill=1, outline=1):
         """
@@ -205,7 +198,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.ellipse(xy, fill, outline)
-        return self.get_pixels()
 
     def draw_line(self, xy, fill=1, width=1):
         """
@@ -219,7 +211,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.line(xy, fill, width)
-        return self.get_pixels()
 
     def draw_pieslice(self, xy, start, end, fill=1, outline=1):
         """
@@ -237,7 +228,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.pieslice(xy, start, end, fill, outline)
-        return self.get_pixels()
 
     def draw_point(self, xy, fill=1):
         """
@@ -250,7 +240,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.point(xy, fill)
-        return self.get_pixels()
 
     def draw_polygon(self, xy, fill=1):
         """
@@ -267,7 +256,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.polygon(xy, fill)
-        return self.get_pixels()
 
     def draw_rectangle(self, xy, fill=1):
         """
@@ -281,7 +269,6 @@ class Canvas:
         :rtype: array
         """
         self.__draw.rectangle(xy, fill)
-        return self.get_pixels()
 
     ##################################################
     # Position/dimension methods
@@ -486,37 +473,6 @@ class Canvas:
     ##################################################
     # Image helper methods
     ##################################################
-
-    # Semi-private: used in OLED test
-    def _pil_image_to_pix_arr(self, pil_img):
-        """
-        Calculates the pixel array of a image
-        :param pil_img:
-        :return: 2D bitmap array of pixels in PIL image
-        """
-        pixels = list(pil_img.getdata())
-        pixels = reshape(pixels, (self.get_width(), self.get_height()))
-        return pixels
-
-    def get_pixels(self):
-        """
-        Gets the pixel array of the current canvas state.
-
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
-        """
-        return self._pil_image_to_pix_arr(self.image)
-
-    def get_pixel(self, xy):
-        """
-        Gets the pixel value based on given xy tuple
-
-        :param tuple xy: The x-y co-ordinates of the pixel to get
-        :return: The value of the pixel specified
-        :rtype: int
-        """
-        return self._pil_image_to_pix_arr(self.image)[xy[0], xy[1]]
-
     def save(self, file_path, format=None):
         """
         Saves the current pixel map of the canvas to file

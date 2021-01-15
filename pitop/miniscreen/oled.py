@@ -5,6 +5,7 @@ from pitopcommon.formatting import is_url
 
 from atexit import register
 from copy import deepcopy
+from numpy import reshape
 from PIL import Image, ImageSequence
 from pyinotify import (
     IN_CLOSE_WRITE,
@@ -129,14 +130,15 @@ class OLED:
     def __init__(self, _exclusive_mode=True):
         self.controller = OledDeviceController(self.reset, _exclusive_mode)
 
-        self.__image = None
-        self.__canvas = None
-        self.image_to_display = Image.new(
-            self.device.mode,
-            self.device.size
-        )
-        self.__displayed_canvas = None
-        self.__update_displayed_canvas()
+        self.canvases = {
+            "default": Canvas(
+                self.device, self.__empty_image()
+            )
+        }
+        self.__canvas_id = "default"
+
+        self.__displayed_image = None
+        self.__update_displayed_image()
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -152,24 +154,70 @@ class OLED:
 
         register(self.__cleanup)
 
-    def __update_displayed_canvas(self):
-        self.__displayed_canvas = Canvas(self.device, deepcopy(self.__image))
+    def __empty_image(self):
+        return Image.new(
+            self.device.mode,
+            self.device.size
+        )
+
+    def __update_displayed_image(self):
+        self.__displayed_image = deepcopy(self.image_to_display)
 
     @property
     def last_displayed_image(self):
         # Return the last image that was sent to the display
-        return self.__displayed_canvas.image
+        return self.__displayed_image
 
     @property
     def image_to_display(self):
         # Return the image that is being prepared for the display
-        return self.__image
+        return self.canvases[self.__canvas_id].image
 
-    @image_to_display.setter
-    def image_to_display(self, new_image_to_display):
-        # Set the image to display
-        self.__image = new_image_to_display
-        self.__canvas = Canvas(self.device, self.__image)
+    def image_to_display_is_new(self):
+        # TODO: find a faster way of checking if pixel data has changed
+        return (
+            self.get_pixel_data(self.last_displayed_image) != self.get_pixel_data(self.image_to_display)
+        ).any()
+
+    def get_pixel_data(self, pil_image):
+        return reshape(
+            list(pil_image.getdata()),
+            (self.width, self.height)
+        )
+
+    @property
+    def canvases(self):
+        return self.canvases.keys()
+
+    def add_canvas(self, canvas_to_add, canvas_id=None):
+        from uuid import uuid1
+        if canvas_id is None:
+            canvas_id = uuid1()
+
+        self.canvases.update({
+            canvas_id: Canvas(
+                self.device, self.__empty_image()
+            )
+        })
+        return (canvas_id, self.canvases[canvas_id])
+
+    def remove_canvas(self, canvas_id_to_remove):
+        if canvas_id_to_remove not in self.canvases:
+            raise Exception("Canvas ID not recognised")
+
+        self.canvases.pop(canvas_id_to_remove)
+
+    @property
+    def active_canvas(self):
+        # Return the active canvas being prepared for the display
+        return self.canvases[self.__canvas_id]
+
+    @active_canvas.setter
+    def active_canvas(self, new_active_canvas_id):
+        if new_active_canvas_id not in self.canvases:
+            raise Exception("Canvas ID not recognised")
+
+        self.__canvas_id = new_active_canvas_id
 
     @property
     def spi_bus(self):
@@ -311,7 +359,7 @@ class OLED:
         self.display()
 
     def __display_text_base(self, text_func, text, font_size, xy):
-        self.canvas.clear()
+        self.__canvas.clear()
 
         if font_size is not None:
             previous_font_size = self.__canvas.font_size
@@ -363,7 +411,7 @@ class OLED:
         self.__display_text_base(self.__canvas.display_multiline_text, text, font_size, xy)
 
     def __send_image_to_device(self):
-        self.device.display(self.__image)
+        self.device.display(self.image_to_display)
 
     def display(self):
         """
@@ -375,21 +423,12 @@ class OLED:
         to screen in a single frame.
         """
         self.__fps_regulator.stop_timer()
-        paint_to_screen = False
-        if self.__displayed_canvas is None:
-            paint_to_screen = True
-        else:
-            # TODO: find a faster way of checking if pixel data has changed
-            prev_pix = self.__displayed_canvas.get_pixels()
-            current_pix = self.__canvas.get_pixels()
-            if (prev_pix != current_pix).any():
-                paint_to_screen = True
 
-        if paint_to_screen:
+        if self.last_displayed_image is None or self.image_to_display_is_new():
             self.__send_image_to_device()
 
         self.__fps_regulator.start_timer()
-        self.__update_displayed_canvas()
+        self.__update_displayed_image()
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
