@@ -339,6 +339,7 @@ class OLED:
         self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
     # TODO: add 'size' parameter for images being rendered to canvas
+    # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
     def display_image(self, image, xy=None):
         """
         Render a static image to the screen from a file or URL at a given position.

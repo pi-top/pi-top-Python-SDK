@@ -62,6 +62,7 @@ class Canvas:
         self.__draw.rectangle(self.get_bounding_box(), 0)
 
     # TODO: add 'size' parameter for images being rendered to canvas
+    # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
     def draw_image(self, xy, image):
         """
         Renders an image to the canvas at a given position.
