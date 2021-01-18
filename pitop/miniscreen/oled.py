@@ -211,7 +211,7 @@ class OLED:
         self.draw()
 
     def __draw_text_base(self, text_func, text, font_size, xy):
-        self.canvas.clear()
+        self.__canvas.clear()
 
         if font_size is not None:
             previous_font_size = self.__canvas.font_size
