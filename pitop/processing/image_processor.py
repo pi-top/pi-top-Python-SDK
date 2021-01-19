@@ -1,4 +1,8 @@
+from pitop.processing.algorithms import find_line
+
+
 class ImageProcessor:
+    line_detect = find_line
 
     def __init__(self, frame_source):
         self.on_new_frame = None
@@ -10,7 +14,7 @@ class ImageProcessor:
 
     def __process(self, frame):
         for transform_fcn in self.transforms:
-            frame, result = transform_fcn(frame)
+            result, frame = transform_fcn(frame)
 
         if callable(self.on_new_frame):
             self.on_new_frame((frame, result))
