@@ -6,6 +6,10 @@ from pitop.processing.utils.vision_functions import (
     find_centroid,
     find_largest_contour
 )
+from pitop.camera.pil_opencv_conversion import (
+    pil_to_opencv,
+    opencv_to_pil,
+)
 
 # define range of blue color in HSV-> H: 0-179, S: 0-255, V: 0-255
 # broken out like this for easy conversion into CV units (will move somewhere more logical in future)
@@ -27,9 +31,9 @@ _upper_blue = array([_cv_hue_upper, _cv_sat_upper, _cv_val_upper])
 
 def find_line(frame):
     line_detector = LineDetector(frame.size)
-    centroid = line_detector._get_centroid(frame)
+    centroid = line_detector._get_centroid(pil_to_opencv(frame))
     found_line = centroid[0] is not None and centroid[1] is not None
-    return (found_line, line_detector._robot_view())
+    return (found_line, opencv_to_pil(line_detector._robot_view()))
 
 
 class LineDetector:
