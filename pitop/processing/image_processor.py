@@ -11,6 +11,7 @@ class ImageProcessor:
 
     def add_transform(self, transform_function):
         self.transforms.append(transform_function)
+        return self
 
     def __process(self, frame):
         for transform_fcn in self.transforms:

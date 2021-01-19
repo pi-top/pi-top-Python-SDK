@@ -9,31 +9,31 @@ from pitop.processing.utils.vision_functions import (
 
 # define range of blue color in HSV-> H: 0-179, S: 0-255, V: 0-255
 # broken out like this for easy conversion into CV units (will move somewhere more logical in future)
-__hue_lower = 160
-__hue_upper = 280
-__sat_lower = 0.3
-__sat_upper = 1.0
-__val_lower = 0.5
-__val_upper = 1.0
-__cv_hue_lower = int(__hue_lower / 2)
-__cv_hue_upper = int(__hue_upper / 2)
-__cv_sat_lower = int(__sat_lower * 255)
-__cv_sat_upper = int(__sat_upper * 255)
-__cv_val_lower = int(__val_lower * 255)
-__cv_val_upper = int(__val_upper * 255)
-__lower_blue = array([__cv_hue_lower, __cv_sat_lower, __cv_val_lower])
-__upper_blue = array([__cv_hue_upper, __cv_sat_upper, __cv_val_upper])
+_hue_lower = 160
+_hue_upper = 280
+_sat_lower = 0.3
+_sat_upper = 1.0
+_val_lower = 0.5
+_val_upper = 1.0
+_cv_hue_lower = int(_hue_lower / 2)
+_cv_hue_upper = int(_hue_upper / 2)
+_cv_sat_lower = int(_sat_lower * 255)
+_cv_sat_upper = int(_sat_upper * 255)
+_cv_val_lower = int(_val_lower * 255)
+_cv_val_upper = int(_val_upper * 255)
+_lower_blue = array([_cv_hue_lower, _cv_sat_lower, _cv_val_lower])
+_upper_blue = array([_cv_hue_upper, _cv_sat_upper, _cv_val_upper])
 
 
 def find_line(frame):
     line_detector = LineDetector(frame.size)
-    centroid = line_detector.__get_centroid(frame)
+    centroid = line_detector._get_centroid(frame)
     found_line = centroid[0] is not None and centroid[1] is not None
-    return (found_line, line_detector.__robot_view())
+    return (found_line, line_detector._robot_view())
 
 
 class LineDetector:
-    def __init__(self, camera_resolution, image_scale=0.5, hsv_lower=__lower_blue, hsv_upper=__upper_blue):
+    def __init__(self, camera_resolution, image_scale=0.5, hsv_lower=_lower_blue, hsv_upper=_upper_blue):
         self._hsv_lower = hsv_lower
         self._hsv_upper = hsv_upper
         self._image_scale = image_scale
@@ -47,7 +47,7 @@ class LineDetector:
         self._image_processor_centroid = None
         self._scaled_frame = None
 
-    def __get_centroid(self, frame):
+    def _get_centroid(self, frame):
         self._scaled_frame = self.__frame_scale_down(frame)
         self._image_mask = colour_mask(self._scaled_frame, self._hsv_lower, self._hsv_upper)
         self._line_contour = find_largest_contour(self._image_mask)
@@ -59,7 +59,7 @@ class LineDetector:
             self._centroid = (None, None)
         return self._centroid
 
-    def __robot_view(self):
+    def _robot_view(self):
         masked_image = cv2.bitwise_and(self._scaled_frame, self._scaled_frame, mask=self._image_mask)
         # draw contour lines on robot view
         if self._line_contour is not None:
