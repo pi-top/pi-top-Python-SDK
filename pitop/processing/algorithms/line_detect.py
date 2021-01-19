@@ -25,6 +25,13 @@ __lower_blue = array([__cv_hue_lower, __cv_sat_lower, __cv_val_lower])
 __upper_blue = array([__cv_hue_upper, __cv_sat_upper, __cv_val_upper])
 
 
+def find_line(frame):
+    line_detector = LineDetector(frame.size)
+    centroid = line_detector.__get_centroid(frame)
+    found_line = centroid[0] is not None and centroid[1] is not None
+    return (found_line, line_detector.__robot_view())
+
+
 class LineDetector:
     def __init__(self, camera_resolution, image_scale=0.5, hsv_lower=__lower_blue, hsv_upper=__upper_blue):
         self._hsv_lower = hsv_lower
@@ -39,11 +46,6 @@ class LineDetector:
         self._centroid = None
         self._image_processor_centroid = None
         self._scaled_frame = None
-
-    def find_line(self, frame):
-        centroid = self.__get_centroid(frame)
-        found_line = centroid[0] is not None and centroid[1] is not None
-        return (found_line, self.__robot_view())
 
     def __get_centroid(self, frame):
         self._scaled_frame = self.__frame_scale_down(frame)
