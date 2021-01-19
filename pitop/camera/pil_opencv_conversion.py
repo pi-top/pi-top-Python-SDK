@@ -28,4 +28,7 @@ def opencv_to_pil(image):
     :return:
         A Pillow Image in RGB format
     """
-    return Image.fromarray(image[:, :, ::-1])
+    if len(image.shape) == 3:
+        return Image.fromarray(image[:, :, ::-1])
+    else:
+        return Image.fromarray(image[:, :])

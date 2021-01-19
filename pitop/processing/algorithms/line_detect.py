@@ -8,6 +8,7 @@ from pitop.processing.utils.vision_functions import (
 )
 from pitop.camera.pil_opencv_conversion import (
     pil_to_opencv,
+    opencv_to_pil,
 )
 
 
@@ -32,104 +33,81 @@ def calculate_blue_limits():
 
 
 def find_line(frame):
-    line_detector = LineDetector(frame.size)
-    centroid = line_detector._get_centroid(pil_to_opencv(frame))
-    found_line = centroid[0] is not None and centroid[1] is not None
+    scale_factor = 0.5
+    cv_frame = pil_to_opencv(frame)
 
-    control_angle = line_detector.get_control_angle(centroid)
+    resized_frame = scale_frame(cv_frame, scale=scale_factor)
+    hsv_lower, hsv_upper = calculate_blue_limits()
+    image_mask = colour_mask(resized_frame, hsv_lower, hsv_upper)
+    line_contour = find_largest_contour(image_mask)
 
-    return (found_line, control_angle, line_detector._robot_view())
+    centroid = None
+    scaled_image_centroid = None
+    if line_contour is not None:
+        # find centroid of contour
+        scaled_image_centroid = find_centroid(line_contour)
+        centroid = centroid_reposition(scaled_image_centroid, scale_factor, cv_frame)
+
+    robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
+    robot_view_scaled_up = scale_frame(robot_view_img, 1/scale_factor)
+
+    return (centroid, opencv_to_pil(robot_view_scaled_up))
 
 
-class LineDetector:
-    def __init__(self, camera_resolution, image_scale=0.5, hsv_lower=None, hsv_upper=None):
-        if hsv_lower is None or hsv_upper is None:
-            _lower_blue, _upper_blue = calculate_blue_limits()
+def get_control_angle(centroid, frame):
+    if centroid is None:
+        return 0
+    # physically, this represents an approximation between chassis rotation center and camera
+    # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
+    # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
+    chassis_center_y = -int(frame.size[1])
 
-            if hsv_lower is None:
-                self._hsv_lower = _lower_blue
-            if hsv_upper is None:
-                self._hsv_upper = _upper_blue
+    # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
+    # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
+    delta_y = abs(centroid[1] - chassis_center_y)
 
-        self._image_scale = image_scale
+    return arctan(centroid[0] / delta_y) * 180 / pi
 
-        self._cam_image_width = camera_resolution[0]
-        self._cam_image_height = camera_resolution[1]
 
-        self._line_follower_image_width = 0
-        self._line_follower_image_height = 0
+def scale_frame(frame, scale):
+    scaled_width = int(frame.shape[0] * scale)
+    scaled_height = int(frame.shape[1] * scale)
+    dim = (scaled_width, scaled_height)
+    return cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
 
-        self._image_mask = None
-        self._line_contour = None
-        self._centroid = None
-        self._image_processor_centroid = None
-        self._scaled_frame = None
 
-    def _get_centroid(self, frame):
-        self._scaled_frame = self.__frame_scale_down(frame)
-        self._image_mask = colour_mask(self._scaled_frame, self._hsv_lower, self._hsv_upper)
-        self._line_contour = find_largest_contour(self._image_mask)
-        if self._line_contour is not None:
-            # find centroid of contour
-            self._image_processor_centroid = find_centroid(self._line_contour)
-            self._centroid = self.__centroid_reposition(self._image_processor_centroid)
-        else:
-            self._centroid = (None, None)
-        return self._centroid
+def centroid_reposition(centroid, scale, frame):
+    if centroid is None:
+        return None
+    # scale centroid so it matches original camera frame resolution
+    centroid_x = int(centroid[0]/scale)
+    centroid_y = int(centroid[1]/scale)
+    # convert so (0, 0) is at the middle bottom of the frame
+    centroid_x = centroid_x - int(frame.shape[0] / 2)
+    centroid_y = int(frame.shape[1] / 2) - centroid_y
 
-    def _robot_view(self):
-        masked_image = cv2.bitwise_and(self._scaled_frame, self._scaled_frame, mask=self._image_mask)
-        # draw contour lines on robot view
-        if self._line_contour is not None:
-            cv2.drawContours(masked_image, [self._line_contour], 0, (100, 60, 240), 2)
-            self.__draw_contour_bound(masked_image)
+    return centroid_x, centroid_y
 
-        if self._centroid[0] is not None and self._centroid[1] is not None:
-            cv2.drawMarker(masked_image, (self._image_processor_centroid[0], self._image_processor_centroid)[1], (100, 60, 240),
-                           markerType=cv2.MARKER_CROSS, markerSize=20, thickness=4, line_type=cv2.FILLED)
 
-        # draw centroid on robot view
-        masked_image_scaled_up = self.__frame_scale_up(masked_image)
-        return masked_image_scaled_up
+def robot_view(frame, image_mask, line_contour, centroid):
+    masked_image = cv2.bitwise_and(frame, frame, mask=image_mask)
 
-    def __draw_contour_bound(self, image):
-        x, y, w, h = cv2.boundingRect(self._line_contour)
-        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    # draw contour lines on robot view
+    if line_contour is not None:
+        cv2.drawContours(masked_image, [line_contour], 0, (100, 60, 240), 2)
+        draw_contour_bound(masked_image, line_contour)
 
-    # def contour_bound_scale_up(self):
-    #     x, y, w, h = [int(element / self._image_scale) for element in cv2.boundingRect(self._line_contour)]
-    #     return x, y, w, h
+    if centroid:
+        cv2.drawMarker(masked_image,
+                       (centroid[0], centroid[1]),
+                       (100, 60, 240),
+                       markerType=cv2.MARKER_CROSS,
+                       markerSize=20,
+                       thickness=4,
+                       line_type=cv2.FILLED)
+    return masked_image
 
-    def __frame_scale_down(self, frame):
-        self._line_follower_image_width = int(self._cam_image_width * self._image_scale)
-        self._line_follower_image_height = int(self._cam_image_height * self._image_scale)
-        dim = (self._line_follower_image_width, self._line_follower_image_height)
 
-        scaled_frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-
-        return scaled_frame
-
-    def __frame_scale_up(self, frame):
-        return cv2.resize(frame, (self._cam_image_width, self._cam_image_height), interpolation=cv2.INTER_AREA)
-
-    def __centroid_reposition(self, centroid):
-        # scale centroid so it matches original camera frame resolution
-        centroid_x = int(centroid[0]/self._image_scale)
-        centroid_y = int(centroid[1]/self._image_scale)
-        # convert so (0, 0) is at the middle bottom of the frame
-        centroid_x = centroid_x - int(self._cam_image_width / 2)
-        centroid_y = int(self._cam_image_height / 2) - centroid_y
-
-        return centroid_x, centroid_y
-
-    def get_control_angle(self, centroid):
-        # physically, this represents an approximation between chassis rotation center and camera
-        # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
-        # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
-        chassis_center_y = -int(self._cam_image_width)
-
-        # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
-        # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
-        delta_y = abs(centroid[1] - chassis_center_y)
-
-        return arctan(centroid[0] / delta_y) * 180 / pi
+def draw_contour_bound(image, contour):
+    x, y, w, h = cv2.boundingRect(contour)
+    cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
