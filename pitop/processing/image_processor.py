@@ -4,16 +4,15 @@ from pitop.processing.algorithms import find_line
 class ImageProcessor:
     line_detect = find_line
 
-    def __init__(self, frame_source):
+    def __init__(self):
         self.on_new_frame = None
-        self.__process = frame_source
         self.transforms = list()
 
     def add_transform(self, transform_function):
         self.transforms.append(transform_function)
         return self
 
-    def __process(self, frame):
+    def process(self, frame):
         for transform_fcn in self.transforms:
             result, frame = transform_fcn(frame)
 
