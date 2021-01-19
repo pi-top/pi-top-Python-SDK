@@ -1,5 +1,5 @@
 import cv2
-from numpy import array
+from numpy import arctan, array, pi
 
 from pitop.processing.utils.vision_functions import (
     colour_mask,
@@ -8,43 +8,57 @@ from pitop.processing.utils.vision_functions import (
 )
 from pitop.camera.pil_opencv_conversion import (
     pil_to_opencv,
-    opencv_to_pil,
 )
 
-# define range of blue color in HSV-> H: 0-179, S: 0-255, V: 0-255
-# broken out like this for easy conversion into CV units (will move somewhere more logical in future)
-_hue_lower = 160
-_hue_upper = 280
-_sat_lower = 0.3
-_sat_upper = 1.0
-_val_lower = 0.5
-_val_upper = 1.0
-_cv_hue_lower = int(_hue_lower / 2)
-_cv_hue_upper = int(_hue_upper / 2)
-_cv_sat_lower = int(_sat_lower * 255)
-_cv_sat_upper = int(_sat_upper * 255)
-_cv_val_lower = int(_val_lower * 255)
-_cv_val_upper = int(_val_upper * 255)
-_lower_blue = array([_cv_hue_lower, _cv_sat_lower, _cv_val_lower])
-_upper_blue = array([_cv_hue_upper, _cv_sat_upper, _cv_val_upper])
+
+def calculate_blue_limits():
+    # define range of blue color in HSV-> H: 0-179, S: 0-255, V: 0-255
+    # broken out like this for easy conversion into CV units (will move somewhere more logical in future)
+    hue_lower = 160
+    hue_upper = 280
+    sat_lower = 0.3
+    sat_upper = 1.0
+    val_lower = 0.5
+    val_upper = 1.0
+    cv_hue_lower = int(hue_lower / 2)
+    cv_hue_upper = int(hue_upper / 2)
+    cv_sat_lower = int(sat_lower * 255)
+    cv_sat_upper = int(sat_upper * 255)
+    cv_val_lower = int(val_lower * 255)
+    cv_val_upper = int(val_upper * 255)
+    lower_blue = array([cv_hue_lower, cv_sat_lower, cv_val_lower])
+    upper_blue = array([cv_hue_upper, cv_sat_upper, cv_val_upper])
+    return (lower_blue, upper_blue)
 
 
 def find_line(frame):
     line_detector = LineDetector(frame.size)
     centroid = line_detector._get_centroid(pil_to_opencv(frame))
     found_line = centroid[0] is not None and centroid[1] is not None
-    return (found_line, opencv_to_pil(line_detector._robot_view()))
+
+    control_angle = line_detector.get_control_angle(centroid)
+
+    return (found_line, control_angle, line_detector._robot_view())
 
 
 class LineDetector:
-    def __init__(self, camera_resolution, image_scale=0.5, hsv_lower=_lower_blue, hsv_upper=_upper_blue):
-        self._hsv_lower = hsv_lower
-        self._hsv_upper = hsv_upper
+    def __init__(self, camera_resolution, image_scale=0.5, hsv_lower=None, hsv_upper=None):
+        if hsv_lower is None or hsv_upper is None:
+            _lower_blue, _upper_blue = calculate_blue_limits()
+
+            if hsv_lower is None:
+                self._hsv_lower = _lower_blue
+            if hsv_upper is None:
+                self._hsv_upper = _upper_blue
+
         self._image_scale = image_scale
+
         self._cam_image_width = camera_resolution[0]
         self._cam_image_height = camera_resolution[1]
+
         self._line_follower_image_width = 0
         self._line_follower_image_height = 0
+
         self._image_mask = None
         self._line_contour = None
         self._centroid = None
@@ -107,3 +121,15 @@ class LineDetector:
         centroid_y = int(self._cam_image_height / 2) - centroid_y
 
         return centroid_x, centroid_y
+
+    def get_control_angle(self, centroid):
+        # physically, this represents an approximation between chassis rotation center and camera
+        # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
+        # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
+        chassis_center_y = -int(self._cam_image_width)
+
+        # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
+        # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
+        delta_y = abs(centroid[1] - chassis_center_y)
+
+        return arctan(centroid[0] / delta_y) * 180 / pi
