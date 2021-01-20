@@ -1,3 +1,20 @@
+py-pitop-sdk (0.12.1) buster; urgency=medium
+
+  * Fix broken reference to OLED's internal canvas
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 18 Jan 2021 16:40:22 +0000
+
+py-pitop-sdk (0.12.0) buster; urgency=medium
+
+  * Use common lib singleton metaclass
+  * Upgrade on installing from docs/requirements.txt
+  * Clean up battery component
+  * Always use 2 leading underscores for private functions and member variables
+  * Fix motor examples to match robot configuration ports and params
+  * Fix changelog formatting
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 18 Jan 2021 16:25:11 +0000
+
 py-pitop-sdk (0.11.0) buster; urgency=medium
 
   * Monitor OLED lock files using inotify to add events for user using the OLED
