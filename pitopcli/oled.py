@@ -106,7 +106,7 @@ class OledCLI(CliBaseClass):
 
         parser_spi = subparser.add_parser("spi", help="Set SPI bus that is used by OLED")
         parser_spi.add_argument("spi_bus",
-                                help="SPI buts to be used by OLED. Valid options: {0, 1}",
+                                help="SPI bus to be used by OLED. Valid options: {0, 1}",
                                 type=int,
                                 choices=[0, 1],
                                 nargs='?')
