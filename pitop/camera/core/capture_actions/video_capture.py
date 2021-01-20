@@ -43,11 +43,8 @@ class VideoCapture(CaptureActionBase):
                                                 fps=fps)
 
     def process(self, frame):
-        self.__video_output_writer.append_data(
-            asarray(
-                frame.resize(self.__video_resolution)
-            )
-        )
+        frame = frame.resize(self.__video_resolution)
+        self.__video_output_writer.append_data(asarray(frame))
 
     def stop(self):
         if self.__video_output_writer is not None:
