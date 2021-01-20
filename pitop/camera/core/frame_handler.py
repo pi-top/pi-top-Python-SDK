@@ -12,31 +12,31 @@ class FrameHandler:
     """
 
     def __init__(self) -> None:
-        self._capture_actions = {}
-        self._frame = None
+        self.__capture_actions = {}
+        self.__frame = None
 
-        self._process_lock = Lock()
-        self._frame_lock = Lock()
+        self.__process_lock = Lock()
+        self.__frame_lock = Lock()
 
     @property
     def frame(self):
-        with self._frame_lock:
-            f = self._frame
+        with self.__frame_lock:
+            f = self.__frame
         return f
 
     @frame.setter
     def frame(self, frame):
-        with self._frame_lock:
-            self._frame = frame
+        with self.__frame_lock:
+            self.__frame = frame
 
     def process(self) -> None:
         """
         Executes all the actions registered in the FrameHandler object
         """
-        with self._process_lock:
+        with self.__process_lock:
             frame = self.frame
 
-            capture_actions = self._capture_actions
+            capture_actions = self.__capture_actions
             actions_to_remove = [CaptureActions.CAPTURE_SINGLE_FRAME]
 
             for action_name, action_objects in capture_actions.items():
@@ -48,7 +48,7 @@ class FrameHandler:
 
             for action_name in actions_to_remove:
                 if self.is_running_action(action_name):
-                    self._capture_actions.pop(action_name)
+                    self.__capture_actions.pop(action_name)
 
     @type_check
     def register_action(self, action: CaptureActions, args_dict: dict) -> None:
@@ -60,14 +60,14 @@ class FrameHandler:
         :param dict args_dict: dictionary with arguments used to create an action object instance
         """
 
-        if action in self._capture_actions:
+        if action in self.__capture_actions:
             print("Already registered this action.")
             return
         if "self" in args_dict:
             args_dict.pop("self")
 
         action_object = action.value(**args_dict)
-        self._capture_actions[action] = action_object
+        self.__capture_actions[action] = action_object
 
     @type_check
     def remove_action(self, action: CaptureActions) -> None:
@@ -76,9 +76,9 @@ class FrameHandler:
 
         :param CaptureActions action: type of action being removed
         """
-        with self._process_lock:
-            if action in self._capture_actions:
-                action_object = self._capture_actions.pop(action)
+        with self.__process_lock:
+            if action in self.__capture_actions:
+                action_object = self.__capture_actions.pop(action)
                 action_object.stop()
 
     def current_actions(self) -> list:
@@ -87,7 +87,7 @@ class FrameHandler:
 
         :return: list
         """
-        return self._capture_actions.keys()
+        return self.__capture_actions.keys()
 
     @type_check
     def is_running_action(self, action: CaptureActions) -> bool:
@@ -97,4 +97,4 @@ class FrameHandler:
         :param CaptureActions action: type of action to check
         :return: bool, True if the action is being processed, False otherwise
         """
-        return action in self._capture_actions
+        return action in self.__capture_actions

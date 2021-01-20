@@ -10,25 +10,28 @@ Utility to interact with pi-top hardware.
 
 .. code-block:: bash
 
-    pi-top [-h] {brightness,device,host,battery,oled} ...
+    pi-top [-h] {battery,devices,display,support,imu,oled} ...
 
 Where:
 
 -h, --help
     Show a help message and exits
 
-{brightness,device,host,battery,oled}
+{battery,devices,display,help,imu,oled}
     battery:
         Get battery information from a pi-top
-
-    brightness:
-        Query and change the device's screen brightness
 
     devices:
         Get information about device and attached pi-top hardware
 
-    host:
-        Returns the name of the host pi-top device
+    display:
+        Communicate and control the device's display
+
+    support:
+        Find support resources
+
+    imu:
+        Expansion Plate IMU utilities
 
     oled:
         Quickly display text in pi-top [4]'s OLED screen
@@ -37,11 +40,11 @@ Where:
 pi-top battery
 =========================
 
-If the pi-top device has an internal battery, it will report it's status.
+If the pi-top device has an internal battery, it will report its status.
 
 .. code-block:: bash
 
-    pt-battery [-h] [-s] [-c] [-t] [-w] [-v]
+    pi-top battery [-h] [-s] [-c] [-t] [-w] [-v]
 
 
 Where:
@@ -75,8 +78,7 @@ Where:
     Report all the information available about the battery (charging state, capacity, time remaining
     and wattage)
 
-Example
-~~~~~~~~~~~~~~~~~
+Example:
 
 .. code-block:: bash
 
@@ -86,27 +88,49 @@ Example
     Time Remaining: 104
     Wattage: -41
 
-pi-top brightness
+pi-top display
 =========================
 
-On pi-top devices with a screen, it allows to query and control its brightness.
-
-Running `pt-brightness` on its own will report back the current brightness value.
+This command provides a way to control different display settings on pi-top devices with a built-in screen.
 
 .. code-block:: bash
 
-    pi-top brightness [-h] [-b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}] [-i]
-                     [-d] [-l {0,1}] [-t TIMEOUT] [-v]
-
+    pi-top display [-h] {brightness,backlight,timeout}
 
 Where:
 
 -h, --help
     Show a help message and exits
 
--b {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}, --brightness_value {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
-    Set screen brightness level [1-10] on pi-topHUB, or
-    [1-16] or pi-topHUB v2
+brightness
+    Control display brightness
+
+backlight
+    Control display backlight
+
+timeout
+    Set the timeout before the screen blanks in seconds (0 to disable)
+
+
+pi-top display brightness
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Request or change the value of the display's brightness.
+
+Note: this only works for the original pi-top, pi-topCEED and pi-top [3]. The pi-top [4] Full HD Touch Display uses hardware buttons to control the brightness, and is not controllable via this SDK.
+
+.. code-block:: bash
+
+    pi-top display brightness [-h] [-v] [-i] [-d]
+                                 [brightness_value]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-v, --verbose
+    Increase verbosity of output
 
 -i, --increment_brightness
     Increment screen brightness level
@@ -114,73 +138,156 @@ Where:
 -d, --decrement_brightness
     Decrement screen brightness level
 
--l {0,1}, --backlight {0,1}
-    Set the screen backlight state [0-1]
-
--t TIMEOUT, --timeout TIMEOUT
-    Set the timeout before the screen blanks in seconds (0
-    to disable)
-
--v, --verbose
-    Increase output verbosity
+brightness_value
+    Set screen brightness level; [1-10] on pi-top [1] and pi-topCEED,
+    [1-16] for pi-top [3]
 
 
-Example
-~~~~~~~~~~~~~~~~~
+Using `pi-top display brightness` without arguments will return the current brightness value.
+
+Note that the `brightness_value` range differs for different devices: for pi-top [3] is from 0-16; pi-top [1] and CEED is 0-10.
+
+
+Example:
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pi-top brightness
+    pi@pi-top:~ $ pi-top display brightness
     16
+
+
+pi-top display backlight
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using `pi-top display backlight` without arguments will return the current backlight status.
+
+.. code-block:: bash
+
+    pi-top display backlight [-h] [-v] [{0,1}]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-v, --verbose
+    Increase verbosity of output
+
+{0,1}
+    Set the screen backlight state [0-1]
+
+pi-top display blank_time
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set the time before the screen goes blank on inactivity periods.
+
+Using `pi-top display blank_time` without arguments will return the screen's timeout value.
+
+.. code-block:: bash
+
+    pi-top display timeout [-h] [-v] [timeout_value]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-v, --verbose
+    Increase verbosity of output
+
+timeout_value
+    Timeout value in seconds. Set to 0 to disable.
+
 
 pi-top devices
 ===================
 
 Finds useful information about the system and the attached devices that are being managed by `pt-device-manager`.
 
-This command doesn't receive arguments.
+Running `pi-top devices` on its own will report back the current brightness value.
 
 .. code-block:: bash
 
-    pi-top devices
+    pi-top devices [-h] [--quiet] [--name-only] {hub,peripherals}
 
-Example
-~~~~~~~~~~~~~~~~~
+Where:
+
+-h, --help
+    Show a help message and exits
+
+--quiet, -q
+    Display only the connected devices
+
+--name-only, -n
+    Display only the name of the devices, without further information
+
+hub
+    Get the name of the active pi-top device
+
+peripherals
+    Get information about attached pi-top peripherals
+
+
+Example:
 
 .. code-block:: bash
 
     pi@pi-top:~ $ pi-top devices
-    Host device: pi-top [4]
-    pi-top Touchscreen: not connected
-    pi-top Keyboard: not connected
-    Upgradable device connected: pi-top [4] Hub (v5.3)
-    Upgradable device connected: pi-top [4] Expansion Plate (v21.5)
-
-pi-top host
-==================
-
-Returns the pi-top host device name where the command is being run.
-
-This command doesn't receive arguments.
-
-.. code-block:: bash
-
-    pi-top host
-
-Example
-~~~~~~~~~~~~~~~~~
+    HUB ===================================================
+    pi-top [4] (v5.4)
+    PERIPHERALS ===========================================
+    [ ✓ ] pi-top [4] Expansion Plate (v21.5)
+    [   ] pi-top Touchscreen
+    [   ] pi-top Keyboard
+    [   ] pi-topPULSE
+    [   ] pi-topSPEAKER (v1) - Left channel
+    [   ] pi-topSPEAKER (v1) - Right channel
+    [   ] pi-topSPEAKER (v1) - Mono
+    [   ] pi-topSPEAKER (v2)
 
 .. code-block:: bash
 
-    # on a pi-top [4]
-    pi@pi-top:~ $ pi-top host
+    pi@pi-top:~ $ pt devices peripherals
+    [ ✓ ] pi-top [4] Expansion Plate (v21.5)
+    [   ] pi-top Touchscreen
+    [   ] pi-top Keyboard
+    [   ] pi-topPULSE
+    [   ] pi-topSPEAKER (v1) - Left channel
+    [   ] pi-topSPEAKER (v1) - Right channel
+    [   ] pi-topSPEAKER (v1) - Mono
+    [   ] pi-topSPEAKER (v2)
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pt devices hub --name-only
     pi-top [4]
 
+
+pi-top imu
+==================
+
+Utility to calibrate the IMU included in the Expansion Plate.
+
 .. code-block:: bash
 
-    # on a pi-top [3]
-    pi@pi-top:~ $ pi-top host
-    pi-top [3]
+    pi-top imu calibrate [-h] [-p PATH]
+
+Where:
+
+-h, --help
+    Show a help message and exits
+
+-p PATH, --path PATH
+    Directory for storing calibration graph data
+
+
+Example:
+
+.. code-block:: bash
+
+    pi-top imu calibrate --path /tmp
+
+
 
 pi-top oled
 ==================
@@ -189,7 +296,7 @@ Display text directly into pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
-    pi-top oled [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
+    pi-top oled draw [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
 
 Where:
 
@@ -205,96 +312,36 @@ text
 --font-size FONT_SIZE
     set the font size
 
-Example
-~~~~~~~~~~~~~~~~~
+
+Example:
 
 .. code-block:: bash
 
-    pi-top oled "hey there!" --timeout 5
+    pi-top oled draw "hey there!" --timeout 5
 
 
---------------------
-Deprecated CLI
---------------------
-
-The following is a list of deprecated CLI tools. They continue to work, but will print
-a message prompting to move to the new CLI `pi-top`.
-
-pt-battery
+pi-top support
 ==================
 
-To learn about the command arguments, check `pi-top battery`_
-
-Example
-~~~~~~~~~~~~~~~~~
+Find resources to learn how to use your device and get help if needed.
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-battery
-    Note: Use of the 'pt-battery' is now deprecated. Please use 'pi-top battery' instead.
-    Charging State: 0
-    Capacity: 42
-    Time Remaining: 104
-    Wattage: -41
+    pi-top support
 
 
-pt-brightness
-==================
-
-To learn about the command arguments, check `pi-top brightness`_
-
-Example
-~~~~~~~~~~~~~~~~~
+Example:
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pt-brightness
-    Note: Use of the 'pt-brightness' is now deprecated. Please use 'pi-top brightness' instead.
-    16
-
-pt-devices
-==================
-
-To learn about the command arguments, check `pi-top devices`_
-
-Example
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    pi@pi-top:~ $ pt-devices
-    Note: Use of the 'pt-device' is now deprecated. Please use 'pi-top device' instead.
-    Host device: pi-top [4]
-    pi-top Touchscreen: not connected
-    pi-top Keyboard: not connected
-    Upgradable device connected: pi-top [4] Hub (v5.3)
-    Upgradable device connected: pi-top [4] Expansion Plate (v21.5)
-
-
-pt-host
-==============
-
-To learn about the command arguments, check `pi-top host`_
-
-Example
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    # on a pi-top [4]
-    pi@pi-top:~ $ pt-host
-    Note: Use of the 'pt-host' is now deprecated. Please use 'pi-top host' instead.
-    pi-top [4]
-
-pt-oled
-============
-
-To learn about the command arguments, check `pi-top oled`_
-
-Example
-~~~~~~~~~~~~~~~~~
-
-.. code-block:: bash
-
-    pi@pi-top:~ $ pt-oled "hey there!" --timeout 5
-    Note: Use of the 'pt-oled' is now deprecated. Please use 'pi-top oled' instead.
+    pi@pi-top:~ $ pi-top support
+    DOCS ==========================================
+    [ ✓ ] pi-top Python SDK documentation: online version, recommended
+      https://docs.pi-top.com/python-sdk/
+    [ ✓ ] pi-top Python SDK documentation: offline version
+      /usr/share/doc/python3-pitop/html/index.html
+    OTHER ========================================
+    [ ✓ ] Knowledge Base: Find answers to commonly asked questions
+      https://knowledgebase.pi-top.com/
+    [ ✓ ] Forum: Discuss and search through support topics.
+      https://forum.pi-top.com/

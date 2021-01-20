@@ -68,7 +68,7 @@ class Display:
             state_str
         )
 
-        return response.parameters()[0]
+        return response.parameters[0]
 
     def __set_state(
         self,
@@ -84,9 +84,11 @@ class Display:
 
     @property
     def brightness(self):
-        return self.__get_state(
-            state_str="get pi-top display brightness",
-            message_id=Message.REQ_GET_BRIGHTNESS,
+        return int(
+            self.__get_state(
+                state_str="get pi-top display brightness",
+                message_id=Message.REQ_GET_BRIGHTNESS,
+            )
         )
 
     @brightness.setter
@@ -123,9 +125,11 @@ class Display:
 
     @property
     def blanking_timeout(self):
-        return self.__get_state(
-            state_str="pi-top display blanking timeout",
-            message_id=Message.REQ_GET_SCREEN_BLANKING_TIMEOUT,
+        return int(
+            self.__get_state(
+                state_str="pi-top display blanking timeout",
+                message_id=Message.REQ_GET_SCREEN_BLANKING_TIMEOUT,
+            )
         )
 
     @blanking_timeout.setter
@@ -144,10 +148,12 @@ class Display:
 
     @property
     def backlight(self):
-        return self.__get_state(
-            state_str="get pi-top display backlight state",
-            message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
-        )
+        return int(
+            self.__get_state(
+                state_str="get pi-top display backlight state",
+                message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
+            )
+        ) == 1
 
     @backlight.setter
     def backlight(self, value):
@@ -160,8 +166,10 @@ class Display:
         )
 
     @property
-    def lid(self):
-        return self.__get_state(
-            state_str="get pi-top display lid open state",
-            message_id=Message.REQ_GET_LID_OPEN_STATE,
-        )
+    def lid_is_open(self):
+        return int(
+            self.__get_state(
+                state_str="get pi-top display lid open state",
+                message_id=Message.REQ_GET_LID_OPEN_STATE,
+            )
+        ) == 1

@@ -3,40 +3,38 @@ name: Build
 on:
   release:
     types: [created]
-  pull_request:
-    branches: [ "master" ]
   push:
-    branches: [ "master", "workflow/*" ]
+    branches: [ "master", "build/*" ]
 
 jobs:
   patch-src:
+    if: github.event_name != 'release'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Set up Debian Docker container for changelog patching
-        if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
           docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
           docker start chglog
           docker exec chglog git config --global user.name "GitHub Build Action"
-          docker exec chglog git config --global user.email "https://github.com/pi-top/pi-top-Python-SDK"
+          docker exec chglog git config --global user.email "https://github.com/${{ env.GITHUB_REPOSITORY_NAME }}"
 
       - name: Patch changelog (snapshot)
-        if: github.event_name != 'release'
         # '--ignore-branch' for testing on feature branch
         run: |
           docker exec chglog gbp dch --verbose --auto --git-author --ignore-branch --snapshot
 
-      - name: Patch changelog (release)
-        if: github.event_name == 'release'
-        run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
+      # Release changelogs are currently handled manually
+      #
+      # - name: Patch changelog (release)
+      #   if: github.event_name == 'release'
+      #   run: |
+      #     docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
 
       - name: Show updated changelog
-        if: github.event_name != 'release'
         run: |
           cat debian/changelog
 
@@ -49,47 +47,8 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
           path: debian/changelog
 
-
-  python-package:
-    needs: patch-src
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download patched changelog
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel
-
-      - name: Build
-        # Create source distribution (sdist) and wheel (bdist_wheel)
-        # By default, both will be placed in dist/ under the current directory
-        run: |
-          python setup.py sdist bdist_wheel
-
-      - name: Upload Python distribution artifacts
-        uses: "actions/upload-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "${{ github.workspace }}/dist"
-
-  debian-package:
-    needs: patch-src
+  debian:
+    if: github.event_name == 'release'
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -101,11 +60,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Delete unpatched changelog
+        if: github.event_name != 'release'
+        run: |
+          rm ${{ github.workspace }}/debian/changelog
+
       - name: Download patched changelog
+        if: github.event_name != 'release'
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/${{ env.GITHUB_REPOSITORY_NAME }}/debian/changelog"
+            path: "${{ github.workspace }}/debian"
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.0
@@ -124,60 +89,64 @@ jobs:
       - name: Upload Debian package artifacts
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
           path: "${{ github.workspace }}/artifacts"
 
-  # python-publish:
-  #   needs: [ python-package, debian-package ]
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: GitHub Environment Variables Action
-  #       uses: FranzDiebold/github-env-vars-action@v1.2.1
+      # TODO: publish to APT server
 
-  #     - name: Download Python distribution artifacts
-  #       uses: "actions/download-artifact@v2"
-  #       with:
-  #           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-  #           path: "${{ github.workspace }}/dist"
+  python:
+    # Does not require patch-src to have actually run
+    # But does need to wait for it if it has
+    if: ${{ always() }}
+    # Python building will not catch errors, but Debian building will
+    # so we wait for that to complete before continuing
+    needs: [ patch-src, debian ]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
 
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: "3.x"
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install twine
+      - name: Delete unpatched changelog
+        if: github.event_name != 'release'
+        run: |
+          rm ${{ github.workspace }}/debian/changelog
 
-  #     # TODO: Only publish to TestPyPI for pre-releases (develop branch?)
-  #     # - name: Publish to TestPyPI
-  #     #   if: github.event_name == 'pull_request' || github.event_name == 'push'
-  #     #   env:
-  #     #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-  #     #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-  #     #   run: |
-  #     #     twine upload --verbose --repository testpypi dist/*
+      - name: Download patched changelog
+        if: github.event_name != 'release'
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
+            path: "${{ github.workspace }}/debian"
 
-  #     - name: Publish to PyPI
-  #       if: github.event_name == 'release'
-  #       env:
-  #         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-  #         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-  #       run: |
-  #         twine upload --verbose dist/*
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
 
-  # debian-publish:
-  #   needs: [ python-package, debian-package ]
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: GitHub Environment Variables Action
-  #       uses: FranzDiebold/github-env-vars-action@v1.2.1
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
 
-  #     - name: Download Debian distribution artifacts
-  #       uses: "actions/download-artifact@v2"
-  #       with:
-  #           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-  #           path: "${{ github.workspace }}/dist"
+      - name: Build
+        # Create source distribution (sdist) and wheel (bdist_wheel)
+        # By default, both will be placed in dist/ under the current directory
+        run: |
+          python setup.py sdist bdist_wheel
 
-  #     # TODO: publish to APT server
+      - name: Upload Python distribution artifacts
+        uses: "actions/upload-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "${{ github.workspace }}/dist"
+
+      - name: Publish to PyPI
+        if: github.event_name == 'release'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose dist/*

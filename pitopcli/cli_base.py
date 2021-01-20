@@ -5,6 +5,10 @@ class PitopCliException(Exception):
     pass
 
 
+class PitopCliInvalidArgument(Exception):
+    pass
+
+
 class CliBaseClass(ABC):
     """Abstract class, used to create CLI commands"""
     @abstractmethod
@@ -41,4 +45,13 @@ class CliBaseClass(ABC):
     @abstractproperty
     def cli_name(self):
         """Name of the class CLI, without the 'pt-' prefix"""
+        pass
+
+    @property
+    def parser(self):
+        """ArgumentParser object used to parse the class"""
+        pass
+
+    def validate_args(self):
+        """Method to perform further validation on arguments"""
         pass

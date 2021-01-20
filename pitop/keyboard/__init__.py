@@ -1,1 +1,1 @@
-from .key_listener import KeyPressListener  # noqa: F401
+from .key_listener import KeyPressListener

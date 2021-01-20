@@ -1,7 +1,5 @@
-from unittest import TestCase, skip
-from sys import modules
 from unittest.mock import Mock
-from math import pi
+from sys import modules
 
 modules["gpiozero"] = Mock()
 modules["gpiozero.exc"] = Mock()
@@ -12,13 +10,14 @@ modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
-# import after applying mocks
-from pitop.pma.parameters import (  # noqa: E402
+from pitop.pma.encoder_motor import EncoderMotor
+from pitop.pma.parameters import (
     BrakingType,
     ForwardDirection,
     Direction
 )
-from pitop.pma.encoder_motor import EncoderMotor  # noqa: E402
+from unittest import TestCase, skip
+from math import pi
 
 
 @skip
@@ -30,7 +29,7 @@ class EncoderMotorTestCase(TestCase):
             forward_direction=ForwardDirection.CLOCKWISE,
             braking_type=BrakingType.COAST)
 
-        self.assertEquals(wheel.wheel_diameter, 0.064)
+        self.assertEquals(wheel.wheel_diameter, 0.075)
         self.assertEquals(round(wheel._wheel_circumference, 3), 0.201)
         self.assertEquals(wheel.forward_direction, ForwardDirection.CLOCKWISE)
 
@@ -38,7 +37,7 @@ class EncoderMotorTestCase(TestCase):
         """Max speed calculation based on max rpm"""
         EncoderMotor.max_rpm = Mock()
         EncoderMotor.max_rpm = 142
-        EncoderMotor._wheel_circumference = 0.064
+        EncoderMotor._wheel_circumference = 0.075
 
         wheel = EncoderMotor(
             port_name="M1",
@@ -81,7 +80,7 @@ class EncoderMotorTestCase(TestCase):
         new_diameter = 0.5
         wheel.wheel_diameter = new_diameter
         self.assertNotEqual(wheel._wheel_circumference, initial_circumference)
-        self.assertEquals(wheel._wheel_circumference, new_diameter*pi)
+        self.assertEquals(wheel._wheel_circumference, new_diameter * pi)
 
     def test_wheel_diameter_cant_be_zero_or_negative(self):
         """Wheel diameter must be higher than zero"""

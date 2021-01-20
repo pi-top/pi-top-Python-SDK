@@ -1,4 +1,4 @@
-from pitop.miniscreen.buttons import (
+from pitop.miniscreen import (
     UpButton,
     DownButton,
     SelectButton,
@@ -27,7 +27,8 @@ def select_something():
     print("select_something called")
 
 
-# To invoke a function when the button is pressed/released, you can assign the function the when_pressed or when_released data member of a button
+# To invoke a function when the button is pressed/released,
+# you can assign the function to the 'when_pressed' or 'when_released' data member of a button
 up_button.when_pressed = do_up_thing
 down_button.when_pressed = do_down_thing
 down_button.when_released = do_another_thing

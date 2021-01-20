@@ -20,9 +20,7 @@ Supports all pi-top peripherals:
 Status: Active Development
 --------------------------
 
-This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
-
-Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+This SDK is currently in active development. Please be patient while we work towards v1.0.0!
 
 Backwards Compatibility
 =======================
@@ -34,7 +32,6 @@ About
 -----
 
 This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
-
 with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
 to interact with your pi-top using the terminal.
 
@@ -64,28 +61,10 @@ modules available in the library:
         sleep(0.1)
 
 
-Check out the `Basic API Examples`_ chapter of the documentation for ideas on how to get started.
+Check out the :ref:`API Recipes<recipes_api:Recipes>` chapter of the documentation for ideas on how to get started.
 
-.. _Basic API Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
-
-
-This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
-
-.. code-block:: bash
-
-    $ pi-top oled write "Hey! I'm a $(pt devices hub)"
-
-
-A 'pt' alias is also provided for quicker typing:
-
-.. code-block:: bash
-
-    $ pt oled write "Hey! I'm a $(pt devices hub)"
-
-
-Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
-
-.. _CLI Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
+The SDK also contains a Command Line Interface (CLI).
+See the :ref:`'pi-top' command<cli_tools:'pi-top' Command>` for more information.
 
 -----------------
 Table of Contents
@@ -96,15 +75,16 @@ Table of Contents
     :numbered:
 
     getting_started
+    getting_started_pma
+    overview
     cli_tools
-    examples_cli
-    examples_api_basic
-    examples_api_advanced
+    recipes_api
+    api_general
     api_miniscreen
     api_pma
-    api_camera
-    api_keyboard
+    api_protoplus
     api_pulse
+    api_helpers
     more
 
 ------------------

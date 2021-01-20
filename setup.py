@@ -4,11 +4,8 @@ import os
 import sys
 from setuptools import setup, find_packages
 
-if sys.version_info[0] == 3:
-    if not sys.version_info >= (3, 2):
-        raise ValueError("This package requires Python 3.2 or above")
-else:
-    raise ValueError("Unrecognized major version of Python")
+if not sys.version_info >= (3, 7):
+    raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -43,11 +40,6 @@ for r in (
     # (replace '~' with '+')
     # See https://www.python.org/dev/peps/pep-0440/#local-version-identifiers for more information
     ("~", "+"),
-
-    # Convert from Debian epoch version format to PEP 440 epoch version format:
-    # (replace ':'' with '!')
-    # See https://www.python.org/dev/peps/pep-0440/#version-epochs for more information
-    (":", "!"),
 ):
     python_version = python_version.replace(*r)
 
@@ -70,12 +62,8 @@ __classifiers__ = [
     "Topic :: System :: Hardware",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.2",
-    "Programming Language :: Python :: 3.3",
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 
@@ -104,6 +92,9 @@ __requires__ = [
     "Pillow",
     # Camera communication
     "PyV4L2Camera",
+    # IMU Calibration
+    "matplotlib",
+    "scipy",
 
     ############
     # Keyboard #
@@ -116,8 +107,7 @@ __requires__ = [
     "luma.oled",
     "luma.core",
     "monotonic",
-    # Communication with the device manager
-    "zmq",
+    "pyinotify",
 
     ##########
     # Proto+ #
@@ -132,23 +122,10 @@ __requires__ = [
 ]
 
 __extra_requires__ = {
-    "computer_vision":  ["opencv"],
-    "doc":              ["sphinx"],
-    "test":             ["pytest", "coverage", "mock"],
+    "computer_vision": ["opencv"],
+    "doc": ["sphinx"],
+    "test": ["pytest", "coverage", "mock"],
 }
-
-if sys.version_info[:2] == (3, 2):
-    # Particular versions are required for Python 3.2 compatibility
-    __extra_requires__["doc"].extend([
-        "Jinja2<2.7",
-        "MarkupSafe<0.16",
-    ])
-    __extra_requires__["test"][0] = "pytest<3.0dev"
-    __extra_requires__["test"][1] = "coverage<4.0dev"
-elif sys.version_info[:2] == (3, 3):
-    __extra_requires__["test"][0] = "pytest<3.3dev"
-elif sys.version_info[:2] == (3, 4):
-    __extra_requires__["test"][0] = "pytest<5.0dev"
 
 __entry_points__ = {
     "console_scripts": [
@@ -156,13 +133,6 @@ __entry_points__ = {
         "pt=pitopcli.pitop:main",
         # 'pi-top' longhand/easy-to-remember command
         "pi-top=pitopcli.pitop:main",
-        # Deprecated console scripts:
-        # see <TODO: LINK TO WIKI PAGE RE: DEPRECATION OF CLI>
-        "pt-battery=pitopcli.battery:main",
-        "pt-brightness=pitopcli.brightness:main",
-        "pt-devices=pitopcli.devices:main",
-        "pt-host=pitopcli.host:main",
-        "pt-oled=pitopcli.oled:main",
     ]
 }
 

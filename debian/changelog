@@ -1,6 +1,244 @@
-py-pitop-sdk (1:0.1.0) UNRELEASED; urgency=medium
+py-pitop-sdk (0.12.1) buster; urgency=medium
+
+  * Fix broken reference to OLED's internal canvas
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 18 Jan 2021 16:40:22 +0000
+
+py-pitop-sdk (0.12.0) buster; urgency=medium
+
+  * Use common lib singleton metaclass
+  * Upgrade on installing from docs/requirements.txt
+  * Clean up battery component
+  * Always use 2 leading underscores for private functions and member variables
+  * Fix motor examples to match robot configuration ports and params
+  * Fix changelog formatting
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 18 Jan 2021 16:25:11 +0000
+
+py-pitop-sdk (0.11.0) buster; urgency=medium
+
+  * Monitor OLED lock files using inotify to add events for user using the OLED
+  * Improve miniscreen button importing to speed miniscreen imports
+  * Handle Ctrl+C in OLED CLI
+  * CLI main function returns exit code for entry point script
+  * Drop '_set_exclusive_mode' for miniscreen objects in favour of constructor
+  argument
+  * Move 'miniscreen.buttons.buttons' to 'miniscreen.buttons'
+  * Move 'miniscreen.oled.oled' to 'miniscreen.oled'
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 13 Jan 2021 13:40:11 -0300
+
+py-pitop-sdk (0.10.1) buster; urgency=medium
+
+  * Fix recursion issue when resetting OLED
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 12 Jan 2021 10:46:11 -0300
+
+py-pitop-sdk (0.10.0) buster; urgency=medium
+
+  * Use parameters property, not function
+  * Remove unused zmq dependency (handled in common lib)
+  * OLED uses controller class
+  * Add additional top-level OLED properties for size and mode
+  * Add additional top-level OLED functions for contrast
+  * Canvas and FPS regulators are now private
+  * Add 'pi-top oled spi' command for changing SPI bus
+  * Fix test imports
+  * Some misc syntax fixes
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 11 Jan 2021 14:09:42 -0300
+
+py-pitop-sdk (0.9.0) buster; urgency=medium
+
+  * Migrate deprecated CLIs to python3-pitop-migr
+
+ -- Mike Roberts <mike@pi-top.com>  Thu, 07 Jan 2021 15:29:50 +0000
+
+py-pitop-sdk (0.8.1) buster; urgency=medium
+
+  * Update GitHub CI - only build on master; publish to PyPI on release
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 04 Jan 2021 13:36:22 +0000
+
+py-pitop-sdk (0.8.0) buster; urgency=medium
+
+  * Rename 'help' CLI to 'support'
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 30 Dec 2020 17:14:44 -0300
+
+py-pitop-sdk (0.7.0) buster; urgency=medium
+
+  * Fix detection of legacy peripherals
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 22 Dec 2020 17:34:37 -0300
+
+py-pitop-sdk (0.6.2) buster; urgency=medium
+
+  * Set DISPLAY environment variable to plot IMU data
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 19:46:24 -0300
+
+py-pitop-sdk (0.6.1) buster; urgency=medium
+
+  * Add missing init file
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 19:18:03 -0300
+
+py-pitop-sdk (0.6.0) buster; urgency=medium
+
+  * Add IMU CLI
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 13:55:57 -0300
+
+py-pitop-sdk (0.5.1) buster; urgency=medium
+
+  * Update docs links
+
+ -- Mike Roberts <mike@pi-top.com>  Thu, 17 Dec 2020 15:33:43 +0000
+
+py-pitop-sdk (0.5.0) buster; urgency=medium
+
+  * Update servo motor classes to latest firmware specification
+  * Add new servo functionality
+  * Replace '.format' with f-strings
+  * Flake8 uses per-file ignores
+  * Ignore RPi.GPIO RuntimeError when running tests
+  * Update package to specify 3.7 and above
+
+ -- Mike Roberts <mike@pi-top.com>  Thu, 17 Dec 2020 14:49:51 +0000
+
+py-pitop-sdk (0.4.2) buster; urgency=medium
+
+  * Initial IMU implementation
+
+ -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 10:22:58 -0300
+
+py-pitop-sdk (0.4.1) buster; urgency=medium
+
+  * 'pi-top Keyboard' --> 'Keyboard Input'
+  * 'pi-top Camera' --> 'USB Camera'
+  * Move to "helpers" section in the docs
+  * Add events to PMA Ultrasonic Sensor example
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 19:26:07 +0000
+
+py-pitop-sdk (0.4.0) buster; urgency=medium
+
+  * Add missing pages to docs
+  * Update examples and mocking in docs as necessary
+  * Add pt-project-files as recommended dependency
+  * Remove TODOs
+
+ -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 16:19:20 +0000
+
+py-pitop-sdk (0.3.9) buster; urgency=medium
+
+  * Reorganize examples in docs
+
+ -- Jorge Capona <jorge@pi-top.com>  Wed, 16 Dec 2020 00:53:33 -0300
+
+py-pitop-sdk (0.3.8) buster; urgency=medium
+
+  * Update docs - add overview page, add placeholders for all API subsystems
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 22:40:55 +0000
+
+py-pitop-sdk (0.3.7) buster; urgency=medium
+
+  * Fix display callback API
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 15 Dec 2020 19:22:56 -0300
+
+py-pitop-sdk (0.3.6) buster; urgency=medium
+
+  * Remove pi-topPULSE config methods
+  * Fix common lib mocking to support inclusion of Singleton internal methods
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 19:23:06 +0000
+
+py-pitop-sdk (0.3.5) buster; urgency=medium
+
+  * Add missing return statement in OLED API
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 23:38:05 -0300
+
+py-pitop-sdk (0.3.4) buster; urgency=medium
+
+  * Supplement 'Breaks' with 'Replaces'
+
+ -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 01:58:43 +0000
+
+py-pitop-sdk (0.3.3) buster; urgency=medium
+
+  * Breaks with python3-pt-oled (<< 2.0.0)
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:58:15 +0000
+
+py-pitop-sdk (0.3.2) buster; urgency=medium
+
+  * Breaks with python3-pt-oled (pt-oled)
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:52:03 +0000
+
+py-pitop-sdk (0.3.1) buster; urgency=medium
+
+  * Breaks with pt-device-manager << 4.0.0 (CLI utils)
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:46:30 +0000
+
+py-pitop-sdk (0.3.0) buster; urgency=medium
+
+  * Do not break python3-pt-oled
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:10:06 +0000
+
+py-pitop-sdk (0.2.6) buster; urgency=medium
+
+  * Set default OLED CLI force argument to False
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 18:37:51 -0300
+
+py-pitop-sdk (0.2.5) buster; urgency=medium
+
+  * Fix battery API
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 18:24:02 -0300
+
+py-pitop-sdk (0.2.4) buster; urgency=medium
+
+  * Check for available displays before opening browser in help CLI
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 12:45:20 -0300
+
+py-pitop-sdk (0.2.3) buster; urgency=medium
+
+  * Add help section to CLI, including support for opening a browser directing
+  to the first recommended available docs URL
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 14:53:24 +0000
+
+py-pitop-sdk (0.2.2) buster; urgency=medium
+
+  * Make miniscreen buttons top-level object a singleton, to ensure that
+  pt-sys-oled can correctly set 'exclusive mode' for the application scope
+
+ -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 14:22:01 +0000
+
+py-pitop-sdk (0.2.1) buster; urgency=medium
+
+  * Fix changelog date
+
+ -- Mike Roberts <mike@pi-top.com>  Sun, 13 Dec 2020 21:27:15 +0000
+
+py-pitop-sdk (0.2.0) buster; urgency=medium
+
+  * Move support for deprecated user libs to python3-pitop-depr (to be dropped
+  at a later date)
+
+ -- Mike Roberts <mike@pi-top.com>  Sun, 13 Dec 2020 21:12:13 +0000
+
+py-pitop-sdk (0.1.0) buster; urgency=medium
 
   * Initial release of package
-  * Use version epoch of 1 to smoothly move from deprecated packages
 
  -- Mike Roberts <mike@pi-top.com>  Wed, 04 Nov 2020 16:26:34 +0000

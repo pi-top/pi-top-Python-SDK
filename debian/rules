@@ -10,6 +10,9 @@ override_dh_auto_test:
 
 override_dh_auto_build:
 	dh_auto_build
+	# Install Python dependencies required to build the docs
+	# This is a sub-optimal solution - until we have something better
+	python3 -m pip install --upgrade -r ./docs/requirements.txt
 	# Fail on warnings; make verbose
 	PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
 	# PYTHONPATH=. sphinx-build -v -bman  docs/ build/man

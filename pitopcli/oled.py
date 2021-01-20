@@ -6,7 +6,7 @@ from time import sleep, strftime
 from pitopcommon.formatting import is_url
 
 from pitop.miniscreen import OLED
-from .cli_base import CliBaseClass
+from .cli_base import CliBaseClass, PitopCliInvalidArgument
 
 
 class OledCLI(CliBaseClass):
@@ -15,9 +15,11 @@ class OledCLI(CliBaseClass):
 
     def __init__(self, args) -> None:
         self.args = args
-        # TODO: add support for 'give/take control to/from hub'
-        # REQ_GET_OLED_CONTROL = 125
-        # REQ_SET_OLED_CONTROL = 126
+        self.validate_args()
+
+    def validate_args(self) -> None:
+        if self.args.oled_subcommand is None:
+            raise PitopCliInvalidArgument
 
     def run(self) -> int:
         def is_animated(image):
@@ -37,28 +39,36 @@ class OledCLI(CliBaseClass):
             return file_path
 
         try:
-            oled = OLED()
+            if self.args.oled_subcommand == "display":
+                # Do take control of OLED to display
+                oled = OLED(_exclusive_mode=True)
 
-            if self.args.force:
-                oled.set_control_to_pi()
+                if self.args.force:
+                    oled.set_control_to_pi()
 
-            if self.args.oled_subcommand == "draw":
-                print("Press Ctrl + C to exit.")
+                try:
+                    print("Press Ctrl + C to exit.")
 
-                skip_timeout = False
-                if isfile(self.args.text) or is_url(self.args.text):
-                    oled.set_max_fps(10)
-                    img = oled.get_raw_image(self.args.text)
-                    skip_timeout = is_animated(img)
+                    skip_timeout = False
+                    if isfile(self.args.text) or is_url(self.args.text):
+                        oled.play_animated_image_file(self.args.text)
+                    else:
+                        oled.display_multiline_text(self.args.text, font_size=self.args.font_size)
 
-                    for i in range(self.args.loop):
-                        for frame in ImageSequence.Iterator(img):
-                            oled.draw_image(frame)
+                    if not skip_timeout:
+                        sleep(self.args.timeout)
+
+                except KeyboardInterrupt:
+                    pass
+
+            elif self.args.oled_subcommand == "spi":
+                # Do not take control of OLED just to change its internal state
+                oled = OLED(_exclusive_mode=False)
+
+                if self.args.spi_bus is not None:
+                    oled.spi_bus = self.args.spi_bus
                 else:
-                    oled.draw_multiline_text(self.args.text, font_size=self.args.font_size)
-
-                if not skip_timeout:
-                    sleep(self.args.timeout)
+                    print(oled.spi_bus)
 
             elif self.args.oled_subcommand == "capture":
                 if self.args.capture_subcommand == "save":
@@ -83,32 +93,7 @@ class OledCLI(CliBaseClass):
                                           description="Set of utilities to use pi-top [4]'s OLED screen",
                                           dest="oled_subcommand")
 
-        # "draw" option arguments
-        parser_draw = subparser.add_parser("draw", help="Draw text and images into the OLED")
-        parser_draw.add_argument("--force", "-f",
-                                 help="Force the hub to give control of the OLED to the Pi",
-                                 action="store_true"
-                                 )
-        parser_draw.add_argument("--timeout", "-t",
-                                 type=int,
-                                 help="Set the timeout in seconds",
-                                 default=10,
-                                 )
-        parser_draw.add_argument("--font-size", "-s",
-                                 type=int,
-                                 help="Set the font size",
-                                 default=20,
-                                 )
-        parser_draw.add_argument("--loop", "-l",
-                                 type=int,
-                                 help="How many times the animated image should be looped",
-                                 default=1,
-                                 )
-        parser_draw.add_argument("text",
-                                 help="Set the text to write to screen",
-                                 )
-
-        # "capture" option sub commands
+        # "capture" arguments
         parser_capture = subparser.add_parser("capture", help="Capture images or videos of the OLED content")
         parser_capture.add_argument("--force", "-f",
                                     help="Force the hub to give control of the OLED to the Pi",
@@ -140,6 +125,38 @@ class OledCLI(CliBaseClass):
         capture_subparser.add_parser("stop",
                                      help="Stop recording OLED screen",
                                      )
+        # "display" arguments
+        parser_display = subparser.add_parser("display", help="Display text and images on the OLED")
+        parser_display.add_argument("--force", "-f",
+                                 help="Force the hub to give control of the OLED to the Pi",
+                                 action="store_true"
+                                 )
+        parser_display.add_argument("--timeout", "-t",
+                                 type=int,
+                                 help="Set the timeout in seconds",
+                                 default=10,
+                                 )
+        parser_display.add_argument("--font-size", "-s",
+                                 type=int,
+                                 help="Set the font size",
+                                 default=20,
+                                 )
+        parser_display.add_argument("--loop", "-l",
+                                 type=int,
+                                 help="How many times the animated image should be looped",
+                                 default=1,
+                                 )
+        parser_display.add_argument("text",
+                                 help="Set the text to write to screen",
+                                 )
+
+        # "spi" arguments
+        parser_spi = subparser.add_parser("spi", help="Set SPI bus that is used by OLED")
+        parser_spi.add_argument("spi_bus",
+                                help="SPI buts to be used by OLED. Valid options: {0, 1}",
+                                type=int,
+                                choices=[0, 1],
+                                nargs='?')
 
 
 def main():

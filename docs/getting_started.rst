@@ -37,7 +37,7 @@ You can also install the latest version of the SDK through PyPI in your pi-top w
 
 .. code-block:: sh
 
-    pip3 install python3-pitop
+    pip3 install pitop
 
 Note: this will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
 

@@ -16,7 +16,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
 
 sys.path.insert(0, PARENT)
-import setup as _setup  # noqa
+import setup as _setup  # noqa: E402
 
 # -- Project information -----------------------------------------------------
 
@@ -32,7 +32,9 @@ master_doc = 'index'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
+
+autosectionlabel_prefix_document = True
 
 # Extension options
 # TODO v2 of sphinx-common: `None` -> `True`
@@ -100,11 +102,28 @@ autodoc_mock_imports = [
     'luma',
     'luma.oled',
     'luma.core',
-    'pitopcommon',
-    'PyV4L2Camera',
+    'matplotlib',
+    'mpl_toolkits',
+    'pitopcommon.bitwise_ops',
+    'pitopcommon.command_runner',
+    'pitopcommon.common_ids',
+    'pitopcommon.common_names',
+    'pitopcommon.current_session_info',
+    'pitopcommon.firmware_device',
+    'pitopcommon.formatting',
+    'pitopcommon.i2c_device',
+    'pitopcommon.lock',
+    'pitopcommon.logger',
+    'pitopcommon.ptdm',
+    'pitopcommon.smbus_device',
+    'pitopcommon.sys_config',
     'PIL',
     'pynput',
-    'smbus2',
+    'pyinotify',
+    'PyV4L2Camera',
+    'scipy',
+    'serial',
+    'smbus',
     'zmq',
     # gpiozero dependencies
     'RPi',

@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
-from sys import exit
 
-from .brightness import BrightnessCLI
-from .devices import DeviceCLI
-from .host import HostCLI
+from .cli_base import PitopCliException, PitopCliInvalidArgument
+
 from .battery import BatteryCLI
+from .display import DisplayCLI
+from .devices import DeviceCLI
+from .support import SupportCLI
+from .imu import ImuCLI
 from .oled import OledCLI
-from .cli_base import PitopCliException
 
 
 lookup_dict = {
-    "brightness": BrightnessCLI,
-    "device": DeviceCLI,
-    "host": HostCLI,
     "battery": BatteryCLI,
+    "devices": DeviceCLI,
+    "display": DisplayCLI,
+    "support": SupportCLI,
+    "imu": ImuCLI,
     "oled": OledCLI
 }
 
@@ -25,7 +27,7 @@ def get_parser():
     defined in ´lookup_dict´, and returns the parsed arguments.
 
     Returns:
-        Namespace: parsed arguments, as returned by ArgumentParser.parse_args()
+        ArgumentParser: parser object
     """
     parser = ArgumentParser(prog='pi-top')
     subparsers = parser.add_subparsers(title='Subcommands',
@@ -36,6 +38,7 @@ def get_parser():
     for cli_name, cli_class in lookup_dict.items():
         class_parser = subparsers.add_parser(cli_name, help=cli_class.parser_help)
         cli_class.add_parser_arguments(class_parser)
+        cli_class.parser = class_parser
 
     return parser
 
@@ -43,23 +46,29 @@ def get_parser():
 def run(args):
     """Executes the command according to the provided arguments"""
     exit_code = 1
+    cli = None
     try:
-        cls = lookup_dict.get(args.subcommand)
-        if cls:
-            obj = cls(args)
-            exit_code = obj.run()
+        cli = lookup_dict.get(args.subcommand)
+        exit_code = cli(args).run()
     except PitopCliException:
-        exit_code = 1
+        pass
+    except PitopCliInvalidArgument:
+        if cli:
+            print(
+                cli.parser.print_help()
+            )
     except Exception as e:
         print(f"Error on pitop.run: {e}")
-        exit_code = 1
+        pass
 
-    exit(exit_code)
+    return exit_code
 
 
 def main():
-    run(get_parser().parse_args())
+    parser = get_parser()
+    args = parser.parse_args()
+    if args.subcommand is None:
+        parser.print_help()
+        return 1
 
-
-if __name__ == "__main__":
-    main()
+    return run(args)

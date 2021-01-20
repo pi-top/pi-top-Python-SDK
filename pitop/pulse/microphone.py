@@ -1,24 +1,26 @@
-# microphone.py (pi-topPULSE)
-# Copyright (C) 2017  CEED ltd.
-#
+from pitop.pulse import configuration
 
 from pitopcommon.logger import PTLogger
-from binascii import hexlify
-from binascii import unhexlify
+
+from binascii import (
+    hexlify,
+    unhexlify
+)
 from tempfile import mkstemp
-from os import close
-from os import path
-from os import remove
-from os import rename
-from os import stat
+from os import (
+    close,
+    path,
+    remove,
+    rename,
+    stat,
+)
 import serial
 import signal
 from struct import pack
 from sys import exit
 from threading import Thread
 from time import sleep
-# local
-from ptpulse import configuration
+
 
 _bitrate = 8
 _continue_writing = False
@@ -32,7 +34,7 @@ _temp_file_path = ""
 #######################
 
 
-def _signal_handler(signal, frame):
+def __signal_handler(signal, frame):
     """INTERNAL. Handles signals from the OS."""
 
     global _exiting
@@ -47,20 +49,20 @@ def _signal_handler(signal, frame):
     exit(0)
 
 
-def _get_size(filename):
+def __get_size(filename):
     """INTERNAL. Gets the size of a file."""
 
     file_stats = stat(filename)
     return file_stats.st_size
 
 
-def _from_hex(value):
+def __from_hex(value):
     """INTERNAL. Gets a bytearray from hex data."""
 
     return bytearray.fromhex(value)
 
 
-def _space_separated_little_endian(integer_value, byte_len):
+def __space_separated_little_endian(integer_value, byte_len):
     """INTERNAL. Get an integer in format for WAV file header."""
 
     if byte_len <= 1:
@@ -80,7 +82,7 @@ def _space_separated_little_endian(integer_value, byte_len):
     return ' '.join([temp[i:i + 2] for i in range(0, len(temp), 2)])
 
 
-def _init_header_information():
+def __init_header_information():
     """INTERNAL. Create a WAV file header."""
 
     RIFF = "52 49 46 46"
@@ -94,49 +96,49 @@ def _init_header_information():
         capture_sample_rate = 16000
 
     # ChunkID
-    header = _from_hex(RIFF)
+    header = __from_hex(RIFF)
     # ChunkSize - 4 bytes (to be changed depending on length of data...)
-    header += _from_hex(_space_separated_little_endian(0, 4))
+    header += __from_hex(__space_separated_little_endian(0, 4))
     # Format
-    header += _from_hex(WAVE)
+    header += __from_hex(WAVE)
     # Subchunk1ID
-    header += _from_hex(fmt)
+    header += __from_hex(fmt)
     # Subchunk1Size (PCM = 16)
-    header += _from_hex(_space_separated_little_endian(16, 4))
+    header += __from_hex(__space_separated_little_endian(16, 4))
     # AudioFormat   (PCM = 1)
-    header += _from_hex(_space_separated_little_endian(1, 2))
-    header += _from_hex(_space_separated_little_endian(1, 2)
-                        )                   # NumChannels
+    header += __from_hex(__space_separated_little_endian(1, 2))
+    header += __from_hex(__space_separated_little_endian(1, 2)
+                         )                   # NumChannels
     # SampleRate
-    header += _from_hex(_space_separated_little_endian(capture_sample_rate, 4))
+    header += __from_hex(__space_separated_little_endian(capture_sample_rate, 4))
     # ByteRate (Same as SampleRate due to 1 channel, 1 byte per sample)
-    header += _from_hex(_space_separated_little_endian(capture_sample_rate, 4))
+    header += __from_hex(__space_separated_little_endian(capture_sample_rate, 4))
     # BlockAlign - (no. of bytes per sample)
-    header += _from_hex(_space_separated_little_endian(1, 2))
+    header += __from_hex(__space_separated_little_endian(1, 2))
     # BitsPerSample
-    header += _from_hex(_space_separated_little_endian(_bitrate, 2))
+    header += __from_hex(__space_separated_little_endian(_bitrate, 2))
     # Subchunk2ID
-    header += _from_hex(DATA)
+    header += __from_hex(DATA)
     # Subchunk2Size - 4 bytes (to be changed depending on length of data...)
-    header += _from_hex(_space_separated_little_endian(0, 4))
+    header += __from_hex(__space_separated_little_endian(0, 4))
 
     return header
 
 
-def _update_header_in_file(file, position, value):
+def __update_header_in_file(file, position, value):
     """INTERNAL. Update the WAV header  """
 
-    hex_value = _space_separated_little_endian(value, 4)
+    hex_value = __space_separated_little_endian(value, 4)
     data = unhexlify(''.join(hex_value.split()))
 
     file.seek(position)
     file.write(data)
 
 
-def _finalise_wav_file(file_path):
+def __finalise_wav_file(file_path):
     """INTERNAL. Update the WAV file header with the size of the data."""
 
-    size_of_data = _get_size(file_path) - 44
+    size_of_data = __get_size(file_path) - 44
 
     if size_of_data <= 0:
         PTLogger.info("Error: No data was recorded!")
@@ -146,17 +148,17 @@ def _finalise_wav_file(file_path):
 
             PTLogger.debug("Updating header information...")
 
-            _update_header_in_file(file, 4, size_of_data + 36)
-            _update_header_in_file(file, 40, size_of_data)
+            __update_header_in_file(file, 4, size_of_data + 36)
+            __update_header_in_file(file, 40, size_of_data)
 
 
-def _thread_method():
+def __thread_method():
     """INTERNAL. Thread method."""
 
-    _record_audio()
+    __record_audio()
 
 
-def _record_audio():
+def __record_audio():
     """INTERNAL. Open the serial port and capture audio data into a temp file."""
 
     global _temp_file_path
@@ -181,7 +183,7 @@ def _record_audio():
                 with open(_temp_file_path, 'wb') as file:
 
                     PTLogger.debug("WRITING: initial header information")
-                    file.write(_init_header_information())
+                    file.write(__init_header_information())
 
                     if serial_device.inWaiting():
                         PTLogger.debug(
@@ -205,14 +207,14 @@ def _record_audio():
                                 pcm_data_int = 0
                                 pcm_data_int = pcm_data_block
                                 scaled_val = int((pcm_data_int * 32768) / 255)
-                                bytes_to_write += _from_hex(
-                                    _space_separated_little_endian(scaled_val, 2))
+                                bytes_to_write += __from_hex(
+                                    __space_separated_little_endian(scaled_val, 2))
 
                             else:
 
                                 pcm_data_int = pcm_data_block
-                                bytes_to_write += _from_hex(
-                                    _space_separated_little_endian(pcm_data_int, 1))
+                                bytes_to_write += __from_hex(
+                                    __space_separated_little_endian(pcm_data_int, 1))
 
                         file.write(bytes_to_write)
 
@@ -221,7 +223,7 @@ def _record_audio():
             finally:
                 serial_device.close()
 
-                _finalise_wav_file(_temp_file_path)
+                __finalise_wav_file(_temp_file_path)
 
                 PTLogger.debug("Finished Recording.")
 
@@ -251,7 +253,7 @@ def record():
     if _thread_running is False:
         _thread_running = True
         _continue_writing = True
-        _recording_thread = Thread(group=None, target=_thread_method)
+        _recording_thread = Thread(group=None, target=__thread_method)
         _recording_thread.start()
     else:
         PTLogger.info("Microphone is already recording!")
@@ -327,4 +329,4 @@ def set_bit_rate_to_signed_16():
 # INITIALISATION      #
 #######################
 
-_signal = signal.signal(signal.SIGINT, _signal_handler)
+_signal = signal.signal(signal.SIGINT, __signal_handler)

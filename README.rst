@@ -4,25 +4,28 @@ pi-top Python SDK (Preview)
 
 A simple, modular interface for interacting with a pi-top and its related accessories and components.
 
+.. ###############################################
+.. # NOTE: THESE ARE EXTERNAL LINKS, AS THEY ARE #
+.. # REQUIRED FOR THE IMAGES TO SHOW ON PYPI     #
+.. ###############################################
+
 Supports all pi-top devices:
 
-.. image:: docs/_static/overview/devices.jpg
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/devices.jpg
 
 Supports pi-top Maker Architecture (PMA):
 
-.. image:: docs/_static/overview/pma.jpg
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/pma.jpg
 
 Supports all pi-top peripherals:
 
-.. image:: docs/_static/overview/peripherals.jpg
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/raw/master/docs/_static/overview/peripherals.jpg
 
 --------------------------
 Status: Active Development
 --------------------------
 
-This SDK is currently in active development, and is made publicly available to inspect while it is being developed.
-
-Please do not expect anything to be final, working or understandable until it has matured, ready for release.
+This SDK is currently in active development. Please be patient while we work towards v1.0.0!
 
 Backwards Compatibility
 =======================
@@ -36,6 +39,10 @@ Build Status: Latest
 .. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Build,%20Test%20and%20Publish
    :alt: GitHub Workflow Status
 
+
+.. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
+    :alt: GitHub tag (latest by date)
+
 .. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
     :alt: GitHub release (latest by date)
 
@@ -46,17 +53,11 @@ Build Status: Latest
     :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
     :alt: Documentation Status
 
-.. # TODO - add coverage report
-.. image: https://codecov.io/gh/pi-top/pi-top-Python-SDK/branch/master/graph/badge.svg?token=hfbgB9Got4
-..     :target: https://codecov.io/gh/pi-top/pi-top-Python-SDK
-..     :alt: Coverage
-
 -----
 About
 -----
 
 This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
-
 with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
 to interact with your pi-top using the terminal.
 
@@ -85,9 +86,9 @@ modules available in the library:
         oled.draw_multiline_text(str(distance))
         sleep(0.1)
 
-Check out the `Basic API Examples`_ chapter of the documentation for ideas on how to get started.
+Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
 
-.. _Basic API Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_api_basic.html
+.. _API Recipes: https://docs.pi-top.com/python-sdk/latest/recipes_api.html
 
 
 This repository also contains a 'pi-top' command-line interface (CLI) for some SDK functionality:
@@ -103,10 +104,9 @@ A 'pt' alias is also provided for quicker typing:
 
     $ pt oled write "Hey! I'm a $(pt devices hub)"
 
+Check out the `CLI`_ chapter of the documentation for ideas on how to get started.
 
-Check out the `CLI Examples`_ chapter of the documentation for ideas on how to get started.
-
-.. _CLI Examples: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/examples_cli.html
+.. _CLI: https://docs.pi-top.com/python-sdk/latest/examples_cli.html
 
 ------------
 Installation
@@ -116,7 +116,8 @@ The pi-top Python SDK is installed out of the box with pi-topOS, which is availa
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
-.. _Getting Started: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
+.. _Getting Started: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
+
 
 -------------
 Documentation
@@ -124,7 +125,45 @@ Documentation
 
 Comprehensive documentation is available here_.
 
-.. _here: https://pi-top-pi-top-python-sdk.readthedocs-hosted.com/en/latest/getting_started.html
+.. _here: https://docs.pi-top.com/python-sdk/en/latest/getting_started.html
+
+-------------
+Development
+-------------
+
+To make changes to the SDK you'll want to install it from source with the
+documentation and test dependencies:
+
+.. code-block:: bash
+
+    git clone https://github.com/pi-top/pi-top-Python-SDK.git
+    cd pi-top-Python-SDK
+    pip3 install -e ".[doc,test]"
+
+
+Changes you make to the source will be reflected in your Python environment.
+
+You may want to repeat this process for the pi-top-Python-Common-Library_ if
+it's not installed already or you need to make changes there too.
+
+.. _pi-top-Python-Common-Library: https://github.com/pi-top/pi-top-Python-Common-Library
+
+Once the SDK is installed you can run the automated test suite with:
+
+.. code-block:: bash
+
+    python3 -m pytest
+
+And you can build the docs locally by running:
+
+.. code-block:: bash
+
+    PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
+
+To view the generated docs open the `build/html/index.html` file in your browser.
+
+Most of the SDK requires pi-top hardware to work but it should be possible to
+run the tests and build documentation in any environment with Python3.
 
 ------------
 Contributing

@@ -1,5 +1,3 @@
-# Example code to draw an analog clock
-
 from pitop.miniscreen import OLED
 from datetime import datetime
 
