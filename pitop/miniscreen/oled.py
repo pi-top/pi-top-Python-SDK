@@ -124,18 +124,20 @@ class OLED:
     for simple rendering of text or images to the screen.
     """
 
-    LOCK_FILE_PATH = "/tmp/pt-oled.lock"
+    __LOCK_FILE_PATH = "/tmp/pt-oled.lock"
 
     # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
     def __init__(self, _exclusive_mode=True):
         self.controller = OledDeviceController(self.reset, _exclusive_mode)
 
-        self.canvases = {
-            "default": Canvas(
-                self.device, self.__empty_image()
-            )
-        }
-        self.__canvas_id = "default"
+        self.__default_canvas_id = "default"
+
+        self._canvases = dict()
+        self._canvases[self.__default_canvas_id] = Canvas(
+            self.device, self.__empty_image()
+        )
+
+        self.__canvas_id = self.__default_canvas_id
 
         self.__displayed_image = None
         self.__update_displayed_image()
@@ -154,6 +156,43 @@ class OLED:
 
         register(self.__cleanup)
 
+    @property
+    def canvases(self):
+        return self._canvases.keys()
+
+    def add_canvas(self, canvas_to_add, canvas_id=None):
+        from uuid import uuid1
+        if canvas_id is None:
+            canvas_id = uuid1()
+
+        self._canvases.update({
+            canvas_id: Canvas(
+                self.device, self.__empty_image()
+            )
+        })
+        return (canvas_id, self._canvases[canvas_id])
+
+    def remove_canvas(self, canvas_id_to_remove):
+        if canvas_id_to_remove == self.__default_canvas_id:
+            raise Exception("Cannot remove default canvas")
+
+        if canvas_id_to_remove not in self._canvases:
+            raise Exception("Canvas ID not recognised")
+
+        self._canvases.pop(canvas_id_to_remove)
+
+    @property
+    def active_canvas(self):
+        # Return the active canvas being prepared for the display
+        return self._canvases[self.__canvas_id]
+
+    @active_canvas.setter
+    def active_canvas(self, new_active_canvas_id):
+        if new_active_canvas_id not in self._canvases:
+            raise Exception("Canvas ID not recognised")
+
+        self.__canvas_id = new_active_canvas_id
+
     def __empty_image(self):
         return Image.new(
             self.device.mode,
@@ -171,7 +210,7 @@ class OLED:
     @property
     def image_to_display(self):
         # Return the image that is being prepared for the display
-        return self.canvases[self.__canvas_id].image
+        return self.active_canvas.image
 
     def should_redisplay(self):
         return self.last_displayed_image is None or self.__image_to_display_is_new()
@@ -187,40 +226,6 @@ class OLED:
             list(pil_image.getdata()),
             (self.width, self.height)
         )
-
-    @property
-    def canvases(self):
-        return self.canvases.keys()
-
-    def add_canvas(self, canvas_to_add, canvas_id=None):
-        from uuid import uuid1
-        if canvas_id is None:
-            canvas_id = uuid1()
-
-        self.canvases.update({
-            canvas_id: Canvas(
-                self.device, self.__empty_image()
-            )
-        })
-        return (canvas_id, self.canvases[canvas_id])
-
-    def remove_canvas(self, canvas_id_to_remove):
-        if canvas_id_to_remove not in self.canvases:
-            raise Exception("Canvas ID not recognised")
-
-        self.canvases.pop(canvas_id_to_remove)
-
-    @property
-    def active_canvas(self):
-        # Return the active canvas being prepared for the display
-        return self.canvases[self.__canvas_id]
-
-    @active_canvas.setter
-    def active_canvas(self, new_active_canvas_id):
-        if new_active_canvas_id not in self.canvases:
-            raise Exception("Canvas ID not recognised")
-
-        self.__canvas_id = new_active_canvas_id
 
     @property
     def spi_bus(self):
@@ -314,12 +319,12 @@ class OLED:
         currently rendering information to the screen) and clears the screen.
         """
         self.set_control_to_pi()
-        self.__canvas.clear()
+        self.active_canvas.clear()
 
         if reset_controller:
             self.controller.reset_device()
 
-        self.__send_image_to_device()
+        self.__send_image_to_display_to_device()
         self.device.contrast(255)
 
         self.show()
@@ -338,6 +343,34 @@ class OLED:
         """
         self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
+    def __do_one_off_display(self, display_func_lambda, font_size=None):
+        # Backup active canvas ID
+        # Switch to default
+        # Clear canvas
+        # Set up font size, if appropriate
+        # Perform draw action to default canvas
+        # Display image in canvas to device
+        # Reset font size in default canvas
+        # Reset active canvas
+        previously_active_canvas = self.active_canvas
+
+        self.active_canvas = self.__default_canvas_id
+        self.active_canvas.clear()
+
+        previous_font_size = self.active_canvas.font_size
+        if font_size is not None:
+            self.active_canvas.set_font_size(font_size)
+
+        display_func_lambda()
+        self.display()
+
+        self.active_canvas.clear()
+
+        if font_size is not None:
+            self.active_canvas.set_font_size(previous_font_size)
+
+        self.active_canvas = previously_active_canvas
+
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
     def display_image(self, image, xy=None):
@@ -355,25 +388,9 @@ class OLED:
             the screen.
         """
         if xy is None:
-            xy = self.__canvas.top_left()
+            xy = self.active_canvas.top_left()
 
-        self.__canvas.clear()
-        self.__canvas.draw_image(xy, image)
-
-        self.display()
-
-    def __display_text_base(self, text_func, text, font_size, xy):
-        self.__canvas.clear()
-
-        if font_size is not None:
-            previous_font_size = self.__canvas.font_size
-            self.__canvas.set_font_size(font_size)
-
-        text_func(xy, text, fill=1, spacing=0, align="left")
-        self.display()
-
-        if font_size is not None:
-            self.__canvas.set_font_size(previous_font_size)
+        self.__do_one_off_display(lambda: self.active_canvas.draw_image(xy, image))
 
     def display_text(self, text, xy=None, font_size=None):
         """
@@ -390,9 +407,9 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.__canvas.top_left()
+            xy = self.active_canvas.top_left()
 
-        self.__display_text_base(self.__canvas.display_text, text, font_size, xy)
+        self.__do_one_off_display(lambda: self.active_canvas.display_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -410,11 +427,11 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.__canvas.top_left()
+            xy = self.active_canvas.top_left()
 
-        self.__display_text_base(self.__canvas.display_multiline_text, text, font_size, xy)
+        self.__do_one_off_display(lambda: self.active_canvas.display_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
-    def __send_image_to_device(self):
+    def __send_image_to_display_to_device(self):
         self.device.display(self.image_to_display)
 
     def display(self, force=False):
@@ -429,7 +446,7 @@ class OLED:
         self.__fps_regulator.stop_timer()
 
         if force or self.should_redisplay():
-            self.__send_image_to_device()
+            self.__send_image_to_display_to_device()
 
         self.__fps_regulator.start_timer()
         self.__update_displayed_image()
@@ -544,7 +561,7 @@ class OLED:
                 events_to_watch = events_to_watch | IN_OPEN
 
             wm = WatchManager()
-            wm.add_watch(self.LOCK_FILE_PATH, events_to_watch)
+            wm.add_watch(self.__LOCK_FILE_PATH, events_to_watch)
             notifier = Notifier(wm, eh)
             notifier.loop()
 
