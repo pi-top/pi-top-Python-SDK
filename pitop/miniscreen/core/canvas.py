@@ -1,9 +1,9 @@
 from os.path import isfile
-from .image_helper import (
-    process_pil_image_frame,
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageFont,
 )
-from PIL import ImageFont, ImageDraw
-from numpy import reshape
 
 
 class Canvas:
@@ -13,13 +13,40 @@ class Canvas:
     """
 
     def __init__(self, oled_device, image):
-        self.pil_image = image
+        # Image object to be used to draw to device
+        self.image = image
+
+        # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.resize
+        self.resize_resampling_filter = Image.NEAREST
+
+        # Internal draw object derived from PIL image
+        # Used by drawing functions - they directly affect the image
+        self.__draw = ImageDraw.Draw(self.image)
+
         self.__oled_device = oled_device
-        self.draw = ImageDraw.Draw(self.pil_image)
+
         self.font_size = 30
         self.__font = None
         self.__font_path = None
         self.__init_font()
+
+    ##################################################
+    # Processing commands
+    ##################################################
+    def process_image(self, image_to_process):
+        image = Image.new(
+            self.__oled_device.mode,
+            self.__oled_device.size,
+            "black"
+        )
+        image.paste(
+            image_to_process.resize(
+                self.__oled_device.size,
+                resample=self.resize_resampling_filter
+            )
+        )
+
+        return image
 
     ##################################################
     # Rendering commands
@@ -32,10 +59,11 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.rectangle(self.get_bounding_box(), 0)
-        return self.get_pixels()
+        self.__draw.rectangle(self.get_bounding_box(), 0)
 
-    def image(self, xy, image):
+    # TODO: add 'size' parameter for images being rendered to canvas
+    # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
+    def draw_image(self, xy, image):
         """
         Renders an image to the canvas at a given position.
 
@@ -49,13 +77,10 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        image_data = process_pil_image_frame(image,
-                                             size=self.__oled_device.size,
-                                             mode=self.__oled_device.mode)
-        self.draw.bitmap(xy, image_data, 1)
-        return self.get_pixels()
 
-    def text(self, xy, text, fill=1, spacing=0, align="left"):
+        self.__draw.bitmap(xy, self.process_image(image), 1)
+
+    def draw_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
         Draws a single line of text to the canvas.
 
@@ -70,7 +95,7 @@ class Canvas:
         :return: Current pixel map as 2D array
         """
 
-        self.draw.text(
+        self.__draw.text(
             xy=xy,
             text=text,
             fill=fill,
@@ -79,9 +104,8 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
-        return self.get_pixels()
 
-    def multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
+    def draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
         Draws multi-line text to the canvas. Text that is too long for the screen
         will automatically wrap to the next line.
@@ -97,7 +121,7 @@ class Canvas:
         :return: Current pixel map as 2D array
         """
 
-        def draw_word_wrap(text):
+        def word_wrap(text):
             remaining = self.get_width()
             space_width, _ = self.textsize(" ")
             # use this list as a stack, push/popping each line
@@ -118,9 +142,9 @@ class Canvas:
                     remaining = remaining - (word_width + space_width)
             return "\n".join(output_text)
 
-        text = draw_word_wrap(text)
+        text = word_wrap(text)
 
-        self.draw.multiline_text(
+        self.__draw.multiline_text(
             xy=xy,
             text=text,
             fill=fill,
@@ -129,9 +153,8 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
-        return self.get_pixels()
 
-    def arc(self, xy, start, end, fill=1):
+    def draw_arc(self, xy, start, end, fill=1):
         """
         Draws an arc (a portion of a circle outline) between the start and end angles, inside
         the given bounding box.
@@ -145,10 +168,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.arc(xy, start, end, fill)
-        return self.get_pixels()
+        self.__draw.arc(xy, start, end, fill)
 
-    def chord(self, xy, start, end, fill=1, outline=1):
+    def draw_chord(self, xy, start, end, fill=1, outline=1):
         """
         Same as arc(), but connects the end points with a straight line and
         can fill the enclosed space.
@@ -163,10 +185,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.chord(xy, start, end, fill, outline)
-        return self.get_pixels()
+        self.__draw.chord(xy, start, end, fill, outline)
 
-    def ellipse(self, xy, fill=1, outline=1):
+    def draw_ellipse(self, xy, fill=1, outline=1):
         """
         Draws an ellipse inside the given bounding box.
 
@@ -177,10 +198,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.ellipse(xy, fill, outline)
-        return self.get_pixels()
+        self.__draw.ellipse(xy, fill, outline)
 
-    def line(self, xy, fill=1, width=1):
+    def draw_line(self, xy, fill=1, width=1):
         """
         Draws a line between the coordinates in the **xy** list.
 
@@ -191,10 +211,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.line(xy, fill, width)
-        return self.get_pixels()
+        self.__draw.line(xy, fill, width)
 
-    def pieslice(self, xy, start, end, fill=1, outline=1):
+    def draw_pieslice(self, xy, start, end, fill=1, outline=1):
         """
         Same as arc, but also draws straight lines between the end points and the
         center of the bounding box.
@@ -209,10 +228,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.pieslice(xy, start, end, fill, outline)
-        return self.get_pixels()
+        self.__draw.pieslice(xy, start, end, fill, outline)
 
-    def point(self, xy, fill=1):
+    def draw_point(self, xy, fill=1):
         """
         Draws points (individual pixels) at the given coordinates.
 
@@ -222,10 +240,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.point(xy, fill)
-        return self.get_pixels()
+        self.__draw.point(xy, fill)
 
-    def polygon(self, xy, fill=1):
+    def draw_polygon(self, xy, fill=1):
         """
         Draws a polygon.
 
@@ -239,10 +256,9 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.polygon(xy, fill)
-        return self.get_pixels()
+        self.__draw.polygon(xy, fill)
 
-    def rectangle(self, xy, fill=1):
+    def draw_rectangle(self, xy, fill=1):
         """
         Draws a rectangle.
 
@@ -253,8 +269,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.draw.rectangle(xy, fill)
-        return self.get_pixels()
+        self.__draw.rectangle(xy, fill)
 
     ##################################################
     # Position/dimension methods
@@ -437,7 +452,7 @@ class Canvas:
         :return: int
         """
 
-        return self.draw.textsize(
+        return self.__draw.textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
@@ -452,52 +467,13 @@ class Canvas:
         :return: int
         """
 
-        return self.draw.multiline_textsize(
+        return self.__draw.multiline_textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
     ##################################################
     # Image helper methods
     ##################################################
-
-    # Semi-private: used in OLED test
-    def _pil_image_to_pix_arr(self, pil_img):
-        """
-        Calculates the pixel array of a image
-        :param pil_img:
-        :return: 2D bitmap array of pixels in PIL image
-        """
-        pixels = list(pil_img.getdata())
-        pixels = reshape(pixels, (self.get_width(), self.get_height()))
-        return pixels
-
-    def __convert_to_1bit(self, pil_image):
-        """
-        Converts an image into a 1bit image
-        :param pil_image:
-        :return: monochrome image
-        """
-        return pil_image.convert("1").point(lambda x: 0 if x == 0 else 1, "1")
-
-    def get_pixels(self):
-        """
-        Gets the pixel array of the current canvas state.
-
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
-        """
-        return self._pil_image_to_pix_arr(self.pil_image)
-
-    def get_pixel(self, xy):
-        """
-        Gets the pixel value based on given xy tuple
-
-        :param tuple xy: The x-y co-ordinates of the pixel to get
-        :return: The value of the pixel specified
-        :rtype: int
-        """
-        return self._pil_image_to_pix_arr(self.pil_image)[xy[0], xy[1]]
-
     def save(self, file_path, format=None):
         """
         Saves the current pixel map of the canvas to file
@@ -505,4 +481,4 @@ class Canvas:
         :param string file_path: The file path to write the data
         :param string format: The image file format to use to encode the image
         """
-        self.__convert_to_1bit(self.pil_image).save(file_path, format)
+        self.image.save(file_path, format)
