@@ -409,7 +409,7 @@ class OLED:
         if xy is None:
             xy = self.active_canvas.top_left()
 
-        self.__do_one_off_display(lambda: self.active_canvas.display_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_display(lambda: self.active_canvas.draw_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -429,7 +429,7 @@ class OLED:
         if xy is None:
             xy = self.active_canvas.top_left()
 
-        self.__do_one_off_display(lambda: self.active_canvas.display_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_display(lambda: self.active_canvas.draw_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def __send_image_to_display_to_device(self):
         self.device.display(self.image_to_display)
