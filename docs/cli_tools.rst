@@ -344,7 +344,7 @@ Example:
 pi-top oled spi
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using `pi-top oled spi` without arguments will return the SPI bus currently used by the OLED.
+Control the SPI bus used by the OLED. When using `pi-top oled spi` without arguments, the SPI bus currently used by the OLED will be returned.
 
 .. code-block:: bash
 
@@ -356,7 +356,7 @@ Where:
      Show a help message and exits
 
 {0,1}
-    SPI bus to be used by OLED. Valid options: {0, 1}
+    Optional. Set the SPI bus to be used by OLED. Valid options: 0 or 1
 
 Example:
 
@@ -366,6 +366,9 @@ Example:
     1
 
     pi@pi-top:~ $ pi-top oled spi 0
+
+    pi@pi-top:~ $ pi-top oled spi
+    0
 
 
 pi-top support
