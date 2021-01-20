@@ -16,7 +16,7 @@ def colour_mask(frame, hsv_lower, hsv_upper):
 
 def find_largest_contour(frame):
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
-    contours, hierarchy = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    image, contours, hierarchy = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # Find the biggest contour (if detected)
     if len(contours) > 0:
