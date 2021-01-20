@@ -8,9 +8,6 @@ from pitop.pma import (
 from pitop.system.port_manager import PortManager
 
 
-# Taken from https://github.com/pi-top/pi-top-Robotics-Kit-Python-Examples/blob/main/ptrobot/alex/common/robot_move_controller.py
-# Added PortManager section
-
 class DriveController:
     """
     Robot reference coordinate system:
