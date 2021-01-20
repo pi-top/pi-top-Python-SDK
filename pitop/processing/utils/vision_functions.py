@@ -55,3 +55,10 @@ def find_largest_rectangle(rectangles):
         current_index += 1
 
     return rectangles[largest_index]
+
+
+def scale_frame(frame, scale):
+    scaled_width = int(frame.shape[1] * scale)
+    scaled_height = int(frame.shape[0] * scale)
+    dim = (scaled_width, scaled_height)
+    return cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)

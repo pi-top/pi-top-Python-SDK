@@ -4,7 +4,8 @@ from numpy import arctan, array, pi
 from pitop.processing.utils.vision_functions import (
     colour_mask,
     find_centroid,
-    find_largest_contour
+    find_largest_contour,
+    scale_frame,
 )
 from pitop.camera.pil_opencv_conversion import (
     pil_to_opencv,
@@ -46,12 +47,11 @@ def find_line(frame):
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
-        centroid = centroid_reposition(scaled_image_centroid, scale_factor, cv_frame)
+        centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
-    robot_view_scaled_up = scale_frame(robot_view_img, 1/scale_factor)
 
-    return (centroid, opencv_to_pil(robot_view_scaled_up))
+    return (centroid, opencv_to_pil(robot_view_img))
 
 
 def get_control_angle(centroid, frame):
@@ -66,14 +66,7 @@ def get_control_angle(centroid, frame):
     # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
     delta_y = abs(centroid[1] - chassis_center_y)
 
-    return arctan(centroid[0] / delta_y) * 180 / pi
-
-
-def scale_frame(frame, scale):
-    scaled_width = int(frame.shape[0] * scale)
-    scaled_height = int(frame.shape[1] * scale)
-    dim = (scaled_width, scaled_height)
-    return cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+    return arctan(centroid[0] / delta_y) * 180.0 / pi
 
 
 def centroid_reposition(centroid, scale, frame):
@@ -83,8 +76,8 @@ def centroid_reposition(centroid, scale, frame):
     centroid_x = int(centroid[0]/scale)
     centroid_y = int(centroid[1]/scale)
     # convert so (0, 0) is at the middle bottom of the frame
-    centroid_x = centroid_x - int(frame.shape[0] / 2)
-    centroid_y = int(frame.shape[1] / 2) - centroid_y
+    centroid_x = centroid_x - int(frame.shape[1] / 2)
+    centroid_y = int(frame.shape[0] / 2) - centroid_y
 
     return centroid_x, centroid_y
 
