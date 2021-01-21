@@ -21,8 +21,8 @@ class VideoCapture(CaptureActionBase):
         default_video_resolution = (640, 368)
 
         if output_file_name == "":
-            output_directory = self.__create_output_directory()
-            output_file_name = self.__get_output_filename(output_directory, "avi")
+            output_directory = self._create_output_directory()
+            output_file_name = self._get_output_filename(output_directory, "avi")
 
         if resolution is None:
             resolution = default_video_resolution
