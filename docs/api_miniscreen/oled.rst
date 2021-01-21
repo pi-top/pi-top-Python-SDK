@@ -83,7 +83,7 @@ OLED class
 Canvas class
 ---------------------
 
-.. automodule:: pitop.miniscreen.core.canvas
+.. automodule:: pitop.miniscreen.oled.core.canvas
     :members:
     :undoc-members:
     :show-inheritance:
