@@ -1,5 +1,8 @@
-from .core.canvas import Canvas
-from .core.device_controller import OledDeviceController
+from .core import (
+    Canvas,
+    FPS_Regulator,
+    OledDeviceController,
+)
 
 from pitopcommon.formatting import is_url
 
@@ -16,106 +19,7 @@ from pyinotify import (
 )
 from threading import Thread
 from time import sleep
-try:
-    from time import monotonic
-except ImportError:
-    from monotonic import monotonic
 from urllib.request import urlopen
-
-
-class FPS_Regulator(object):
-    """
-    Adapted from ``luma.core.spritesheet``
-
-    Implements a variable sleep mechanism to give the appearance of a consistent
-    frame rate. Using a fixed-time sleep will cause animations to be jittery
-    (looking like they are speeding up or slowing down, depending on what other
-    work is occurring), whereas this class keeps track of when the last time the
-    ``sleep()`` method was called, and calculates a sleep period to smooth out
-    the jitter.
-    :param fps: The max frame rate, expressed numerically in
-        frames-per-second.  By default, this is set at 16.67, to give a frame
-        render time of approximately 60ms. This can be overridden as necessary,
-        and if no FPS limiting is required, the ``fps`` can be set to zero.
-    :type fps: float
-    """
-
-    def __init__(self, max_fps=16.67):
-        self.set_max_fps(max_fps)
-        self.total_transit_time = 0
-        self.start_time = None
-        self.last_time = None
-        self.fps = 30
-
-    def set_max_fps(self, max_fps):
-        """
-        Sets the max frame rate to the value provided
-
-        Parameters
-        ----------
-        max_fps : int
-          The frame rate that the user aims to render to the screen at. Lower frame rates are permitted.
-        """
-        self.total_no_of_frames = 0
-        if max_fps == 0:
-            max_fps = -1
-        self.max_sleep_time = 1.0 / max_fps
-
-    def throttle_fps_if_needed(self):
-        """
-        Sleep to ensure that max frame rate is not exceeded
-        """
-        if self.max_sleep_time >= 0:
-            last_frame_transit_time = monotonic() - self.last_time
-            sleep_for = self.max_sleep_time - last_frame_transit_time
-
-            if sleep_for > 0:
-                sleep(sleep_for)
-
-    def start_timer(self):
-        """
-        Starts internal timer so that time taken to render frame can be known
-        """
-        self.enter_time = monotonic()
-        if not self.start_time:
-            self.start_time = self.enter_time
-            self.last_time = self.enter_time
-
-    def stop_timer(self):
-        """
-        Stops internal timer so that time taken to render frame can be known. Responsible for throttling frame rate as
-         required
-        """
-        try:
-            self.total_transit_time += monotonic() - self.enter_time
-            self.total_no_of_frames += 1
-            self.throttle_fps_if_needed()
-
-            self.last_time = monotonic()
-        except AttributeError:
-            pass
-
-    def effective_FPS(self):
-        """
-        Calculates the effective frames-per-second - this should largely
-        correlate to the max FPS supplied in the constructor, but no
-        guarantees are given.
-        :returns: the effective frame rate
-        :rtype: float
-        """
-        if self.start_time is None:
-            self.start_time = 0
-        elapsed = monotonic() - self.start_time
-        return self.total_no_of_frames / elapsed
-
-    def average_transit_time(self):
-        """
-        Calculates the average transit time between the enter and exit methods,
-        and return the time in milliseconds
-        :returns: the average transit in milliseconds
-        :rtype: float
-        """
-        return self.total_transit_time * 1000.0 / self.total_no_of_frames
 
 
 class OLED:
@@ -128,19 +32,20 @@ class OLED:
 
     # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
     def __init__(self, _exclusive_mode=True):
-        self.controller = OledDeviceController(self.reset, _exclusive_mode)
+        self.__controller = OledDeviceController(self.reset, _exclusive_mode)
 
-        self.__default_canvas_id = "default"
+        self.image = None
 
-        self._canvases = dict()
-        self._canvases[self.__default_canvas_id] = Canvas(
-            self.device, self.__empty_image()
+        self._image = Image.new(
+            self.device.mode,
+            self.device.size
         )
 
-        self.__canvas_id = self.__default_canvas_id
-
-        self.__displayed_image = None
-        self.__update_displayed_image()
+        self.canvas = Canvas(
+            self._image,
+            self.device.mode,
+            self.device.size,
+        )
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -156,88 +61,35 @@ class OLED:
 
         register(self.__cleanup)
 
-    @property
-    def canvases(self):
-        return self._canvases.keys()
-
-    def add_canvas(self, canvas_to_add, canvas_id=None):
-        from uuid import uuid1
-        if canvas_id is None:
-            canvas_id = uuid1()
-
-        self._canvases.update({
-            canvas_id: Canvas(
-                self.device, self.__empty_image()
-            )
-        })
-        return (canvas_id, self._canvases[canvas_id])
-
-    def remove_canvas(self, canvas_id_to_remove):
-        if canvas_id_to_remove == self.__default_canvas_id:
-            raise Exception("Cannot remove default canvas")
-
-        if canvas_id_to_remove not in self._canvases:
-            raise Exception("Canvas ID not recognised")
-
-        self._canvases.pop(canvas_id_to_remove)
-
-    @property
-    def active_canvas(self):
-        # Return the active canvas being prepared for the display
-        return self._canvases[self.__canvas_id]
-
-    @active_canvas.setter
-    def active_canvas(self, new_active_canvas_id):
-        if new_active_canvas_id not in self._canvases:
-            raise Exception("Canvas ID not recognised")
-
-        self.__canvas_id = new_active_canvas_id
-
-    def __empty_image(self):
-        return Image.new(
-            self.device.mode,
-            self.device.size
-        )
-
-    def __update_displayed_image(self):
-        self.__displayed_image = deepcopy(self.image_to_display)
-
-    @property
-    def last_displayed_image(self):
-        # Return the last image that was sent to the display
-        return self.__displayed_image
-
-    @property
-    def image_to_display(self):
-        # Return the image that is being prepared for the display
-        return self.active_canvas.image
+    def prepare_image(self, image_to_prepare):
+        return self.canvas.process_image(image_to_prepare)
 
     def should_redisplay(self):
-        return self.last_displayed_image is None or self.__image_to_display_is_new()
+        def image_to_display_is_new():
+            # TODO: find a faster way of checking if pixel data has changed
+            def get_pixel_data(pil_image):
+                return reshape(
+                    list(pil_image.getdata()),
+                    self.size
+                )
 
-    def __image_to_display_is_new(self):
-        # TODO: find a faster way of checking if pixel data has changed
-        return (
-            self.get_pixel_data(self.last_displayed_image) != self.get_pixel_data(self.image_to_display)
-        ).any()
+            return (
+                get_pixel_data(self.image) != get_pixel_data(self._image)
+            ).any()
 
-    def get_pixel_data(self, pil_image):
-        return reshape(
-            list(pil_image.getdata()),
-            (self.width, self.height)
-        )
+        return self.image is None or image_to_display_is_new()
 
     @property
     def spi_bus(self):
-        return self.controller.spi_bus
+        return self.__controller.spi_bus
 
     @spi_bus.setter
     def spi_bus(self, bus):
-        self.controller.spi_bus = bus
+        self.__controller.spi_bus = bus
 
     @property
     def device(self):
-        return self.controller.get_device()
+        return self.__controller.get_device()
 
     @property
     def size(self):
@@ -256,13 +108,13 @@ class OLED:
         return self.device.mode
 
     def is_active(self):
-        return self.controller.device_is_active()
+        return self.__controller.device_is_active()
 
     def set_control_to_pi(self):
-        self.controller.set_control_to_pi()
+        self.__controller.set_control_to_pi()
 
     def set_control_to_hub(self):
-        self.controller.set_control_to_hub()
+        self.__controller.set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """
@@ -313,18 +165,18 @@ class OLED:
     def sleep(self):
         self.contrast(0)
 
-    def reset(self, reset_controller=True):
+    def reset(self, force=True):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
         """
         self.set_control_to_pi()
-        self.active_canvas.clear()
+        self.canvas.clear()
 
-        if reset_controller:
-            self.controller.reset_device()
+        if force:
+            self.__controller.reset_device()
 
-        self.__send_image_to_display_to_device()
+        self.__display(self.image, force=True)
         self.device.contrast(255)
 
         self.show()
@@ -344,32 +196,19 @@ class OLED:
         self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
     def __do_one_off_display(self, display_func_lambda, font_size=None):
-        # Backup active canvas ID
-        # Switch to default
-        # Clear canvas
-        # Set up font size, if appropriate
-        # Perform draw action to default canvas
-        # Display image in canvas to device
-        # Reset font size in default canvas
-        # Reset active canvas
-        previously_active_canvas = self.active_canvas
+        self.canvas.clear()
 
-        self.active_canvas = self.__default_canvas_id
-        self.active_canvas.clear()
-
-        previous_font_size = self.active_canvas.font_size
+        previous_font_size = self.canvas.font_size
         if font_size is not None:
-            self.active_canvas.set_font_size(font_size)
+            self.canvas.set_font_size(font_size)
 
         display_func_lambda()
         self.display()
 
-        self.active_canvas.clear()
+        self.canvas.clear()
 
         if font_size is not None:
-            self.active_canvas.set_font_size(previous_font_size)
-
-        self.active_canvas = previously_active_canvas
+            self.canvas.set_font_size(previous_font_size)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
@@ -388,9 +227,9 @@ class OLED:
             the screen.
         """
         if xy is None:
-            xy = self.active_canvas.top_left()
+            xy = self.canvas.top_left()
 
-        self.__do_one_off_display(lambda: self.active_canvas.draw_image(xy, image))
+        self.__do_one_off_display(lambda: self.canvas.draw_image(xy, image))
 
     def display_text(self, text, xy=None, font_size=None):
         """
@@ -407,9 +246,9 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.active_canvas.top_left()
+            xy = self.canvas.top_left()
 
-        self.__do_one_off_display(lambda: self.active_canvas.draw_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_display(lambda: self.canvas.draw_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -427,29 +266,18 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.active_canvas.top_left()
+            xy = self.canvas.top_left()
 
-        self.__do_one_off_display(lambda: self.active_canvas.draw_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_display(lambda: self.canvas.draw_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
-    def __send_image_to_display_to_device(self):
-        self.device.display(self.image_to_display)
-
-    def display(self, force=False):
-        """
-        Displays what is on the current canvas to the screen as a single frame.
-
-        This method does not need to be called when using the other `draw`
-        functions in this class, but is used when the caller wants to use
-        the *canvas* object to draw composite objects and then render them
-        to screen in a single frame.
-        """
+    def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
 
         if force or self.should_redisplay():
-            self.__send_image_to_display_to_device()
+            self.device.display(image_to_display)
 
         self.__fps_regulator.start_timer()
-        self.__update_displayed_image()
+        self.image = deepcopy(self._image)
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
@@ -492,6 +320,44 @@ class OLED:
             self.__kill_thread = True
             self.__auto_play_thread.join()
 
+    #######################
+    # Deprecation support #
+    #######################
+    def display(self, force=False):
+        """
+        Displays what is on the current canvas to the screen as a single frame.
+
+        This method does not need to be called when using the other `draw`
+        functions in this class, but is used when the caller wants to use
+        the *canvas* object to draw composite objects and then render them
+        to screen in a single frame.
+        """
+        print("'display()' is now deprecated. You will need to handle your own images in future.")
+        self.__display(self._image)
+
+    def draw(self, file_path_or_url, xy=None):
+        print("'draw()' is now deprecated. Using 'display()'...")
+        self.display()
+
+    def draw_image_file(self, file_path_or_url, xy=None):
+        print("draw_image_file is now deprecated. Using display_image_file...")
+        self.display_image_file(self, file_path_or_url, xy=None)
+
+    def draw_image(self, image, xy=None):
+        print("draw_image is now deprecated. Using display_image...")
+        self.display_image(self, image, xy=None)
+
+    def draw_text(self, text, xy=None, font_size=None):
+        print("draw_text is now deprecated. Using display_text...")
+        self.display_text(self, text, xy=None, font_size=None)
+
+    def draw_multiline_text(self, text, xy=None, font_size=None):
+        print("draw_multiline_text is now deprecated. Using display_multiline_text...")
+        self.display_multiline_text(self, text, xy=None, font_size=None)
+
+    ####################
+    # Internal support #
+    ####################
     def __auto_play(self, image, loop=False):
         while True:
             for frame in ImageSequence.Iterator(image):

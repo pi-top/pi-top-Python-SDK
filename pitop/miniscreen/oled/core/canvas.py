@@ -12,18 +12,18 @@ class Canvas:
     and then render the entire image to the screen as a single frame.
     """
 
-    def __init__(self, oled_device, image):
+    def __init__(self, image, mode, size):
         # Image object to be used to draw to device
-        self.image = image
-
-        # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.resize
-        self.resize_resampling_filter = Image.NEAREST
+        self._image = image
 
         # Internal draw object derived from PIL image
         # Used by drawing functions - they directly affect the image
-        self.__draw = ImageDraw.Draw(self.image)
+        self.__draw = ImageDraw.Draw(self._image)
 
-        self.__oled_device = oled_device
+        self.mode = mode
+        self.size = size
+
+        self.bounding_box = (0, 0, self.size[0] - 1, self.size[1] - 1)
 
         self.font_size = 30
         self.__font = None
@@ -35,13 +35,13 @@ class Canvas:
     ##################################################
     def process_image(self, image_to_process):
         image = Image.new(
-            self.__oled_device.mode,
-            self.__oled_device.size,
+            self.mode,
+            self.size,
             "black"
         )
         image.paste(
             image_to_process.resize(
-                self.__oled_device.size,
+                self.size,
                 resample=self.resize_resampling_filter
             )
         )
@@ -59,10 +59,14 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.__draw.rectangle(self.get_bounding_box(), 0)
+        self.__draw.rectangle(self.bounding_box, 0)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
+    def image(self, xy, image):
+        print("'image()' is now deprecated. Please use 'draw_image()'")
+        self.draw_image(self, xy, image)
+
     def draw_image(self, xy, image):
         """
         Renders an image to the canvas at a given position.
@@ -79,6 +83,10 @@ class Canvas:
         """
 
         self.__draw.bitmap(xy, self.process_image(image), 1)
+
+    def text(self, xy, text, fill=1, spacing=0, align="left"):
+        print("'text()' is now deprecated. Please use 'draw_text()'")
+        self.draw_text(self, xy, text, fill=1, spacing=0, align="left")
 
     def draw_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
@@ -104,6 +112,10 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
+
+    def multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
+        print("'multiline_text()' is now deprecated. Please use 'draw_multiline_text()'")
+        self.draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left")
 
     def draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
@@ -154,6 +166,10 @@ class Canvas:
             align=align,
         )
 
+    def arc(self, xy, start, end, fill=1):
+        print("'arc()' is now deprecated. Please use 'draw_arc()'")
+        self.draw_arc(self, xy, start, end, fill=1)
+
     def draw_arc(self, xy, start, end, fill=1):
         """
         Draws an arc (a portion of a circle outline) between the start and end angles, inside
@@ -169,6 +185,10 @@ class Canvas:
         :rtype: array
         """
         self.__draw.arc(xy, start, end, fill)
+
+    def chord(self, xy, start, end, fill=1, outline=1):
+        print("'chord()' is now deprecated. Please use 'draw_chord()'")
+        self.draw_chord(self, xy, start, end, fill=1, outline=1)
 
     def draw_chord(self, xy, start, end, fill=1, outline=1):
         """
@@ -187,6 +207,10 @@ class Canvas:
         """
         self.__draw.chord(xy, start, end, fill, outline)
 
+    def ellipse(self, xy, fill=1, outline=1):
+        print("'ellipse()' is now deprecated. Please use 'draw_ellipse()'")
+        self.draw_ellipse(self, xy, fill=1, outline=1)
+
     def draw_ellipse(self, xy, fill=1, outline=1):
         """
         Draws an ellipse inside the given bounding box.
@@ -200,6 +224,10 @@ class Canvas:
         """
         self.__draw.ellipse(xy, fill, outline)
 
+    def line(self, xy, fill=1, width=1):
+        print("'line()' is now deprecated. Please use 'draw_line()'")
+        self.draw_line(self, xy, fill=1, width=1)
+
     def draw_line(self, xy, fill=1, width=1):
         """
         Draws a line between the coordinates in the **xy** list.
@@ -212,6 +240,10 @@ class Canvas:
         :rtype: array
         """
         self.__draw.line(xy, fill, width)
+
+    def pieslice(self, xy, start, end, fill=1, outline=1):
+        print("'pieslice()' is now deprecated. Please use 'draw_pieslice()'")
+        self.draw_pieslice(self, xy, start, end, fill=1, outline=1)
 
     def draw_pieslice(self, xy, start, end, fill=1, outline=1):
         """
@@ -230,6 +262,10 @@ class Canvas:
         """
         self.__draw.pieslice(xy, start, end, fill, outline)
 
+    def point(self, xy, fill=1):
+        print("'point()' is now deprecated. Please use 'draw_point()'")
+        self.draw_point(self, xy, fill=1)
+
     def draw_point(self, xy, fill=1):
         """
         Draws points (individual pixels) at the given coordinates.
@@ -241,6 +277,10 @@ class Canvas:
         :rtype: array
         """
         self.__draw.point(xy, fill)
+
+    def polygon(self, xy, fill=1):
+        print("'polygon()' is now deprecated. Please use 'draw_polygon()'")
+        self.draw_polygon(self, xy, fill=1)
 
     def draw_polygon(self, xy, fill=1):
         """
@@ -257,6 +297,10 @@ class Canvas:
         :rtype: array
         """
         self.__draw.polygon(xy, fill)
+
+    def rectangle(self, xy, fill=1):
+        print("'rectangle()' is now deprecated. Please use 'draw_rectangle()'")
+        self.draw_rectangle(self, xy, fill=1)
 
     def draw_rectangle(self, xy, fill=1):
         """
@@ -282,7 +326,7 @@ class Canvas:
         :return: A tuple containing the bounding rectangle of the canvas
         :rtype: tuple
         """
-        return self.__oled_device.bounding_box
+        return self.bounding_box
 
     def __get_corner(self, pos1, pos2):
         """
@@ -291,8 +335,10 @@ class Canvas:
         :return: coordinates of the corner
         :rtype: tuple
         """
-        box = self.get_bounding_box()
-        return (box[pos1], box[pos2])
+        return (
+            self.bounding_box[pos1],
+            self.bounding_box[pos2]
+        )
 
     def top_left(self):
         """
@@ -337,16 +383,7 @@ class Canvas:
         :return: The dimensions of the canvas as a tuple
         :rtype: tuple
         """
-        return self.__oled_device.size
-
-    def get_height(self):
-        """
-        Gets the height of the pi-top OLED display
-
-        :return: The height of canvas in pixels
-        :rtype: int
-        """
-        return self.__oled_device.height
+        return self.size
 
     def get_width(self):
         """
@@ -355,7 +392,16 @@ class Canvas:
         :return: The width of canvas in pixels
         :rtype: int
         """
-        return self.__oled_device.width
+        return self.size[0]
+
+    def get_height(self):
+        """
+        Gets the height of the pi-top OLED display
+
+        :return: The height of canvas in pixels
+        :rtype: int
+        """
+        return self.size[1]
 
     ##################################################
     # Font config methods
@@ -470,15 +516,3 @@ class Canvas:
         return self.__draw.multiline_textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
-
-    ##################################################
-    # Image helper methods
-    ##################################################
-    def save(self, file_path, format=None):
-        """
-        Saves the current pixel map of the canvas to file
-
-        :param string file_path: The file path to write the data
-        :param string format: The image file format to use to encode the image
-        """
-        self.image.save(file_path, format)

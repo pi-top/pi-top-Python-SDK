@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 from os.path import isfile, isdir, join
-from PIL import ImageSequence
 from time import sleep, strftime
 
 from pitopcommon.formatting import is_url
@@ -128,27 +127,27 @@ class OledCLI(CliBaseClass):
         # "display" arguments
         parser_display = subparser.add_parser("display", help="Display text and images on the OLED")
         parser_display.add_argument("--force", "-f",
-                                 help="Force the hub to give control of the OLED to the Pi",
-                                 action="store_true"
-                                 )
+                                    help="Force the hub to give control of the OLED to the Pi",
+                                    action="store_true"
+                                    )
         parser_display.add_argument("--timeout", "-t",
-                                 type=int,
-                                 help="Set the timeout in seconds",
-                                 default=10,
-                                 )
+                                    type=int,
+                                    help="Set the timeout in seconds",
+                                    default=10,
+                                    )
         parser_display.add_argument("--font-size", "-s",
-                                 type=int,
-                                 help="Set the font size",
-                                 default=20,
-                                 )
+                                    type=int,
+                                    help="Set the font size",
+                                    default=20,
+                                    )
         parser_display.add_argument("--loop", "-l",
-                                 type=int,
-                                 help="How many times the animated image should be looped",
-                                 default=1,
-                                 )
+                                    type=int,
+                                    help="How many times the animated image should be looped",
+                                    default=1,
+                                    )
         parser_display.add_argument("text",
-                                 help="Set the text to write to screen",
-                                 )
+                                    help="Set the text to write to screen",
+                                    )
 
         # "spi" arguments
         parser_spi = subparser.add_parser("spi", help="Set SPI bus that is used by OLED")
