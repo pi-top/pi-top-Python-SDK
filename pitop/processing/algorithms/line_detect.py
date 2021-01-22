@@ -1,4 +1,3 @@
-import cv2
 from numpy import arctan, array, pi
 
 from pitop.processing.utils.vision_functions import (
@@ -11,6 +10,15 @@ from pitop.camera.pil_opencv_conversion import (
     pil_to_opencv,
     opencv_to_pil,
 )
+
+
+def import_opencv():
+    try:
+        import cv2
+        return cv2
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
 
 
 def calculate_blue_limits():
@@ -83,6 +91,7 @@ def centroid_reposition(centroid, scale, frame):
 
 
 def robot_view(frame, image_mask, line_contour, centroid):
+    cv2 = import_opencv()
     masked_image = cv2.bitwise_and(frame, frame, mask=image_mask)
 
     # draw contour lines on robot view
@@ -102,5 +111,6 @@ def robot_view(frame, image_mask, line_contour, centroid):
 
 
 def draw_contour_bound(image, contour):
+    cv2 = import_opencv()
     x, y, w, h = cv2.boundingRect(contour)
     cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)

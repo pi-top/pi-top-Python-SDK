@@ -1,7 +1,14 @@
-import cv2
+def import_opencv():
+    try:
+        import cv2
+        return cv2
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
 
 
 def colour_mask(frame, hsv_lower, hsv_upper):
+    cv2 = import_opencv()
     # apply gaussian blur to smooth out the frame
     blur = cv2.blur(frame, (9, 9))
 
@@ -15,6 +22,7 @@ def colour_mask(frame, hsv_lower, hsv_upper):
 
 
 def find_largest_contour(frame):
+    cv2 = import_opencv()
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
     image, contours, hierarchy = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -29,6 +37,7 @@ def find_largest_contour(frame):
 
 
 def find_centroid(contour):
+    cv2 = import_opencv()
 
     if contour is not None:
         moments = cv2.moments(contour)
@@ -58,6 +67,7 @@ def find_largest_rectangle(rectangles):
 
 
 def scale_frame(frame, scale):
+    cv2 = import_opencv()
     scaled_width = int(frame.shape[1] * scale)
     scaled_height = int(frame.shape[0] * scale)
     dim = (scaled_width, scaled_height)
