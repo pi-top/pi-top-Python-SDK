@@ -55,4 +55,3 @@ class PIDController:
     @_speed_angular_z.setter
     def _speed_angular_z(self, _speed_angular_z):
         self.__twist_data.angular.z = _speed_angular_z
-
