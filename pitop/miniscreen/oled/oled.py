@@ -214,7 +214,7 @@ class OLED:
             the screen.
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.top_left()
 
         self.__do_one_off_display(lambda: self.canvas.draw_image(xy, image))
 
@@ -233,7 +233,7 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.top_left()
 
         self.__do_one_off_display(lambda: self.canvas.draw_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
@@ -253,7 +253,7 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.canvas.top_left()
+            xy = self.top_left()
 
         self.__do_one_off_display(lambda: self.canvas.draw_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
@@ -306,6 +306,57 @@ class OLED:
         if self.__auto_play_thread is not None:
             self.__kill_thread = True
             self.__auto_play_thread.join()
+
+    ##################################################
+    # Position/dimension methods
+    ##################################################
+    def top_left(self):
+        """
+        Gets the top left corner of the pi-top OLED display.
+
+        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.device.bounding_box[0],
+            self.device.bounding_box[1]
+        )
+
+    def top_right(self):
+        """
+        Gets the top-right corner of the pi-top OLED display.
+
+        :return: The top-right coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.device.bounding_box[2],
+            self.device.bounding_box[1]
+        )
+
+    def bottom_left(self):
+        """
+        Gets the bottom-left corner of the pi-top OLED display.
+
+        :return: The bottom-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.device.bounding_box[0],
+            self.device.bounding_box[3]
+        )
+
+    def bottom_right(self):
+        """
+        Gets the bottom-right corner of the pi-top OLED display.
+
+        :return: The bottom-right coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.device.bounding_box[2],
+            self.device.bounding_box[3]
+        )
 
     #######################
     # Deprecation support #
