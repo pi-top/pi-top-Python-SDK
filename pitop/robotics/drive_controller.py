@@ -74,7 +74,7 @@ class DriveController:
     def right(self, speed_factor):
         self.left(-speed_factor)
 
-    def forward_with_angle(self, angle):
+    def target_angle(self, angle):
         self.__pid_controller.set_target_control_angle(angle)
         twist_data = self.__pid_controller.twist
         linear_speed = twist_data.linear.x

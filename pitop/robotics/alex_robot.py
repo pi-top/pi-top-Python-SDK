@@ -48,5 +48,5 @@ class AlexRobot(PiTop):
     def stop(self):
         self._drive_controller.stop()
 
-    def forward_with_angle(self, angle):
-        self._drive_controller.forward_with_angle(angle)
+    def target_angle(self, angle):
+        self._drive_controller.target_angle(angle)
