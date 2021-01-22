@@ -44,8 +44,7 @@ class DriveController:
         self.__port_manager.register_component_instance(self._left_motor, left_motor_port)
         self.__port_manager.register_component_instance(self._right_motor, right_motor_port)
 
-        self.__pid_controller= PIDController(10)
-
+        self.__pid_controller = PIDController(10)
 
     def __robot_move(self, linear_speed, angular_speed):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -53,19 +52,22 @@ class DriveController:
         speed_left = linear_speed - (self._wheel_base * angular_speed) / 2
         rpm_right = self._speed_to_rpm(speed_right)
         rpm_left = self._speed_to_rpm(speed_left)
+
         rpm_diff = abs(rpm_right - rpm_left)
-
-        if rpm_right > self._max_rpm:
-            rpm_right = self._max_rpm
-            rpm_left = self._max_rpm - rpm_diff
-        elif rpm_right < -self._max_rpm:
-            rpm_right = -self._max_rpm
-            rpm_left = -self._max_rpm + rpm_diff
-
-        if rpm_left > self._max_rpm:
-            rpm_left = self._max_rpm
-        elif rpm_left < -self._max_rpm:
-            rpm_left = -self._max_rpm
+        if rpm_right > self._max_rpm or rpm_left > self.max_rpm:
+            if rpm_right > rpm_left:
+                rpm_right = self._max_rpm
+                rpm_left = self._max_rpm - rpm_diff
+            else:
+                rpm_left = self._max_rpm
+                rpm_right = self._max_rpm - rpm_diff
+        elif rpm_right < -self._max_rpm or rpm_left < -self._max_rpm:
+            if rpm_right > rpm_left:
+                rpm_right = -self._max_rpm
+                rpm_left = -self._max_rpm + rpm_diff
+            else:
+                rpm_left = -self._max_rpm
+                rpm_right = -self._max_rpm + rpm_diff
 
         self._left_motor.set_target_rpm(target_rpm=rpm_left)
         self._right_motor.set_target_rpm(target_rpm=rpm_right)
