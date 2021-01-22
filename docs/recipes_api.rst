@@ -28,12 +28,12 @@ PMA (with Robotics Kit): Rover
 .. literalinclude:: ../examples/pma/encoder_motor_rover.py
 
 PMA (with Robotics Kit): Line detection
-------------------------------
+---------------------------------------
 
 .. literalinclude:: ../examples/robotics/line_detection.py
 
 PMA (with Robotics Kit): Alex Robot
-------------------------------
+-----------------------------------
 
 .. literalinclude:: ../examples/robotics/alex.py
 
