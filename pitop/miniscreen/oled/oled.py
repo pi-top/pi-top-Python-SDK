@@ -189,7 +189,7 @@ class OLED:
         """
         self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
-    def __do_one_off_display(self, display_func_lambda, font_size=None):
+    def __do_one_off_text_display(self, display_func_lambda, font_size=None):
         # Clear
         self.canvas.rectangle(self.bounding_box, fill=0)
 
@@ -214,23 +214,9 @@ class OLED:
 
         The image should be provided as a PIL Image object.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
-        `xy` position parameter, e.g. `top_left`, `top_right`.
-
         :param Image image: A PIL Image object to be rendered
-        :param tuple xy: The position on the screen to render the image. If not
-            provided or passed as `None` the image will be drawn in the top-left of
-            the screen.
         """
-        if image.mode == self.mode and image.size == self.size:
-            # just display image directly
-            self.__display(image)
-            return
-
-        if xy is None:
-            xy = self.top_left
-
-        self.__do_one_off_display(lambda: self.canvas.image(xy, image))
+        self.__display(self.prepare_image(image))
 
     def display_text(self, text, xy=None, font_size=None):
         """
@@ -249,7 +235,7 @@ class OLED:
         if xy is None:
             xy = self.top_left
 
-        self.__do_one_off_display(lambda: self.canvas.text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_text_display(lambda: self.canvas.text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -269,7 +255,7 @@ class OLED:
         if xy is None:
             xy = self.top_left
 
-        self.__do_one_off_display(lambda: self.canvas.multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_text_display(lambda: self.canvas.multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
