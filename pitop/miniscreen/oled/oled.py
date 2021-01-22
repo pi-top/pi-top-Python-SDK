@@ -36,12 +36,12 @@ class OLED:
     def __init__(self, _exclusive_mode=True):
         self.__controller = OledDeviceController(self.reset, _exclusive_mode)
 
-        self.image = None
-
-        self._image = Image.new(
+        self.image = Image.new(
             self.device.mode,
             self.device.size
         )
+
+        self._image = self.image.copy()
 
         self.canvas = Canvas(self._image)
 
@@ -152,13 +152,17 @@ class OLED:
     def sleep(self):
         self.contrast(0)
 
+    def clear(self):
+        # Clear
+        self.canvas.rectangle(self.bounding_box, fill=0)
+        self.__display(self._image, force=True)
+
     def reset(self, force=True):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
         """
         self.set_control_to_pi()
-        self.canvas.clear()
 
         if force:
             self.__controller.reset_device()
@@ -183,16 +187,18 @@ class OLED:
         self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
     def __do_one_off_display(self, display_func_lambda, font_size=None):
-        self.canvas.clear()
+        # Clear
+        self.canvas.rectangle(self.bounding_box, fill=0)
 
-        previous_font_size = self.canvas.font_size
+        previous_font_size = self.canvas.get_font_size()
         if font_size is not None:
             self.canvas.set_font_size(font_size)
 
         display_func_lambda()
         self.display()
 
-        self.canvas.clear()
+        # Clear
+        self.canvas.rectangle(self.bounding_box, fill=0)
 
         if font_size is not None:
             self.canvas.set_font_size(previous_font_size)
@@ -213,10 +219,15 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
+        if image.mode == self.mode and image.size == self.size:
+            # just display image directly
+            self.__display(image)
+            return
+
         if xy is None:
             xy = self.top_left()
 
-        self.__do_one_off_display(lambda: self.canvas.draw_image(xy, image))
+        self.__do_one_off_display(lambda: self.canvas.image(xy, image))
 
     def display_text(self, text, xy=None, font_size=None):
         """
@@ -235,7 +246,7 @@ class OLED:
         if xy is None:
             xy = self.top_left()
 
-        self.__do_one_off_display(lambda: self.canvas.draw_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_display(lambda: self.canvas.text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -255,7 +266,7 @@ class OLED:
         if xy is None:
             xy = self.top_left()
 
-        self.__do_one_off_display(lambda: self.canvas.draw_multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        self.__do_one_off_display(lambda: self.canvas.multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
     def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
@@ -310,6 +321,16 @@ class OLED:
     ##################################################
     # Position/dimension methods
     ##################################################
+    @property
+    def bounding_box(self):
+        """
+        Gets the center of the pi-top OLED display.
+
+        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return self.device.bounding_box
+
     def center(self):
         """
         Gets the center of the pi-top OLED display.
@@ -330,8 +351,8 @@ class OLED:
         :rtype: tuple
         """
         return (
-            self.device.bounding_box[0],
-            self.device.bounding_box[1]
+            self.bounding_box[0],
+            self.bounding_box[1]
         )
 
     def top_right(self):
@@ -342,8 +363,8 @@ class OLED:
         :rtype: tuple
         """
         return (
-            self.device.bounding_box[2],
-            self.device.bounding_box[1]
+            self.bounding_box[2],
+            self.bounding_box[1]
         )
 
     def bottom_left(self):
@@ -354,8 +375,8 @@ class OLED:
         :rtype: tuple
         """
         return (
-            self.device.bounding_box[0],
-            self.device.bounding_box[3]
+            self.bounding_box[0],
+            self.bounding_box[3]
         )
 
     def bottom_right(self):
@@ -366,8 +387,8 @@ class OLED:
         :rtype: tuple
         """
         return (
-            self.device.bounding_box[2],
-            self.device.bounding_box[3]
+            self.bounding_box[2],
+            self.bounding_box[3]
         )
 
     #######################

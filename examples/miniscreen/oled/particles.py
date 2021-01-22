@@ -36,7 +36,8 @@ def add_new_particle():
 
 
 while True:
-    canvas.clear()
+    # Clear
+    canvas.rectangle(canvas.bounding_box, fill=0)
     particles.clear()
 
     speed_factor = randint(5, 30)
@@ -56,4 +57,4 @@ while True:
                 canvas.point((x, y))
                 particle.update()
 
-        oled.draw()
+        oled.display()

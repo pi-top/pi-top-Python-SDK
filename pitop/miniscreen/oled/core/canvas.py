@@ -59,19 +59,12 @@ class Canvas:
     def clear(self):
         """
         Clears the canvas.
-
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
-        self.__draw.rectangle(self.__bounding_box, 0)
+        self.__draw.rectangle(self.bounding_box, 0)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
     def image(self, xy, image):
-        print("'image()' is now deprecated. Please use 'draw_image()'")
-        self.draw_image(self, xy, image)
-
-    def draw_image(self, xy, image):
         """
         Renders an image to the canvas at a given position.
 
@@ -82,17 +75,11 @@ class Canvas:
 
         :param tuple xy: The position on the canvas to render the image
         :param Image image: The image to render
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
 
         self.__draw.bitmap(xy, self.process_image(image), 1)
 
     def text(self, xy, text, fill=1, spacing=0, align="left"):
-        print("'text()' is now deprecated. Please use 'draw_text()'")
-        self.draw_text(self, xy, text, fill=1, spacing=0, align="left")
-
-    def draw_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
         Draws a single line of text to the canvas.
 
@@ -118,10 +105,6 @@ class Canvas:
         )
 
     def multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
-        print("'multiline_text()' is now deprecated. Please use 'draw_multiline_text()'")
-        self.draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left")
-
-    def draw_multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
         Draws multi-line text to the canvas. Text that is too long for the screen
         will automatically wrap to the next line.
@@ -171,10 +154,6 @@ class Canvas:
         )
 
     def arc(self, xy, start, end, fill=1):
-        print("'arc()' is now deprecated. Please use 'draw_arc()'")
-        self.draw_arc(self, xy, start, end, fill=1)
-
-    def draw_arc(self, xy, start, end, fill=1):
         """
         Draws an arc (a portion of a circle outline) between the start and end angles, inside
         the given bounding box.
@@ -185,16 +164,10 @@ class Canvas:
             3 o'clock, increasing clockwise.
         :param int end: Ending angle, in degrees.
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.arc(xy, start, end, fill)
 
     def chord(self, xy, start, end, fill=1, outline=1):
-        print("'chord()' is now deprecated. Please use 'draw_chord()'")
-        self.draw_chord(self, xy, start, end, fill=1, outline=1)
-
-    def draw_chord(self, xy, start, end, fill=1, outline=1):
         """
         Same as arc(), but connects the end points with a straight line and
         can fill the enclosed space.
@@ -206,16 +179,10 @@ class Canvas:
         :param int end: Ending angle, in degrees
         :param int fill: Color to use for the fill (1 pixel "on", 0 pixel "off")
         :param int outline: Color to use for the outline (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.chord(xy, start, end, fill, outline)
 
     def ellipse(self, xy, fill=1, outline=1):
-        print("'ellipse()' is now deprecated. Please use 'draw_ellipse()'")
-        self.draw_ellipse(self, xy, fill=1, outline=1)
-
-    def draw_ellipse(self, xy, fill=1, outline=1):
         """
         Draws an ellipse inside the given bounding box.
 
@@ -223,16 +190,10 @@ class Canvas:
             ``[(x0, y0), (x1, y1)]`` or ``[x0, y0, x1, y1]``
         :param int fill: Color to use for the fill (1 pixel "on", 0 pixel "off")
         :param int outline: Color to use for the outline (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.ellipse(xy, fill, outline)
 
     def line(self, xy, fill=1, width=1):
-        print("'line()' is now deprecated. Please use 'draw_line()'")
-        self.draw_line(self, xy, fill=1, width=1)
-
-    def draw_line(self, xy, fill=1, width=1):
         """
         Draws a line between the coordinates in the **xy** list.
 
@@ -240,16 +201,10 @@ class Canvas:
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         :param width: The line width, in pixels
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.line(xy, fill, width)
 
     def pieslice(self, xy, start, end, fill=1, outline=1):
-        print("'pieslice()' is now deprecated. Please use 'draw_pieslice()'")
-        self.draw_pieslice(self, xy, start, end, fill=1, outline=1)
-
-    def draw_pieslice(self, xy, start, end, fill=1, outline=1):
         """
         Same as arc, but also draws straight lines between the end points and the
         center of the bounding box.
@@ -261,32 +216,20 @@ class Canvas:
         :param int end: Ending angle, in degrees
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         :param int outline: Color to use for the outline (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.pieslice(xy, start, end, fill, outline)
 
     def point(self, xy, fill=1):
-        print("'point()' is now deprecated. Please use 'draw_point()'")
-        self.draw_point(self, xy, fill=1)
-
-    def draw_point(self, xy, fill=1):
         """
         Draws points (individual pixels) at the given coordinates.
 
         :param tuple xy: Sequence of either 2-tuples like ``[(x, y), (x, y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.point(xy, fill)
 
     def polygon(self, xy, fill=1):
-        print("'polygon()' is now deprecated. Please use 'draw_polygon()'")
-        self.draw_polygon(self, xy, fill=1)
-
-    def draw_polygon(self, xy, fill=1):
         """
         Draws a polygon.
 
@@ -297,16 +240,10 @@ class Canvas:
         :param tuple xy: Sequence of either 2-tuples like ``[(x, y), (x, y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.polygon(xy, fill)
 
     def rectangle(self, xy, fill=1):
-        print("'rectangle()' is now deprecated. Please use 'draw_rectangle()'")
-        self.draw_rectangle(self, xy, fill=1)
-
-    def draw_rectangle(self, xy, fill=1):
         """
         Draws a rectangle.
 
@@ -314,14 +251,15 @@ class Canvas:
             ``[(x0, y0), (x1, y1)]`` or ``[x0, y0, x1, y1]``. The second point
             is just outside the drawn rectangle.
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
-        :return: The current canvas pixel map as a 2D array
-        :rtype: array
         """
         self.__draw.rectangle(xy, fill)
 
     ##################################################
     # Position/dimension methods
     ##################################################
+    @property
+    def bounding_box(self):
+        return self.__bounding_box
 
     def get_bounding_box(self):
         """
@@ -330,7 +268,7 @@ class Canvas:
         :return: A tuple containing the bounding rectangle of the canvas
         :rtype: tuple
         """
-        return self.__bounding_box
+        return self.bounding_box
 
     def __get_corner(self, pos1, pos2):
         """
@@ -340,8 +278,8 @@ class Canvas:
         :rtype: tuple
         """
         return (
-            self.__bounding_box[pos1],
-            self.__bounding_box[pos2]
+            self.bounding_box[pos1],
+            self.bounding_box[pos2]
         )
 
     def top_left(self):
