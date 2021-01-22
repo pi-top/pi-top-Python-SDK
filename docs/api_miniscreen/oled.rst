@@ -52,10 +52,10 @@ Displaying an GIF looping in background
 
 .. literalinclude:: ../../examples/miniscreen/oled/animated_image_loop_in_background.py
 
-Drawing shapes and displaying them on the OLED
+Handling basic 2D graphics drawing and displaying on the OLED
 ------------------------------------------------------------------
 
-.. literalinclude:: ../../examples/miniscreen/oled/drawing_with_canvas.py
+.. literalinclude:: ../../examples/miniscreen/oled/drawing_2d_graphics.py
 
 Displaying a clock on the OLED
 ------------------------------------------------------------------
