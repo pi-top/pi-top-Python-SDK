@@ -310,6 +310,18 @@ class OLED:
     ##################################################
     # Position/dimension methods
     ##################################################
+    def center(self):
+        """
+        Gets the center of the pi-top OLED display.
+
+        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.width / 2,
+            self.height / 2
+        )
+
     def top_left(self):
         """
         Gets the top left corner of the pi-top OLED display.
