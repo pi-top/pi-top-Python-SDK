@@ -34,17 +34,23 @@ class Canvas:
     # Processing commands
     ##################################################
     def process_image(self, image_to_process):
-        image = Image.new(
-            self.mode,
-            self.size,
-            "black"
-        )
-        image.paste(
-            image_to_process.resize(
+        if image_to_process.size == self.size:
+            image = image_to_process
+            if image.mode != self.mode:
+                image.convert(self.mode)
+        else:
+            # Size change will also handle mode change
+            image = Image.new(
+                self.mode,
                 self.size,
-                resample=self.resize_resampling_filter
+                "black"
             )
-        )
+            image.paste(
+                image_to_process.resize(
+                    self.size,
+                    resample=self.resize_resampling_filter
+                )
+            )
 
         return image
 
