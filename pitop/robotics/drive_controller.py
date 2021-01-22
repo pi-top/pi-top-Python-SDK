@@ -30,6 +30,7 @@ class DriveController:
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x = 0
         self._angular_speed_z = 0
+        self.turn_radius = 0.5
 
         self._left_motor = EncoderMotor(port_name=left_motor_port,
                                         forward_direction=ForwardDirection.CLOCKWISE)
@@ -44,17 +45,17 @@ class DriveController:
         self.__port_manager.register_component_instance(self._left_motor, left_motor_port)
         self.__port_manager.register_component_instance(self._right_motor, right_motor_port)
 
-        self.__pid_controller = PIDController(10)
+        self.__pid_controller = PIDController(1)
 
     def __robot_move(self, linear_speed, angular_speed):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
-        speed_right = linear_speed + (self._wheel_base * angular_speed) / 2
-        speed_left = linear_speed - (self._wheel_base * angular_speed) / 2
+        speed_right = linear_speed + (self.turn_radius + self._wheel_base / 2) * angular_speed
+        speed_left = linear_speed + (self.turn_radius - self._wheel_base / 2) * angular_speed
         rpm_right = self._speed_to_rpm(speed_right)
         rpm_left = self._speed_to_rpm(speed_left)
 
         rpm_diff = abs(rpm_right - rpm_left)
-        if rpm_right > self._max_rpm or rpm_left > self.max_rpm:
+        if rpm_right > self._max_rpm or rpm_left > self._max_rpm:
             if rpm_right > rpm_left:
                 rpm_right = self._max_rpm
                 rpm_left = self._max_rpm - rpm_diff
