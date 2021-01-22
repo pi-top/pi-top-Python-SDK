@@ -109,6 +109,9 @@ class OLED:
         display. This method can be useful to control or limit the speed
         of animations.
 
+        This works by blocking on the OLED's display methods if called before
+        the amount of time that a frame should last is not exceeded.
+
         :param int max_fps: The maximum frames that can be rendered per second
         """
         self.__fps_regulator.set_max_fps(max_fps)
