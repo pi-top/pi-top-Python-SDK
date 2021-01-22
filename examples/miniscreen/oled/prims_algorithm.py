@@ -16,13 +16,9 @@ oled.set_max_fps(50)
 
 
 def draw_pixel(pos):
-    canvas.point(pos)
-    pix = list(canvas.im.getdata())
-    pix[:] = [x for x in pix if x != 0]
-    print(pix)
-    oled.display_image(canvas.im)
+    canvas.point(pos, fill=1)
+    oled.display_image(image)
     drawn_pixels.append(pos)
-    sleep(1)
 
 
 width = ((oled.width // 2) * 2 - 1)

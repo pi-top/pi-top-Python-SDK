@@ -225,7 +225,7 @@ class OLED:
             return
 
         if xy is None:
-            xy = self.top_left()
+            xy = self.top_left
 
         self.__do_one_off_display(lambda: self.canvas.image(xy, image))
 
@@ -244,7 +244,7 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.top_left()
+            xy = self.top_left
 
         self.__do_one_off_display(lambda: self.canvas.text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
@@ -264,7 +264,7 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.top_left()
+            xy = self.top_left
 
         self.__do_one_off_display(lambda: self.canvas.multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
 
@@ -324,13 +324,14 @@ class OLED:
     @property
     def bounding_box(self):
         """
-        Gets the center of the pi-top OLED display.
+        Gets the bounding box of the pi-top OLED display.
 
         :return: The top-left coordinates of the canvas bounding box as a tuple
         :rtype: tuple
         """
         return self.device.bounding_box
 
+    @property
     def center(self):
         """
         Gets the center of the pi-top OLED display.
@@ -343,6 +344,7 @@ class OLED:
             self.height / 2
         )
 
+    @property
     def top_left(self):
         """
         Gets the top left corner of the pi-top OLED display.
@@ -355,6 +357,7 @@ class OLED:
             self.bounding_box[1]
         )
 
+    @property
     def top_right(self):
         """
         Gets the top-right corner of the pi-top OLED display.
@@ -367,6 +370,7 @@ class OLED:
             self.bounding_box[1]
         )
 
+    @property
     def bottom_left(self):
         """
         Gets the bottom-left corner of the pi-top OLED display.
@@ -379,6 +383,7 @@ class OLED:
             self.bounding_box[3]
         )
 
+    @property
     def bottom_right(self):
         """
         Gets the bottom-right corner of the pi-top OLED display.

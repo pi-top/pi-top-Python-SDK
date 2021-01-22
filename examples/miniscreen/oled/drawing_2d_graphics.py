@@ -1,12 +1,14 @@
 # Example code showing how to draw various shapes
-
 from pitop.miniscreen import OLED
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 oled = OLED()
+image = Image.new(
+    oled.mode,
+    oled.size,
+)
+canvas = ImageDraw.Draw(image)
 oled.set_max_fps(1)
-canvas = ImageDraw.Draw(oled.image)
-canvas.set_font_size(25)
 
 
 def clear():
@@ -14,53 +16,67 @@ def clear():
 
 
 print("Drawing an arc")
+canvas.arc(oled.bounding_box, 0, 180, fill=1, width=1)
+oled.display_image(image)
+
 clear()
-canvas.arc(oled.bounding_box, 0, 180)
-oled.display()
 
 print("Drawing an image")
-clear()
 # Image provided by 'pt-project-files'
-demo_image = Image.open("/usr/share/pt-project-files/images/rocket.gif")
-canvas.image(canvas.top_left(), demo_image)
-oled.display()
+# Note: this is an animated file, but this approach will only show the first frame
+demo_image = Image.open("/usr/share/pt-project-files/images/rocket.gif").convert("1")
+canvas.bitmap((0, 0), demo_image, fill=1)
+oled.display_image(image)
+
+clear()
 
 print("Drawing a chord")
+canvas.chord(oled.bounding_box, 0, 180, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.chord(oled.bounding_box, 0, 180)
-oled.display()
 
 print("Drawing an ellipse")
+canvas.ellipse(oled.bounding_box, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.ellipse(oled.bounding_box)
-oled.display()
 
 print("Drawing a line")
+canvas.line(oled.bounding_box, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.line(oled.bounding_box)
-oled.display()
 
 print("Drawing a pieslice")
+canvas.pieslice(oled.bounding_box, 0, 180, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.pieslice(oled.bounding_box, 0, 180)
-oled.display()
 
 print("Drawing a point")
+canvas.point(oled.bounding_box, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.point(oled.bounding_box)
-oled.display()
 
 print("Drawing a polygon")
+canvas.polygon(oled.bounding_box, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.polygon(oled.bounding_box)
-oled.display()
 
 print("Drawing a rectangle")
+canvas.rectangle(oled.bounding_box, fill=1)
+oled.display_image(image)
+
 clear()
-canvas.rectangle(oled.bounding_box)
-oled.display()
 
 print("Drawing some text")
-clear()
-canvas.multiline_text(canvas.top_left(), "Hello World!")
-oled.display()
+canvas.multiline_text(
+    (0, 0),
+    "Hello World!",
+    font=ImageFont.truetype("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", size=25),
+    fill=1
+)
+oled.display_image(image)
