@@ -7,9 +7,11 @@ from .core import (
 from pitopcommon.formatting import is_url
 
 from atexit import register
-from copy import deepcopy
-from numpy import reshape
-from PIL import Image, ImageSequence
+from PIL import (
+    Image,
+    ImageChops,
+    ImageSequence,
+)
 from pyinotify import (
     IN_CLOSE_WRITE,
     IN_OPEN,
@@ -65,19 +67,8 @@ class OLED:
         return self.canvas.process_image(image_to_prepare)
 
     def should_redisplay(self):
-        def image_to_display_is_new():
-            # TODO: find a faster way of checking if pixel data has changed
-            def get_pixel_data(pil_image):
-                return reshape(
-                    list(pil_image.getdata()),
-                    self.size
-                )
-
-            return (
-                get_pixel_data(self.image) != get_pixel_data(self._image)
-            ).any()
-
-        return self.image is None or image_to_display_is_new()
+        return self.image is None or \
+            ImageChops.difference(self.image, self._image).getbbox()
 
     @property
     def spi_bus(self):
@@ -277,7 +268,7 @@ class OLED:
             self.device.display(image_to_display)
 
         self.__fps_regulator.start_timer()
-        self.image = deepcopy(self._image)
+        self.image = image_to_display.copy()
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
