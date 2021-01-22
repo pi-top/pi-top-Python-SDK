@@ -43,11 +43,7 @@ class OLED:
             self.device.size
         )
 
-        self.canvas = Canvas(
-            self._image,
-            self.device.mode,
-            self.device.size,
-        )
+        self.canvas = Canvas(self._image)
 
         self.__fps_regulator = FPS_Regulator()
 

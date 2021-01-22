@@ -12,7 +12,7 @@ class Canvas:
     and then render the entire image to the screen as a single frame.
     """
 
-    def __init__(self, image, mode, size):
+    def __init__(self, image):
         # Image object to be used to draw to device
         self._image = image
 
@@ -20,12 +20,10 @@ class Canvas:
         # Used by drawing functions - they directly affect the image
         self.__draw = ImageDraw.Draw(self._image)
 
-        self.mode = mode
-        self.size = size
+        self.__bounding_box = (0, 0, self._image.size[0] - 1, self._image.size[1] - 1)
 
-        self.bounding_box = (0, 0, self.size[0] - 1, self.size[1] - 1)
+        self.__font_size = 30
 
-        self.font_size = 30
         self.__font = None
         self.__font_path = None
         self.__init_font()
@@ -34,20 +32,20 @@ class Canvas:
     # Processing commands
     ##################################################
     def process_image(self, image_to_process):
-        if image_to_process.size == self.size:
+        if image_to_process.size == self._image.size:
             image = image_to_process
-            if image.mode != self.mode:
-                image.convert(self.mode)
+            if image.mode != self._image.mode:
+                image.convert(self._image.mode)
         else:
             # Size change will also handle mode change
             image = Image.new(
-                self.mode,
-                self.size,
+                self._image.mode,
+                self._image.size,
                 "black"
             )
             image.paste(
                 image_to_process.resize(
-                    self.size,
+                    self._image.size,
                     resample=self.resize_resampling_filter
                 )
             )
@@ -65,7 +63,7 @@ class Canvas:
         :return: The current canvas pixel map as a 2D array
         :rtype: array
         """
-        self.__draw.rectangle(self.bounding_box, 0)
+        self.__draw.rectangle(self.__bounding_box, 0)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
@@ -332,7 +330,7 @@ class Canvas:
         :return: A tuple containing the bounding rectangle of the canvas
         :rtype: tuple
         """
-        return self.bounding_box
+        return self.__bounding_box
 
     def __get_corner(self, pos1, pos2):
         """
@@ -342,8 +340,8 @@ class Canvas:
         :rtype: tuple
         """
         return (
-            self.bounding_box[pos1],
-            self.bounding_box[pos2]
+            self.__bounding_box[pos1],
+            self.__bounding_box[pos2]
         )
 
     def top_left(self):
@@ -389,7 +387,7 @@ class Canvas:
         :return: The dimensions of the canvas as a tuple
         :rtype: tuple
         """
-        return self.size
+        return self._image.size
 
     def get_width(self):
         """
@@ -398,7 +396,7 @@ class Canvas:
         :return: The width of canvas in pixels
         :rtype: int
         """
-        return self.size[0]
+        return self._image.size[0]
 
     def get_height(self):
         """
@@ -407,7 +405,7 @@ class Canvas:
         :return: The height of canvas in pixels
         :rtype: int
         """
-        return self.size[1]
+        return self._image.size[1]
 
     ##################################################
     # Font config methods
@@ -421,7 +419,7 @@ class Canvas:
             raise Exception(
                 "No font path set - call set_font_path(font_path)"
             )
-        self.__font = ImageFont.truetype(self.__font_path, size=self.font_size)
+        self.__font = ImageFont.truetype(self.__font_path, size=self.__font_size)
 
     def __check_for_and_get_font(self):
         """
@@ -442,9 +440,9 @@ class Canvas:
         fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
 
         if isfile(primary_font_path):
-            self.set_font(primary_font_path, self.font_size)
+            self.set_font(primary_font_path, self.__font_size)
         elif isfile(fallback_font_path):
-            self.set_font(fallback_font_path, self.font_size)
+            self.set_font(fallback_font_path, self.__font_size)
 
     def get_font_path(self):
         """
@@ -472,7 +470,7 @@ class Canvas:
         """
         self.__font_path = font_path
         if font_size is not None:
-            self.font_size = font_size
+            self.__font_size = font_size
         self.__update_font()
 
     def get_font_size(self):
@@ -482,7 +480,7 @@ class Canvas:
         :return: The current font size
         :rtype: int
         """
-        return self.font_size
+        return self.__font_size
 
     def set_font_size(self, font_size):
         """
@@ -490,7 +488,7 @@ class Canvas:
 
         :param int font_size: The font size to use
         """
-        self.font_size = font_size
+        self.__font_size = font_size
         self.__update_font()
 
     def textsize(self, text, spacing=4):
