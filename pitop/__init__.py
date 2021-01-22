@@ -1,3 +1,3 @@
 from .system.pitop import PiTop
-from .robotics.rover_alex import RoverAlex
+from .robotics.alex_robot import AlexRobot
 from .processing.image_processor import ImageProcessor

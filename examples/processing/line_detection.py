@@ -1,4 +1,4 @@
-from pitop import RoverAlex
+from pitop import AlexRobot
 from pitop.processing.algorithms.line_detect import (
     find_line,
     get_control_angle,
@@ -15,8 +15,11 @@ def drive_based_on_frame(frame):
     rover.left(1)
     rover.oled.draw_image(robot_view)
 
+rover = AlexRobot(
+    motor_left_port="M3",
+    motor_right_port="M0",
+    ultrasonic_sensor_port="D1")
 
-rover = RoverAlex(motor_left_port="M3", motor_right_port="M0")
 rover.camera.on_new_frame = drive_based_on_frame
 
 

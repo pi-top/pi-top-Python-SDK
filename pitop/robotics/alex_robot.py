@@ -10,7 +10,7 @@ from pitopcommon.common_ids import FirmwareDeviceID
 from .drive_controller import DriveController
 
 
-class RoverAlex(PiTop):
+class AlexRobot(PiTop):
     def __init__(self,
                  motor_left_port="M1",
                  motor_right_port="M2",
@@ -47,3 +47,6 @@ class RoverAlex(PiTop):
 
     def stop(self):
         self._drive_controller.stop()
+
+    def forward_with_angle(self, angle):
+        self._drive_controller.forward_with_angle(angle)

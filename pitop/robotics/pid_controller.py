@@ -19,26 +19,26 @@ from pitop.processing.utils.twist import Twist
 #
 # e) Return to step (a) in order to improve your closed loop performance as best as possible.
 
-class FeedbackController:
-    def __init__(self, linear_speed, drive_controller):
-        self.__drive_controller = drive_controller
-
+class PIDController:
+    def __init__(self, linear_speed):
         self.__pid = PID(Kp=0.045, Ki=0.002, Kd=0.0035, setpoint=0)
         self.__pid.output_limits = (-5.0, 5.0)
 
         self.__twist_data = Twist()
 
-        self._speed_angular_z = 0
-        self.speed_linear_x = linear_speed
+        self.__twist_data.angular.z = 0
+        self.__twist_data.linear.x = linear_speed
 
     def stop(self):
-        self.speed_linear_x = 0
-        self.__send_motor_commands(0)
+        self.__twist_data.linear.x = 0
+        self.__twist_data.angular.z = 0
 
     def set_target_control_angle(self, target_angle):
-        # Update PID information
-        target_speed_angular_z = self.__pid(target_angle)
-        self.__send_motor_commands(target_speed_angular_z)
+        self.__twist_data.angular.z = self.__pid(target_angle)
+
+    @property
+    def twist(self):
+        return self.__twist_data
 
     @property
     def speed_linear_x(self):
@@ -56,6 +56,3 @@ class FeedbackController:
     def _speed_angular_z(self, _speed_angular_z):
         self.__twist_data.angular.z = _speed_angular_z
 
-    def __send_motor_commands(self, target_speed_angular_z):
-        self._speed_angular_z = target_speed_angular_z
-        self.__drive_controller.command(self.__twist_data)

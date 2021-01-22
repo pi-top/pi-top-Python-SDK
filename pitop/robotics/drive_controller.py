@@ -6,6 +6,7 @@ from pitop.pma import (
 )
 
 from pitop.system.port_manager import PortManager
+from .pid_controller import PIDController
 
 
 class DriveController:
@@ -43,12 +44,10 @@ class DriveController:
         self.__port_manager.register_component_instance(self._left_motor, left_motor_port)
         self.__port_manager.register_component_instance(self._right_motor, right_motor_port)
 
-    def command(self, twist_data):
-        linear_speed = twist_data.linear.x
-        angular_speed = twist_data.angular.z
-        self.robot_move(linear_speed, angular_speed)
+        self.__pid_controller= PIDController(10)
 
-    def robot_move(self, linear_speed, angular_speed):
+
+    def __robot_move(self, linear_speed, angular_speed):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = linear_speed + (self._wheel_base * angular_speed) / 2
         speed_left = linear_speed - (self._wheel_base * angular_speed) / 2
@@ -73,26 +72,33 @@ class DriveController:
 
     def forward(self, speed_factor):
         self._linear_speed_x = self._max_speed * speed_factor
-        self.robot_move(self._linear_speed_x, self._angular_speed_z)
+        self.__robot_move(self._linear_speed_x, self._angular_speed_z)
 
     def backward(self, speed_factor):
         self.forward(-speed_factor)
 
     def left(self, speed_factor):
         self._angular_speed_z = self._max_angular_speed * speed_factor
-        self.robot_move(self._linear_speed_x, self._angular_speed_z)
+        self.__robot_move(self._linear_speed_x, self._angular_speed_z)
 
     def right(self, speed_factor):
         self.left(-speed_factor)
 
+    def forward_with_angle(self, angle):
+        self.__pid_controller.set_target_control_angle(angle)
+        twist_data = self.__pid_controller.twist
+        linear_speed = twist_data.linear.x
+        angular_speed = twist_data.angular.z
+        self.__robot_move(linear_speed, angular_speed)
+
     def stop(self):
         self._linear_speed_x = 0
         self._angular_speed_z = 0
-        self.robot_move(self._linear_speed_x, self._angular_speed_z)
+        self.__robot_move(self._linear_speed_x, self._angular_speed_z)
 
     def stop_rotation(self):
         self._angular_speed_z = 0
-        self.robot_move(self._linear_speed_x, self._angular_speed_z)
+        self.__robot_move(self._linear_speed_x, self._angular_speed_z)
 
     def _speed_to_rpm(self, speed):
         rpm = round(60.0 * speed / self._wheel_circumference, 1)
