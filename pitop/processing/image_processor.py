@@ -5,7 +5,7 @@ class ImageProcessor:
     line_detect = find_line
 
     def __init__(self):
-        self.on_new_frame = None
+        self.on_frame = None
         self.transforms = list()
 
     def add_transform(self, transform_function):
@@ -16,5 +16,5 @@ class ImageProcessor:
         for transform_fcn in self.transforms:
             result, frame = transform_fcn(frame)
 
-        if callable(self.on_new_frame):
-            self.on_new_frame((frame, result))
+        if callable(self.on_frame):
+            self.on_frame((frame, result))

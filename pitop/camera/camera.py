@@ -29,7 +29,7 @@ class Camera:
             self.__camera = FileSystemCamera(path_to_images)
 
         # Frame callback
-        self.on_new_frame = None
+        self.on_frame = None
 
         self.__continue_processing = True
         self.__frame_handler = FrameHandler()
@@ -190,8 +190,8 @@ class Camera:
             try:
                 self.__frame_handler.frame = self.__camera.get_frame()
                 self.__new_frame_event.set()
-                if callable(self.on_new_frame):
-                    self.on_new_frame(self.__frame_handler.frame)
+                if callable(self.on_frame):
+                    self.on_frame(self.__frame_handler.frame)
                 self.__frame_handler.process()
             except Exception as e:
                 print(f"There was an error: {e}")

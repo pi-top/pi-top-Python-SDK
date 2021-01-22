@@ -16,12 +16,15 @@ def drive_based_on_frame(frame):
     robot.oled.draw_image(robot_view)
 
 
+# Setup robot
 robot = AlexRobot(
     motor_left_port="M3",
     motor_right_port="M0",
     ultrasonic_sensor_port="D1")
 
-robot.camera.on_new_frame = drive_based_on_frame
+
+# On each camera frame, detect a line
+robot.camera.on_frame = drive_based_on_frame
 
 
 pause()
