@@ -1,7 +1,5 @@
 from simple_pid import PID
 
-from pitop.processing.utils.twist import Twist
-
 
 # // short guide for tuning PIDs \\ #
 # a) Set integral and derivative gains to zero (work only with the P part).
