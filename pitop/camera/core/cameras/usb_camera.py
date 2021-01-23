@@ -10,7 +10,7 @@ class UsbCamera:
         try:
             self.__camera = Camera(f"/dev/video{camera_index}")
         except CameraError:
-            raise IOError(f"Error opening camera {camera_index}. Make sure it's correctly connected via USB.") from None
+            raise IOError(f"Error opening camera {camera_index}. Make sure it's connected to the correct USB port.") from None
 
     def __del__(self):
         if hasattr(self.__camera, "close"):
