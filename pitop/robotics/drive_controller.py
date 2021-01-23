@@ -72,12 +72,16 @@ class DriveController:
         self._left_motor.set_target_rpm(target_rpm=rpm_left)
         self._right_motor.set_target_rpm(target_rpm=rpm_right)
 
-    def forward(self, speed_factor):
-        self._linear_speed_x = self._max_motor_speed * speed_factor
-        self.__robot_move(self._linear_speed_x, 0)
+    def forward(self, speed_factor, hold):
+        linear_speed_x = self._max_motor_speed * speed_factor
+        if hold:
+            self._linear_speed_x = linear_speed_x
+        else:
+            self._linear_speed_x = 0
+        self.__robot_move(linear_speed_x, 0)
 
-    def backward(self, speed_factor):
-        self.forward(-speed_factor)
+    def backward(self, speed_factor, hold):
+        self.forward(-speed_factor, hold)
 
     def left(self, speed_factor, turn_radius):
         self.__robot_move(self._linear_speed_x, self._max_robot_angular_speed * speed_factor, turn_radius)

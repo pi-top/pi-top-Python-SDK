@@ -35,11 +35,11 @@ class AlexRobot(PiTop):
         self.pan_servo = self.port_manager.get_component(servo_pan_port)
         self.tilt_servo = self.port_manager.get_component(servo_tilt_port)
 
-    def forward(self, speed_factor):
-        self._drive_controller.forward(speed_factor)
+    def forward(self, speed_factor, hold=False):
+        self._drive_controller.forward(speed_factor, hold)
 
-    def backward(self, speed_factor):
-        self._drive_controller.backward(speed_factor)
+    def backward(self, speed_factor, hold=False):
+        self._drive_controller.backward(speed_factor, hold)
 
     def left(self, speed_factor, turn_radius=0):
         self._drive_controller.left(speed_factor, turn_radius)
