@@ -187,14 +187,18 @@ class Camera:
 
     def __process_camera_output(self):
         while self.__camera and self.__continue_processing is True:
+            self.__frame_handler.frame = self.__camera.get_frame()
+            self.__new_frame_event.set()
             try:
-                self.__frame_handler.frame = self.__camera.get_frame()
-                self.__new_frame_event.set()
                 if callable(self.on_frame):
                     self.on_frame(self.__frame_handler.frame)
+            except Exception as e:
+                print(f"Error while executing 'on_frame' event: {e}")
+
+            try:
                 self.__frame_handler.process()
             except Exception as e:
-                print(f"There was an error: {e}")
+                print(f"Error in camera frame handler: {e}")
 
     def current_frame(self, format='PIL'):
         """
