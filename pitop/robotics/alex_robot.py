@@ -32,8 +32,8 @@ class AlexRobot(PiTop):
         self.right_motor = self.port_manager.get_component(motor_right_port)
 
         self._pan_tilt_controller = PanTiltController()
-        self.tilt_servo = self.port_manager.get_component(servo_tilt_port)
         self.pan_servo = self.port_manager.get_component(servo_pan_port)
+        self.tilt_servo = self.port_manager.get_component(servo_tilt_port)
 
     def forward(self, speed_factor):
         self._drive_controller.forward(speed_factor)
@@ -52,3 +52,6 @@ class AlexRobot(PiTop):
 
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
+
+    def store_servo_zero_points(self):
+        pass
