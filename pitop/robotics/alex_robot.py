@@ -50,5 +50,5 @@ class AlexRobot(PiTop):
     def stop(self):
         self._drive_controller.stop()
 
-    def target_lock_angle(self, angle):
-        self._drive_controller.target_lock_angle(angle)
+    def target_lock_drive_angle(self, angle):
+        self._drive_controller.target_lock_drive_angle(angle)
