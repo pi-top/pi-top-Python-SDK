@@ -39,11 +39,11 @@ class AlexRobot(PiTop):
     def backward(self, speed_factor):
         self._drive_controller.backward(speed_factor)
 
-    def left(self, speed_factor):
-        self._drive_controller.left(speed_factor)
+    def left(self, speed_factor, turn_radius=0):
+        self._drive_controller.left(speed_factor, turn_radius)
 
-    def right(self, speed_factor):
-        self._drive_controller.right(speed_factor)
+    def right(self, speed_factor, turn_radius=0):
+        self._drive_controller.right(speed_factor, turn_radius)
 
     def stop(self):
         self._drive_controller.stop()

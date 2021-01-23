@@ -29,7 +29,6 @@ class DriveController:
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x = 0
-        self.turn_radius = 0.1
 
         self._left_motor = EncoderMotor(port_name=left_motor_port,
                                         forward_direction=ForwardDirection.CLOCKWISE)
@@ -46,10 +45,10 @@ class DriveController:
 
         self.__pid_controller = PIDController(self._max_speed)
 
-    def __robot_move(self, linear_speed, angular_speed):
+    def __calculate_angular_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
-        speed_right = linear_speed + (self.turn_radius + self._wheel_base / 2) * angular_speed
-        speed_left = linear_speed + (self.turn_radius - self._wheel_base / 2) * angular_speed
+        speed_right = linear_speed + (turn_radius + self._wheel_base / 2) * angular_speed
+        speed_left = linear_speed + (turn_radius - self._wheel_base / 2) * angular_speed
         rpm_right = self._speed_to_rpm(speed_right)
         rpm_left = self._speed_to_rpm(speed_left)
 
@@ -58,6 +57,10 @@ class DriveController:
             rpm_right = rpm_right * factor
             rpm_left = rpm_left * factor
 
+        return rpm_left, rpm_right
+
+    def __robot_move(self, linear_speed, angular_speed, turn_radius=0):
+        rpm_left, rpm_right = self.__calculate_angular_speeds(linear_speed, angular_speed, turn_radius)
         self._left_motor.set_target_rpm(target_rpm=rpm_left)
         self._right_motor.set_target_rpm(target_rpm=rpm_right)
 
@@ -68,18 +71,18 @@ class DriveController:
     def backward(self, speed_factor):
         self.forward(-speed_factor)
 
-    def left(self, speed_factor):
-        self.__robot_move(self._linear_speed_x, self._max_angular_speed * speed_factor)
+    def left(self, speed_factor, turn_radius):
+        self.__robot_move(self._linear_speed_x, self._max_angular_speed * speed_factor, turn_radius)
 
-    def right(self, speed_factor):
-        self.left(-speed_factor)
+    def right(self, speed_factor, turn_radius):
+        self.left(-speed_factor, turn_radius)
 
     def target_angle(self, angle):
         self.__pid_controller.set_target_control_angle(angle)
         twist_data = self.__pid_controller.twist
         linear_speed = twist_data.linear.x
         angular_speed = twist_data.angular.z
-        self.__robot_move(linear_speed, angular_speed)
+        self.__robot_move(linear_speed, angular_speed, turn_radius=0.1)
 
     def stop(self):
         self._linear_speed_x = 0
