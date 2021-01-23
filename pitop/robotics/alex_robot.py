@@ -1,13 +1,13 @@
 from pitop import PiTop
 from pitop.camera import Camera
 from pitop.pma import (
-    ServoMotor,
-    UltrasonicSensor,
+    UltrasonicSensor
 )
 
 from pitopcommon.common_ids import FirmwareDeviceID
 
 from .drive_controller import DriveController
+from .pan_tilt_controller import PanTiltController
 
 
 class AlexRobot(PiTop):
@@ -26,12 +26,14 @@ class AlexRobot(PiTop):
 
         self.camera = self.port_manager.register_component(Camera, camera_id)
         self.ultrasonic_sensor = self.port_manager.register_component(UltrasonicSensor, ultrasonic_sensor_port)
-        self.servo_tilt = self.port_manager.register_component(ServoMotor, servo_tilt_port)
-        self.servo_pan = self.port_manager.register_component(ServoMotor, servo_pan_port)
 
         self._drive_controller = DriveController(motor_left_port, motor_right_port)
         self.motor_left = self.port_manager.get_component(motor_left_port)
         self.motor_right = self.port_manager.get_component(motor_right_port)
+
+        self._pan_tilt_controller = PanTiltController()
+        self.servo_tilt = self.port_manager.get_component(servo_tilt_port)
+        self.servo_pan = self.port_manager.get_component(servo_pan_port)
 
     def forward(self, speed_factor):
         self._drive_controller.forward(speed_factor)
