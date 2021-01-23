@@ -19,6 +19,7 @@ from pitop.processing.utils.twist import Twist
 #
 # e) Return to step (a) in order to improve your closed loop performance as best as possible.
 
+# TODO: decide whether to remove this and use simple_pid directly in drive_controller
 class PIDController:
     def __init__(self, lower_limit, upper_limit, setpoint, Kp, Ki, Kd):
         self.__pid = PID(Kp=Kp, Ki=Ki, Kd=Kd, setpoint=setpoint)
