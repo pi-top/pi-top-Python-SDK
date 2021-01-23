@@ -448,7 +448,7 @@ class OLED:
         print("'display()' is now deprecated. You will need to handle your own images in future.")
         self.__display(self._image)
 
-    def draw(self, file_path_or_url, xy=None):
+    def draw(self):
         print("'draw()' is now deprecated. Using 'display()'...")
         self.display()
 
