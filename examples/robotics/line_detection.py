@@ -7,6 +7,10 @@ from pitop.processing.algorithms.line_detect import (
 from signal import pause
 
 
+# Setup robot
+robot = AlexRobot()
+
+
 # Set up logic based on line detection
 def drive_based_on_frame(frame):
     centroid, robot_view = find_line(frame)
@@ -14,13 +18,6 @@ def drive_based_on_frame(frame):
     print(f"Target angle: {angle:.2f} deg ", end="\r")
     robot.target_lock_drive_angle(angle)
     robot.oled.display_image(robot_view)
-
-
-# Setup robot
-robot = AlexRobot(
-    motor_left_port="M3",
-    motor_right_port="M0",
-    ultrasonic_sensor_port="D1")
 
 
 # On each camera frame, detect a line
