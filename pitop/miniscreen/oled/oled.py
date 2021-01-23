@@ -7,9 +7,12 @@ from .core import (
 from pitopcommon.formatting import is_url
 
 from atexit import register
+from os.path import isfile
 from PIL import (
     Image,
     ImageChops,
+    ImageDraw,
+    ImageFont,
     ImageSequence,
 )
 from pyinotify import (
@@ -94,8 +97,18 @@ class OLED:
     def mode(self):
         return self.device.mode
 
+    @property
     def is_active(self):
         return self.__controller.device_is_active()
+
+    @property
+    def visible(self):
+        """
+        Returns whether the device is currently in low power state
+        :return: whether the the screen is in low power mode
+        :rtype: bool
+        """
+        return not self.__visible
 
     def set_control_to_pi(self):
         self.__controller.set_control_to_pi()
@@ -116,16 +129,6 @@ class OLED:
         """
         self.__fps_regulator.set_max_fps(max_fps)
 
-    def hide(self):
-        """
-        The pi-top OLED display is put into low power mode. The previously
-        shown image will re-appear when show() is given, even if the
-        internal frame buffer has been changed (so long as display() has not
-        been called).
-        """
-        self.device.hide()
-        self.__visible = False
-
     def show(self):
         """
         The pi-top OLED display comes out of low power mode showing the
@@ -135,14 +138,15 @@ class OLED:
         self.device.show()
         self.__visible = True
 
-    @property
-    def is_hidden(self):
+    def hide(self):
         """
-        Returns whether the device is currently in low power state
-        :return: whether the the screen is in low power mode
-        :rtype: bool
+        The pi-top OLED display is put into low power mode. The previously
+        shown image will re-appear when show() is given, even if the
+        internal frame buffer has been changed (so long as display() has not
+        been called).
         """
-        return not self.__visible
+        self.device.hide()
+        self.__visible = False
 
     def contrast(self, new_contrast_value):
         assert new_contrast_value in range(0, 256)
@@ -156,24 +160,33 @@ class OLED:
         self.contrast(0)
 
     def clear(self):
-        # Clear
         self.canvas.rectangle(self.bounding_box, fill=0)
         self.__display(self._image, force=True)
+
+    # TODO: evaluate dropping this 'redraw last image' function at v1.0.0
+    #
+    # this is only necessary to support users with SPI0 on device
+    # with older SDK version that only supported SPI1
+    def _redraw_last_image(self):
+        self.__display(self.image, force=True)
+
+    def refresh(self):
+        self.set_control_to_pi()
+        self.__controller.reset_device()
+        self._redraw_last_image()
 
     def reset(self, force=True):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
         """
-        self.set_control_to_pi()
+        self.clear()
+        self.refresh(force)
 
-        if force:
-            self.__controller.reset_device()
+        self.wake()
 
-        self.__display(self.image, force=True)
-        self.device.contrast(255)
-
-        self.show()
+        if not self.visible:
+            self.show()
 
     def display_image_file(self, file_path_or_url, xy=None):
         """
@@ -188,23 +201,6 @@ class OLED:
             the screen.
         """
         self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
-
-    def __do_one_off_text_display(self, display_func_lambda, font_size=None):
-        # Clear
-        self.canvas.rectangle(self.bounding_box, fill=0)
-
-        previous_font_size = self.canvas.get_font_size()
-        if font_size is not None:
-            self.canvas.set_font_size(font_size)
-
-        display_func_lambda()
-        self.display()
-
-        # Clear
-        self.canvas.rectangle(self.bounding_box, fill=0)
-
-        if font_size is not None:
-            self.canvas.set_font_size(previous_font_size)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
@@ -235,7 +231,33 @@ class OLED:
         if xy is None:
             xy = self.top_left
 
-        self.__do_one_off_text_display(lambda: self.canvas.text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        if font_size is None:
+            font_size = 30
+
+        # Create empty image
+        image = Image.new(
+            self.device.mode,
+            self.device.size
+        )
+
+        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
+        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+
+        # 'Draw' text to empty image, using desired font size
+        ImageDraw.Draw(image).text(
+            xy,
+            text,
+            font=ImageFont.truetype(
+                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                size=font_size
+            ),
+            fill=1,
+            spacing=0,
+            align="left"
+        )
+
+        # Display image
+        self.display_image(image)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """
@@ -255,7 +277,33 @@ class OLED:
         if xy is None:
             xy = self.top_left
 
-        self.__do_one_off_text_display(lambda: self.canvas.multiline_text(xy, text, fill=1, spacing=0, align="left"), font_size)
+        if font_size is None:
+            font_size = 30
+
+        # Create empty image
+        image = Image.new(
+            self.device.mode,
+            self.device.size
+        )
+
+        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
+        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+
+        # 'Draw' text to empty image, using desired font size
+        ImageDraw.Draw(image).multiline_text(
+            xy,
+            text,
+            font=ImageFont.truetype(
+                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                size=font_size
+            ),
+            fill=1,
+            spacing=0,
+            align="left"
+        )
+
+        # Display image
+        self.display_image(image)
 
     def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
