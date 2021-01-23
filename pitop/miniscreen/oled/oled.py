@@ -1,14 +1,20 @@
-from .core.canvas import Canvas
-from .core.device_controller import OledDeviceController
-from .core.fps_regulator import FPS_Regulator
-from .core.image_helper import (
-    get_pil_image_from_path,
-    process_pil_image_frame,
+from .core import (
+    Canvas,
+    FPS_Regulator,
+    OledDeviceController,
 )
 
+from pitopcommon.formatting import is_url
+
 from atexit import register
-from copy import deepcopy
-from PIL import Image, ImageSequence
+from os.path import isfile
+from PIL import (
+    Image,
+    ImageChops,
+    ImageDraw,
+    ImageFont,
+    ImageSequence,
+)
 from pyinotify import (
     IN_CLOSE_WRITE,
     IN_OPEN,
@@ -18,6 +24,7 @@ from pyinotify import (
 )
 from threading import Thread
 from time import sleep
+from urllib.request import urlopen
 
 
 class OLED:
@@ -26,19 +33,20 @@ class OLED:
     for simple rendering of text or images to the screen.
     """
 
-    LOCK_FILE_PATH = "/tmp/pt-oled.lock"
+    __LOCK_FILE_PATH = "/tmp/pt-oled.lock"
 
     # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
     def __init__(self, _exclusive_mode=True):
-        self.controller = OledDeviceController(self.reset, _exclusive_mode)
-
-        self.__image = None
-        self.__canvas = None
+        self.__controller = OledDeviceController(self._redraw_last_image, _exclusive_mode)
 
         self.image = Image.new(
             self.device.mode,
             self.device.size
         )
+
+        self._image = self.image.copy()
+
+        self.canvas = Canvas(self._image)
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -55,26 +63,24 @@ class OLED:
 
         register(self.__cleanup)
 
-    @property
-    def image(self):
-        return self.__image
+    def prepare_image(self, image_to_prepare):
+        return self.canvas.process_image(image_to_prepare)
 
-    @image.setter
-    def image(self, image):
-        self.__image = image
-        self.__canvas = Canvas(self.device, self.__image)
+    def should_redisplay(self):
+        return self.image is None or \
+            ImageChops.difference(self.image, self._image).getbbox()
 
     @property
     def spi_bus(self):
-        return self.controller.spi_bus
+        return self.__controller.spi_bus
 
     @spi_bus.setter
     def spi_bus(self, bus):
-        self.controller.spi_bus = bus
+        self.__controller.spi_bus = bus
 
     @property
     def device(self):
-        return self.controller.get_device()
+        return self.__controller.get_device()
 
     @property
     def size(self):
@@ -92,14 +98,24 @@ class OLED:
     def mode(self):
         return self.device.mode
 
+    @property
     def is_active(self):
-        return self.controller.device_is_active()
+        return self.__controller.device_is_active()
+
+    @property
+    def visible(self):
+        """
+        Returns whether the device is currently in low power state
+        :return: whether the the screen is in low power mode
+        :rtype: bool
+        """
+        return not self.__visible
 
     def set_control_to_pi(self):
-        self.controller.set_control_to_pi()
+        self.__controller.set_control_to_pi()
 
     def set_control_to_hub(self):
-        self.controller.set_control_to_hub()
+        self.__controller.set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """
@@ -107,19 +123,12 @@ class OLED:
         display. This method can be useful to control or limit the speed
         of animations.
 
+        This works by blocking on the OLED's display methods if called before
+        the amount of time that a frame should last is not exceeded.
+
         :param int max_fps: The maximum frames that can be rendered per second
         """
         self.__fps_regulator.set_max_fps(max_fps)
-
-    def hide(self):
-        """
-        The pi-top OLED display is put into low power mode. The previously
-        shown image will re-appear when show() is given, even if the
-        internal frame buffer has been changed (so long as draw() has not
-        been called).
-        """
-        self.device.hide()
-        self.__visible = False
 
     def show(self):
         """
@@ -130,14 +139,15 @@ class OLED:
         self.device.show()
         self.__visible = True
 
-    @property
-    def is_hidden(self):
+    def hide(self):
         """
-        Returns whether the device is currently in low power state
-        :return: whether the the screen is in low power mode
-        :rtype: bool
+        The pi-top OLED display is put into low power mode. The previously
+        shown image will re-appear when show() is given, even if the
+        internal frame buffer has been changed (so long as display() has not
+        been called).
         """
-        return not self.__visible
+        self.device.hide()
+        self.__visible = False
 
     def contrast(self, new_contrast_value):
         assert new_contrast_value in range(0, 256)
@@ -150,21 +160,34 @@ class OLED:
     def sleep(self):
         self.contrast(0)
 
-    def reset(self, reset_controller=True):
+    def clear(self):
+        self.canvas.rectangle(self.bounding_box, fill=0)
+        self.__display(self._image, force=True)
+
+    # TODO: evaluate dropping this 'redraw last image' function at v1.0.0
+    #
+    # this is only necessary to support users with SPI0 on device
+    # with older SDK version that only supported SPI1
+    def _redraw_last_image(self):
+        self.__display(self.image, force=True)
+
+    def refresh(self):
+        self.set_control_to_pi()
+        self.__controller.reset_device()
+        self._redraw_last_image()
+
+    def reset(self, force=True):
         """
         Gives the caller access to the OLED screen (i.e. in the case the the system is
         currently rendering information to the screen) and clears the screen.
         """
-        self.set_control_to_pi()
-        self.__canvas.clear()
+        self.clear()
+        self.refresh()
 
-        if reset_controller:
-            self.controller.reset_device()
+        self.wake()
 
-        self.device.display(self.__image)
-        self.device.contrast(255)
-
-        self.show()
+        if not self.visible:
+            self.show()
 
     def __process_image_frame(self, image):
         return process_pil_image_frame(
@@ -177,7 +200,7 @@ class OLED:
         """
         Render a static image to the screen from a file or URL at a given position.
 
-        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         `xy` position parameter, e.g. `top_left`, `top_right`.
 
         :param str file_path_or_url: A file path or URL to the image
@@ -194,40 +217,15 @@ class OLED:
 
         The image should be provided as a PIL Image object.
 
-        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
-        `xy` position parameter, e.g. `top_left`, `top_right`.
-
         :param Image image: A PIL Image object to be rendered
-        :param tuple xy: The position on the screen to render the image. If not
-            provided or passed as `None` the image will be drawn in the top-left of
-            the screen.
         """
-        if xy is None:
-            xy = self.__canvas.top_left()
-
-        self.__canvas.clear()
-        self.__canvas.image(xy, image)
-
-        self.draw()
-
-    def __draw_text_base(self, text_func, text, font_size, xy):
-        self.__canvas.clear()
-
-        if font_size is not None:
-            previous_font_size = self.__canvas.font_size
-            self.__canvas.set_font_size(font_size)
-
-        text_func(xy, text, fill=1, spacing=0, align="left")
-        self.draw()
-
-        if font_size is not None:
-            self.__canvas.set_font_size(previous_font_size)
+        self.__display(self.prepare_image(image))
 
     def draw_text(self, text, xy=None, font_size=None):
         """
         Renders a single line of text to the screen at a given position and size.
 
-        The helper methods in the pitop.miniscreen.core.Canvas class can be used to specify the
+        The helper methods in the pitop.miniscreen.oled.core.Canvas class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -238,16 +236,42 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.__canvas.top_left()
+            xy = self.top_left
 
-        self.__draw_text_base(self.__canvas.text, text, font_size, xy)
+        if font_size is None:
+            font_size = 30
+
+        # Create empty image
+        image = Image.new(
+            self.device.mode,
+            self.device.size
+        )
+
+        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
+        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+
+        # 'Draw' text to empty image, using desired font size
+        ImageDraw.Draw(image).text(
+            xy,
+            text,
+            font=ImageFont.truetype(
+                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                size=font_size
+            ),
+            fill=1,
+            spacing=0,
+            align="left"
+        )
+
+        # Display image
+        self.display_image(image)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         """
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
 
-        The helper methods in the `pitop.miniscreen.core.Canvas` class can be used to specify the
+        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
         position, e.g. `top_left`, `top_right`.
 
         :param string text: The text to render
@@ -258,19 +282,37 @@ class OLED:
             `None`, the default font size will be used
         """
         if xy is None:
-            xy = self.__canvas.top_left()
+            xy = self.top_left
 
-        self.__draw_text_base(self.__canvas.multiline_text, text, font_size, xy)
+        if font_size is None:
+            font_size = 30
 
-    def draw(self):
-        """
-        Draws what is on the current canvas to the screen as a single frame.
+        # Create empty image
+        image = Image.new(
+            self.device.mode,
+            self.device.size
+        )
 
-        This method does not need to be called when using the other `draw`
-        functions in this class, but is used when the caller wants to use
-        the *canvas* object to draw composite objects and then render them
-        to screen in a single frame.
-        """
+        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
+        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+
+        # 'Draw' text to empty image, using desired font size
+        ImageDraw.Draw(image).multiline_text(
+            xy,
+            text,
+            font=ImageFont.truetype(
+                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                size=font_size
+            ),
+            fill=1,
+            spacing=0,
+            align="left"
+        )
+
+        # Display image
+        self.display_image(image)
+
+    def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
         paint_to_screen = False
         if self.__previous_frame is None:
@@ -281,11 +323,11 @@ class OLED:
             if (prev_pix != current_pix).any():
                 paint_to_screen = True
 
-        if paint_to_screen:
-            self.device.display(self.__image)
+        if force or self.should_redisplay():
+            self.device.display(image_to_display)
 
         self.__fps_regulator.start_timer()
-        self.__previous_frame = Canvas(self.device, deepcopy(self.__image))
+        self.image = image_to_display.copy()
 
     def play_animated_image_file(self, file_path_or_url, background=False, loop=False):
         """
@@ -328,6 +370,122 @@ class OLED:
             self.__kill_thread = True
             self.__auto_play_thread.join()
 
+    ##################################################
+    # Position/dimension methods
+    ##################################################
+    @property
+    def bounding_box(self):
+        """
+        Gets the bounding box of the pi-top OLED display.
+
+        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return self.device.bounding_box
+
+    @property
+    def center(self):
+        """
+        Gets the center of the pi-top OLED display.
+
+        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.width / 2,
+            self.height / 2
+        )
+
+    @property
+    def top_left(self):
+        """
+        Gets the top left corner of the pi-top OLED display.
+
+        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.bounding_box[0],
+            self.bounding_box[1]
+        )
+
+    @property
+    def top_right(self):
+        """
+        Gets the top-right corner of the pi-top OLED display.
+
+        :return: The top-right coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.bounding_box[2],
+            self.bounding_box[1]
+        )
+
+    @property
+    def bottom_left(self):
+        """
+        Gets the bottom-left corner of the pi-top OLED display.
+
+        :return: The bottom-left coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.bounding_box[0],
+            self.bounding_box[3]
+        )
+
+    @property
+    def bottom_right(self):
+        """
+        Gets the bottom-right corner of the pi-top OLED display.
+
+        :return: The bottom-right coordinates of the canvas bounding box as a tuple
+        :rtype: tuple
+        """
+        return (
+            self.bounding_box[2],
+            self.bounding_box[3]
+        )
+
+    #######################
+    # Deprecation support #
+    #######################
+    def display(self, force=False):
+        """
+        Displays what is on the current canvas to the screen as a single frame.
+
+        This method does not need to be called when using the other `draw`
+        functions in this class, but is used when the caller wants to use
+        the *canvas* object to draw composite objects and then render them
+        to screen in a single frame.
+        """
+        print("'display()' is now deprecated. You will need to handle your own images in future.")
+        self.__display(self._image)
+
+    def draw(self):
+        print("'draw()' is now deprecated. Using 'display()'...")
+        self.display()
+
+    def draw_image_file(self, file_path_or_url, xy=None):
+        print("draw_image_file is now deprecated. Using display_image_file...")
+        self.display_image_file(self, file_path_or_url, xy=None)
+
+    def draw_image(self, image, xy=None):
+        print("draw_image is now deprecated. Using display_image...")
+        self.display_image(self, image, xy=None)
+
+    def draw_text(self, text, xy=None, font_size=None):
+        print("draw_text is now deprecated. Using display_text...")
+        self.display_text(self, text, xy=None, font_size=None)
+
+    def draw_multiline_text(self, text, xy=None, font_size=None):
+        print("draw_multiline_text is now deprecated. Using display_multiline_text...")
+        self.display_multiline_text(self, text, xy=None, font_size=None)
+
+    ####################
+    # Internal support #
+    ####################
     def __auto_play(self, image, loop=False):
         while True:
             for frame in ImageSequence.Iterator(image):
@@ -386,7 +544,7 @@ class OLED:
                 events_to_watch = events_to_watch | IN_OPEN
 
             wm = WatchManager()
-            wm.add_watch(self.LOCK_FILE_PATH, events_to_watch)
+            wm.add_watch(self.__LOCK_FILE_PATH, events_to_watch)
             notifier = Notifier(wm, eh)
             notifier.loop()
 

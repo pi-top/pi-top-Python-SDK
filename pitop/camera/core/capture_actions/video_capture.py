@@ -21,22 +21,19 @@ class VideoCapture(CaptureActionBase):
         default_video_resolution = (640, 368)
 
         if output_file_name == "":
-            output_directory = self.__create_output_directory()
-            output_file_name = self.__get_output_filename(output_directory, "avi")
+            output_directory = self._create_output_directory()
+            output_file_name = self._get_output_filename(output_directory, "avi")
 
         if resolution is None:
             resolution = default_video_resolution
-        else:
-            width = resolution[0]
-            height = resolution[1]
-            if width % 16:
-                width = width + 16 - width % 16
-                PTLogger.warning(f"Invalid resolution. Setting width to {width}")
-            if height % 16:
-                height = height + 16 - height % 16
-                PTLogger.warning(f"Invalid resolution. Setting height to {height}")
-            self.__video_resolution = (width, height)
 
+        def fix_dimension(dimension):
+            if dimension % 16:
+                dimension = dimension + 16 - dimension % 16
+                PTLogger.warning(f"Invalid resolution. Setting dimension to {dimension}")
+            return dimension
+
+        self.__video_resolution = [fix_dimension(x) for x in resolution]
         self.__video_output_writer = get_writer(output_file_name,
                                                 format="avi",
                                                 mode="I",

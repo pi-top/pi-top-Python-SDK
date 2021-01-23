@@ -1,11 +1,15 @@
 from pitop.miniscreen import OLED
+
+from PIL import Image, ImageDraw
 from random import randint
 
 oled = OLED()
-canvas = oled.canvas
+image = Image.new(
+    oled.mode,
+    oled.size,
+)
+canvas = ImageDraw.Draw(image)
 
-screen_width = canvas.get_width()
-screen_height = canvas.get_height()
 speed_factor = 15
 particle_count = 15
 particles = []
@@ -21,22 +25,23 @@ class Particle:
         return (self.x, self.y)
 
     def update(self):
-        dx = (self.x - (screen_width / 2)) / speed_factor if self.x < (screen_width /
-                                                                       2) else (self.x - (screen_width / 2)) / speed_factor
-        dy = (self.y - (screen_height / 2)) / speed_factor if self.y < (screen_height /
-                                                                        2) else (self.y - (screen_height / 2)) / speed_factor
+        dx = (self.x - (oled.width / 2)) / speed_factor if self.x < (oled.width /
+                                                                     2) else (self.x - (oled.width / 2)) / speed_factor
+        dy = (self.y - (oled.height / 2)) / speed_factor if self.y < (oled.height /
+                                                                      2) else (self.y - (oled.height / 2)) / speed_factor
         self.x += dx
         self.y += dy
 
 
 def add_new_particle():
-    x = randint(0, screen_width)
-    y = randint(0, screen_height)
+    x = randint(0, oled.width)
+    y = randint(0, oled.height)
     particles.append(Particle(x, y))
 
 
 while True:
-    canvas.clear()
+    # Clear display
+    canvas.rectangle(oled.bounding_box, fill=0)
     particles.clear()
 
     speed_factor = randint(5, 30)
@@ -49,11 +54,11 @@ while True:
         for particle in particles:
             x, y = particle.get_position()
 
-            if (x < 0 or x > screen_width) or (y < 0 or y > screen_height):
+            if (x < 0 or x > oled.width) or (y < 0 or y > oled.height):
                 particles.remove(particle)
                 add_new_particle()
             else:
-                canvas.point((x, y))
+                canvas.point((x, y), fill=1)
                 particle.update()
 
-        oled.draw()
+        oled.display_image(image)
