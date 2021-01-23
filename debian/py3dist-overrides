@@ -10,4 +10,5 @@ python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera
 rpi.gpio python3-rpi.gpio
 scipy python3-scipy
+simple_pid python3-simple-pid
 smbus python3-smbus
