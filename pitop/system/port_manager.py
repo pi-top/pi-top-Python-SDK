@@ -6,14 +6,6 @@ class PortManager(metaclass=Singleton):
         # TODO: if state not empty, reproduce it
         self.port_lookup = state
 
-    def register_component(self, component_type, port, **kwargs):
-        if self.port_lookup.get(port):
-            raise Exception("Port is already in use")
-
-        component = component_type(port, **kwargs)
-        self.port_lookup[port] = component
-        return component
-
     def register_component_instance(self, component_instance, port):
         if self.port_lookup.get(port):
             raise Exception("Port is already in use")

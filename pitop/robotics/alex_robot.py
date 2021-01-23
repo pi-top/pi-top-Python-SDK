@@ -29,8 +29,9 @@ class AlexRobot(PiTop):
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
 
-        self.camera = self.port_manager.register_component(Camera, camera_id)
-        self.ultrasonic_sensor = self.port_manager.register_component(UltrasonicSensor, ultrasonic_sensor_port)
+        self.camera = Camera(camera_id)
+        self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
+        self.port_manager.register_component_instance(self.ultrasonic_sensor, ultrasonic_sensor_port)
 
         self._drive_controller = DriveController(motor_left_port, motor_right_port)
         self.left_motor = self.port_manager.get_component(motor_left_port)

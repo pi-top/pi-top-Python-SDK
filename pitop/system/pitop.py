@@ -27,10 +27,6 @@ class PiTop(metaclass=Singleton):
         self.cancel_button = CancelButton() if is_pi_top_four else None
         self._plate = connected_plate() if is_pi_top_four else None
 
-    def register_component(self, component, port):
-        if self.port_manager:
-            return self.port_manager.register_component(component, port)
-
     def register_component_instance(self, component_instance, port):
         if self.port_manager:
             self.port_manager.register_component_instance(component_instance, port)
