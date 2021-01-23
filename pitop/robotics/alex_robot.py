@@ -28,12 +28,12 @@ class AlexRobot(PiTop):
         self.ultrasonic_sensor = self.port_manager.register_component(UltrasonicSensor, ultrasonic_sensor_port)
 
         self._drive_controller = DriveController(motor_left_port, motor_right_port)
-        self.motor_left = self.port_manager.get_component(motor_left_port)
-        self.motor_right = self.port_manager.get_component(motor_right_port)
+        self.left_motor = self.port_manager.get_component(motor_left_port)
+        self.right_motor = self.port_manager.get_component(motor_right_port)
 
         self._pan_tilt_controller = PanTiltController()
-        self.servo_tilt = self.port_manager.get_component(servo_tilt_port)
-        self.servo_pan = self.port_manager.get_component(servo_pan_port)
+        self.tilt_servo = self.port_manager.get_component(servo_tilt_port)
+        self.pan_servo = self.port_manager.get_component(servo_pan_port)
 
     def forward(self, speed_factor):
         self._drive_controller.forward(speed_factor)
