@@ -14,17 +14,17 @@ class AlexRobot(PiTop):
     def __init__(self,
                  motor_left_port="M3",
                  motor_right_port="M0",
-                 camera_port=0,
+                 camera_id=0,
                  ultrasonic_sensor_port="D3",
                  servo_pan_port="S0",
-                 servo_tilt_port="S3"                 
+                 servo_tilt_port="S3"
                  ):
 
         super().__init__()
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
 
-        self.camera = self.port_manager.register_component(Camera, camera_port)
+        self.camera = self.port_manager.register_component(Camera, camera_id)
         self.ultrasonic_sensor = self.port_manager.register_component(UltrasonicSensor, ultrasonic_sensor_port)
         self.servo_left = self.port_manager.register_component(ServoMotor, servo_tilt_port)
         self.servo_right = self.port_manager.register_component(ServoMotor, servo_pan_port)
