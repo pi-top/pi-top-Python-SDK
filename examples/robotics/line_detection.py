@@ -13,7 +13,7 @@ def drive_based_on_frame(frame):
     angle = get_control_angle(centroid, robot_view)
     print(f"Target angle: {angle:.2f} deg ", end="\r")
     robot.target_lock_drive_angle(angle)
-    robot.oled.draw_image(robot_view)
+    robot.oled.display_image(robot_view)
 
 
 # Setup robot

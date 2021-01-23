@@ -1,9 +1,9 @@
 from os.path import isfile
-from .image_helper import (
-    process_pil_image_frame,
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageFont,
 )
-from PIL import ImageFont, ImageDraw
-from numpy import reshape
 
 
 class Canvas:
@@ -19,6 +19,8 @@ class Canvas:
         # Internal draw object derived from PIL image
         # Used by drawing functions - they directly affect the image
         self.__draw = ImageDraw.Draw(self._image)
+
+        self.resize_resampling_filter = Image.NEAREST
 
         self.__bounding_box = (0, 0, self._image.size[0] - 1, self._image.size[1] - 1)
 
@@ -81,11 +83,6 @@ class Canvas:
         :param tuple xy: The position on the canvas to render the image
         :param Image image: The image to render
         """
-        image_data = process_pil_image_frame(image,
-                                             size=self.__oled_device.size,
-                                             mode=self.__oled_device.mode)
-        self.draw.bitmap(xy, image_data, 1)
-        return self.get_pixels()
 
         self.__draw.bitmap(xy, self.process_image(image), 1)
 
@@ -104,7 +101,7 @@ class Canvas:
         :return: Current pixel map as 2D array
         """
 
-        self.draw.text(
+        self.__draw.text(
             xy=xy,
             text=text,
             fill=fill,
@@ -113,7 +110,6 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
-        return self.get_pixels()
 
     def multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
         """
@@ -131,7 +127,7 @@ class Canvas:
         :return: Current pixel map as 2D array
         """
 
-        def draw_word_wrap(text):
+        def word_wrap(text):
             remaining = self.get_width()
             space_width, _ = self.textsize(" ")
             # use this list as a stack, push/popping each line
@@ -152,9 +148,9 @@ class Canvas:
                     remaining = remaining - (word_width + space_width)
             return "\n".join(output_text)
 
-        text = draw_word_wrap(text)
+        text = word_wrap(text)
 
-        self.draw.multiline_text(
+        self.__draw.multiline_text(
             xy=xy,
             text=text,
             fill=fill,
@@ -163,7 +159,6 @@ class Canvas:
             spacing=spacing,
             align=align,
         )
-        return self.get_pixels()
 
     def arc(self, xy, start, end, fill=1):
         """
@@ -177,8 +172,7 @@ class Canvas:
         :param int end: Ending angle, in degrees.
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         """
-        self.draw.arc(xy, start, end, fill)
-        return self.get_pixels()
+        self.__draw.arc(xy, start, end, fill)
 
     def chord(self, xy, start, end, fill=1, outline=1):
         """
@@ -193,8 +187,7 @@ class Canvas:
         :param int fill: Color to use for the fill (1 pixel "on", 0 pixel "off")
         :param int outline: Color to use for the outline (1 pixel "on", 0 pixel "off")
         """
-        self.draw.chord(xy, start, end, fill, outline)
-        return self.get_pixels()
+        self.__draw.chord(xy, start, end, fill, outline)
 
     def ellipse(self, xy, fill=1, outline=1):
         """
@@ -205,8 +198,7 @@ class Canvas:
         :param int fill: Color to use for the fill (1 pixel "on", 0 pixel "off")
         :param int outline: Color to use for the outline (1 pixel "on", 0 pixel "off")
         """
-        self.draw.ellipse(xy, fill, outline)
-        return self.get_pixels()
+        self.__draw.ellipse(xy, fill, outline)
 
     def line(self, xy, fill=1, width=1):
         """
@@ -217,8 +209,7 @@ class Canvas:
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         :param width: The line width, in pixels
         """
-        self.draw.line(xy, fill, width)
-        return self.get_pixels()
+        self.__draw.line(xy, fill, width)
 
     def pieslice(self, xy, start, end, fill=1, outline=1):
         """
@@ -233,8 +224,7 @@ class Canvas:
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         :param int outline: Color to use for the outline (1 pixel "on", 0 pixel "off")
         """
-        self.draw.pieslice(xy, start, end, fill, outline)
-        return self.get_pixels()
+        self.__draw.pieslice(xy, start, end, fill, outline)
 
     def point(self, xy, fill=1):
         """
@@ -244,8 +234,7 @@ class Canvas:
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         """
-        self.draw.point(xy, fill)
-        return self.get_pixels()
+        self.__draw.point(xy, fill)
 
     def polygon(self, xy, fill=1):
         """
@@ -259,8 +248,7 @@ class Canvas:
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         """
-        self.draw.polygon(xy, fill)
-        return self.get_pixels()
+        self.__draw.polygon(xy, fill)
 
     def rectangle(self, xy, fill=1):
         """
@@ -271,8 +259,7 @@ class Canvas:
             is just outside the drawn rectangle.
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         """
-        self.draw.rectangle(xy, fill)
-        return self.get_pixels()
+        self.__draw.rectangle(xy, fill)
 
     ##################################################
     # Position/dimension methods
@@ -460,7 +447,7 @@ class Canvas:
         :return: int
         """
 
-        return self.draw.textsize(
+        return self.__draw.textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )
 
@@ -475,6 +462,6 @@ class Canvas:
         :return: int
         """
 
-        return self.draw.multiline_textsize(
+        return self.__draw.multiline_textsize(
             text=text, font=self.__check_for_and_get_font(), spacing=spacing
         )

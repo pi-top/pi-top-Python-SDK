@@ -51,7 +51,6 @@ class OLED:
         self.__fps_regulator = FPS_Regulator()
 
         self.__visible = False
-        self.__previous_frame = None
         self.__auto_play_thread = None
 
         # Lock file monitoring - used by pt-sys-oled
@@ -133,7 +132,7 @@ class OLED:
     def show(self):
         """
         The pi-top OLED display comes out of low power mode showing the
-        previous image shown before hide() was called (so long as draw()
+        previous image shown before hide() was called (so long as display()
         has not been called)
         """
         self.device.show()
@@ -189,14 +188,7 @@ class OLED:
         if not self.visible:
             self.show()
 
-    def __process_image_frame(self, image):
-        return process_pil_image_frame(
-            image,
-            self.device.size,
-            self.device.mode
-        )
-
-    def draw_image_file(self, file_path_or_url, xy=None):
+    def display_image_file(self, file_path_or_url, xy=None):
         """
         Render a static image to the screen from a file or URL at a given position.
 
@@ -208,10 +200,11 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        image = get_pil_image_from_path(file_path_or_url)
-        self.draw_image(self.__process_image_frame(image), xy)
+        self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
 
-    def draw_image(self, image, xy=None):
+    # TODO: add 'size' parameter for images being rendered to canvas
+    # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
+    def display_image(self, image, xy=None):
         """
         Render a static image to the screen from a file or URL at a given position.
 
@@ -221,7 +214,7 @@ class OLED:
         """
         self.__display(self.prepare_image(image))
 
-    def draw_text(self, text, xy=None, font_size=None):
+    def display_text(self, text, xy=None, font_size=None):
         """
         Renders a single line of text to the screen at a given position and size.
 
@@ -266,7 +259,7 @@ class OLED:
         # Display image
         self.display_image(image)
 
-    def draw_multiline_text(self, text, xy=None, font_size=None):
+    def display_multiline_text(self, text, xy=None, font_size=None):
         """
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
@@ -314,14 +307,6 @@ class OLED:
 
     def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
-        paint_to_screen = False
-        if self.__previous_frame is None:
-            paint_to_screen = True
-        else:
-            prev_pix = self.__previous_frame.get_pixels()
-            current_pix = self.__canvas.get_pixels()
-            if (prev_pix != current_pix).any():
-                paint_to_screen = True
 
         if force or self.should_redisplay():
             self.device.display(image_to_display)
@@ -339,7 +324,7 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
-        image = get_pil_image_from_path(file_path_or_url)
+        image = self.__get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
 
     def play_animated_image(self, image, background=False, loop=False):
@@ -360,7 +345,7 @@ class OLED:
                 target=self.__auto_play, args=(image, loop))
             self.__auto_play_thread.start()
         else:
-            self.__auto_play(image)
+            self.__auto_play(image, loop)
 
     def stop_animated_image(self):
         """
@@ -469,19 +454,19 @@ class OLED:
 
     def draw_image_file(self, file_path_or_url, xy=None):
         print("draw_image_file is now deprecated. Using display_image_file...")
-        self.display_image_file(self, file_path_or_url, xy=None)
+        self.display_image_file(file_path_or_url, xy=None)
 
     def draw_image(self, image, xy=None):
         print("draw_image is now deprecated. Using display_image...")
-        self.display_image(self, image, xy=None)
+        self.display_image(image, xy=None)
 
     def draw_text(self, text, xy=None, font_size=None):
         print("draw_text is now deprecated. Using display_text...")
-        self.display_text(self, text, xy=None, font_size=None)
+        self.display_text(text, xy=None, font_size=None)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         print("draw_multiline_text is now deprecated. Using display_multiline_text...")
-        self.display_multiline_text(self, text, xy=None, font_size=None)
+        self.display_multiline_text(text, xy=None, font_size=None)
 
     ####################
     # Internal support #
@@ -493,9 +478,7 @@ class OLED:
                 if self.__kill_thread:
                     break
 
-                self.draw_image(
-                    self.__process_image_frame(frame)
-                )
+                self.display_image(frame)
                 # Wait for animated image's frame length
                 sleep(
                     float(frame.info["duration"] / 1000)  # ms to s
@@ -504,6 +487,19 @@ class OLED:
             if self.__kill_thread or not loop:
                 self.reset()
                 break
+
+    def __get_pil_image_from_path(self, file_path_or_url):
+        image = Image.open(
+            urlopen(file_path_or_url) if is_url(file_path_or_url) else file_path_or_url
+        )
+
+        # Verify on deep copy to avoid needing to close and
+        # re-open after verifying...
+        test_image = image.copy()
+        # Raise exception if there's an issue with the image
+        test_image.verify()
+
+        return image
 
     @property
     def _when_user_starts_using_oled(self):
