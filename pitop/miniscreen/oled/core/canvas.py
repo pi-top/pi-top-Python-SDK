@@ -32,12 +32,16 @@ class Canvas:
     # Processing commands
     ##################################################
     def process_image(self, image_to_process):
+        # print(f"Before: {image_to_process.size}, {image_to_process.mode}")
         if image_to_process.size == self._image.size:
             image = image_to_process
             if image.mode != self._image.mode:
-                image.convert(self._image.mode)
+                # print(f"Converting image with mode {image.mode} to mode {self._image.mode}...")
+                image = image.convert(self._image.mode)
+            # else:
+                # print("Nothing to do...")
         else:
-            # Size change will also handle mode change
+            # print("Pasting resized image into new image...")
             image = Image.new(
                 self._image.mode,
                 self._image.size,
@@ -50,6 +54,7 @@ class Canvas:
                 )
             )
 
+        # print(f"After:  {image.size}, {image.mode}")
         return image
 
     ##################################################
