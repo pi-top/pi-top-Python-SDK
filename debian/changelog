@@ -1,3 +1,11 @@
+py-pitop-sdk (0.13.0) buster; urgency=medium
+
+  * Add PiTop and AlexRobot classes
+  * Add line follower example
+  * Refactor OLED and Canvas classes
+
+ -- Jorge Capona <jorge@pi-top.com>  Sat, 23 Jan 2021 19:06:04 -0300
+
 py-pitop-sdk (0.12.1) buster; urgency=medium
 
   * Fix broken reference to OLED's internal canvas
