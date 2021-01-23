@@ -38,7 +38,7 @@ def calculate_blue_limits():
     cv_val_upper = int(val_upper * 255)
     lower_blue = array([cv_hue_lower, cv_sat_lower, cv_val_lower])
     upper_blue = array([cv_hue_upper, cv_sat_upper, cv_val_upper])
-    return (lower_blue, upper_blue)
+    return lower_blue, upper_blue
 
 
 def find_line(frame):
@@ -59,7 +59,7 @@ def find_line(frame):
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
-    return (centroid, opencv_to_pil(robot_view_img))
+    return centroid, opencv_to_pil(robot_view_img)
 
 
 def get_control_angle(centroid, frame):
