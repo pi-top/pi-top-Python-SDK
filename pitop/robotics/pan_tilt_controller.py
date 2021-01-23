@@ -10,18 +10,3 @@ class PanTiltController:
         self.__port_manager = PortManager()
         self.__port_manager.register_component_instance(self._pan_servo, pan_servo_port)
         self.__port_manager.register_component_instance(self._tilt_servo, tilt_servo_port)
-
-    def tilt_speed(self, speed):
-        pass
-
-    def pan_speed(self, speed):
-        pass
-
-    def tilt_angle(self, angle):
-        pass
-
-    def pan_angle(self, angle):
-        pass
-
-
-
