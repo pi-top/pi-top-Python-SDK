@@ -10,11 +10,18 @@ from .drive_controller import DriveController
 from .pan_tilt_controller import PanTiltController
 
 import configparser
-from os.path import exists
+from os import mkdir
+from os.path import (
+    exists,
+    isdir,
+    join,
+)
+from pathlib import Path
 
 
 class AlexRobot(PiTop):
-    CONF_FILE = "/etc/pi-top/sdk/alex.conf"
+    CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
+    CALIBRATION_FILE_NAME = "alex.conf"
 
     def __init__(self,
                  motor_left_port="M3",
@@ -41,6 +48,8 @@ class AlexRobot(PiTop):
         self.pan_servo = self.port_manager.get_component(servo_pan_port)
         self.tilt_servo = self.port_manager.get_component(servo_tilt_port)
 
+        self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
+
     def forward(self, speed_factor, hold=False):
         self._drive_controller.forward(speed_factor, hold)
 
@@ -59,11 +68,8 @@ class AlexRobot(PiTop):
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
 
-    def store_servo_zero_points(self):
-        pass
-
     def calibrate(self, save=True, reset=False):
-        if not reset and exists(self.CONF_FILE):
+        if not reset and exists(self.__calibration_file_path):
             return self.__load_calibration()
 
         # PanTilt servo calibration
@@ -87,7 +93,7 @@ class AlexRobot(PiTop):
                 user_zero_setting = int(user_zero_setting)
                 if user_zero_setting < int(servo_obj.angle_range[0]) or user_zero_setting > int(servo_obj.angle_range[1]):
                     print(f"Invalid angle value {user_zero_setting}. "
-                          " Please enter a value in the range {servo_obj.angle_range}")
+                          f" Please enter a value in the range {servo_obj.angle_range}")
                     continue
             except ValueError:
                 print("Please, enter a valid value")
@@ -105,7 +111,7 @@ class AlexRobot(PiTop):
 
     def __load_calibration(self):
         config = configparser.ConfigParser()
-        config.read(self.CONF_FILE)
+        config.read(self.__calibration_file_path)
 
         if 'PAN_TILT' in config.sections():
             section_config = config['PAN_TILT']
@@ -118,11 +124,21 @@ class AlexRobot(PiTop):
                 self.tilt_servo.zero_point = int(section_config.get('tilt_zero_point'))
 
     def __save_calibration(self, section, values_dict):
+        def create_config_file():
+            conf_file_dir = join(str(Path.home()), self.CALIBRATION_FILE_DIR)
+            if not isdir(conf_file_dir):
+                mkdir(conf_file_dir)
+            if not exists(self.__calibration_file_path):
+                Path.touch(self.__calibration_file_path)
+
+        if not exists(self.__calibration_file_path):
+            create_config_file()
+
         config = configparser.ConfigParser()
-        config.read(self.CONF_FILE)
+        config.read(self.__calibration_file_path)
         if section not in config:
             config[section] = {}
 
         config[section].update({k: str(v) for k, v in values_dict.items()})
-        with open(self.CONF_FILE, 'w') as configfile:
+        with open(self.__calibration_file_path, 'w') as configfile:
             config.write(configfile)
