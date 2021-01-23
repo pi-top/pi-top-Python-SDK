@@ -26,8 +26,8 @@ class AlexRobot(PiTop):
 
         self.camera = self.port_manager.register_component(Camera, camera_id)
         self.ultrasonic_sensor = self.port_manager.register_component(UltrasonicSensor, ultrasonic_sensor_port)
-        self.servo_left = self.port_manager.register_component(ServoMotor, servo_tilt_port)
-        self.servo_right = self.port_manager.register_component(ServoMotor, servo_pan_port)
+        self.servo_tilt = self.port_manager.register_component(ServoMotor, servo_tilt_port)
+        self.servo_pan = self.port_manager.register_component(ServoMotor, servo_pan_port)
 
         self._drive_controller = DriveController(motor_left_port, motor_right_port)
         self.motor_left = self.port_manager.get_component(motor_left_port)
