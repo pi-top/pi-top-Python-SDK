@@ -181,7 +181,7 @@ class OLED:
         currently rendering information to the screen) and clears the screen.
         """
         self.clear()
-        self.refresh(force)
+        self.refresh()
 
         self.wake()
 
