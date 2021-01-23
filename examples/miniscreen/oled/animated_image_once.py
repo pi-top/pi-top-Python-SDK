@@ -8,4 +8,4 @@ oled.set_max_fps(10)
 rocket = Image.open("/usr/share/pt-project-files/images/rocket.gif")
 
 for frame in ImageSequence.Iterator(rocket):
-    oled.draw_image(frame)
+    oled.display_image(frame)

@@ -312,12 +312,12 @@ spi
 
 
 
-pi-top oled draw
+pi-top oled display
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
-    pi-top oled draw [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
+    pi-top oled display [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
 
 Where:
 
@@ -338,7 +338,7 @@ Example:
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pi-top oled draw "hey!" -t 5
+    pi@pi-top:~ $ pi-top oled display "hey!" -t 5
 
 
 pi-top oled spi

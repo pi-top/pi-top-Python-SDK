@@ -26,8 +26,12 @@ class OledDeviceController:
     SPI_BUS_SPEED_HZ = 8000000
     SPI_TRANSFER_SIZE = 4096
 
-    def __init__(self, device_reset_func, exclusive_mode):
-        self.__device_reset_func = device_reset_func
+    # TODO: drop 'redraw last image' logic at v1.0.0
+    #
+    # this is only necessary to support users with SPI0 on device
+    # with older SDK version that only supported SPI1
+    def __init__(self, redraw_last_image_func, exclusive_mode):
+        self.__redraw_last_image_func = redraw_last_image_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
         self.__exclusive_mode = exclusive_mode
@@ -42,7 +46,7 @@ class OledDeviceController:
         def on_spi_bus_changed(parameters):
             self.__spi_bus = int(parameters[0])
             self.reset_device()
-            self.__device_reset_func(reset_controller=False)
+            self.__redraw_last_image_func()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise({
