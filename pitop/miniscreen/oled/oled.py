@@ -37,7 +37,7 @@ class OLED:
 
     # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
     def __init__(self, _exclusive_mode=True):
-        self.__controller = OledDeviceController(self.reset, _exclusive_mode)
+        self.__controller = OledDeviceController(self._redraw_last_image, _exclusive_mode)
 
         self.image = Image.new(
             self.device.mode,
