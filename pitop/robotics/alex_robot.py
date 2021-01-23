@@ -142,3 +142,6 @@ class AlexRobot(PiTop):
         config[section].update({k: str(v) for k, v in values_dict.items()})
         with open(self.__calibration_file_path, 'w') as configfile:
             config.write(configfile)
+
+    def rotate(self, angle, angular_speed=2):
+        self._drive_controller.rotate(angle, angular_speed)

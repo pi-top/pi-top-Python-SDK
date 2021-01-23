@@ -93,6 +93,15 @@ class DriveController:
         angular_speed = self.__target_lock_pid_controller.control_state_update(angle)
         self.__robot_move(self._linear_speed_x, angular_speed)
 
+    def rotate(self, angle, angular_speed):
+        angular_speed = angular_speed * angle / abs(angle)
+        rpm_left, rpm_right = self.__calculate_motor_rpms(0, angular_speed, turn_radius=0)
+        rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
+        self._left_motor.set_target_rpm(target_rpm=rpm_left,
+                                        total_rotations=rotations*rpm_left/abs(rpm_left))
+        self._right_motor.set_target_rpm(target_rpm=rpm_right,
+                                         total_rotations=rotations*rpm_right/abs(rpm_right))
+
     def stop(self):
         self._linear_speed_x = 0
         self.__robot_move(0, 0)
