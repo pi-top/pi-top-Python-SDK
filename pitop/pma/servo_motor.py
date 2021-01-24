@@ -39,7 +39,9 @@ class ServoMotor:
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self.__zero_point = zero_point
-        # TODO: removing this cleanup until bug in current_speed from firmware is resolved
+        # TODO: re-add cleanup when firmware 'current_speed' bug is resolved
+        # This bug is causing cleanup to be called every time, even if servo is not moving
+        #
         # atexit.register(self.__cleanup)
 
     def __cleanup(self):
