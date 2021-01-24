@@ -78,7 +78,7 @@ class AlexRobot(PiTop):
         self._drive_controller.target_lock_drive_angle(angle)
 
     def calibrate(self, save=True, reset=False):
-        if not reset:
+        if not reset and exists(self.__calibration_file_path):
             return self.__load_calibration()
 
         # PanTilt servo calibration
