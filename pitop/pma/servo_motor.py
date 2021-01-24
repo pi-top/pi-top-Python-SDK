@@ -1,6 +1,8 @@
-from pitopcommon.logger import PTLogger
-# import atexit
 from .servo_controller import ServoController, ServoHardwareSpecs
+
+from pitopcommon.logger import PTLogger
+
+# import atexit
 from dataclasses import dataclass
 
 
