@@ -190,9 +190,10 @@ class Camera:
                   "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
 
         args = locals()
+        args.update({'format': self.format})
         callback_signature = signature(callback_on_frame)
-        if len(callback_signature.parameters) > 1:
-            raise ValueError("Invalid callback signature: it should receive at most one argument.")
+        if len(callback_signature.parameters) == 0:
+            raise ValueError("Invalid callback signature: it should receive at least one argument.")
         self.__frame_handler.register_action(CaptureActions.HANDLE_FRAME, args)
 
     def stop_handling_frames(self):
