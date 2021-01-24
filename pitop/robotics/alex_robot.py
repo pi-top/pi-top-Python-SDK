@@ -18,6 +18,8 @@ from os.path import (
 )
 from pathlib import Path
 
+from math import radians
+
 
 class AlexRobot(PiTop):
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
@@ -63,6 +65,13 @@ class AlexRobot(PiTop):
 
     def right(self, speed_factor, turn_radius=0):
         self._drive_controller.right(speed_factor, turn_radius)
+
+    def rotate(self, angle, time_to_take):
+        angle_radians = radians(angle)
+        angular_speed = angle_radians / time_to_take
+        self._drive_controller.rotate(angle, angular_speed)
+        # TODO: shall we add a sleep here to make it blocking?
+        #  Ideally we'd have it return properly when motors have finished turning
 
     def stop(self):
         self._drive_controller.stop()
