@@ -42,6 +42,7 @@ def calculate_blue_limits():
 
 
 def find_line(frame, image_format="PIL", scale_factor=0.5):
+    cv2 = import_opencv()
     cv_frame = pil_to_opencv(frame)
 
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
@@ -51,17 +52,20 @@ def find_line(frame, image_format="PIL", scale_factor=0.5):
 
     centroid = None
     scaled_image_centroid = None
+    rectangle_dimensions = None
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
         centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
+        bounding_rectangle = cv2.boundingRect(line_contour)
+        rectangle_dimensions = bounding_rectangle[2:5]
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
     if image_format.lower() != 'opencv':
         robot_view_img = opencv_to_pil(robot_view_img)
-
-    return centroid, robot_view_img
+        
+    return centroid, robot_view_img, rectangle_dimensions
 
 
 def get_control_angle(centroid, frame):
