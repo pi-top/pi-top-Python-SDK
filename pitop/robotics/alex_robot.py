@@ -50,8 +50,6 @@ class AlexRobot(PiTop):
 
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
 
-        self.__load_calibration()
-
     def forward(self, speed_factor, hold=False):
         self._drive_controller.forward(speed_factor, hold)
 
@@ -80,7 +78,10 @@ class AlexRobot(PiTop):
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
 
-    def calibrate(self, save=True):
+    def calibrate(self, save=True, reset=False):
+        if not reset:
+            return self.__load_calibration()
+
         # PanTilt servo calibration
         self.pan_servo.zero_point = 0
         self.tilt_servo.zero_point = 0
