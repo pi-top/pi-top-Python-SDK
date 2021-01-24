@@ -41,8 +41,7 @@ def calculate_blue_limits():
     return lower_blue, upper_blue
 
 
-def find_line(frame, image_format="PIL"):
-    scale_factor = 0.5
+def find_line(frame, image_format="PIL", scale_factor=0.5):
     cv_frame = pil_to_opencv(frame)
 
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
@@ -55,7 +54,7 @@ def find_line(frame, image_format="PIL"):
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
-        centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
+        centroid = centroid_reposition(scaled_image_centroid, scale_factor, cv_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
