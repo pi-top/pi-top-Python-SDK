@@ -1,10 +1,10 @@
+from pitop.core import ImageFunctions
 from .core import (
     Canvas,
     FPS_Regulator,
     OledDeviceController,
 )
 
-from pitopcommon.formatting import is_url
 
 from atexit import register
 from os.path import isfile
@@ -24,7 +24,6 @@ from pyinotify import (
 )
 from threading import Thread
 from time import sleep
-from urllib.request import urlopen
 
 
 class OLED:
@@ -200,7 +199,7 @@ class OLED:
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
         """
-        self.display_image(self.__get_pil_image_from_path(file_path_or_url), xy)
+        self.display_image(ImageFunctions.get_pil_image_from_path(file_path_or_url), xy)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
@@ -324,7 +323,7 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
-        image = self.__get_pil_image_from_path(file_path_or_url)
+        image = ImageFunctions.get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
 
     def play_animated_image(self, image, background=False, loop=False):
@@ -487,19 +486,6 @@ class OLED:
             if self.__kill_thread or not loop:
                 self.reset()
                 break
-
-    def __get_pil_image_from_path(self, file_path_or_url):
-        image = Image.open(
-            urlopen(file_path_or_url) if is_url(file_path_or_url) else file_path_or_url
-        )
-
-        # Verify on deep copy to avoid needing to close and
-        # re-open after verifying...
-        test_image = image.copy()
-        # Raise exception if there's an issue with the image
-        test_image.verify()
-
-        return image
 
     @property
     def _when_user_starts_using_oled(self):
