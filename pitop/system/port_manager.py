@@ -11,6 +11,9 @@ class PortManager(metaclass=Singleton):
         return self.__pma_port_lookup.get(port)
 
     def register_pma_component(self, component_instance):
+        if not hasattr(component_instance, "_pma_port"):
+            raise Exception(f"Component {component_instance} does not appear to be a PMA component")
+
         if self.get_component_on_pma_port(component_instance._pma_port):
             raise Exception(f"Port {component_instance._pma_port} is already in use")
 
