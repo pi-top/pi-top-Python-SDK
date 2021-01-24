@@ -1,3 +1,9 @@
+py-pitop-sdk (0.13.3) buster; urgency=medium
+
+  * Convert image to array before checking dimensional size for RGB conversion
+
+ -- Mike Roberts <mike@pi-top.com>  Sun, 24 Jan 2021 23:02:20 +0000
+
 py-pitop-sdk (0.13.2) buster; urgency=medium
 
   * Use 'ImageFunctions' to handle all image conversion

@@ -26,13 +26,13 @@ def pil_to_opencv(image: Image):
     :return:
         A numpy array representing the image in BGR format, as used by default in OpenCV
     """
-    image_arr = array(image)
+    image = array(image)
 
-    if __image_has_3_channels(image_arr):
+    if __image_has_3_channels(image):
         # Array has 3 channel, do nothing
-        image = __image_rgb_bgr_convert(image_arr)
+        image = __image_rgb_bgr_convert(image)
     else:
-        image = image_arr
+        image = image
 
     return image
 
@@ -47,7 +47,8 @@ def opencv_to_pil(image: array):
     :return:
         A Pillow Image in RGB format
     """
-    if len(image.shape) == 3:
+    image = array(image)
+    if __image_has_3_channels(image):
         image = Image.fromarray(__image_rgb_bgr_convert(image))
     else:
         # Not 3 channel, do nothing
