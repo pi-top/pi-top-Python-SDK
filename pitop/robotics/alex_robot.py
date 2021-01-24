@@ -69,7 +69,7 @@ class AlexRobot(PiTop):
         self._drive_controller.target_lock_drive_angle(angle)
 
     def calibrate(self, save=True, reset=False):
-        if not reset and exists(self.__calibration_file_path):
+        if not reset:
             return self.__load_calibration()
 
         # PanTilt servo calibration
@@ -110,18 +110,19 @@ class AlexRobot(PiTop):
                 return None
 
     def __load_calibration(self):
-        config = configparser.ConfigParser()
-        config.read(self.__calibration_file_path)
+        if exists(self.__calibration_file_path):
+            config = configparser.ConfigParser()
+            config.read(self.__calibration_file_path)
 
-        if 'PAN_TILT' in config.sections():
-            section_config = config['PAN_TILT']
-            if section_config.get('pan_zero_point'):
-                print(f"PanTilt.pan_servo.zero = {int(section_config.get('pan_zero_point'))}")
-                self.pan_servo.zero_point = int(section_config.get('pan_zero_point'))
+            if 'PAN_TILT' in config.sections():
+                section_config = config['PAN_TILT']
+                if section_config.get('pan_zero_point'):
+                    print(f"PanTilt.pan_servo.zero = {int(section_config.get('pan_zero_point'))}")
+                    self.pan_servo.zero_point = int(section_config.get('pan_zero_point'))
 
-            if section_config.get('tilt_zero_point'):
-                print(f"PanTilt.tilt_servo.zero = {int(section_config.get('tilt_zero_point'))}")
-                self.tilt_servo.zero_point = int(section_config.get('tilt_zero_point'))
+                if section_config.get('tilt_zero_point'):
+                    print(f"PanTilt.tilt_servo.zero = {int(section_config.get('tilt_zero_point'))}")
+                    self.tilt_servo.zero_point = int(section_config.get('tilt_zero_point'))
 
     def __save_calibration(self, section, values_dict):
         def create_config_file():
