@@ -1,12 +1,15 @@
-from threading import Thread, Event
-from inspect import signature
-
+from .core import UsbCamera
+from .core import FileSystemCamera
 from .core import (
     FrameHandler,
     CameraTypes)
 from .core.capture_actions import CaptureActions
-from pitop.pma.common import type_check
 from .pil_opencv_conversion import pil_to_opencv
+
+from pitop.pma.common import type_check
+
+from threading import Thread, Event
+from inspect import signature
 
 
 class Camera:
@@ -28,16 +31,21 @@ class Camera:
                  format='PIL'
                  ):
 
-        if camera_type == CameraTypes.USB_CAMERA:
-            from .core import UsbCamera
-            self.__camera = UsbCamera(index, resolution)
-        elif camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
-            from .core import FileSystemCamera
-            self.__camera = FileSystemCamera(path_to_images)
-
+        self.format = format
         # Frame callback
         self.on_frame = None
-        self._on_frame_image_format = format
+
+        # Internal
+        self._index = index
+        self._camera_type = camera_type
+        self._path_to_images = path_to_images
+
+        if self._camera_type == CameraTypes.USB_CAMERA:
+            self.__camera = UsbCamera(self._index, self._resolution)
+
+        elif self._camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
+            self.__camera = FileSystemCamera(self._path_to_images)
+
         self.__continue_processing = True
         self.__frame_handler = FrameHandler()
         self.__new_frame_event = Event()
@@ -156,7 +164,7 @@ class Camera:
         self.__frame_handler.remove_action(CaptureActions.DETECT_MOTION)
 
     @type_check
-    def start_handling_frames(self, callback_on_frame, frame_interval=1, format='PIL'):
+    def start_handling_frames(self, callback_on_frame, frame_interval=1, format=None):
         """
         Begin calling the passed callback with each new frame, allowing for custom processing.
 
@@ -174,10 +182,11 @@ class Camera:
 
         :type format: string
         :param format:
-            The image format to provide to the callback. Case-insensitive.
-            By default, with format='PIL', the image will be provided as a raw RGB-ordered :class:`PIL.Image.Image` object.
-            When ``format='OpenCV'`` the image will be provided as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
+            DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
         """
+        if format is not None:
+            print("'format' is no longer supported in this function. "
+                  "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
 
         args = locals()
         callback_signature = signature(callback_on_frame)
@@ -192,34 +201,28 @@ class Camera:
 
         self.__frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
 
-    @property
-    def on_frame_image_format(self):
-        return self._on_frame_image_format
+    def __get_processed_current_frame(self):
+        image = self.__frame_handler.frame
 
-    @on_frame_image_format.setter
-    def on_frame_image_format(self, format):
-        self._on_frame_image_format = format
+        if self.format.lower() == "opencv":
+            image = pil_to_opencv(image)
+
+        return image
 
     def __process_camera_output(self):
         while self.__camera and self.__continue_processing is True:
             self.__frame_handler.frame = self.__camera.get_frame()
             self.__new_frame_event.set()
-            try:
-                if callable(self.on_frame):
-                    if self._on_frame_image_format.lower() == 'opencv':
-                        frame = pil_to_opencv(self.__frame_handler.frame)
-                    else:
-                        frame = self.__frame_handler.frame
-                    self.on_frame(frame)
-            except Exception as e:
-                print(f"Error while executing 'on_frame' event: {e}")
+
+            if callable(self.on_frame):
+                self.on_frame(self.__get_processed_current_frame())
 
             try:
                 self.__frame_handler.process()
             except Exception as e:
                 print(f"Error in camera frame handler: {e}")
 
-    def current_frame(self, format='PIL'):
+    def current_frame(self, format=None):
         """
         Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
 
@@ -227,29 +230,27 @@ class Camera:
 
         :type format: string
         :param format:
-            The image format to return. Case-insensitive.
-            By default, with format='PIL', the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
-            When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
+            DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
         """
-        if format.lower() == 'opencv':
-            return pil_to_opencv(self.__frame_handler.frame)
+        if format is not None:
+            print("'format' is no longer supported in this function. "
+                  "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
 
-        return self.__frame_handler.frame
+        return self.__get_processed_current_frame()
 
-    def get_frame(self, format='PIL'):
+    def get_frame(self, format=None):
         """
         Returns the next frame captured by the camera. This method blocks until a new frame is available.
 
         :type format: string
         :param format:
-            The image format to return. Case-insensitive.
-            By default, with format='PIL', the image will be returned as a raw RGB-ordered :class:`PIL.Image.Image` object.
-            When ``format='Opencv'`` the image will be returned as a raw BGR-ordered :class:`numpy.ndarray` as used by OpenCV.
+            DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
         """
+        if format is not None:
+            print("'format' is no longer supported in this function. "
+                  "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
+
         self.__new_frame_event.wait()
         self.__new_frame_event.clear()
 
-        if format.lower() == 'opencv':
-            return pil_to_opencv(self.__frame_handler.frame)
-
-        return self.__frame_handler.frame
+        return self.__get_processed_current_frame()

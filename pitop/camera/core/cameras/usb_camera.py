@@ -22,8 +22,11 @@ class UsbCamera:
             self.__camera.close()
 
     def get_frame(self):
-        return Image.frombytes('RGB',
-                               (self.__camera.width, self.__camera.height),
-                               self.__camera.get_frame(),
-                               'raw',
-                               'RGB')
+        # Always PIL format
+        return Image.frombytes(
+            'RGB',
+            (self.__camera.width, self.__camera.height),
+            self.__camera.get_frame(),
+            'raw',
+            'RGB'
+        )
