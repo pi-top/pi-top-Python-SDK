@@ -29,7 +29,7 @@ class DriveController:
         self._wheel_separation = 0.1725
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
-        self._linear_speed_x = 0
+        self._linear_speed_x_hold = 0
 
         self._left_motor = EncoderMotor(port_name=left_motor_port,
                                         forward_direction=ForwardDirection.CLOCKWISE)
@@ -75,23 +75,23 @@ class DriveController:
     def forward(self, speed_factor, hold):
         linear_speed_x = self._max_motor_speed * speed_factor
         if hold:
-            self._linear_speed_x = linear_speed_x
+            self._linear_speed_x_hold = linear_speed_x
         else:
-            self._linear_speed_x = 0
+            self._linear_speed_x_hold = 0
         self.__robot_move(linear_speed_x, 0)
 
     def backward(self, speed_factor, hold):
         self.forward(-speed_factor, hold)
 
     def left(self, speed_factor, turn_radius):
-        self.__robot_move(self._linear_speed_x, self._max_robot_angular_speed * speed_factor, turn_radius)
+        self.__robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
 
     def right(self, speed_factor, turn_radius):
         self.left(-speed_factor, turn_radius)
 
     def target_lock_drive_angle(self, angle):
         angular_speed = self.__target_lock_pid_controller.control_state_update(angle)
-        self.__robot_move(self._linear_speed_x, angular_speed)
+        self.__robot_move(self._linear_speed_x_hold, angular_speed)
 
     def rotate(self, angle, angular_speed):
         angular_speed = angular_speed * angle / abs(angle)
@@ -103,11 +103,11 @@ class DriveController:
                                          total_rotations=rotations*rpm_right/abs(rpm_right))
 
     def stop(self):
-        self._linear_speed_x = 0
+        self._linear_speed_x_hold = 0
         self.__robot_move(0, 0)
 
     def stop_rotation(self):
-        self.__robot_move(self._linear_speed_x, 0)
+        self.__robot_move(self._linear_speed_x_hold, 0)
 
     def _speed_to_rpm(self, speed):
         rpm = round(60.0 * speed / self._wheel_circumference, 1)
