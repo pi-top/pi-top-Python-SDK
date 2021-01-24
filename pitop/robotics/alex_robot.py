@@ -81,6 +81,8 @@ class AlexRobot(PiTop):
 
     def calibrate(self, save=True):
         # PanTilt servo calibration
+        self.pan_servo.zero_point = 0
+        self.tilt_servo.zero_point = 0
         servo_lookup = {
             'pan_zero_point': self.pan_servo,
             'tilt_zero_point': self.tilt_servo,
@@ -89,6 +91,8 @@ class AlexRobot(PiTop):
             value = self.__calibrate_servo(servo_name, servo_obj)
             if save and value is not None:
                 self.__save_calibration(section='PAN_TILT', values_dict={servo_name: value})
+
+        print("Calibration finished.")
 
     def __calibrate_servo(self, servo_name, servo_obj):
         print(f"Starting {servo_name} servo motor calibration.")
