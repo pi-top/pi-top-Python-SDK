@@ -37,7 +37,11 @@ class ServoMotor:
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self.__zero_point = zero_point
-        atexit.register(self.__controller.cleanup)
+        atexit.register(self.__cleanup)
+
+    def __cleanup(self):
+        if self.__has_set_angle:
+            self.__controller.cleanup()
 
     @property
     def zero_point(self):
