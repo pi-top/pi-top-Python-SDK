@@ -17,10 +17,18 @@ class UltrasonicSensor(SmoothedInputDevice):
     ECHO_LOCK = Lock()
 
     def __init__(
-            self, port_name, queue_len=9, max_distance=3,
-            threshold_distance=0.3, partial=False):
+        self,
+        port_name,
+        queue_len=9,
+        max_distance=3,
+        threshold_distance=0.3,
+        partial=False
+    ):
+
+        self._pma_port = port_name
+
         super(UltrasonicSensor, self).__init__(
-            get_pin_for_port(port_name),
+            get_pin_for_port(self._pma_port),
             pull_up=False,
             queue_len=queue_len,
             sample_wait=0.06,
@@ -28,6 +36,7 @@ class UltrasonicSensor(SmoothedInputDevice):
             ignore=frozenset({None}),
             pin_factory=NativeFactory(),
         )
+
         try:
             if max_distance <= 0:
                 raise ValueError('invalid maximum distance (must be positive)')

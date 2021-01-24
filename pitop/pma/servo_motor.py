@@ -32,8 +32,10 @@ class ServoMotor:
     __HARDWARE_MAX_ANGLE = ServoHardwareSpecs.ANGLE_RANGE / 2
     __DEFAULT_SPEED = 50.0
 
-    def __init__(self, port, zero_point=0):
-        self.__controller = ServoController(port)
+    def __init__(self, port_name, zero_point=0):
+        self._pma_port = port_name
+
+        self.__controller = ServoController(self._pma_port)
         self.__target_state = ServoMotorState()
         self.__min_angle = self.__HARDWARE_MIN_ANGLE
         self.__max_angle = self.__HARDWARE_MAX_ANGLE

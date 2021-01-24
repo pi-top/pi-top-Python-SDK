@@ -22,7 +22,7 @@ class Camera:
 
     def __init__(self,
                  index=0,
-                 resolution=(0, 0),
+                 resolution=None,
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
                  format='PIL'

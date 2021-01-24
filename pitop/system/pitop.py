@@ -28,14 +28,14 @@ class PiTop(metaclass=Singleton):
         self._port_manager = PortManager(state={}) if is_pi_top_four else None
         self._plate = connected_plate() if is_pi_top_four else None
 
-    def register_component_instance(self, component_instance, port):
+    def register_pma_component(self, component_instance):
         if self._port_manager:
-            self._port_manager.register_component_instance(component_instance, port)
+            self._port_manager.register_pma_component(component_instance)
 
-    def drop_component(self, port):
+    def drop_pma_component(self, port):
         if self._port_manager:
-            self._port_manager.drop_component(port)
+            self._port_manager.drop_pma_component(port)
 
-    def get_component(self, port):
+    def get_component_on_pma_port(self, port):
         if self._port_manager:
-            return self._port_manager.get_component(port)
+            return self._port_manager.get_component_on_pma_port(port)

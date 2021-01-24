@@ -41,8 +41,8 @@ class DriveController:
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
 
         self.__port_manager = PortManager()
-        self.__port_manager.register_component_instance(self._left_motor, left_motor_port)
-        self.__port_manager.register_component_instance(self._right_motor, right_motor_port)
+        self.__port_manager.register_pma_component(self._left_motor)
+        self.__port_manager.register_pma_component(self._right_motor)
 
         self.__target_lock_pid_controller = PIDController(lower_limit=-self._max_robot_angular_speed,
                                                           upper_limit=self._max_robot_angular_speed,

@@ -1,6 +1,6 @@
 from pitop import PiTop
 from pitop.camera import Camera
-# from pitop.pma import UltrasonicSensor
+from pitop.pma import UltrasonicSensor
 
 from pitopcommon.common_ids import FirmwareDeviceID
 
@@ -37,16 +37,16 @@ class AlexRobot(PiTop):
             raise Exception("Expansion Plate not connected")
 
         self.camera = Camera(camera_device_index, camera_resolution)
-        # self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
-        # self.register_component_instance(self.ultrasonic_sensor, ultrasonic_sensor_port)
+        self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
+        self.register_pma_component(self.ultrasonic_sensor)
 
         self._drive_controller = DriveController(motor_left_port, motor_right_port)
-        self.left_motor = self.get_component(motor_left_port)
-        self.right_motor = self.get_component(motor_right_port)
+        self.left_motor = self.get_component_on_pma_port(motor_left_port)
+        self.right_motor = self.get_component_on_pma_port(motor_right_port)
 
         self._pan_tilt_controller = PanTiltController(servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
-        self.pan_servo = self.get_component(servo_pan_port)
-        self.tilt_servo = self.get_component(servo_tilt_port)
+        self.pan_servo = self.get_component_on_pma_port(servo_pan_port)
+        self.tilt_servo = self.get_component_on_pma_port(servo_tilt_port)
 
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
 

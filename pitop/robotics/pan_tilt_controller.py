@@ -8,5 +8,5 @@ class PanTiltController:
         self._pan_servo = ServoMotor(servo_pan_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
         self.__port_manager = PortManager()
-        self.__port_manager.register_component_instance(self._pan_servo, servo_pan_port)
-        self.__port_manager.register_component_instance(self._tilt_servo, servo_tilt_port)
+        self.__port_manager.register_pma_component(self._pan_servo)
+        self.__port_manager.register_pma_component(self._tilt_servo)

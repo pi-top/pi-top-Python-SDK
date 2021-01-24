@@ -2,22 +2,28 @@ from pitopcommon.singleton import Singleton
 
 
 class PortManager(metaclass=Singleton):
-    def __init__(self, state={}):
+    def __init__(self, state=dict()):
         # TODO: if state not empty, reproduce it
-        self.port_lookup = state
+        self.__pma_port_lookup = state
 
-    def register_component_instance(self, component_instance, port):
-        if self.port_lookup.get(port):
-            raise Exception("Port is already in use")
-        self.port_lookup[port] = component_instance
+    def get_component_on_pma_port(self, port):
+        # Return None if not available
+        return self.__pma_port_lookup.get(port)
 
-    def drop_component(self, port):
-        component = self.port_lookup.get(port)
-        if component is not None:
-            if hasattr(component, "close"):
-                component.close()
-            component = None
-            self.port_lookup[port] = None
+    def register_pma_component(self, component_instance):
+        if self.get_component_on_pma_port(component_instance._pma_port):
+            raise Exception(f"Port {component_instance._pma_port} is already in use")
 
-    def get_component(self, port):
-        return self.port_lookup.get(port)
+        self.__pma_port_lookup[component_instance._pma_port] = component_instance
+
+    def drop_pma_component(self, port):
+        component_instance = self.get_component_on_pma_port(port)
+        if component_instance is None:
+            print(f"No component_instance found on port {port} - cannot drop from PortManager")
+            return
+
+        if hasattr(component_instance, "close"):
+            component_instance.close()
+
+        component_instance = None
+        self.__pma_port_lookup[component_instance._pma_port] = None
