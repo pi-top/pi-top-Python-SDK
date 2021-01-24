@@ -41,7 +41,7 @@ def calculate_blue_limits():
     return lower_blue, upper_blue
 
 
-def find_line(frame):
+def find_line(frame, image_format="PIL"):
     scale_factor = 0.5
     cv_frame = pil_to_opencv(frame)
 
@@ -59,7 +59,10 @@ def find_line(frame):
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
-    return centroid, opencv_to_pil(robot_view_img)
+    if image_format.lower() != 'opencv':
+        robot_view_img = opencv_to_pil(robot_view_img)
+
+    return centroid, robot_view_img
 
 
 def get_control_angle(centroid, frame):
