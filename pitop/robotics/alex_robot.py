@@ -136,9 +136,9 @@ class AlexRobot(PiTop):
         def create_config_file():
             conf_file_dir = join(str(Path.home()), self.CALIBRATION_FILE_DIR)
             if not isdir(conf_file_dir):
-                mkdir(conf_file_dir)
+                Path(conf_file_dir).mkdir(parents=True, exist_ok=True)
             if not exists(self.__calibration_file_path):
-                Path.touch(self.__calibration_file_path)
+                Path(self.__calibration_file_path).touch()
 
         if not exists(self.__calibration_file_path):
             create_config_file()
