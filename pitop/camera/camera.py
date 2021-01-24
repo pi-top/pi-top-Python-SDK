@@ -19,7 +19,7 @@ class Camera:
         The ID for the port to which this component is connected. Defaults to 0.
     """
 
-    def __init__(self, camera_device_id=0, camera_type=CameraTypes.USB_CAMERA, path_to_images=""):
+    def __init__(self, camera_device_id=0, camera_type=CameraTypes.USB_CAMERA, path_to_images="", format='PIL'):
 
         if camera_type == CameraTypes.USB_CAMERA:
             from .core import UsbCamera
@@ -30,7 +30,7 @@ class Camera:
 
         # Frame callback
         self.on_frame = None
-
+        self._on_frame_image_format = format
         self.__continue_processing = True
         self.__frame_handler = FrameHandler()
         self.__new_frame_event = Event()
@@ -185,13 +185,25 @@ class Camera:
 
         self.__frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
 
+    @property
+    def on_frame_image_format(self):
+        return self._on_frame_image_format
+
+    @on_frame_image_format.setter
+    def on_frame_image_format(self, format):
+        self._on_frame_image_format = format
+
     def __process_camera_output(self):
         while self.__camera and self.__continue_processing is True:
             self.__frame_handler.frame = self.__camera.get_frame()
             self.__new_frame_event.set()
             try:
                 if callable(self.on_frame):
-                    self.on_frame(self.__frame_handler.frame)
+                    if self._on_frame_image_format.lower() == 'opencv':
+                        frame = pil_to_opencv(self.__frame_handler.frame)
+                    else:
+                        frame = self.__frame_handler.frame
+                    self.on_frame(frame)
             except Exception as e:
                 print(f"Error while executing 'on_frame' event: {e}")
 
