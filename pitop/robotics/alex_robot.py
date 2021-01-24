@@ -10,7 +10,6 @@ from .drive_controller import DriveController
 from .pan_tilt_controller import PanTiltController
 
 import configparser
-from os import mkdir
 from os.path import (
     exists,
     isdir,
