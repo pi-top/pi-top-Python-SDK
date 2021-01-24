@@ -32,6 +32,7 @@ class Camera:
                  ):
 
         self.format = format
+        self._resolution = resolution
         # Frame callback
         self.on_frame = None
 
