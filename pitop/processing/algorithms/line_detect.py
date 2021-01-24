@@ -41,7 +41,7 @@ def calculate_blue_limits():
     return lower_blue, upper_blue
 
 
-def find_line(frame, image_format="PIL", scale_factor=0.5):
+def process_frame_for_line(frame, image_format="OpenCV", scale_factor=0.5):
     cv2 = import_opencv()
     cv_frame = pil_to_opencv(frame)
 
@@ -65,7 +65,18 @@ def find_line(frame, image_format="PIL", scale_factor=0.5):
     if image_format.lower() != 'opencv':
         robot_view_img = opencv_to_pil(robot_view_img)
 
-    return centroid, robot_view_img, rectangle_dimensions
+    class dotdict(dict):
+        """dot.notation access to dictionary attributes"""
+        __getattr__ = dict.get
+        __setattr__ = dict.__setitem__
+        __delattr__ = dict.__delitem__
+
+    return dotdict({
+        "line_center": centroid,
+        "robot_view": robot_view_img,
+        "rectangle_dimensions": rectangle_dimensions,
+        "angle": get_control_angle(centroid, robot_view_img),
+    })
 
 
 def get_control_angle(centroid, frame):

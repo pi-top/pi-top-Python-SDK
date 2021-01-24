@@ -1,1 +1,1 @@
-from .line_detect import find_line
+from .line_detect import process_frame_for_line
