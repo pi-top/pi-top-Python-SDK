@@ -50,6 +50,8 @@ class AlexRobot(PiTop):
 
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
 
+        self.__load_calibration()
+
     def forward(self, speed_factor, hold=False):
         self._drive_controller.forward(speed_factor, hold)
 
