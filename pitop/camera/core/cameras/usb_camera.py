@@ -1,7 +1,7 @@
 from PIL import Image
 
 from PyV4L2Camera.camera import Camera as V4L2Camera
-from PyV4L2Camera.exceptions import V4L2CameraError
+from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
 
 
 class UsbCamera:
