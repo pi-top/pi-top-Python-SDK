@@ -128,11 +128,11 @@ class AlexRobot(PiTop):
             if 'PAN_TILT' in config.sections():
                 section_config = config['PAN_TILT']
                 if section_config.get('pan_zero_point'):
-                    print(f"PanTilt.pan_servo.zero = {int(section_config.get('pan_zero_point'))}")
+                    # print(f"PanTilt.pan_servo.zero = {int(section_config.get('pan_zero_point'))}")
                     self.pan_servo.zero_point = int(section_config.get('pan_zero_point'))
 
                 if section_config.get('tilt_zero_point'):
-                    print(f"PanTilt.tilt_servo.zero = {int(section_config.get('tilt_zero_point'))}")
+                    # print(f"PanTilt.tilt_servo.zero = {int(section_config.get('tilt_zero_point'))}")
                     self.tilt_servo.zero_point = int(section_config.get('tilt_zero_point'))
 
     def __save_calibration(self, section, values_dict):
