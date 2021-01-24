@@ -38,7 +38,7 @@ class DriveController:
         self._max_motor_rpm = floor(min(self._left_motor.max_rpm, self._right_motor.max_rpm))
 
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
-        self._max_robot_angular_speed = 2 * self._max_motor_speed / self._wheel_separation
+        self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
 
         self.__port_manager = PortManager()
         self.__port_manager.register_component_instance(self._left_motor, left_motor_port)
