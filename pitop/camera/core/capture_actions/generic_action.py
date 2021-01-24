@@ -1,8 +1,9 @@
+from .capture_action_base import CaptureActionBase
+
+from pitop.core import ImageFunctions
+
 from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
-
-from pitop.camera.pil_opencv_conversion import pil_to_opencv
-from .capture_action_base import CaptureActionBase
 
 
 class GenericAction(CaptureActionBase):
@@ -29,7 +30,7 @@ class GenericAction(CaptureActionBase):
 
     def process(self, frame):
         if isinstance(self.__format, str) and self.__format.lower() == 'opencv':
-            frame = pil_to_opencv(frame)
+            frame = ImageFunctions.pil_to_opencv(frame)
 
         if self.__elapsed_frames % self.__frame_interval == 0:
             if self.callback_has_argument:
