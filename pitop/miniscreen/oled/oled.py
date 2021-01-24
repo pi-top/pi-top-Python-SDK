@@ -454,19 +454,19 @@ class OLED:
 
     def draw_image_file(self, file_path_or_url, xy=None):
         print("draw_image_file is now deprecated. Using display_image_file...")
-        self.display_image_file(file_path_or_url, xy=None)
+        self.display_image_file(file_path_or_url, xy)
 
     def draw_image(self, image, xy=None):
         print("draw_image is now deprecated. Using display_image...")
-        self.display_image(image, xy=None)
+        self.display_image(image, xy)
 
     def draw_text(self, text, xy=None, font_size=None):
         print("draw_text is now deprecated. Using display_text...")
-        self.display_text(text, xy=None, font_size=None)
+        self.display_text(text, xy, font_size)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
         print("draw_multiline_text is now deprecated. Using display_multiline_text...")
-        self.display_multiline_text(text, xy=None, font_size=None)
+        self.display_multiline_text(text, xy, font_size)
 
     ####################
     # Internal support #
