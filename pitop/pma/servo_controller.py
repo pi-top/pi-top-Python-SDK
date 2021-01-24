@@ -38,8 +38,11 @@ class ServoController:
         self.set_min_pulse_width(ServoHardwareSpecs.MIN_PULSE_WIDTH_MICRO_S)
         self.set_max_pulse_width(ServoHardwareSpecs.MAX_PULSE_WIDTH_MICRO_S)
 
-    def cleanup(self, state):
-        self.set_target_angle(state.angle, state.speed)
+    def cleanup(self, state=None):
+        self.set_target_angle(
+            state.angle if state is not None else 0,
+            state.speed if state is not None else 0
+        )
 
     @type_check
     def set_min_pulse_width(self, min_width_us: int) -> None:
