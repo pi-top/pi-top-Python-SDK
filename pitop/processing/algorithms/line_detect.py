@@ -54,7 +54,7 @@ def find_line(frame, image_format="PIL", scale_factor=0.5):
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
-        centroid = centroid_reposition(scaled_image_centroid, scale_factor, cv_frame)
+        centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
