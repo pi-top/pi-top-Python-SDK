@@ -37,11 +37,12 @@ class ServoMotor:
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self.__zero_point = zero_point
-        atexit.register(self.__cleanup)
+        # TODO: removing this cleanup until bug in current_speed from firmware is resolved
+        # atexit.register(self.__cleanup)
 
     def __cleanup(self):
-        if self.__has_set_angle:
-            self.__controller.cleanup()
+        if self.__has_set_angle and self.current_speed != 0.0:
+            self.__controller.cleanup(self.state)
 
     @property
     def zero_point(self):
@@ -93,7 +94,7 @@ class ServoMotor:
 
         angle, speed = self.__controller.get_current_angle_and_speed()
         current_state = ServoMotorState()
-        current_state.angle = angle
+        current_state.angle = angle - self.zero_point
         current_state.speed = speed
         return current_state
 
