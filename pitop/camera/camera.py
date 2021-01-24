@@ -19,11 +19,11 @@ class Camera:
         The ID for the port to which this component is connected. Defaults to 0.
     """
 
-    def __init__(self, camera_device_id=0, camera_type=CameraTypes.USB_CAMERA, path_to_images="", format='PIL'):
+    def __init__(self, camera_device_id=0, width=0, height=0, camera_type=CameraTypes.USB_CAMERA, path_to_images="", format='PIL'):
 
         if camera_type == CameraTypes.USB_CAMERA:
             from .core import UsbCamera
-            self.__camera = UsbCamera(camera_device_id)
+            self.__camera = UsbCamera(camera_device_id, width, height)
         elif camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
             from .core import FileSystemCamera
             self.__camera = FileSystemCamera(path_to_images)

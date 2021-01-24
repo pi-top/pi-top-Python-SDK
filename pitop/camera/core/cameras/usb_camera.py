@@ -5,10 +5,10 @@ from PyV4L2Camera.exceptions import CameraError
 
 
 class UsbCamera:
-    def __init__(self, camera_index: int = 0):
+    def __init__(self, camera_index: int = 0, width: int = 0, height: int = 0):
         self.camera_id = camera_index
         try:
-            self.__camera = Camera(f"/dev/video{camera_index}")
+            self.__camera = Camera(f"/dev/video{camera_index}", width, height)
         except CameraError:
             raise IOError(f"Error opening camera {camera_index}. Make sure it's correctly connected via USB.") from None
 
