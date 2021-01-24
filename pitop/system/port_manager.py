@@ -14,7 +14,8 @@ class PortManager(metaclass=Singleton):
     def drop_component(self, port):
         component = self.port_lookup.get(port)
         if component is not None:
-            # this doesn't actually release the port
+            if hasattr(component, "close"):
+                component.close()
             component = None
             self.port_lookup[port] = None
 

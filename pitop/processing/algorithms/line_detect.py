@@ -64,7 +64,7 @@ def find_line(frame, image_format="PIL", scale_factor=0.5):
 
     if image_format.lower() != 'opencv':
         robot_view_img = opencv_to_pil(robot_view_img)
-        
+
     return centroid, robot_view_img, rectangle_dimensions
 
 
