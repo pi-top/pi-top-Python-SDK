@@ -1,3 +1,9 @@
+py-pitop-sdk (0.13.1) buster; urgency=medium
+
+  * Set line detector default image format to 'PIL'
+
+ -- Jorge Capona <jorge@pi-top.com>  Sun, 24 Jan 2021 18:28:38 -0300
+
 py-pitop-sdk (0.13.0) buster; urgency=medium
 
   * Add initial 'PiTop' and 'RobotAlex' top-level objects

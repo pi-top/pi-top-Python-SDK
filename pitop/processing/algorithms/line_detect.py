@@ -38,7 +38,7 @@ def calculate_blue_limits():
     return lower_blue, upper_blue
 
 
-def process_frame_for_line(frame, image_format="OpenCV", scale_factor=0.5):
+def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     cv2 = import_opencv()
     cv_frame = ImageFunctions.pil_to_opencv(frame)
 
