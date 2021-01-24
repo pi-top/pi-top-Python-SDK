@@ -32,9 +32,13 @@ class Camera:
                  format='PIL'
                  ):
 
-        self._format = None
-        self.format = format
+        # Initialise private variables
         self._resolution = resolution
+        self._format = None
+
+        # Set format using setter property function
+        self.format = format
+
         # Frame callback
         self.on_frame = None
 
