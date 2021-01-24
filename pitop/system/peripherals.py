@@ -70,6 +70,18 @@ def upgradable_pitop_peripherals():
     return peripherals
 
 
+def connected_plate():
+    """Detects which plate from the PMA is connected to the device.
+
+    Returns:
+        FirmwareDeviceID: device ID of the connected plate. None if not detected"""
+    for plate_id in (FirmwareDeviceID.pt4_foundation_plate, FirmwareDeviceID.pt4_expansion_plate):
+        status = __get_fw_device_status(plate_id)
+        if status.get("connected") is True:
+            return plate_id
+    return None
+
+
 def usb_pitop_peripherals():
     """Returns a list with the status of USB pi-top peripherals.
 

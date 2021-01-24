@@ -1,6 +1,8 @@
-from pitopcommon.logger import PTLogger
-import atexit
 from .servo_controller import ServoController, ServoHardwareSpecs
+
+from pitopcommon.logger import PTLogger
+
+# import atexit
 from dataclasses import dataclass
 
 
@@ -30,14 +32,23 @@ class ServoMotor:
     __HARDWARE_MAX_ANGLE = ServoHardwareSpecs.ANGLE_RANGE / 2
     __DEFAULT_SPEED = 50.0
 
-    def __init__(self, port, zero_point=0):
-        self.__controller = ServoController(port)
+    def __init__(self, port_name, zero_point=0):
+        self._pma_port = port_name
+
+        self.__controller = ServoController(self._pma_port)
         self.__target_state = ServoMotorState()
         self.__min_angle = self.__HARDWARE_MIN_ANGLE
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self.__zero_point = zero_point
-        atexit.register(self.__controller.cleanup)
+        # TODO: re-add cleanup when firmware 'current_speed' bug is resolved
+        # This bug is causing cleanup to be called every time, even if servo is not moving
+        #
+        # atexit.register(self.__cleanup)
+
+    def __cleanup(self):
+        if self.__has_set_angle and self.current_speed != 0.0:
+            self.__controller.cleanup(self.state)
 
     @property
     def zero_point(self):
@@ -89,7 +100,7 @@ class ServoMotor:
 
         angle, speed = self.__controller.get_current_angle_and_speed()
         current_state = ServoMotorState()
-        current_state.angle = angle
+        current_state.angle = angle - self.zero_point
         current_state.speed = speed
         return current_state
 

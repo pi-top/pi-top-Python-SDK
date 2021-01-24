@@ -1,3 +1,13 @@
+py-pitop-sdk (0.13.0) buster; urgency=medium
+
+  * Add initial 'PiTop' and 'RobotAlex' top-level objects
+  * Support line-following with 'RobotAlex'
+  * Add ImageFunctions module in pitop.core for globally useful functions
+  * Camera now manages its format as a property. Deprecated format parameter
+  in functions
+
+ -- Jorge Capona <jorge@pi-top.com>  Sat, 23 Jan 2021 19:06:04 -0300
+
 py-pitop-sdk (0.12.1) buster; urgency=medium
 
   * Fix broken reference to OLED's internal canvas

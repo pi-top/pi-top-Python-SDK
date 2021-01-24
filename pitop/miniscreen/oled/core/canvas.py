@@ -20,6 +20,8 @@ class Canvas:
         # Used by drawing functions - they directly affect the image
         self.__draw = ImageDraw.Draw(self._image)
 
+        self.resize_resampling_filter = Image.NEAREST
+
         self.__bounding_box = (0, 0, self._image.size[0] - 1, self._image.size[1] - 1)
 
         self.__font_size = 30

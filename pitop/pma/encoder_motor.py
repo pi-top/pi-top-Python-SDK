@@ -46,10 +46,15 @@ class EncoderMotor:
     MMK_STANDARD_GEAR_RATIO = 41.8
     MAX_DC_MOTOR_RPM = 4800
 
-    def __init__(self, port_name, forward_direction, braking_type=BrakingType.COAST, wheel_diameter=0.075):
+    def __init__(self,
+                 port_name,
+                 forward_direction,
+                 braking_type=BrakingType.COAST,
+                 wheel_diameter=0.075
+                 ):
+        self._pma_port = port_name
 
-        self.__port_name = port_name
-        self.__motor_core = EncoderMotorController(self.__port_name, braking_type.value)
+        self.__motor_core = EncoderMotorController(self._pma_port, braking_type.value)
         self.__forward_direction = forward_direction
         self.__wheel_diameter = wheel_diameter
 
