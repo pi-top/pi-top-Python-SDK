@@ -4,7 +4,7 @@ from .core import (
     FrameHandler,
     CameraTypes)
 from .core.capture_actions import CaptureActions
-from .pil_opencv_conversion import pil_to_opencv
+from pitop.core import ImageFunctions
 
 from pitop.pma.common import type_check
 
@@ -224,7 +224,7 @@ class Camera:
         image = self.__frame_handler.frame
 
         if self.format.lower() == "opencv":
-            image = pil_to_opencv(image)
+            image = ImageFunctions.pil_to_opencv(image)
 
         return image
 
