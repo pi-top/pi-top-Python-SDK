@@ -8,14 +8,14 @@ from .drive_controller import DriveController
 from .pan_tilt_controller import PanTiltController
 
 import configparser
+from math import radians
 from os.path import (
     exists,
     isdir,
     join,
 )
 from pathlib import Path
-
-from math import radians
+from time import sleep
 
 
 class AlexRobot(PiTop):
@@ -66,8 +66,7 @@ class AlexRobot(PiTop):
         angle_radians = radians(angle)
         angular_speed = angle_radians / time_to_take
         self._drive_controller.rotate(angle, angular_speed)
-        # TODO: shall we add a sleep here to make it blocking?
-        #  Ideally we'd have it return properly when motors have finished turning
+        sleep(time_to_take)
 
     def stop_rotation(self):
         self._drive_controller.stop_rotation()
