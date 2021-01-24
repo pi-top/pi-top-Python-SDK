@@ -14,16 +14,23 @@ class Camera:
     Provides a variety of high-level functionality for using the PMA USB Camera, including capturing
     images and video, and processing image data from the camera
 
-    :type camera_device_id: int
-    :param camera_device_id:
-        The ID for the port to which this component is connected. Defaults to 0.
+    :type index: int
+    :param index:
+        ID of the video capturing device to open.
+        To open default camera using default backend just pass 0.
     """
 
-    def __init__(self, camera_device_id=0, width=0, height=0, camera_type=CameraTypes.USB_CAMERA, path_to_images="", format='PIL'):
+    def __init__(self,
+                 index=0,
+                 resolution=(0, 0),
+                 camera_type=CameraTypes.USB_CAMERA,
+                 path_to_images="",
+                 format='PIL'
+                 ):
 
         if camera_type == CameraTypes.USB_CAMERA:
             from .core import UsbCamera
-            self.__camera = UsbCamera(camera_device_id, width, height)
+            self.__camera = UsbCamera(index, resolution)
         elif camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
             from .core import FileSystemCamera
             self.__camera = FileSystemCamera(path_to_images)
@@ -47,11 +54,11 @@ class Camera:
 
     @classmethod
     @type_check
-    def from_usb(cls, camera_device_id: int = 0):
+    def from_usb(cls, index: int = 0):
         """
         Alternative classmethod to create an instance of a :class:`Camera` object using a :data:`UsbCamera`
         """
-        return cls(camera_type=CameraTypes.USB_CAMERA, camera_device_id=camera_device_id)
+        return cls(camera_type=CameraTypes.USB_CAMERA, index=index)
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.__camera = None

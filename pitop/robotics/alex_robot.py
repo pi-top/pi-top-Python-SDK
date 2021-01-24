@@ -23,21 +23,20 @@ class AlexRobot(PiTop):
     CALIBRATION_FILE_NAME = "alex.conf"
 
     def __init__(self,
+                 camera_device_index=0,
+                 camera_resolution=(640, 480),
+                 ultrasonic_sensor_port="D3",
                  motor_left_port="M3",
                  motor_right_port="M0",
-                 camera_id=0,
-                 ultrasonic_sensor_port="D3",
                  servo_pan_port="S0",
                  servo_tilt_port="S3",
-                 camera_width=640,
-                 camera_height=480
                  ):
 
         super().__init__()
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
 
-        self.camera = Camera(camera_id, camera_width, camera_height)
+        self.camera = Camera(camera_device_index, camera_resolution)
         # self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
         # self.port_manager.register_component_instance(self.ultrasonic_sensor, ultrasonic_sensor_port)
 
