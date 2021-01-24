@@ -72,7 +72,7 @@ class Camera:
         format_value = str(format_value).lower()
         if format_value not in self.__VALID_FORMATS:
             raise ValueError(f"Invalid format '{format_value}'. Use one of the following: {self.__VALID_FORMATS}")
-        self._format = format
+        self._format = format_value
 
     @classmethod
     @type_check
