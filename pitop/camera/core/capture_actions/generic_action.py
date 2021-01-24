@@ -28,7 +28,7 @@ class GenericAction(CaptureActionBase):
         self.stop()
 
     def process(self, frame):
-        if self.__format.lower() == 'opencv':
+        if isinstance(self.__format, str) and self.__format.lower() == 'opencv':
             frame = pil_to_opencv(frame)
 
         if self.__elapsed_frames % self.__frame_interval == 0:
