@@ -22,6 +22,7 @@ class Camera:
         ID of the video capturing device to open.
         To open default camera using default backend just pass 0.
     """
+    __VALID_FORMATS = ('opencv', 'pil')
 
     def __init__(self,
                  index=0,
@@ -31,6 +32,7 @@ class Camera:
                  format='PIL'
                  ):
 
+        self._format = None
         self.format = format
         self._resolution = resolution
         # Frame callback
@@ -60,6 +62,17 @@ class Camera:
         Alternative classmethod to create an instance of a :class:`Camera` object using a :data:`FileSystemCamera`
         """
         return cls(camera_type=CameraTypes.FILE_SYSTEM_CAMERA, path_to_images=path_to_images)
+
+    @property
+    def format(self):
+        return self._format
+
+    @format.setter
+    def format(self, format_value):
+        format_value = str(format_value).lower()
+        if format_value not in self.__VALID_FORMATS:
+            raise ValueError(f"Invalid format '{format_value}'. Use one of the following: {self.__VALID_FORMATS}")
+        self._format = format
 
     @classmethod
     @type_check
