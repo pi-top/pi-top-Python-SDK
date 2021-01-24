@@ -13,7 +13,7 @@ robot = AlexRobot()
 
 # Set up logic based on line detection
 def drive_based_on_frame(frame):
-    centroid, robot_view = find_line(frame)
+    centroid, robot_view, rectangle = find_line(frame)
     angle = get_control_angle(centroid, robot_view)
     print(f"Target angle: {angle:.2f} deg ", end="\r")
     robot.target_lock_drive_angle(angle)
