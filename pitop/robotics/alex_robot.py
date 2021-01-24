@@ -39,8 +39,8 @@ class AlexRobot(PiTop):
             raise Exception("Expansion Plate not connected")
 
         self.camera = Camera(camera_id)
-        self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
-        self.port_manager.register_component_instance(self.ultrasonic_sensor, ultrasonic_sensor_port)
+        # self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
+        # self.port_manager.register_component_instance(self.ultrasonic_sensor, ultrasonic_sensor_port)
 
         self._drive_controller = DriveController(motor_left_port, motor_right_port)
         self.left_motor = self.port_manager.get_component(motor_left_port)
@@ -79,10 +79,7 @@ class AlexRobot(PiTop):
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
 
-    def calibrate(self, save=True, reset=False):
-        if not reset:
-            return self.__load_calibration()
-
+    def calibrate(self, save=True):
         # PanTilt servo calibration
         servo_lookup = {
             'pan_zero_point': self.pan_servo,
