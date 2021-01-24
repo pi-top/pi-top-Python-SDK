@@ -1,8 +1,6 @@
 from pitop import PiTop
 from pitop.camera import Camera
-from pitop.pma import (
-    UltrasonicSensor
-)
+# from pitop.pma import UltrasonicSensor
 
 from pitopcommon.common_ids import FirmwareDeviceID
 
