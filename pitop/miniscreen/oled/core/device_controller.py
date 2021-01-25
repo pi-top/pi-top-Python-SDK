@@ -42,8 +42,6 @@ class OledDeviceController:
 
         atexit.register(self.__clean_up)
 
-        self.get_device()
-
     def __setup_subscribe_client(self):
         def on_spi_bus_changed(parameters):
             self.__spi_bus = int(parameters[0])
