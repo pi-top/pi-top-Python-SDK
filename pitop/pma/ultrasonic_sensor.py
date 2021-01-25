@@ -34,7 +34,7 @@ class UltrasonicSensor(SmoothedInputDevice):
             sample_wait=0.06,
             partial=partial,
             ignore=frozenset({None}),
-            pin_factory=NativeFactory(),
+            pin_factory=None,
         )
 
         try:
