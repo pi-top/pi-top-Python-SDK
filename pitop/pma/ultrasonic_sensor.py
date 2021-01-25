@@ -2,7 +2,6 @@ from .common import get_pin_for_port
 
 from gpiozero.exc import GPIOZeroWarning
 from gpiozero import SmoothedInputDevice
-from gpiozero.pins.native import NativeFactory
 
 import warnings
 from threading import Event, Lock
@@ -34,7 +33,6 @@ class UltrasonicSensor(SmoothedInputDevice):
             sample_wait=0.06,
             partial=partial,
             ignore=frozenset({None}),
-            pin_factory=None,
         )
 
         try:
