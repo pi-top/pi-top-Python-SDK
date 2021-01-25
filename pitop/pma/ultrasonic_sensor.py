@@ -1,28 +1,42 @@
-from __future__ import (
-    unicode_literals,
-    print_function,
-    absolute_import,
-    division,
-)
-import warnings
-from threading import Event, Lock
-from gpiozero.exc import GPIOZeroWarning
-from gpiozero import SmoothedInputDevice
-
 from .common import get_pin_for_port
 
+from gpiozero.exc import GPIOZeroWarning
+from gpiozero import SmoothedInputDevice
+from gpiozero.pins.native import NativeFactory
+
+import warnings
+from threading import Event, Lock
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
+#
+# Note: all private member variables are semi-private to follow upstream gpiozero convention
+# and to override inherited functions
+
+
 class UltrasonicSensor(SmoothedInputDevice):
     ECHO_LOCK = Lock()
 
     def __init__(
-            self, port_name, queue_len=9, max_distance=3,
-            threshold_distance=0.3, partial=False):
+        self,
+        port_name,
+        queue_len=9,
+        max_distance=3,
+        threshold_distance=0.3,
+        partial=False
+    ):
+
+        self._pma_port = port_name
+
         super(UltrasonicSensor, self).__init__(
-            get_pin_for_port(port_name), pull_up=False, queue_len=queue_len, sample_wait=0.06,
-            partial=partial, ignore=frozenset({None})
+            get_pin_for_port(self._pma_port),
+            pull_up=False,
+            queue_len=queue_len,
+            sample_wait=0.06,
+            partial=partial,
+            ignore=frozenset({None}),
+            pin_factory=NativeFactory(),
         )
+
         try:
             if max_distance <= 0:
                 raise ValueError('invalid maximum distance (must be positive)')

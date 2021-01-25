@@ -1,14 +1,14 @@
 from time import sleep
-
 try:
     from time import monotonic
 except ImportError:
     from monotonic import monotonic
 
 
-# Adapted from luma.core.spritesheet
 class FPS_Regulator(object):
     """
+    Adapted from ``luma.core.spritesheet``
+
     Implements a variable sleep mechanism to give the appearance of a consistent
     frame rate. Using a fixed-time sleep will cause animations to be jittery
     (looking like they are speeding up or slowing down, depending on what other

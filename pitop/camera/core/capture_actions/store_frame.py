@@ -10,11 +10,11 @@ class StoreFrame(CaptureActionBase):
         if output_file_name == "":
             output_directory = self._create_output_directory()
             output_file_name = self._get_output_filename(output_directory, "png")
-        self._output_file_name = output_file_name
+        self.__output_file_name = output_file_name
 
     def process(self, frame):
         if hasattr(frame, "save"):
-            frame.save(self._output_file_name)
+            frame.save(self.__output_file_name)
 
     def stop(self):
         pass

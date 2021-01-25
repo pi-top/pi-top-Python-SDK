@@ -22,7 +22,6 @@ modules["PyV4L2Camera.camera"] = Mock()
 modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
-modules["pitop.camera.pil_opencv_conversion"] = Mock()
 
 
 class CameraTestCase(TestCase):

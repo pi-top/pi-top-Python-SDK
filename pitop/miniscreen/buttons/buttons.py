@@ -1,9 +1,9 @@
-from pitopcommon.singleton import Singleton
 from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message
 )
 from pitopcommon.lock import PTLock
+from pitopcommon.singleton import Singleton
 
 import atexit
 from uuid import uuid1
@@ -19,8 +19,7 @@ class Button:
         self.when_released = None
 
 
-@Singleton
-class Buttons:
+class Buttons(metaclass=Singleton):
     """
     Instantiates a single instance for each of the four button types up, down,
     select and cancel.
@@ -30,7 +29,7 @@ class Buttons:
     SELECT = "SELECT"
     CANCEL = "CANCEL"
 
-    def __init__(self):
+    def __init__(self, _exclusive_mode=True):
         self.up = Button(self.UP)
         self.down = Button(self.DOWN)
         self.select = Button(self.SELECT)
@@ -43,7 +42,7 @@ class Buttons:
 
         self.uuid = uuid1()
 
-        self.exclusive_mode = True
+        self.exclusive_mode = _exclusive_mode
         self.lock = None
         self.__configure_lock()
 
@@ -71,10 +70,6 @@ class Buttons:
             }
         )
         self.__ptdm_subscribe_client.start_listening()
-
-    def _set_exclusive_mode(self, exclusive):
-        self.exclusive_mode = exclusive
-        self.__configure_lock()
 
     def __configure_lock(self):
         if self.exclusive_mode:
@@ -104,15 +99,12 @@ class Buttons:
             pass
 
 
-buttons = Buttons.instance()
-
-
 def UpButton():
     """
     :return: A button object for the up button.
     :rtype: Button
     """
-    return buttons.up
+    return Buttons().up
 
 
 def DownButton():
@@ -120,7 +112,7 @@ def DownButton():
     :return: A button object for the down button.
     :rtype: Button
     """
-    return buttons.down
+    return Buttons().down
 
 
 def SelectButton():
@@ -128,7 +120,7 @@ def SelectButton():
     :return: A button object for the select button.
     :rtype: Button
     """
-    return buttons.select
+    return Buttons().select
 
 
 def CancelButton():
@@ -136,4 +128,4 @@ def CancelButton():
     :return: A button object for the cancel button.
     :rtype: Button
     """
-    return buttons.cancel
+    return Buttons().cancel

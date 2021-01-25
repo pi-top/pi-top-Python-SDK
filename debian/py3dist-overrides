@@ -4,10 +4,11 @@ luma.core python3-luma-core
 luma.oled python3-luma-oled
 matplotlib python3-matplotlib
 pitopcommon python3-pitopcommon
+pyinotify python3-pyinotify
 pynput python3-pynput
 python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera
 rpi.gpio python3-rpi.gpio
 scipy python3-scipy
+simple_pid python3-simple-pid
 smbus python3-smbus
-zmq python3-zmq

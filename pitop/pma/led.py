@@ -12,7 +12,9 @@ class LED(gpiozero_LED):
     """
 
     def __init__(self, port_name):
-        super(LED, self).__init__(get_pin_for_port(port_name))
+        self._pma_port = port_name
+
+        super(LED, self).__init__(get_pin_for_port(self._pma_port))
 
     def close(self):
         """

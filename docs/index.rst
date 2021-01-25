@@ -57,7 +57,7 @@ modules available in the library:
 
     while True:
         distance = utrasonic.distance
-        oled.draw_multiline_text(str(distance))
+        oled.display_multiline_text(str(distance))
         sleep(0.1)
 
 

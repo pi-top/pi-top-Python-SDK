@@ -12,7 +12,7 @@ def get_cpu_rates():
     f = open("/proc/stat", "r")
     line = ""
     for i in range(0, 4):
-        while not "cpu"+str(i) in line:
+        while not "cpu" + str(i) in line:
             line = f.readline()
         # print(line)
         splitline = line.split()
@@ -20,7 +20,7 @@ def get_cpu_rates():
         idle = int(splitline[4])
         diff_work = work - last_work[i]
         diff_idle = idle - last_idle[i]
-        rate[i] = float(diff_work) / float(diff_idle+diff_work)
+        rate[i] = float(diff_work) / float(diff_idle + diff_work)
         last_work[i] = work
         last_idle[i] = idle
     f.close()
@@ -45,7 +45,7 @@ while True:
             r = 255
             g = 0
             b = 0
-        for y in range(0, level+1):
+        for y in range(0, level + 1):
             ledmatrix.set_pixel(2 * i, y, r, g, b)
 
     ledmatrix.show()

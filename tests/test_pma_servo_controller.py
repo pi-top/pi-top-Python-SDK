@@ -1,11 +1,5 @@
-from pitop.pma.servo_controller import ServoController
-from pitop.pma.common.servo_motor_registers import (
-    ServoMotorS0,
-    ServoMotorSetup
-)
-from unittest import TestCase, skip
-from sys import modules
 from unittest.mock import Mock
+from sys import modules
 
 modules["io"] = Mock()
 modules["gpiozero"] = Mock()
@@ -16,6 +10,13 @@ modules["pitopcommon.smbus_device"] = Mock()
 modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
+
+from pitop.pma.servo_controller import ServoController
+from pitop.pma.common.servo_motor_registers import (
+    ServoMotorS0,
+    ServoMotorSetup
+)
+from unittest import TestCase, skip
 
 
 @skip

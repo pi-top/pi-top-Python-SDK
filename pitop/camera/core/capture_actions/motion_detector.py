@@ -23,10 +23,10 @@ class MotionDetector(CaptureActionBase):
             raise ModuleNotFoundError(
                 "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
 
-        self._motion_detect_previous_frame = None
-        self._motion_detect_threshold = moving_object_minimum_area**2
-        self._motion_detect_callback = callback_on_motion
-        self._event_executor = ThreadPoolExecutor()
+        self.__motion_detect_previous_frame = None
+        self.__motion_detect_threshold = moving_object_minimum_area**2
+        self.__motion_detect_callback = callback_on_motion
+        self.__event_executor = ThreadPoolExecutor()
 
         callback_signature = signature(callback_on_motion)
         self.callback_has_argument = len(callback_signature.parameters) > 0
@@ -40,10 +40,10 @@ class MotionDetector(CaptureActionBase):
         gray = self.cv2.cvtColor(frame, self.cv2.COLOR_BGR2GRAY)
         gray = self.cv2.GaussianBlur(gray, (21, 21), 0)
 
-        if self._motion_detect_previous_frame is None:
-            self._motion_detect_previous_frame = gray
+        if self.__motion_detect_previous_frame is None:
+            self.__motion_detect_previous_frame = gray
         else:
-            diff_frame = self.cv2.absdiff(self._motion_detect_previous_frame, gray)
+            diff_frame = self.cv2.absdiff(self.__motion_detect_previous_frame, gray)
             threshold_frame = self.cv2.threshold(diff_frame, 30, 255, self.cv2.THRESH_BINARY)[1]
             threshold_frame = self.cv2.dilate(threshold_frame, None, iterations=2)
 
@@ -58,14 +58,14 @@ class MotionDetector(CaptureActionBase):
             for contour in detected_contours:
                 area = self.cv2.contourArea(contour)
 
-                if area > self._motion_detect_threshold:
+                if area > self.__motion_detect_threshold:
                     if self.callback_has_argument:
-                        self._event_executor.submit(self._motion_detect_callback, frame)
+                        self.__event_executor.submit(self.__motion_detect_callback, frame)
                     else:
-                        self._event_executor.submit(self._motion_detect_callback)
+                        self.__event_executor.submit(self.__motion_detect_callback)
                     break
 
     def stop(self):
-        if self._event_executor is not None:
-            self._event_executor.shutdown()
-            self._event_executor = None
+        if self.__event_executor is not None:
+            self.__event_executor.shutdown()
+            self.__event_executor = None
