@@ -1,6 +1,8 @@
 py-pitop-sdk (0.14.0) buster; urgency=medium
 
   * Buttons can only be used by a single process
+  * Suppress ultrasonic sensor warning messages
+  * Increase ultrasonic sensor detection range
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 25 Jan 2021 16:17:48 -0300
 
