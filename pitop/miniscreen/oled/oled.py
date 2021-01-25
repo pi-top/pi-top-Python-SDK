@@ -64,9 +64,13 @@ class OLED:
     def prepare_image(self, image_to_prepare):
         return self.canvas.process_image(image_to_prepare)
 
-    def should_redisplay(self):
+    def should_redisplay(self, image_to_display=None):
+        # Use canvas image if no image is offered
+        if image_to_display is None:
+            image_to_display = self._image
+
         return self.image is None or \
-            ImageChops.difference(self.image, self._image).getbbox()
+            ImageChops.difference(self.image, image_to_display).getbbox()
 
     @property
     def spi_bus(self):
@@ -307,7 +311,7 @@ class OLED:
     def __display(self, image_to_display, force=False):
         self.__fps_regulator.stop_timer()
 
-        if force or self.should_redisplay():
+        if force or self.should_redisplay(image_to_display):
             self.device.display(image_to_display)
 
         self.__fps_regulator.start_timer()
