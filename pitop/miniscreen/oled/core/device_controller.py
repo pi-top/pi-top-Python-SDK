@@ -97,15 +97,11 @@ class OledDeviceController:
     ##############################
 
     def device_is_active(self):
-        if (self.__exclusive_mode is True and self.__device is not None):
-            # We already have the device, so no-one else can
-            return False
-
         return self.lock.is_locked()
 
     def reset_device(self):
         self.__device = None
-        if self.lock.is_locked():
+        if self.device_is_active():
             self.lock.release()
 
     def get_device(self):
