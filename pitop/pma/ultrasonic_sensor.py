@@ -1,18 +1,16 @@
 from .common import get_pin_for_port
 
-from gpiozero.exc import GPIOZeroWarning
-from gpiozero import SmoothedInputDevice
-from gpiozero.pins.native import NativeFactory
+from pitopcommon.logger import PTLogger
 
-import warnings
+from gpiozero.pins.native import NativeFactory
+from gpiozero import SmoothedInputDevice
 from threading import Event, Lock
+
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
 #
 # Note: all private member variables are semi-private to follow upstream gpiozero convention
 # and to override inherited functions
-
-
 class UltrasonicSensor(SmoothedInputDevice):
     ECHO_LOCK = Lock()
 
@@ -95,7 +93,27 @@ class UltrasonicSensor(SmoothedInputDevice):
             ...     led.on()
             ...
         """
-        super(UltrasonicSensor, self).close()
+        try:
+            super(UltrasonicSensor, self).close()
+        except RuntimeError:
+            # Currently, if used with OLED, this will raise the following exception:
+            #
+            # Exception ignored in: <function GPIOBase.__del__ at 0xb5041660>
+            # Traceback (most recent call last):
+            #   File "/usr/lib/python3/dist-packages/gpiozero/devices.py", line 151, in __del__
+            #   File "/usr/lib/python3/dist-packages/pitop/pma/ultrasonic_sensor.py", line 98, in close
+            #   File "/usr/lib/python3/dist-packages/gpiozero/input_devices.py", line 299, in close
+            #   File "/usr/lib/python3/dist-packages/gpiozero/devices.py", line 540, in close
+            #   File "/usr/lib/python3/dist-packages/gpiozero/pins/native.py", line 397, in close
+            #   File "/usr/lib/python3/dist-packages/gpiozero/pins/__init__.py", line 420, in <lambda>
+            #   File "/usr/lib/python3/dist-packages/gpiozero/pins/native.py", line 468, in _set_edges
+            # RuntimeError: could not find io module state (interpreter shutdown?)
+
+            # This can be removed when no other part of the SDK is using RPi.GPIO
+            # TODO: evaluate removing Luma dependency, in favour of direct use of SPIDEV
+            # to ensure that RPi.GPIO and gpiozero are not used together
+            PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
+                           "there was an error in closing the port!")
 
     @property
     def max_distance(self):
@@ -170,7 +188,8 @@ class UltrasonicSensor(SmoothedInputDevice):
         # horribly wrong (most likely at the hardware level)
         if self.pin.state:
             if not self._echo.wait(0.05):
-                warnings.warn(GPIOZeroWarning('echo pin set high'))
+                PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
+                               "no echo received, not using value")
                 return None
         self._echo.clear()
         self._echo_fall = None
@@ -178,11 +197,8 @@ class UltrasonicSensor(SmoothedInputDevice):
         # Obtain the class-level ECHO_LOCK to ensure multiple distance sensors
         # don't listen for each other's "pings"
         with UltrasonicSensor.ECHO_LOCK:
-            # Wait up to 100ms for the echo pin to rise and fall (35ms is the
-            # maximum pulse time, but the pre-rise time is unspecified in the
-            # "datasheet"; 100ms seems sufficiently long to conclude something
-            # has failed)
-            if self._echo.wait(0.1):
+            # Wait up to 200ms for the echo pin to rise and fall
+            if self._echo.wait(0.2):
                 if self._echo_fall is not None and self._echo_rise is not None:
                     distance = (
                         self.pin_factory.ticks_diff(
@@ -194,10 +210,10 @@ class UltrasonicSensor(SmoothedInputDevice):
                     # the echo because it was too fast
                     return None
             else:
-                # The echo pin never rose or fell; something's gone horribly
-                # wrong
-                warnings.warn(GPIOZeroWarning('no echo received'))
-                return None
+                # The echo pin never rose or fell - assume that distance is max
+                PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
+                               "no echo received, using max distance ")
+                return self._max_distance
 
     @property
     def in_range(self):
