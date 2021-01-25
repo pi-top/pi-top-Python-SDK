@@ -6,7 +6,6 @@ from pitopcommon.lock import PTLock
 from pitopcommon.singleton import Singleton
 
 import atexit
-from uuid import uuid1
 
 
 class Button:
@@ -35,16 +34,20 @@ class Buttons(metaclass=Singleton):
         self.select = Button(self.SELECT)
         self.cancel = Button(self.CANCEL)
 
+        self.__exclusive_mode = _exclusive_mode
+
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
 
         atexit.register(self.__clean_up)
 
-        self.uuid = uuid1()
+        self.lock = PTLock("pt-buttons")
+        if self.__exclusive_mode:
+            self.lock.acquire()
 
-        self.exclusive_mode = _exclusive_mode
-        self.lock = None
-        self.__configure_lock()
+    @property
+    def is_active(self):
+        return self.lock.is_locked()
 
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed):
@@ -71,24 +74,9 @@ class Buttons(metaclass=Singleton):
         )
         self.__ptdm_subscribe_client.start_listening()
 
-    def __configure_lock(self):
-        if self.exclusive_mode:
-            # UUID makes this lock single-purpose
-            #
-            # This is actually just a hack workaround to let pt-sys-oled know that
-            # the buttons are in use. In an ideal world, there would be a way
-            # to ask pt-device-manager how many things are registered to listen
-            # for particular events
-            self.lock = PTLock(f"pt-buttons-{str(self.uuid)}", _single_purpose=True)
-            self.lock.acquire()
-        else:
-            self.__clean_up_lock()
-
     def __clean_up_lock(self):
-        if self.lock is not None:
+        if self.is_active:
             self.lock.release()
-            del self.lock
-            self.lock = None
 
     def __clean_up(self):
         self.__clean_up_lock()

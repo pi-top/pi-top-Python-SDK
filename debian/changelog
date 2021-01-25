@@ -1,3 +1,9 @@
+py-pitop-sdk (0.14.0) buster; urgency=medium
+
+  * Buttons can only be used by a single process
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 25 Jan 2021 16:17:48 -0300
+
 py-pitop-sdk (0.13.3) buster; urgency=medium
 
   * Convert image to array before checking dimensional size for RGB conversion
