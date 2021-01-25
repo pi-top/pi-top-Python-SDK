@@ -213,7 +213,7 @@ class UltrasonicSensor(SmoothedInputDevice):
                 # The echo pin never rose or fell - assume that distance is max
                 PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
                                "no echo received, using max distance ")
-                return self._max_distance
+                return 1.0
 
     @property
     def in_range(self):
