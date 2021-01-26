@@ -2,7 +2,7 @@
 API - pi-top [4] Miniscreen
 ======================================
 
-.. image:: _static/miniscreen/pi-top_4_Front.jpg
+.. image:: ../_static/miniscreen/pi-top_4_Front.jpg
 
 The Miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
 OLED screen and 4 programmable buttons.
@@ -18,5 +18,5 @@ things to note - see :ref:`faq-lost-oled-menu`.
 .. toctree::
     :maxdepth: 2
 
-    api_miniscreen/oled
-    api_miniscreen/buttons
+    miniscreen/oled
+    miniscreen/buttons

@@ -8,11 +8,11 @@ This module will work with original pi-top, pi-topCEED and pi-top [3]. pi-top [4
 
 Using the pi-topPROTO+ as a Distance Sensor
 -------------------------------------------
-.. literalinclude:: ../examples/protoplus/distance_sensor.py
+.. literalinclude:: ../../examples/protoplus/distance_sensor.py
 
 Using the pi-topPROTO+'s onboard ADC
 ------------------------------------
-.. literalinclude:: ../examples/protoplus/adc.py
+.. literalinclude:: ../../examples/protoplus/adc.py
 
 ----------------------
 pi-topPROTO+

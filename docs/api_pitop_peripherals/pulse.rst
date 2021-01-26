@@ -2,7 +2,7 @@
 API - pi-topPULSE
 ======================================================
 
-.. image:: _static/peripherals/pi-topPULSE.jpg
+.. image:: ../_static/peripherals/pi-topPULSE.jpg
 
 This module provides a simple way to use a pi-topPULSE.
 
@@ -27,11 +27,11 @@ repository <https://github.com/raspberrypi/hats>`__ for more information.
 
 Using the pi-topPULSE's microphone
 ----------------------------------
-.. literalinclude:: ../examples/pulse/mic-demo.py
+.. literalinclude:: ../../examples/pulse/mic-demo.py
 
 Using the pi-topPULSE's LEDs
 ----------------------------------
-.. literalinclude:: ../examples/pulse/leds-test_colors.py
+.. literalinclude:: ../../examples/pulse/leds-test_colors.py
 
 ----------------------
 pi-topPULSE

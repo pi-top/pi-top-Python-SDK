@@ -79,11 +79,9 @@ Table of Contents
     overview
     cli_tools
     recipes_api
-    api_general
-    api_miniscreen
+    api_core
     api_pma
-    api_protoplus
-    api_pulse
+    api_pitop_peripherals
     api_system_devices
     more
 
