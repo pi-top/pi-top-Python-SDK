@@ -296,7 +296,7 @@ Display text directly into pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
-    pi-top oled [-h] {draw,spi}
+    pi-top oled [-h] {display,spi}
 
 Where:
 
@@ -304,8 +304,8 @@ Where:
 -h, --help
     Show a help message and exits
 
-draw
-    Draw text and images into the OLED
+display
+    Display text and images into the OLED
 
 spi
     Control the SPI bus used by OLED
