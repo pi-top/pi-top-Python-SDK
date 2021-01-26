@@ -8,14 +8,57 @@ from pitopcommon.singleton import Singleton
 import atexit
 
 
-class Button:
+class MiniscreenButton:
     def __init__(self, button_type):
         # State parameters
         self.type = button_type
-        self.is_pressed = False
+        self._is_pressed = False
         # Event-based functions
-        self.when_pressed = None
-        self.when_released = None
+        self._when_pressed = None
+        self._when_released = None
+
+    @property
+    def is_pressed(self):
+        """
+        Returns a boolean value, representing the button state.
+
+        :type callback: bool
+        """
+        return self._is_pressed
+
+    @property
+    def when_pressed(self):
+        """
+        Event based procedure, executed when a button is pressed.
+
+        Setting this property will set the function to call when this event happens.
+
+        :type callback: Function
+        :param callback:
+            Callback function to run when a button is pressed.
+        """
+        return self._when_pressed
+
+    @when_pressed.setter
+    def when_pressed(self, callback):
+        self._when_pressed = callback
+
+    @property
+    def when_released(self):
+        """
+        Event based procedure, executed when a button is released.
+
+        Setting this property will set the function to call when this event happens.
+
+        :type callback: Function
+        :param callback:
+            Callback function to run when a button is released.
+        """
+        return self._when_released
+
+    @when_released.setter
+    def when_released(self, callback):
+        self._when_released = callback
 
 
 class Buttons(metaclass=Singleton):
@@ -29,10 +72,10 @@ class Buttons(metaclass=Singleton):
     CANCEL = "CANCEL"
 
     def __init__(self, _exclusive_mode=True):
-        self.up = Button(self.UP)
-        self.down = Button(self.DOWN)
-        self.select = Button(self.SELECT)
-        self.cancel = Button(self.CANCEL)
+        self.up = MiniscreenButton(self.UP)
+        self.down = MiniscreenButton(self.DOWN)
+        self.select = MiniscreenButton(self.SELECT)
+        self.cancel = MiniscreenButton(self.CANCEL)
 
         self.__exclusive_mode = _exclusive_mode
 
@@ -47,6 +90,9 @@ class Buttons(metaclass=Singleton):
 
     @property
     def is_active(self):
+        """
+        Returns a boolean value, representing if the miniscreen buttons are under user control.
+        """
         return self.lock.is_locked()
 
     def __setup_subscribe_client(self):
@@ -90,7 +136,7 @@ class Buttons(metaclass=Singleton):
 def UpButton():
     """
     :return: A button object for the up button.
-    :rtype: Button
+    :rtype: MiniscreenButton
     """
     return Buttons().up
 
@@ -98,7 +144,7 @@ def UpButton():
 def DownButton():
     """
     :return: A button object for the down button.
-    :rtype: Button
+    :rtype: MiniscreenButton
     """
     return Buttons().down
 
@@ -106,7 +152,7 @@ def DownButton():
 def SelectButton():
     """
     :return: A button object for the select button.
-    :rtype: Button
+    :rtype: MiniscreenButton
     """
     return Buttons().select
 
@@ -114,6 +160,6 @@ def SelectButton():
 def CancelButton():
     """
     :return: A button object for the cancel button.
-    :rtype: Button
+    :rtype: MiniscreenButton
     """
     return Buttons().cancel

@@ -19,3 +19,37 @@ Buttons
 --------
 
 .. autoclass:: pitop.miniscreen.Buttons
+    :members:
+    :exclude-members: UP, DOWN, SELECT, CANCEL, instance
+    :show-inheritance:
+    :inherited-members:
+
+
+.. autoclass:: pitop.miniscreen.UpButton
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+
+.. autoclass:: pitop.miniscreen.DownButton
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+
+.. autoclass:: pitop.miniscreen.SelectButton
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+
+.. autoclass:: pitop.miniscreen.CancelButton
+    :members:
+    :show-inheritance:
+    :inherited-members:
+
+
+.. autoclass:: pitop.miniscreen.buttons.buttons.MiniscreenButton
+    :members:
+    :show-inheritance:
+    :inherited-members:
