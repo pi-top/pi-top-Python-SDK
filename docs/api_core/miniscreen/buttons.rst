@@ -1,6 +1,9 @@
 ======================================
-API - pi-top [4] Mini Screen - Buttons
+pi-top [4] Mini Screen - Buttons
 ======================================
+
+Overview
+--------
 
 .. image:: ../../_static/miniscreen/pi-top_4_Front_BUTTONS.jpg
 
@@ -12,10 +15,13 @@ To get started, copy this code into your program and see what you can make using
 
 Note: when you write a program that interacts with the pi-top [4] buttons, you will not be able to use them to control the mini-screen system menu.
 
+Examples
+--------
+
 .. literalinclude:: ../../../examples/miniscreen/buttons/buttons.py
 
-Buttons
---------
+Buttons class
+--------------
 
 .. autoclass:: pitop.miniscreen.Buttons
     :members:
