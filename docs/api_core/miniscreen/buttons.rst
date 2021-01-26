@@ -23,32 +23,34 @@ Buttons
     :show-inheritance:
     :inherited-members:
 
+UpButton class
+--------------
 
 .. autoclass:: pitop.miniscreen.UpButton
     :members:
     :show-inheritance:
     :inherited-members:
 
+DownButton class
+----------------
 
 .. autoclass:: pitop.miniscreen.DownButton
     :members:
     :show-inheritance:
     :inherited-members:
 
+SelectButton class
+------------------
 
 .. autoclass:: pitop.miniscreen.SelectButton
     :members:
     :show-inheritance:
     :inherited-members:
 
+CancelButton class
+------------------
 
 .. autoclass:: pitop.miniscreen.CancelButton
-    :members:
-    :show-inheritance:
-    :inherited-members:
-
-
-.. autoclass:: pitop.miniscreen.buttons.buttons.MiniscreenButton
     :members:
     :show-inheritance:
     :inherited-members:

@@ -8,7 +8,7 @@ from pitopcommon.singleton import Singleton
 import atexit
 
 
-class MiniscreenButton:
+class MiniscreenButtonBase:
     def __init__(self, button_type):
         # State parameters
         self.type = button_type
@@ -25,6 +25,10 @@ class MiniscreenButton:
         :type callback: bool
         """
         return self._is_pressed
+
+    @is_pressed.setter
+    def is_pressed(self, value):
+        self._is_pressed = value
 
     @property
     def when_pressed(self):
@@ -63,8 +67,9 @@ class MiniscreenButton:
 
 class Buttons(metaclass=Singleton):
     """
-    Instantiates a single instance for each of the four button types up, down,
-    select and cancel.
+    Instantiates a button for each one of the four types (up, down,
+    select and cancel), configuring them to receive event press events
+    from the device manager.
     """
     UP = "UP"
     DOWN = "DOWN"
@@ -72,10 +77,10 @@ class Buttons(metaclass=Singleton):
     CANCEL = "CANCEL"
 
     def __init__(self, _exclusive_mode=True):
-        self.up = MiniscreenButton(self.UP)
-        self.down = MiniscreenButton(self.DOWN)
-        self.select = MiniscreenButton(self.SELECT)
-        self.cancel = MiniscreenButton(self.CANCEL)
+        self.up = MiniscreenButtonBase(self.UP)
+        self.down = MiniscreenButtonBase(self.DOWN)
+        self.select = MiniscreenButtonBase(self.SELECT)
+        self.cancel = MiniscreenButtonBase(self.CANCEL)
 
         self.__exclusive_mode = _exclusive_mode
 
@@ -134,33 +139,49 @@ class Buttons(metaclass=Singleton):
             pass
 
 
-def UpButton():
+class UpButton(MiniscreenButtonBase):
     """
-    :return: A button object for the up button.
-    :rtype: MiniscreenButton
+    A button object for the Up button.
     """
-    return Buttons().up
+
+    def __init__(self):
+        pass
+
+    def __new__(cls):
+        return Buttons().up
 
 
-def DownButton():
+class DownButton(MiniscreenButtonBase):
     """
-    :return: A button object for the down button.
-    :rtype: MiniscreenButton
+    A button object for the Down button.
     """
-    return Buttons().down
+
+    def __init__(self):
+        pass
+
+    def __new__(cls):
+        return Buttons().down
 
 
-def SelectButton():
+class SelectButton(MiniscreenButtonBase):
     """
-    :return: A button object for the select button.
-    :rtype: MiniscreenButton
+    A button object for the Select button.
     """
-    return Buttons().select
+
+    def __init__(self):
+        pass
+
+    def __new__(cls):
+        return Buttons().select
 
 
-def CancelButton():
+class CancelButton(MiniscreenButtonBase):
     """
-    :return: A button object for the cancel button.
-    :rtype: MiniscreenButton
+    A button object for the Cancel button.
     """
-    return Buttons().cancel
+
+    def __init__(self):
+        pass
+
+    def __new__(cls):
+        return Buttons().cancel
