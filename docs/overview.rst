@@ -11,6 +11,14 @@ Choose your pi-top device to go to the relevant section:
 * :ref:`pi-topCEED<overview:pi-topCEED>`
 * :ref:`Original pi-top<overview:pi-top laptops>`
 
+This API provides some convenience classes for :ref:`common system devices<api_system_devices:API - System Devices>`, such as:
+
+* Camera
+* Keyboard
+
+.. * Microphone
+.. * Mouse
+
 ----------------------------------------
 pi-top [4]
 ----------------------------------------
@@ -121,13 +129,3 @@ pi-topCEED does not support the following API sections:
 * :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Makers Architecture (PMA)>`
 
 This is due to the fact that PMA is only available for pi-top [4].
-
-----------------------------------------
-Additional helper modules/classes
-----------------------------------------
-
-The pi-top SDK provides some :ref:`helpful modules/classes<api_helpers:API - Helpers>` to get the most out of your pi-top.
-
-Check out the :ref:`USB Camera (camera)<api_helpers/camera:API - USB Camera>` module to easily add computer vision to your physical computing projects.
-
-Check out the :ref:`keyboard<api_helpers/keyboard:API - Keyboard Input>` module to use your computer keyboard as an input device, similar to a PMA button.

@@ -84,7 +84,7 @@ Table of Contents
     api_pma
     api_protoplus
     api_pulse
-    api_helpers
+    api_system_devices
     more
 
 ------------------
