@@ -91,7 +91,8 @@ class Buttons(metaclass=Singleton):
     @property
     def is_active(self):
         """
-        Returns a boolean value, representing if the miniscreen buttons are under user control.
+        Determine if the current instance is in control of the buttons.
+        :rtype: bool
         """
         return self.lock.is_locked()
 

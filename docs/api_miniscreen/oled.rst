@@ -73,7 +73,6 @@ Prim's algorithm
 .. literalinclude:: ../../examples/miniscreen/oled/prims_algorithm.py
 
 
----------------------
 OLED class
 ---------------------
 

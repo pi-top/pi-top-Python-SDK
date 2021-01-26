@@ -14,7 +14,6 @@ Note: when you write a program that interacts with the pi-top [4] buttons, you w
 
 .. literalinclude:: ../../examples/miniscreen/buttons/buttons.py
 
---------
 Buttons
 --------
 

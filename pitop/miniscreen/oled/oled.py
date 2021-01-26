@@ -62,9 +62,24 @@ class OLED:
         register(self.__cleanup)
 
     def prepare_image(self, image_to_prepare):
+        """
+        Formats the given image into one that can be used directly by the OLED.
+
+        :type image_to_prepare: :class:`PIL.Image.Image`
+        :param image_to_prepare: Image to be formatted.
+        :rtype: :class:`PIL.Image.Image`
+        """
         return self.canvas.process_image(image_to_prepare)
 
     def should_redisplay(self, image_to_display=None):
+        """
+        Determines if the OLED screen needs to be refreshed, based on the provided image.
+        If no image is provided, the content of the canvas will be used.
+
+        :type image_to_display: :class:`PIL.Image.Image` or None
+        :param image_to_display: Image to be displayed.
+        :rtype: bool
+        """
         # Use canvas image if no image is offered
         if image_to_display is None:
             image_to_display = self._image
@@ -74,26 +89,54 @@ class OLED:
 
     @property
     def spi_bus(self):
+        """
+        Returns the number of the SPI bus used by the OLED screen to receive data.
+
+        Setting this property will modify the SPI bus that the OLED uses. You might notice a flicker in the screen.
+
+        :param int bus: Number of the SPI bus for the OLED to use. Accepted values are `0` or `1`.
+        """
         return self.__controller.spi_bus
 
     @spi_bus.setter
     def spi_bus(self, bus):
+        assert bus in (0, 1)
         self.__controller.spi_bus = bus
 
     @property
     def device(self):
+        """
+        Returns the OLED display controller instance.
+
+        :rtype: :class:`luma.oled.device.sh1106`
+        """
         return self.__controller.get_device()
 
     @property
     def size(self):
+        """
+        Returns the size of the OLED screen.
+
+        :rtype: :class:`tuple` as (width, height)
+        """
         return self.device.size
 
     @property
     def width(self):
+        """
+        Returns the width of the OLED screen.
+
+        :rtype: int
+        """
         return self.size[0]
 
     @property
     def height(self):
+        """
+        Returns the height of the OLED screen.
+
+        :rtype: int
+        """
         return self.size[1]
 
     @property
@@ -102,21 +145,33 @@ class OLED:
 
     @property
     def is_active(self):
+        """
+        Determine if the current OLED instance is in control of the OLED hardware.
+
+        :rtype: bool
+        """
         return self.__controller.device_is_active()
 
     @property
     def visible(self):
         """
         Returns whether the device is currently in low power state
+
         :return: whether the the screen is in low power mode
         :rtype: bool
         """
         return not self.__visible
 
     def set_control_to_pi(self):
+        """
+        Signals the pi-top hub to give control of the OLED screen to the Raspberry Pi.
+        """
         self.__controller.set_control_to_pi()
 
     def set_control_to_hub(self):
+        """
+        Signals the pi-top hub to take control of the OLED screen.
+        """
         self.__controller.set_control_to_hub()
 
     def set_max_fps(self, max_fps):
@@ -152,17 +207,33 @@ class OLED:
         self.__visible = False
 
     def contrast(self, new_contrast_value):
+        """
+        Sets the contrast value of the OLED display to the provided value.
+
+        :param int new_contrast_value: contrast value to set, between 0 and 255.
+        """
         assert new_contrast_value in range(0, 256)
 
         self.device.contrast(new_contrast_value)
 
     def wake(self):
+        """
+        The pi-top OLED display is set to high contrast mode, without modifying
+        the content of the screen
+        """
         self.contrast(255)
 
     def sleep(self):
+        """
+        The pi-top OLED display in set to low contrast mode, without modifying
+        the content of the screen.
+        """
         self.contrast(0)
 
     def clear(self):
+        """
+        Clears any content displayed in the OLED screen.
+        """
         self.canvas.rectangle(self.bounding_box, fill=0)
         self.__display(self._image, force=True)
 
@@ -443,6 +514,9 @@ class OLED:
         """
         Displays what is on the current canvas to the screen as a single frame.
 
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
         This method does not need to be called when using the other `draw`
         functions in this class, but is used when the caller wants to use
         the *canvas* object to draw composite objects and then render them
@@ -452,22 +526,53 @@ class OLED:
         self.__display(self._image)
 
     def draw(self):
+        """
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        Calls :func:`display`.
+
+        """
         print("'draw()' is now deprecated. Using 'display()'...")
         self.display()
 
     def draw_image_file(self, file_path_or_url, xy=None):
+        """
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        Refer to :func:`display_image_file`.
+        """
         print("draw_image_file is now deprecated. Using display_image_file...")
         self.display_image_file(file_path_or_url, xy)
 
     def draw_image(self, image, xy=None):
+        """
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        Refer to :func:`display_image`.
+        """
         print("draw_image is now deprecated. Using display_image...")
         self.display_image(image, xy)
 
     def draw_text(self, text, xy=None, font_size=None):
+        """
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        Refer to :func:`display_text`.
+        """
         print("draw_text is now deprecated. Using display_text...")
         self.display_text(text, xy, font_size)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
+        """
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        Refer to :func:`display_multiline_text`.
+        """
         print("draw_multiline_text is now deprecated. Using display_multiline_text...")
         self.display_multiline_text(text, xy, font_size)
 
