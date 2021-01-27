@@ -1,5 +1,5 @@
 ======================================
-pi-top [4] Mini Screen - Buttons
+Buttons
 ======================================
 
 Overview
@@ -24,39 +24,29 @@ Buttons class
 --------------
 
 .. autoclass:: pitop.miniscreen.Buttons
-    :members:
     :exclude-members: UP, DOWN, SELECT, CANCEL, instance
-    :show-inheritance:
     :inherited-members:
 
 UpButton class
 --------------
 
 .. autoclass:: pitop.miniscreen.UpButton
-    :members:
-    :show-inheritance:
     :inherited-members:
 
 DownButton class
 ----------------
 
 .. autoclass:: pitop.miniscreen.DownButton
-    :members:
-    :show-inheritance:
     :inherited-members:
 
 SelectButton class
 ------------------
 
 .. autoclass:: pitop.miniscreen.SelectButton
-    :members:
-    :show-inheritance:
     :inherited-members:
 
 CancelButton class
 ------------------
 
 .. autoclass:: pitop.miniscreen.CancelButton
-    :members:
-    :show-inheritance:
     :inherited-members:
