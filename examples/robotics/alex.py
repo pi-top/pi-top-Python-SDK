@@ -4,10 +4,10 @@ from time import sleep
 
 
 # Setup robot
-robot = AlexRobot(
-    motor_left_port="M3",
-    motor_right_port="M0",
-    ultrasonic_sensor_port="D1")
+robot = AlexRobot()
+
+# Use display
+robot.oled.display_multiline_text("hi!\nI'm Alex!")
 
 # Move it
 robot.forward(0.5)
