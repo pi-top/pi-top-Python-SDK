@@ -296,7 +296,7 @@ Display text directly into pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
-    pi-top oled draw [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
+    pi-top oled display [-h] [--timeout TIMEOUT] [--font-size FONT_SIZE] text
 
 Where:
 
@@ -317,7 +317,7 @@ Example:
 
 .. code-block:: bash
 
-    pi-top oled draw "hey there!" --timeout 5
+    pi-top oled display "hey there!" --timeout 5
 
 
 pi-top support
