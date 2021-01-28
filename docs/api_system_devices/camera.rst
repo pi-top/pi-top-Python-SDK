@@ -2,6 +2,9 @@
 API - USB Camera
 =====================================
 
+Overview
+----------------------
+
 This module provides a Camera class for using a USB Camera attached to your
 pi-top. There are methods to: save image and video files; direct access camera
 frames in your code; provide a callback to process frames in the background;
@@ -24,23 +27,28 @@ format instead. There are also helpers :class:`pil_to_opencv` and
 :class:`opencv_to_pil` for performing this conversion yourself. The OpenCV
 format uses raw, BGR-ordered pixels in a NumPy :class:`numpy.ndarray` object.
 
+Examples
+----------------------
+
+-------------------------------------------------------------------------------
 Using a USB Camera to Access Image Data
 -------------------------------------------------------------------------------
 
 .. literalinclude:: ../../examples/camera/camera_loop_print_first_pixel.py
 
+-------------------------------------------------------------------------------
 Using a USB Camera to Capture Video
 -------------------------------------------------------------------------------
 
 .. literalinclude:: ../../examples/camera/camera_capture_video.py
 
+-------------------------------------------------------------------------------
 Convert USB Camera image to grayscale
 -------------------------------------------------------------------------------
 
 .. literalinclude:: ../../examples/camera/camera_opencv_processing.py
 
-----------------------
-Camera
+Camera class
 ----------------------
 
 .. autoclass:: pitop.camera.Camera
