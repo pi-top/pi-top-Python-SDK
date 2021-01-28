@@ -119,6 +119,11 @@ __requires__ = [
     # Pulse #
     #########
     "pyserial",
+
+    ##############
+    # Algorithms #
+    ##############
+    "simple_pid",
 ]
 
 __extra_requires__ = {

@@ -10,7 +10,9 @@ class Buzzer(gpiozero_Buzzer):
     """
 
     def __init__(self, port_name):
-        super(Buzzer, self).__init__(get_pin_for_port(port_name))
+        self._pma_port = port_name
+
+        super(Buzzer, self).__init__(get_pin_for_port(self._pma_port))
 
     def close(self):
         """

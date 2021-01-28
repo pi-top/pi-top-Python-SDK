@@ -65,7 +65,7 @@ class OLEDTestCase(TestCase):
     def test_rectangle(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.rectangle(
-            self.oled.core.canvas.get_bounding_box())
+            self.oled.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/rectangle.bmp")
 
         self.compare_arrays("rectangle", canvas_pix, bmp_pix)
@@ -73,7 +73,7 @@ class OLEDTestCase(TestCase):
     def test_arc(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.arc(
-            self.oled.core.canvas.get_bounding_box(), 0, 180)
+            self.oled.bounding_box, 0, 180)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/arc.bmp")
 
         self.compare_arrays("arc", canvas_pix, bmp_pix)
@@ -81,7 +81,7 @@ class OLEDTestCase(TestCase):
     def test_chord(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.chord(
-            self.oled.core.canvas.get_bounding_box(), 0, 180)
+            self.oled.bounding_box, 0, 180)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/chord.bmp")
 
         self.compare_arrays("chord", canvas_pix, bmp_pix)
@@ -89,7 +89,7 @@ class OLEDTestCase(TestCase):
     def test_ellipse(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.ellipse(
-            self.oled.core.canvas.get_bounding_box())
+            self.oled.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/ellipse.bmp")
 
         self.compare_arrays("ellipse", canvas_pix, bmp_pix)
@@ -97,7 +97,7 @@ class OLEDTestCase(TestCase):
     def test_line(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.line(
-            self.oled.core.canvas.get_bounding_box())
+            self.oled.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/line.bmp")
 
         self.compare_arrays("line", canvas_pix, bmp_pix)
@@ -105,7 +105,7 @@ class OLEDTestCase(TestCase):
     def test_pieslice(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.pieslice(
-            self.oled.core.canvas.get_bounding_box(), 0, 180)
+            self.oled.bounding_box, 0, 180)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/pieslice.bmp")
 
         self.compare_arrays("pieslice", canvas_pix, bmp_pix)
@@ -113,7 +113,7 @@ class OLEDTestCase(TestCase):
     def test_point(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.point(
-            self.oled.core.canvas.get_bounding_box())
+            self.oled.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/point.bmp")
 
         self.compare_arrays("point", canvas_pix, bmp_pix)
@@ -121,7 +121,7 @@ class OLEDTestCase(TestCase):
     def test_polygon(self):
         self.oled.reset()
         canvas_pix = self.oled.core.canvas.polygon(
-            self.oled.core.canvas.get_bounding_box())
+            self.oled.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/polygon.bmp")
 
         self.compare_arrays("polygon", canvas_pix, bmp_pix)

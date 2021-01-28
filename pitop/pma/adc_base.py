@@ -18,8 +18,10 @@ class ADCBase:
     """
 
     def __init__(self, port_name, pin_number=1):
+        self._pma_port = port_name
+
         self.is_current = False
-        self.channel = get_pin_for_port(port_name, pin_number)
+        self.channel = get_pin_for_port(self._pma_port, pin_number)
         self.__adc_device = PlateInterface().get_device_mcu()
 
     def read(self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False):
