@@ -13,7 +13,7 @@ Example
 
 .. literalinclude:: ../../examples/system/pitop.py
 
-----------------------
+
 PiTop class
 ----------------------
 

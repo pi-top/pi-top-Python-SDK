@@ -33,15 +33,73 @@ class PiTop(metaclass=Singleton):
     def __init__(self):
         is_pi_top_four = device_type() == DeviceName.pi_top_4.value
 
-        self.battery = Battery()
-        self.oled = OLED() if is_pi_top_four else None
-        self.up_button = UpButton() if is_pi_top_four else None
-        self.down_button = DownButton() if is_pi_top_four else None
-        self.select_button = SelectButton() if is_pi_top_four else None
-        self.cancel_button = CancelButton() if is_pi_top_four else None
+        self._battery = Battery()
+        self._oled = OLED() if is_pi_top_four else None
+        self._up_button = UpButton() if is_pi_top_four else None
+        self._down_button = DownButton() if is_pi_top_four else None
+        self._select_button = SelectButton() if is_pi_top_four else None
+        self._cancel_button = CancelButton() if is_pi_top_four else None
 
         self._port_manager = PortManager(state={}) if is_pi_top_four else None
         self._plate = connected_plate() if is_pi_top_four else None
+
+    @property
+    def battery(self):
+        """
+        Returns a :class:`pitop.battery.Battery`
+        """
+        return self._battery
+
+    @property
+    def oled(self):
+        """
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.OLED` object to interact with
+        the miniscreen OLED display.
+
+        If not running on a pi-top [4], it will return None.
+        """
+        return self._oled
+
+    @property
+    def up_button(self):
+        """
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.UpButton` object to interact with
+        the miniscreen up button.
+
+        If not running on a pi-top [4], it will return None.
+        """
+        return self._up_button
+
+    @property
+    def down_button(self):
+        """
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.DownButton` object to interact with
+        the miniscreen down button.
+
+        If not running on a pi-top [4], it will return None.
+        """
+        return self._down_button
+
+    @property
+    def select_button(self):
+        """
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.SelectButton` object to interact with
+        the miniscreen select button.
+
+        If not running on a pi-top [4], it will return None.
+        """
+
+        return self._select_button
+
+    @property
+    def cancel_button(self):
+        """
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.CancelButton` object to interact with
+        the miniscreen cancel button.
+
+        If not running on a pi-top [4], it will return None.
+        """
+        return self._cancel_button
 
     def register_pma_component(self, component_instance):
         """
