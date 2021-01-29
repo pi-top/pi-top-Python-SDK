@@ -292,7 +292,7 @@ Example:
 pi-top oled
 ==================
 
-Display text directly into pi-top [4]'s OLED screen.
+Configure and display text/images directly onto pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
@@ -314,6 +314,8 @@ spi
 
 pi-top oled display
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Display text and images directly onto pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
