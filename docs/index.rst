@@ -82,7 +82,6 @@ Table of Contents
     api_pma
     api_pitop_peripherals
     api_system_devices
-    api_advanced_usage
     cli_tools
     more
 
