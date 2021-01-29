@@ -1,12 +1,11 @@
-from pitopcommon.singleton import Singleton
 from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message
 )
 from pitopcommon.lock import PTLock
+from pitopcommon.singleton import Singleton
 
 import atexit
-from uuid import uuid1
 
 
 class Button:
@@ -19,8 +18,7 @@ class Button:
         self.when_released = None
 
 
-@Singleton
-class Buttons:
+class Buttons(metaclass=Singleton):
     """
     Instantiates a single instance for each of the four button types up, down,
     select and cancel.
@@ -30,22 +28,26 @@ class Buttons:
     SELECT = "SELECT"
     CANCEL = "CANCEL"
 
-    def __init__(self):
+    def __init__(self, _exclusive_mode=True):
         self.up = Button(self.UP)
         self.down = Button(self.DOWN)
         self.select = Button(self.SELECT)
         self.cancel = Button(self.CANCEL)
+
+        self.__exclusive_mode = _exclusive_mode
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
 
         atexit.register(self.__clean_up)
 
-        self.uuid = uuid1()
+        self.lock = PTLock("pt-buttons")
+        if self.__exclusive_mode:
+            self.lock.acquire()
 
-        self.exclusive_mode = True
-        self.lock = None
-        self.__configure_lock()
+    @property
+    def is_active(self):
+        return self.lock.is_locked()
 
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed):
@@ -72,28 +74,9 @@ class Buttons:
         )
         self.__ptdm_subscribe_client.start_listening()
 
-    def _set_exclusive_mode(self, exclusive):
-        self.exclusive_mode = exclusive
-        self.__configure_lock()
-
-    def __configure_lock(self):
-        if self.exclusive_mode:
-            # UUID makes this lock single-purpose
-            #
-            # This is actually just a hack workaround to let pt-sys-oled know that
-            # the buttons are in use. In an ideal world, there would be a way
-            # to ask pt-device-manager how many things are registered to listen
-            # for particular events
-            self.lock = PTLock(f"pt-buttons-{str(self.uuid)}", _single_purpose=True)
-            self.lock.acquire()
-        else:
-            self.__clean_up_lock()
-
     def __clean_up_lock(self):
-        if self.lock is not None:
+        if self.is_active:
             self.lock.release()
-            del self.lock
-            self.lock = None
 
     def __clean_up(self):
         self.__clean_up_lock()
@@ -104,15 +87,12 @@ class Buttons:
             pass
 
 
-buttons = Buttons.instance()
-
-
 def UpButton():
     """
     :return: A button object for the up button.
     :rtype: Button
     """
-    return buttons.up
+    return Buttons().up
 
 
 def DownButton():
@@ -120,7 +100,7 @@ def DownButton():
     :return: A button object for the down button.
     :rtype: Button
     """
-    return buttons.down
+    return Buttons().down
 
 
 def SelectButton():
@@ -128,7 +108,7 @@ def SelectButton():
     :return: A button object for the select button.
     :rtype: Button
     """
-    return buttons.select
+    return Buttons().select
 
 
 def CancelButton():
@@ -136,4 +116,4 @@ def CancelButton():
     :return: A button object for the cancel button.
     :rtype: Button
     """
-    return buttons.cancel
+    return Buttons().cancel

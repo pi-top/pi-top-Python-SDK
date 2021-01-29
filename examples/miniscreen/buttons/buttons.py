@@ -1,4 +1,4 @@
-from pitop.miniscreen.buttons import (
+from pitop.miniscreen import (
     UpButton,
     DownButton,
     SelectButton,

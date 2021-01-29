@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
-from sys import exit
+
+from .cli_base import PitopCliException, PitopCliInvalidArgument
 
 from .battery import BatteryCLI
-from .cli_base import PitopCliException, PitopCliInvalidArgument
 from .display import DisplayCLI
 from .devices import DeviceCLI
 from .support import SupportCLI
@@ -46,23 +46,22 @@ def get_parser():
 def run(args):
     """Executes the command according to the provided arguments"""
     exit_code = 1
-    cls = None
+    cli = None
     try:
-        cls = lookup_dict.get(args.subcommand)
-        if cls:
-            obj = cls(args)
-            exit_code = obj.run()
+        cli = lookup_dict.get(args.subcommand)
+        exit_code = cli(args).run()
     except PitopCliException:
-        exit_code = 1
+        pass
     except PitopCliInvalidArgument:
-        exit_code = 1
-        if cls:
-            print(cls.parser.print_help())
+        if cli:
+            print(
+                cli.parser.print_help()
+            )
     except Exception as e:
         print(f"Error on pitop.run: {e}")
-        exit_code = 1
+        pass
 
-    exit(exit_code)
+    return exit_code
 
 
 def main():
@@ -70,9 +69,6 @@ def main():
     args = parser.parse_args()
     if args.subcommand is None:
         parser.print_help()
-        exit(1)
-    run(args)
+        return 1
 
-
-if __name__ == "__main__":
-    main()
+    return run(args)

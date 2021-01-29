@@ -30,8 +30,8 @@ def show_digit(val, xd, yd, r, g, b):
     offset = val * 15
     for p in range(offset, offset + 15):
         xt = p % 3
-        yt = (p-offset) // 3
-        ledmatrix.set_pixel(xt+xd, 7-yt-yd, r*NUMS[p], g*NUMS[p], b*NUMS[p])
+        yt = (p - offset) // 3
+        ledmatrix.set_pixel(xt + xd, 7 - yt - yd, r * NUMS[p], g * NUMS[p], b * NUMS[p])
     ledmatrix.show()
 
 
@@ -42,7 +42,7 @@ def show_number(val, r, g, b):
     units = abs_val % 10
     if (abs_val > 9):
         show_digit(tens, OFFSET_LEFT, OFFSET_TOP, r, g, b)
-    show_digit(units, OFFSET_LEFT+4, OFFSET_TOP, r, g, b)
+    show_digit(units, OFFSET_LEFT + 4, OFFSET_TOP, r, g, b)
 
 
 ###########################################################

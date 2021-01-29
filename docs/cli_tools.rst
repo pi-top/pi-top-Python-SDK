@@ -292,7 +292,30 @@ Example:
 pi-top oled
 ==================
 
-Display text directly into pi-top [4]'s OLED screen.
+Configure and display text/images directly onto pi-top [4]'s OLED screen.
+
+.. code-block:: bash
+
+    pi-top oled [-h] {display,spi}
+
+Where:
+
+
+-h, --help
+    Show a help message and exits
+
+display
+    Display text and images into the OLED
+
+spi
+    Control the SPI bus used by OLED
+
+
+
+pi-top oled display
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Display text and images directly onto pi-top [4]'s OLED screen.
 
 .. code-block:: bash
 
@@ -300,24 +323,54 @@ Display text directly into pi-top [4]'s OLED screen.
 
 Where:
 
-text
-    set the text to write to screen
-
 -h, --help
-    Show a help message and exits
+     Show a help message and exits
 
---timeout TIMEOUT
+-t, --timeout TIMEOUT
     set the timeout in seconds
 
 --font-size FONT_SIZE
     set the font size
+
+text
+    set the text to write to screen
 
 
 Example:
 
 .. code-block:: bash
 
-    pi-top oled display "hey there!" --timeout 5
+    pi@pi-top:~ $ pi-top oled display "hey!" -t 5
+
+
+pi-top oled spi
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Control the SPI bus used by the OLED. When using `pi-top oled spi` without arguments, the SPI bus currently used by the OLED will be returned.
+
+.. code-block:: bash
+
+    pi-top oled spi [-h] {0,1}
+
+Where:
+
+-h, --help
+     Show a help message and exits
+
+{0,1}
+    Optional. Set the SPI bus to be used by OLED. Valid options: 0 or 1
+
+Example:
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pi-top oled spi
+    1
+
+    pi@pi-top:~ $ pi-top oled spi 0
+
+    pi@pi-top:~ $ pi-top oled spi
+    0
 
 
 pi-top support

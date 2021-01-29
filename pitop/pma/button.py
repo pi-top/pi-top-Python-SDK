@@ -12,7 +12,9 @@ class Button(gpiozero_Button):
     """
 
     def __init__(self, port_name):
-        super(Button, self).__init__(get_pin_for_port(port_name))
+        self._pma_port = port_name
+
+        super(Button, self).__init__(get_pin_for_port(self._pma_port))
 
     def close(self):
         """

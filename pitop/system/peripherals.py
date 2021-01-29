@@ -25,7 +25,7 @@ def legacy_pitop_peripherals():
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        p_enabled = (response.parameters()[0] == '1')
+        p_enabled = (int(response.parameters[0]) == 1)
         peripherals.append({
             "name": human_readable_name,
             "connected": p_enabled})
@@ -68,6 +68,18 @@ def upgradable_pitop_peripherals():
         peripherals.append(__get_fw_device_status(device_enum))
 
     return peripherals
+
+
+def connected_plate():
+    """Detects which plate from the PMA is connected to the device.
+
+    Returns:
+        FirmwareDeviceID: device ID of the connected plate. None if not detected"""
+    for plate_id in (FirmwareDeviceID.pt4_foundation_plate, FirmwareDeviceID.pt4_expansion_plate):
+        status = __get_fw_device_status(plate_id)
+        if status.get("connected") is True:
+            return plate_id
+    return None
 
 
 def usb_pitop_peripherals():
