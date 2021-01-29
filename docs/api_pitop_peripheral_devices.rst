@@ -58,24 +58,47 @@ repository <https://github.com/raspberrypi/hats>`__ for more information.
 
 Using the pi-topPULSE's microphone
 ----------------------------------
+
 .. literalinclude:: ../examples/pulse/mic-demo.py
 
-Using the pi-topPULSE's LEDs
-----------------------------------
+Using the pi-topPULSE's LED matrix: Test colors
+-----------------------------------------------
+
 .. literalinclude:: ../examples/pulse/leds-test_colors.py
 
-Class Reference: pi-topPULSE
-----------------------------
+Using the pi-topPULSE's LED matrix: Fancy Light Show!
+-----------------------------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-fancy_demo.py
+
+Using the pi-topPULSE's LED matrix: Showing CPU temperature
+-----------------------------------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-cpu_temp.py
+
+Using the pi-topPULSE's LED matrix: Showing CPU usage
+-----------------------------------------------------
+
+.. literalinclude:: ../examples/pulse/leds-cpu_usage.py
+
+Module Reference: pi-topPULSE Configuration
+-------------------------------------------
 
 .. automodule:: pitop.pulse.configuration
     :members:
     :undoc-members:
     :show-inheritance:
 
+Module Reference: pi-topPULSE LED Matrix
+----------------------------------------
+
 .. automodule:: pitop.pulse.ledmatrix
     :members:
     :undoc-members:
     :show-inheritance:
+
+Module Reference: pi-topPULSE Microphone
+----------------------------------------
 
 .. automodule:: pitop.pulse.microphone
     :members:

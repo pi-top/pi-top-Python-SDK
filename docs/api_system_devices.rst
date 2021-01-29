@@ -53,6 +53,21 @@ Convert USB Camera image to grayscale
 
 .. literalinclude:: ../examples/camera/camera_opencv_processing.py
 
+Adding Motion Detection to a USB Camera
+---------------------------------------
+
+.. literalinclude:: ../examples/camera/camera_motion_detector.py
+
+Processing Camera Frames with OpenCV
+---------------------------------------
+
+.. literalinclude:: ../examples/camera/camera_opencv_processing.py
+
+Processing Camera Frames in the Background
+------------------------------------------
+
+.. literalinclude:: ../examples/camera/camera_background_processing.py
+
 Class Reference: USB Camera
 ---------------------------
 
