@@ -142,7 +142,7 @@ The `Motor` component included in the Robotics Kits are:
 
 More Information
 ----------------
-For more information about pi-top Maker Architecture, check out the pi-top `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_
+For more information about pi-top Maker Architecture, check out the pi-top `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_.
 
 
 pi-top [4] Miniscreen
@@ -150,7 +150,7 @@ pi-top [4] Miniscreen
 
 .. image:: _static/miniscreen/pi-top_4_Front.jpg
 
-The Miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
+The miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
 OLED screen and 4 programmable buttons.
 
 The `pt-sys-oled` package, provided out-of-the-box with pi-topOS (and available for Raspberry Pi OS),

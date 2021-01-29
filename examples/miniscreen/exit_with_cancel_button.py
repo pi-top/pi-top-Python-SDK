@@ -1,5 +1,4 @@
-from pitop.miniscreen import Miniscreen
-from pitop.miniscreen import CancelButton
+from pitop.miniscreen import Miniscreen, CancelButton
 from time import sleep
 
 miniscreen = Miniscreen()

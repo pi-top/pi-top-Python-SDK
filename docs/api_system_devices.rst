@@ -31,12 +31,12 @@ intending to do your own image processing with OpenCV. The OpenCV format uses ra
 pixels in a NumPy :class:`numpy.ndarray` object. This can be done by setting the camera's format
 property to "OpenCV":
 
-.. .. literalinclude:: ../examples/camera/show_camera_image_to_display.py
+.. code-block:: python
 
-.. TODO: explain more about image processing
+    from pitop.camera import Camera
 
-format instead. There are also helpers :class:`pil_to_opencv` and
-:class:`opencv_to_pil` for performing this conversion yourself.
+    c = Camera()
+    c.format = "OpenCV"
 
 Using a USB Camera to Access Image Data
 ---------------------------------------

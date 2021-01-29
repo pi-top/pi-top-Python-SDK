@@ -39,47 +39,19 @@ pi-top [4] Miniscreen
 
 .. image:: _static/miniscreen/pi-top_4_Front.jpg
 
-The Miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
+The miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
 OLED screen and 4 programmable buttons.
 
 Check out :ref:`Key Concepts: pi-top [4] Miniscreen<key_concepts:pi-top [4] Miniscreen>` for useful information about how this class works.
 
-Buttons
--------
-
-.. image:: _static/miniscreen/pi-top_4_Front_BUTTONS.jpg
-
-You can write code to respond to these buttons being pressed and released.
-
-The buttons are easily accessed from the :class:`pitop.miniscreen.Miniscreen` object:
-
-.. literalinclude:: ../examples/miniscreen/buttons/buttons.py
-
-
-Class Reference: pi-top [4] Miniscreen Buttons
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. autoclass:: pitop.miniscreen.UpButton
-    :inherited-members:
-
-.. autoclass:: pitop.miniscreen.DownButton
-    :inherited-members:
-
-.. autoclass:: pitop.miniscreen.SelectButton
-    :inherited-members:
-
-.. autoclass:: pitop.miniscreen.CancelButton
-    :inherited-members:
-
-
-OLED Display
-------------
+Using the Miniscreen's OLED Display
+-----------------------------------
 
 .. image:: _static/miniscreen/pi-top_4_Front_OLED.jpg
 
-You can write code to send pixel data to the miniscreen's OLED display.
+The OLED display is an array of pixels that can be either on or off. Unlike the pixels in a more advanced display, such as the monitor you are most likely reading this on, the display is a "1-bit monochromatic" display. Text and images can be displayed by directly manipulating the pixels.
 
-All of the OLED display functionality is available by using the :class:`pitop.miniscreen.Miniscreen` class directly.
+The :class:`pitop.miniscreen.Miniscreen` class directly provides display functions for the OLED.
 
 Displaying text
 ~~~~~~~~~~~~~~~
@@ -135,4 +107,41 @@ Class Reference: pi-top [4] Miniscreen
 --------------------------------------
 
 .. autoclass:: pitop.miniscreen.Miniscreen
+    :inherited-members:
+
+Using the Miniscreen's Buttons
+------------------------------
+
+.. image:: _static/miniscreen/pi-top_4_Front_BUTTONS.jpg
+
+The miniscreen's buttons are simple, and behave in a similar way to the other button-style components in this SDK. Each miniscreen button can be queried for their "is pressed" state, and also invoke callback functions for when pressed and released.
+
+The :class:`pitop.miniscreen.Miniscreen` class provides these buttons as properties:
+
+.. code-block:: python
+    >>> from pitop.miniscreen import Miniscreen
+    >>> miniscreen = Miniscreen()
+    >>> miniscreen.up_button
+    >>> miniscreen.down_button
+    >>> miniscreen.select_button
+    >>> miniscreen.button_button
+
+Here is an example demonstrating 2 ways to make use of these buttons:
+
+.. literalinclude:: ../examples/miniscreen/buttons/buttons.py
+
+
+Class Reference: pi-top [4] Miniscreen Buttons
+----------------------------------------------
+
+.. autoclass:: pitop.miniscreen.UpButton
+    :inherited-members:
+
+.. autoclass:: pitop.miniscreen.DownButton
+    :inherited-members:
+
+.. autoclass:: pitop.miniscreen.SelectButton
+    :inherited-members:
+
+.. autoclass:: pitop.miniscreen.CancelButton
     :inherited-members:

@@ -8,13 +8,6 @@ from pitopcommon.common_names import DeviceName
 from pitopcommon.singleton import Singleton
 
 
-def do_none_check(object):
-    if object is None:
-        raise Exception("Object is not available")
-
-    return object
-
-
 class PiTop(metaclass=Singleton):
     """
     Abstraction of a pi-top device.
@@ -52,9 +45,9 @@ class PiTop(metaclass=Singleton):
         If not using a pi-topCEED, it returns a :class:`pitop.battery.Battery` object to interact with
         the miniscreen OLED display.
 
-        This will raise an exception if on a pi-topCEED.
+        This will return None if on a pi-topCEED.
         """
-        return do_none_check(self._battery)
+        return self._battery
 
     @property
     def miniscreen(self):
@@ -62,8 +55,9 @@ class PiTop(metaclass=Singleton):
         If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
         the miniscreen OLED display.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
         """
+        return self._miniscreen
 
     @property
     def oled(self):
@@ -74,9 +68,9 @@ class PiTop(metaclass=Singleton):
         If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
         the miniscreen OLED display.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
         """
-        return do_none_check(self._miniscreen)
+        return self._miniscreen
 
     @property
     def up_button(self):
@@ -84,9 +78,9 @@ class PiTop(metaclass=Singleton):
         If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.UpButton` object to interact with
         the miniscreen up button.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
         """
-        return do_none_check(self._miniscreen.up_button)
+        return self._miniscreen.up_button
 
     @property
     def down_button(self):
@@ -94,9 +88,9 @@ class PiTop(metaclass=Singleton):
         If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.DownButton` object to interact with
         the miniscreen down button.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
         """
-        return do_none_check(self._miniscreen.down_button)
+        return self._miniscreen.down_button
 
     @property
     def select_button(self):
@@ -104,10 +98,10 @@ class PiTop(metaclass=Singleton):
         If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.SelectButton` object to interact with
         the miniscreen select button.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
         """
 
-        return do_none_check(self._miniscreen.select_button)
+        return self._miniscreen.select_button
 
     @property
     def cancel_button(self):
@@ -115,38 +109,38 @@ class PiTop(metaclass=Singleton):
         If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.CancelButton` object to interact with
         the miniscreen cancel button.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
         """
-        return do_none_check(self._miniscreen.cancel_button)
+        return self._miniscreen.cancel_button
 
     def register_pma_component(self, component_instance):
         """
         If using a pi-top [4], register a PMA component as being connected. This allows
         the object to keep track of what component is connected and where.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
 
         :param component_instance: Instance of a PMA component.
         """
-        do_none_check(self._port_manager).register_pma_component(component_instance)
+        self._port_manager.register_pma_component(component_instance)
 
     def drop_pma_component(self, port):
         """
         If using a pi-top [4], unregister a PMA component as being connected. This will free
         the port to be reused if necessary.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
 
         :param str port: name of the PMA port where the component to be dropped is connected.
         """
-        do_none_check(self._port_manager).drop_pma_component(port)
+        self._port_manager.drop_pma_component(port)
 
     def get_component_on_pma_port(self, port):
         """
         If using a pi-top [4], get the instance of the PMA component connected to a given port.
 
-        This will raise an exception if not on a pi-top [4].
+        This will return None if not on a pi-top [4].
 
         :param str port: name of the PMA port where the component to be retrieved is connected.
         """
-        do_none_check(self._port_manager).get_component_on_pma_port(port)
+        self._port_manager.get_component_on_pma_port(port)

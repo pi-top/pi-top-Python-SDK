@@ -9,17 +9,15 @@ API - pi-top Maker Architecture (PMA) Components
 
 The Foundation & Expansion Plates and all the parts included in the Foundation & Robotics Kit are known as the pi-top Maker Architecture (PMA).
 
-Each component has a Python class associated with it.
+Each PMA component has a Python class provided for it.
 
 Check out :ref:`Key Concepts: pi-top Maker Architecture<key_concepts:pi-top Maker Architecture>` for useful information to get started with using PMA.
 
-Components
-==========
 
 .. _component-button:
 
 Button
-------
+======
 
 .. image:: _static/pma/foundation_kit/components/button.jpg
 
@@ -36,7 +34,7 @@ Button
 .. _component-buzzer:
 
 Buzzer
-------
+======
 
 .. image:: _static/pma/foundation_kit/components/buzzer.jpg
 
@@ -53,7 +51,7 @@ Buzzer
 .. _component-encoder-motor:
 
 Encoder Motor
--------------
+=============
 
 .. note::
    This is a :ref:`Motor Component<motor-component>` which connects to a :ref:`MotorEncoder Port<motor-port>` `[M0-M3]`.
@@ -75,7 +73,7 @@ Parameters
 .. _component-led:
 
 LED
----
+===
 
 .. image:: _static/pma/foundation_kit/components/led_red.jpg
 
@@ -92,7 +90,7 @@ LED
 .. _component-light-sensor:
 
 Light Sensor
-------------
+============
 
 .. image:: _static/pma/foundation_kit/components/light_sensor.jpg
 
@@ -107,7 +105,7 @@ Light Sensor
 .. _component-potentiometer:
 
 Potentiometer
--------------
+=============
 
 .. image:: _static/pma/foundation_kit/components/potentiometer.jpg
 
@@ -122,7 +120,7 @@ Potentiometer
 .. _component-servo-motor:
 
 Servo Motor
------------
+===========
 
 .. note::
    This is a :ref:`Motor Component<motor-component>` which connects to a :ref:`ServoMotor Port<servomotor-port>` `[S0-S3]`.
@@ -136,7 +134,7 @@ Servo Motor
 .. _component-sound-sensor:
 
 Sound Sensor
-------------
+============
 
 .. image:: _static/pma/foundation_kit/components/sound_sensor.jpg
 
@@ -150,7 +148,7 @@ Sound Sensor
 .. _component-ultrasonic-sensor:
 
 Ultrasonic Sensor
------------------
+=================
 
 .. image:: _static/pma/foundation_kit/components/ultrasonic_sensor.jpg
 
