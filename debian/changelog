@@ -1,7 +1,6 @@
 py-pitop-sdk (0.14.1) buster; urgency=medium
 
-  * Add PiTop & AlexRobot docs
-  * Reorganise api_core elements subsections
+  * Docs update and refactor
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 28 Jan 2021 12:50:55 -0300
 
