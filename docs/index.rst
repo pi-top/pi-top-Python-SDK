@@ -84,6 +84,3 @@ Table of Contents
     api_system_devices
     cli_tools
     more
-
-
-For an alphabetized list of terms used in this SDK with links, check out the :ref:`genindex`.
