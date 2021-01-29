@@ -75,15 +75,15 @@ Table of Contents
     :numbered:
 
     getting_started
-    getting_started_pma
     overview
-    cli_tools
+    key_concepts
     recipes_api
     api_core
     api_pma
     api_pitop_peripherals
     api_system_devices
     api_advanced_usage
+    cli_tools
     more
 
 ------------------

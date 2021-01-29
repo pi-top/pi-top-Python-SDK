@@ -3,32 +3,40 @@ API - System Devices
 ======================================
 
 
-The pi-top SDK provides some helpful classes for common system devices:
+The pi-top Python SDK provides classes which represent devices, including some that can be used by generic devices, such as USB cameras. These classes are intended to simplify connecting common system devices with pi-top devices.
 
 USB Camera
 =====================================
 
-This module provides a Camera class for using a USB Camera attached to your
-pi-top. There are methods to: save image and video files; direct access camera
-frames in your code; provide a callback to process frames in the background;
-and make use of some pre-written video processors such as a motion detection.
+This class provides an easy way to:
 
-The module also provides a mock 'File System Camera' which reads it's frames
-from a directory of images for working without camera hardware in situations
-such as testing.
+* save image and video files
+* directly access camera frames
+* process frames in the background (via callback)
+
+It is easy to make use of some pre-written video processors, such as motion detection.
+
+It is also possible to make use of this class to read frames from a directory of images,
+removing the need for a stream of images from physical hardware. This can be useful for
+testing, or simulating a real camera.
 
 .. literalinclude:: ../examples/camera/camera_capture_video.py
 
-By default, Camera frames are provided as instances of the Pillow module
-:class:`PIL.Image.Image` class, which provides various methods for working with
-the image. These Image objects use raw, RGB-ordered pixels.
+By default, camera frames are of :class:`PIL.Image.Image` type (using the Pillow module),
+which provides a standardized way of working with the image.
+These Image objects use raw, RGB-ordered pixels.
 
-The Camera also supports providing frames in the OpenCV standard format. You
-can pass the parameter ``format='OpenCV'`` to Camera methods such as
-:class:`get_frame` and :class:`start_handling_frames` to have them provide this
+It is also possible to use OpenCV standard format, if desired. This may be useful if you are
+intending to do your own image processing with OpenCV. The OpenCV format uses raw, BGR-ordered
+pixels in a NumPy :class:`numpy.ndarray` object. This can be done by setting the camera's format
+property to "OpenCV":
+
+.. .. literalinclude:: ../examples/camera/show_camera_image_to_display.py
+
+.. TODO: explain more about image processing
+
 format instead. There are also helpers :class:`pil_to_opencv` and
-:class:`opencv_to_pil` for performing this conversion yourself. The OpenCV
-format uses raw, BGR-ordered pixels in a NumPy :class:`numpy.ndarray` object.
+:class:`opencv_to_pil` for performing this conversion yourself.
 
 Using a USB Camera to Access Image Data
 ---------------------------------------

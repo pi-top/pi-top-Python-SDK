@@ -53,7 +53,7 @@ pi-top [4] does not support the following API sections:
 
 This is due to the fact that pi-topPROTO+ makes use of the legacy 'modular rail', which has no way of connecting to a pi-top [4].
 
-See :ref:`getting_started_pma:Getting Started with pi-top Maker Architecture`
+Check out the :ref:`key concepts for pi-top Maker Architecture<key_concepts:pi-top Maker Architecture>` for more information.
 
 ----------------------------------------
 pi-top laptops
