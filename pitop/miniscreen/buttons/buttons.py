@@ -141,7 +141,7 @@ class Buttons(metaclass=Singleton):
 
 class UpButton(MiniscreenButtonBase):
     """
-    A button object for the Up button.
+    pi-top [4] Miniscreen 'Up' button.
     """
 
     def __init__(self):
@@ -153,7 +153,7 @@ class UpButton(MiniscreenButtonBase):
 
 class DownButton(MiniscreenButtonBase):
     """
-    A button object for the Down button.
+    pi-top [4] Miniscreen 'Down' button.
     """
 
     def __init__(self):
@@ -165,7 +165,7 @@ class DownButton(MiniscreenButtonBase):
 
 class SelectButton(MiniscreenButtonBase):
     """
-    A button object for the Select button.
+    pi-top [4] Miniscreen 'Select' button.
     """
 
     def __init__(self):
@@ -177,7 +177,7 @@ class SelectButton(MiniscreenButtonBase):
 
 class CancelButton(MiniscreenButtonBase):
     """
-    A button object for the Cancel button.
+    pi-top [4] Miniscreen 'Cancel' button.
     """
 
     def __init__(self):

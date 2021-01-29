@@ -138,3 +138,46 @@ The `Motor` component included in the Robotics Kits are:
 
 - :ref:`MotorEncoder<component-encoder-motor>` (connects to a :ref:`Motor Port<motor-port>`)
 - :ref:`ServoMotor<component-servo-motor>` (connects to a :ref:`ServoMotor Port<servomotor-port>`)
+
+
+More Information
+----------------
+For more information about pi-top Maker Architecture, check out the pi-top `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_
+
+
+pi-top [4] Miniscreen
+=====================
+
+.. image:: _static/miniscreen/pi-top_4_Front.jpg
+
+The Miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
+OLED screen and 4 programmable buttons.
+
+The `pt-sys-oled` package, provided out-of-the-box with pi-topOS (and available for Raspberry Pi OS),
+provides a convenient interactive menu interface, using the pi-top [4]'s miniscreen OLED display and
+buttons for navigation and actions. This menu includes useful information and options about the system
+state and configuration.
+
+When a user program creates an instance of the miniscreen, the system menu will clear itself and
+start to ignore button press events until the user program exits. This is true, regardless of
+whether or not the OLED display or the buttons were intended to be used.
+
+.. warning::
+   When you write a program that interacts with the pi-top [4] miniscreen, the miniscreen display
+   will clear itself, ready to be controlled by user code.
+
+   The system menu cannot be accessed until the program exits, at which point the system menu is
+   automatically restored.
+
+.. note::
+   For convenience, it is recommended that you provide yourself with an easy method of being able
+   to exit your program. It is recommended that you configure an input (such as the miniscreen's
+   'cancel' button) to trigger an exit. This is particularly helpful if you wish to start/stop
+   your project headlessly (that is, without requiring a display or keyboard/mouse).
+
+   Here is one way of achieving this:
+
+   .. literalinclude:: ../examples/miniscreen/exit_with_cancel_button.py
+
+If you wish to make use of any of the functionality in system menu, have a go at implementing
+it yourself in your own project!

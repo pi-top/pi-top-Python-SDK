@@ -1,4 +1,4 @@
-from pitop.miniscreen import OLED
+from pitop.miniscreen import Miniscreen
 
 from PIL import Image, ImageDraw
 from random import randint, random
@@ -6,28 +6,28 @@ from time import sleep
 
 # https://en.wikipedia.org/wiki/Maze_generation_algorithm
 
-oled = OLED()
+miniscreen = Miniscreen()
 image = Image.new(
-    oled.mode,
-    oled.size,
+    miniscreen.mode,
+    miniscreen.size,
 )
 canvas = ImageDraw.Draw(image)
-oled.set_max_fps(50)
+miniscreen.set_max_fps(50)
 
 
 def draw_pixel(pos):
     canvas.point(pos, fill=1)
-    oled.display_image(image)
+    miniscreen.display_image(image)
     drawn_pixels.append(pos)
 
 
-width = ((oled.width // 2) * 2 - 1)
-height = ((oled.height // 2) * 2 - 1)
+width = ((miniscreen.width // 2) * 2 - 1)
+height = ((miniscreen.height // 2) * 2 - 1)
 
 while True:
 
     print("Initialising...")
-    canvas.rectangle(oled.bounding_box, fill=0)
+    canvas.rectangle(miniscreen.bounding_box, fill=0)
 
     drawn_pixels = list()
     complexity = int(random() * (5 * (width + height)))

@@ -1,6 +1,6 @@
-from pitop.miniscreen import OLED
+from pitop.miniscreen import Miniscreen
 from time import sleep
 
-oled = OLED()
-oled.display_multiline_text("Hello, world!")
+miniscreen = Miniscreen()
+miniscreen.display_multiline_text("Hello, world!")
 sleep(2)

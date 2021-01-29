@@ -5,9 +5,9 @@ API - pi-top Peripheral Devices
 pi-topPROTO+
 ==================
 
-This module provides a simple way to use a pi-topPROTO+'s onboard ADC (analog-to-digital converter), and make use of it as a distance sensor.
+This module provides 2 classes - a simple way to use a pi-topPROTO+'s onboard ADC (analog-to-digital converter), and another use it as a distance sensor.
 
-This module will work with original pi-top, pi-topCEED and pi-top [3]. pi-top [4] does not support the modular rail connector, and so will not work.
+These classes will work with original pi-top, pi-topCEED and pi-top [3]. pi-top [4] does not support the pi-topPROTO+'s modular rail connector, and so will not work.
 
 Using the pi-topPROTO+ as a Distance Sensor
 -------------------------------------------
@@ -35,26 +35,13 @@ pi-topPULSE
 
 .. image:: _static/peripherals/pi-topPULSE.jpg
 
-This module provides a simple way to use a pi-topPULSE.
+This module provides a simple way to use a pi-topPULSE, and will work with any Raspberry Pi and/or pi-top.
 
-This module will work with any Raspberry Pi and/or pi-top.
-
-The hardware representation of each color is 5 bits e.g. only 32 different values.
+The hardware representation of each color is 5 bits (i.e. only 32 different values).
 Without gamma correction, this would mean the actual color value
 changes only every 8th color intensity value.
 This module applies gamma correction, which means that pixels with seemingly
 different intensities actually have the same.
-
-Advanced: EEPROM
-----------------
-The pi-topPULSE contains an EEPROM which was programmed using `this settings file`_.
-during factory production.
-
-.. _this settings file: ./_static/pulse_eeprom_settings.txt
-
-See the Raspberry Pi Foundation's `HAT Github
-repository <https://github.com/raspberrypi/hats>`__ for more information.
-
 
 Using the pi-topPULSE's microphone
 ----------------------------------
@@ -104,3 +91,13 @@ Module Reference: pi-topPULSE Microphone
     :members:
     :undoc-members:
     :show-inheritance:
+
+Advanced: EEPROM
+----------------
+The pi-topPULSE contains an EEPROM which was programmed using `this settings file`_.
+during factory production.
+
+.. _this settings file: ./_static/pulse_eeprom_settings.txt
+
+See the Raspberry Pi Foundation's `HAT Github
+repository <https://github.com/raspberrypi/hats>`__ for more information.

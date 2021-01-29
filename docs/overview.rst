@@ -28,12 +28,12 @@ Interacting with onboard pi-top [4] hardware
 
 pi-top [4] supports the following API devices/components for its onboard hardware:
 
-* :ref:`Battery<api_pitop_device:pi-top Battery>`
-* :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_pitop_device:pi-top [4] Miniscreen>`
+* :ref:`api_pitop_device:pi-top Battery`
+* :ref:`api_pitop_device:pi-top [4] Miniscreen`
 
 pi-top [4] does not support the following API devices/components:
 
-* :ref:`Display<api_pitop_device:pi-top Display>`
+* :ref:`api_pitop_device:pi-top Display`
 
 This is due to the fact that pi-top [4] has no attached display, and the pi-top [4] official display's brightness is handled in hardware with physical brightness buttons, and the backlight is handled by DPMS (the operating system's internal screen blanking functionality).
 
@@ -42,14 +42,14 @@ Physical computing with pi-top [4]
 
 pi-top [4] supports the following API devices/components for physical computing:
 
-* :ref:`pi-topPULSE (pulse)<api_pitop_peripheral_devices:pi-topPULSE>`
+* :ref:`api_pitop_peripheral_devices:pi-topPULSE`
 * :ref:`pi-top Maker Architecture (PMA) Components<api_pma_components:API - pi-top Maker Architecture (PMA)  Components>`
 
 The pi-topPULSE can be used as a Raspberry Pi HAT with a pi-top [4]. The USB camera library can be used with any USB camera, and - whilst technically can be used with any Raspberry Pi/pi-top, was designed with the pi-top [4] and PMA in mind.
 
 pi-top [4] does not support the following API devices/components:
 
-* :ref:`pi-topPROTO+ (protoplus)<api_pitop_peripheral_devices:pi-topPROTO+>`
+* :ref:`api_pitop_peripheral_devices:pi-topPROTO+`
 
 This is due to the fact that pi-topPROTO+ makes use of the legacy 'modular rail', which has no way of connecting to a pi-top [4].
 
@@ -64,12 +64,12 @@ Interacting with onboard pi-top laptop hardware
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API devices/components for their onboard hardware:
 
-* :ref:`Battery<api_pitop_device:pi-top Battery>`
-* :ref:`Display<api_pitop_device:pi-top Display>`
+* :ref:`api_pitop_device:pi-top Battery`
+* :ref:`api_pitop_device:pi-top Display`
 
 pi-top laptops does not support the following API devices/components:
 
-* :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_pitop_device:pi-top [4] Miniscreen>`
+* :ref:`api_pitop_device:pi-top [4] Miniscreen`
 
 This is due to the fact that pi-top laptops do not include the pi-top [4]'s miniscreen.
 
@@ -78,8 +78,8 @@ Using peripherals with a pi-top laptop
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API devices/components for use with peripherals:
 
-* :ref:`pi-topPROTO+ (protoplus)<api_pitop_peripheral_devices:pi-topPROTO+>`
-* :ref:`pi-topPULSE (pulse)<api_pitop_peripheral_devices:pi-topPULSE>`
+* :ref:`api_pitop_peripheral_devices:pi-topPROTO+`
+* :ref:`api_pitop_peripheral_devices:pi-topPULSE`
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
@@ -100,12 +100,12 @@ Interacting with onboard pi-topCEED hardware
 
 pi-top laptops (Original pi-top and pi-top [3]) support the following API devices/components for their onboard hardware:
 
-* :ref:`Display<api_pitop_device:pi-top Display>`
+* :ref:`api_pitop_device:pi-top Display`
 
 pi-top laptops does not support the following API devices/components:
 
-* :ref:`Battery<api_pitop_device:pi-top Battery>`
-* :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_pitop_device:pi-top [4] Miniscreen>`
+* :ref:`api_pitop_device:pi-top Battery`
+* :ref:`api_pitop_device:pi-top [4] Miniscreen`
 
 This is due to the fact that pi-topCEED does not include a battery or the pi-top [4]'s miniscreen.
 
@@ -114,8 +114,8 @@ Using peripherals with a pi-topCEED
 
 pi-topCEED supports the following API devices/components for use with peripherals:
 
-* :ref:`pi-topPROTO+ (protoplus)<api_pitop_peripheral_devices:pi-topPROTO+>`
-* :ref:`pi-topPULSE (pulse)<api_pitop_peripheral_devices:pi-topPULSE>`
+* :ref:`api_pitop_peripheral_devices:pi-topPROTO+`
+* :ref:`api_pitop_peripheral_devices:pi-topPULSE`
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 

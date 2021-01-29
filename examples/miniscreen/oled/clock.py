@@ -1,14 +1,14 @@
-from pitop.miniscreen import OLED
+from pitop.miniscreen import Miniscreen
 
 from datetime import datetime
 from PIL import Image, ImageDraw
 
-oled = OLED()
-oled.set_max_fps(1)
+miniscreen = Miniscreen()
+miniscreen.set_max_fps(1)
 
 image = Image.new(
-    oled.mode,
-    oled.size,
+    miniscreen.mode,
+    miniscreen.size,
 )
 canvas = ImageDraw.Draw(image)
 
@@ -49,4 +49,4 @@ while True:
     canvas.pieslice(little_hand_box, angle_hour, angle_hour + 5, fill=0)
 
     # Display to screen
-    oled.display_image(image)
+    miniscreen.display_image(image)

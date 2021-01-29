@@ -115,9 +115,9 @@ class OLED:
     @property
     def size(self):
         """
-        Returns the size of the OLED screen.
+        Returns the size of the OLED screen as a (width, height) tuple
 
-        :rtype: :class:`tuple` as (width, height)
+        :rtype: tuple
         """
         return self.device.size
 
@@ -148,6 +148,7 @@ class OLED:
         """
         Determine if the current OLED instance is in control of the OLED hardware.
 
+        :return: whether the OLED instance is in control of the OLED hardware.
         :rtype: bool
         """
         return self.__controller.device_is_active()
@@ -157,7 +158,7 @@ class OLED:
         """
         Returns whether the device is currently in low power state
 
-        :return: whether the the screen is in low power mode
+        :return: whether the screen is in low power mode
         :rtype: bool
         """
         return not self.__visible
@@ -251,7 +252,7 @@ class OLED:
 
     def reset(self, force=True):
         """
-        Gives the caller access to the OLED screen (i.e. in the case the the system is
+        Gives the caller access to the OLED screen (i.e. in the case the system is
         currently rendering information to the screen) and clears the screen.
         """
         self.clear()

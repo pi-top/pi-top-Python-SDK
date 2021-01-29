@@ -7,7 +7,7 @@ if not environ.get("DISPLAY"):
     environ["DISPLAY"] = str(get_first_display())
 
 
-class KeyPressListener:
+class KeyboardButton:
     def __init__(self, key):
         """
         This class is designed to simulate a button press similar to the button in the gpiozero,

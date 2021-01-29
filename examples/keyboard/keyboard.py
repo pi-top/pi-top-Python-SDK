@@ -1,4 +1,4 @@
-from pitop.keyboard import KeyPressListener
+from pitop.keyboard import KeyboardButton
 from time import sleep
 
 
@@ -34,27 +34,27 @@ def on_right_released():
     print("right released")
 
 
-key_listener_up = KeyPressListener("up")
-key_listener_down = KeyPressListener("down")
-key_listener_left = KeyPressListener("left")
-key_listener_right = KeyPressListener("right")
-key_listener_uppercase_z = KeyPressListener("Z")
+keyboard_btn_up = KeyboardButton("up")
+keyboard_btn_down = KeyboardButton("down")
+keyboard_btn_left = KeyboardButton("left")
+keyboard_btn_right = KeyboardButton("right")
+keyboard_btn_uppercase_z = KeyboardButton("Z")
 
 # Methods will be called when key is pressed:
 
-key_listener_up.when_pressed = on_up_pressed
-key_listener_up.when_released = on_up_released
-key_listener_down.when_pressed = on_down_pressed
-key_listener_down.when_released = on_down_released
-key_listener_left.when_pressed = on_left_pressed
-key_listener_left.when_released = on_left_released
-key_listener_right.when_pressed = on_right_pressed
-key_listener_right.when_released = on_right_released
+keyboard_btn_up.when_pressed = on_up_pressed
+keyboard_btn_up.when_released = on_up_released
+keyboard_btn_down.when_pressed = on_down_pressed
+keyboard_btn_down.when_released = on_down_released
+keyboard_btn_left.when_pressed = on_left_pressed
+keyboard_btn_left.when_released = on_left_released
+keyboard_btn_right.when_pressed = on_right_pressed
+keyboard_btn_right.when_released = on_right_released
 
 # Or alternatively you can "poll" for key presses:
 
 while True:
-    if key_listener_uppercase_z.is_pressed is True:
+    if keyboard_btn_uppercase_z.is_pressed is True:
         print("Z pressed!")
 
     sleep(0.1)

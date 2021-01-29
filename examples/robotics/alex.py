@@ -6,8 +6,8 @@ from time import sleep
 # Setup robot
 robot = AlexRobot()
 
-# Use display
-robot.oled.display_multiline_text("hi!\nI'm Alex!")
+# Use miniscreen display
+robot.miniscreen.display_multiline_text("hi!\nI'm Alex!")
 
 # Move it
 robot.forward(0.5)

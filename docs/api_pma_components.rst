@@ -7,13 +7,11 @@ API - pi-top Maker Architecture (PMA) Components
 .. image:: _static/pma/robotics_kit/Alex.jpg
 
 
-The Foundation & Expansion Plates and all the parts included in the Foundation & Robotics Kit are known as the pi-top Maker Architecture (PMA). This module is designed to interact with each one of these components.
+The Foundation & Expansion Plates and all the parts included in the Foundation & Robotics Kit are known as the pi-top Maker Architecture (PMA).
 
-The component interfaces have been provided for simple use of everyday components, and are intended for general use with the devices they represent.
+Each component has a Python class associated with it.
 
-See :ref:`key_concepts:pi-top Maker Architecture` for useful information to get started with using PMA.
-
-For even more information about pi-top Maker Architecture, check out the pi-top `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_
+Check out :ref:`Key Concepts: pi-top Maker Architecture<key_concepts:pi-top Maker Architecture>` for useful information to get started with using PMA.
 
 Components
 ==========

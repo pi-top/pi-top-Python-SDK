@@ -73,28 +73,27 @@ Class Reference: USB Camera
 
 .. autoclass:: pitop.camera.Camera
 
-Keyboard
-========
 
-This module has been designed to allow a programmer to utilise keyboard input in the same way as
-they might use GPIO input (e.g. a button).
+Keyboard Button
+===============
+This class makes it easy to handle a keyboard button in the same way as a
+GPIO-based button.
 
-You can listen for any standard keyboard key input, for example by using ``a`` or ``A`` to listen
-for the A-key being pressed with or without shift.
+You can listen for any standard keyboard key input. For example, using ``a`` or ``A`` will provide the ability to 'listen' for the A-key being pressed - with or without shift.
 
 .. literalinclude:: ../examples/keyboard/keyboard.py
 
-Class Reference: Keyboard Key Press Listener
+Class Reference: KeyboardButton
 --------------------------------------------
 
-.. autoclass:: pitop.keyboard.KeyPressListener
+.. autoclass:: pitop.keyboard.KeyboardButton
 
 
 Special Key Names
 -----------------
 
 You can listen for the following special keys by passing their names when creating an instance
-of KeyPressListener.
+of KeyboardButton.
 
 ==================      ============
 Identifier              Description

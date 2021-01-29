@@ -1,8 +1,8 @@
-from pitop.miniscreen import OLED
+from pitop.miniscreen import Miniscreen
 from time import sleep
 
-oled = OLED()
+miniscreen = Miniscreen()
 # Image provided by 'pt-project-files'
-oled.display_image_file("/usr/share/pt-project-files/images/rocket.gif")
+miniscreen.display_image_file("/usr/share/pt-project-files/images/rocket.gif")
 sleep(2)
-oled.image.save("/home/pi/Desktop/My OLED Rocket.gif")
+miniscreen.image.save("/home/pi/Desktop/My Miniscreen Rocket.gif")

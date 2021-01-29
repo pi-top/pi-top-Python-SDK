@@ -1,14 +1,7 @@
-from pitop.miniscreen import (
-    UpButton,
-    DownButton,
-    SelectButton,
-    CancelButton,
-)
+from pitop.miniscreen import Miniscreen
 
-up_button = UpButton()
-down_button = DownButton()
-select_button = SelectButton()
-cancel_button = CancelButton()
+
+mini_screen = Miniscreen()
 
 
 def do_up_thing():
@@ -29,12 +22,12 @@ def select_something():
 
 # To invoke a function when the button is pressed/released,
 # you can assign the function to the 'when_pressed' or 'when_released' data member of a button
-up_button.when_pressed = do_up_thing
-down_button.when_pressed = do_down_thing
-down_button.when_released = do_another_thing
+mini_screen.up_button.when_pressed = do_up_thing
+mini_screen.down_button.when_pressed = do_down_thing
+mini_screen.down_button.when_released = do_another_thing
 
 
 # Another way to react to button events is to poll the is_pressed data member
 while True:
-    if select_button.is_pressed:
+    if mini_screen.select_button.is_pressed:
         select_something()

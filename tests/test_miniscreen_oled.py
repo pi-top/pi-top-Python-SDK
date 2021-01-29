@@ -16,7 +16,7 @@ modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
-from pitop.miniscreen import OLED
+from pitop.miniscreen import Miniscreen
 from unittest import TestCase, skip
 from PIL import Image
 from os import environ, path
@@ -36,7 +36,7 @@ class OLEDTestCase(TestCase):
         del environ["SDL_VIDEODRIVER"]
 
     def setUp(self):
-        self.oled = OLED()
+        self.oled = Miniscreen()
 
     def tearDown(self):
         pass
