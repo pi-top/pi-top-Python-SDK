@@ -118,7 +118,6 @@ The miniscreen's buttons are simple, and behave in a similar way to the other bu
 
 The :class:`pitop.miniscreen.Miniscreen` class provides these buttons as properties:
 
-.. code-block:: python
     >>> from pitop.miniscreen import Miniscreen
     >>> miniscreen = Miniscreen()
     >>> miniscreen.up_button
