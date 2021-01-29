@@ -85,9 +85,5 @@ Table of Contents
     cli_tools
     more
 
-------------------
-Indices and tables
-------------------
 
-* :ref:`genindex`
-* :ref:`modindex`
+For an alphabetized list of terms used in this SDK with links, check out the :ref:`genindex`.
