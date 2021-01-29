@@ -1,6 +1,6 @@
-======================================
-API - pi-top Maker Architecture (PMA)
-======================================
+================================================
+API - pi-top Maker Architecture (PMA) Components
+================================================
 
 .. image:: _static/pma/foundation_kit/components_spread.jpg
 

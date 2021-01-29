@@ -1,6 +1,6 @@
-===============================
-API - Core pi-top Functionality
-===============================
+===================
+API - pi-top Device
+===================
 
 All pi-tops come with some software-controllable onboard hardware. These sections of the API make it easy to access and change the state of your pi-top hardware.
 

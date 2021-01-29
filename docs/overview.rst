@@ -26,12 +26,12 @@ pi-top [4]
 Interacting with onboard pi-top [4] hardware
 ============================================
 
-pi-top [4] supports the following API sections for its onboard hardware:
+pi-top [4] supports the following API devices/components for its onboard hardware:
 
 * :ref:`Battery<api_core:pi-top Battery>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_core:pi-top [4] Miniscreen>`
 
-pi-top [4] does not support the following API sections:
+pi-top [4] does not support the following API devices/components:
 
 * :ref:`Display<api_core:pi-top Display>`
 
@@ -40,14 +40,14 @@ This is due to the fact that pi-top [4] has no attached display, and the pi-top 
 Physical computing with pi-top [4]
 ========================================
 
-pi-top [4] supports the following API sections for physical computing:
+pi-top [4] supports the following API devices/components for physical computing:
 
 * :ref:`pi-topPULSE (pulse)<api_pitop_peripherals:pi-topPULSE>`
-* :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Maker Architecture (PMA)>`
+* :ref:`pi-top Maker Architecture (PMA) Components<api_pma:API - pi-top Maker Architecture (PMA)  Components>`
 
 The pi-topPULSE can be used as a Raspberry Pi HAT with a pi-top [4]. The USB camera library can be used with any USB camera, and - whilst technically can be used with any Raspberry Pi/pi-top, was designed with the pi-top [4] and PMA in mind.
 
-pi-top [4] does not support the following API sections:
+pi-top [4] does not support the following API devices/components:
 
 * :ref:`pi-topPROTO+ (protoplus)<api_pitop_peripherals:pi-topPROTO+>`
 
@@ -62,12 +62,12 @@ pi-top laptops
 Interacting with onboard pi-top laptop hardware
 ===============================================
 
-pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for their onboard hardware:
+pi-top laptops (Original pi-top and pi-top [3]) support the following API devices/components for their onboard hardware:
 
 * :ref:`Battery<api_core:pi-top Battery>`
 * :ref:`Display<api_core:pi-top Display>`
 
-pi-top laptops does not support the following API sections:
+pi-top laptops does not support the following API devices/components:
 
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_core:pi-top [4] Miniscreen>`
 
@@ -76,7 +76,7 @@ This is due to the fact that pi-top laptops do not include the pi-top [4]'s mini
 Using peripherals with a pi-top laptop
 ========================================
 
-pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for use with peripherals:
+pi-top laptops (Original pi-top and pi-top [3]) support the following API devices/components for use with peripherals:
 
 * :ref:`pi-topPROTO+ (protoplus)<api_pitop_peripherals:pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pitop_peripherals:pi-topPULSE>`
@@ -85,9 +85,9 @@ Note that the USB camera library works with any pi-top with a USB camera connect
 
 pi-topSPEAKER support is provided automagically by pt-device-manager, and so there is no exposed API for this.
 
-pi-top laptops does not support the following API sections:
+pi-top laptops does not support the following API devices/components:
 
-* :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Maker Architecture (PMA)>`
+* :ref:`pi-top Maker Architecture (PMA) Components<api_pma:API - pi-top Maker Architecture (PMA)  Components>`
 
 This is due to the fact that PMA is only available for pi-top [4].
 
@@ -98,11 +98,11 @@ pi-topCEED
 Interacting with onboard pi-topCEED hardware
 ============================================
 
-pi-top laptops (Original pi-top and pi-top [3]) support the following API sections for their onboard hardware:
+pi-top laptops (Original pi-top and pi-top [3]) support the following API devices/components for their onboard hardware:
 
 * :ref:`Display<api_core:pi-top Display>`
 
-pi-top laptops does not support the following API sections:
+pi-top laptops does not support the following API devices/components:
 
 * :ref:`Battery<api_core:pi-top Battery>`
 * :ref:`pi-top [4] Miniscreen - OLED and buttons (miniscreen)<api_core:pi-top [4] Miniscreen>`
@@ -112,7 +112,7 @@ This is due to the fact that pi-topCEED does not include a battery or the pi-top
 Using peripherals with a pi-topCEED
 ========================================
 
-pi-topCEED supports the following API sections for use with peripherals:
+pi-topCEED supports the following API devices/components for use with peripherals:
 
 * :ref:`pi-topPROTO+ (protoplus)<api_pitop_peripherals:pi-topPROTO+>`
 * :ref:`pi-topPULSE (pulse)<api_pitop_peripherals:pi-topPULSE>`
@@ -121,8 +121,8 @@ Note that the USB camera library works with any pi-top with a USB camera connect
 
 pi-topSPEAKER support is provided automagically by pt-device-manager, and so there is no exposed API for this.
 
-pi-topCEED does not support the following API sections:
+pi-topCEED does not support the following API devices/components:
 
-* :ref:`pi-top Maker Architecture (pma)<api_pma:API - pi-top Maker Architecture (PMA)>`
+* :ref:`pi-top Maker Architecture (PMA) Components<api_pma:API - pi-top Maker Architecture (PMA)  Components>`
 
 This is due to the fact that PMA is only available for pi-top [4].
