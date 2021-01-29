@@ -78,9 +78,9 @@ Table of Contents
     overview
     key_concepts
     recipes_api
-    api_core
-    api_pma
-    api_pitop_peripherals
+    api_pitop_device
+    api_pma_components
+    api_pitop_peripheral_devices
     api_system_devices
     cli_tools
     more
