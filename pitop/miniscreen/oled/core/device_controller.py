@@ -7,6 +7,8 @@ from pitopcommon.ptdm import (
     PTDMSubscribeClient,
 )
 
+from os import getenv
+
 from luma.core.interface.serial import spi
 from luma.oled.device import sh1106
 
@@ -30,11 +32,10 @@ class OledDeviceController:
     #
     # this is only necessary to support users with SPI0 on device
     # with older SDK version that only supported SPI1
-    def __init__(self, redraw_last_image_func, exclusive_mode):
+    def __init__(self, redraw_last_image_func):
         self.__redraw_last_image_func = redraw_last_image_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
-        self.__exclusive_mode = exclusive_mode
         self.lock = PTLock("pt-oled")
 
         self.__ptdm_subscribe_client = None
@@ -67,7 +68,7 @@ class OledDeviceController:
             request_client.send_message(message)
 
     def __setup_device(self):
-        if self.__exclusive_mode:
+        if getenv('PT_SDK_MINISCREEN_SYSTEM', 0) != 1:
             self.lock.acquire()
             atexit.register(self.reset_device)
 
