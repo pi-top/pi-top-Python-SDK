@@ -1,5 +1,4 @@
 from .oled import OLED
-from .buttons import MiniscreenButton
 
 from pitopcommon.ptdm import (
     PTDMSubscribeClient,
@@ -66,7 +65,7 @@ class Miniscreen(OLED):
         Gets the up button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the up button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.buttons.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
         """
         return self._up_button
 
@@ -76,7 +75,7 @@ class Miniscreen(OLED):
         Gets the down button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the down button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.buttons.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
         """
         return self._down_button
 
@@ -86,7 +85,7 @@ class Miniscreen(OLED):
         Gets the select button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the select button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.buttons.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
         """
         return self._select_button
 
@@ -96,6 +95,65 @@ class Miniscreen(OLED):
         Gets the cancel button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the cancel button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.buttons.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
         """
         return self._cancel_button
+
+
+class MiniscreenButton:
+    """
+    Represents one of the 4 buttons around the miniscreen display on a pi-top [4].
+    Should not be created directly - instead, use :class:`pitop.miniscreen.Miniscreen`.
+    """
+
+    def __init__(self):
+        # State parameters
+        self._is_pressed = False
+        # Event-based functions
+        self._when_pressed = None
+        self._when_released = None
+
+    @property
+    def is_pressed(self):
+        """
+        Get or set the button state as a boolean value.
+
+        :rtype: bool
+        """
+        return self._is_pressed
+
+    @is_pressed.setter
+    def is_pressed(self, value):
+        self._is_pressed = value
+
+    @property
+    def when_pressed(self):
+        """
+        Get or set the 'when pressed' button state callback function.
+        When set, this callback function will be invoked when this event happens.
+
+        :type callback: Function
+        :param callback:
+            Callback function to run when a button is pressed.
+        """
+        return self._when_pressed
+
+    @when_pressed.setter
+    def when_pressed(self, callback):
+        self._when_pressed = callback
+
+    @property
+    def when_released(self):
+        """
+        Get or set the 'when released' button state callback function.
+        When set, this callback function will be invoked when this event happens.
+
+        :type callback: Function
+        :param callback:
+            Callback function to run when a button is released.
+        """
+        return self._when_released
+
+    @when_released.setter
+    def when_released(self, callback):
+        self._when_released = callback
