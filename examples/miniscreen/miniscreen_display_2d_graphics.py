@@ -73,10 +73,10 @@ miniscreen.display_image(image)
 clear()
 
 print("Drawing some text")
-canvas.multiline_text(
+canvas.text(
     (0, 0),
-    "Hello World!",
-    font=ImageFont.truetype("/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf", size=25),
+    "Hello\nWorld!",
+    font=ImageFont.load_default(),
     fill=1
 )
 miniscreen.display_image(image)
