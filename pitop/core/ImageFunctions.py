@@ -13,12 +13,6 @@ from urllib.request import urlopen
 from pitopcommon.formatting import is_url
 
 
-def __image_has_3_channels(image):
-    if not isinstance(image, ndarray):
-        image = asarray(image)
-    return len(image.shape) > 2 and image.shape[2] == 3
-
-
 def convert(image, format="PIL"):
     assert isinstance(format, str)
     format = format.lower()
@@ -35,7 +29,7 @@ def convert(image, format="PIL"):
             cv_image = cvtColor(cv_image, COLOR_RGB2BGR)
         return cv_image
     elif isinstance(image, ndarray) and format == "pil":
-        if __image_has_3_channels(image):
+        if len(image.shape) > 2 and image.shape[2] == 3:
             image = cvtColor(image, COLOR_BGR2RGB)
         return Image.fromarray(image)
 
