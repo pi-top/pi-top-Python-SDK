@@ -24,16 +24,16 @@ def convert(image, format="PIL"):
     format = format.lower()
     assert format in ("pil", "opencv")
 
-    if ([
+    if any([
         isinstance(image, Image.Image) and format == "pil",
         isinstance(image, ndarray) and format == "opencv"
     ]):
         return image
     elif isinstance(image, Image.Image) and format == "opencv":
-        image = asarray(image)
-        if __image_has_3_channels(image) and image.mode == "RGB":
-            image = cvtColor(image, COLOR_RGB2BGR)
-        return image
+        cv_image = asarray(image)
+        if image.mode == "RGB":
+            cv_image = cvtColor(cv_image, COLOR_RGB2BGR)
+        return cv_image
     elif isinstance(image, ndarray) and format == "pil":
         if __image_has_3_channels(image):
             image = cvtColor(image, COLOR_BGR2RGB)
