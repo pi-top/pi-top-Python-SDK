@@ -38,7 +38,24 @@ class OledCLI(CliBaseClass):
             return file_path
 
         try:
-            if self.args.oled_subcommand == "display":
+            if self.args.oled_subcommand == "capture":
+                oled = Miniscreen(_exclusive_mode=True)
+
+                if self.args.capture_subcommand == "save":
+                    file_path = path_to_stored_file(self.args.path)
+                    extension = "PNG"
+                    print(f"Saving capture to {file_path}.{extension}")
+                    oled.canvas.save(f"{file_path}.{extension}")
+                elif self.args.capture_subcommand == "start":
+                    file_path = path_to_stored_file(self.args.path)
+                    print(f"Saving video capture to {self.args.path}")
+                elif self.args.capture_subcommand == "stop":
+                    print("Stopping video capture")
+
+            elif self.args.oled_subcommand == "contrast":
+                pass
+
+            elif self.args.oled_subcommand == "display":
                 # Do take control of OLED to display
                 oled = Miniscreen(_exclusive_mode=True)
 
@@ -60,6 +77,15 @@ class OledCLI(CliBaseClass):
                 except KeyboardInterrupt:
                     pass
 
+            elif self.args.oled_subcommand == "off":
+                pass
+
+            elif self.args.oled_subcommand == "on":
+                pass
+
+            elif self.args.oled_subcommand == "sleep_time":
+                pass
+
             elif self.args.oled_subcommand == "spi":
                 # Do not take control of OLED just to change its internal state
                 oled = Miniscreen(_exclusive_mode=False)
@@ -68,18 +94,6 @@ class OledCLI(CliBaseClass):
                     oled.spi_bus = self.args.spi_bus
                 else:
                     print(oled.spi_bus)
-
-            elif self.args.oled_subcommand == "capture":
-                if self.args.capture_subcommand == "save":
-                    file_path = path_to_stored_file(self.args.path)
-                    extension = "PNG"
-                    print(f"Saving capture to {file_path}.{extension}")
-                    oled.canvas.save(f"{file_path}.{extension}")
-                elif self.args.capture_subcommand == "start":
-                    file_path = path_to_stored_file(self.args.path)
-                    print(f"Saving video capture to {self.args.path}")
-                elif self.args.capture_subcommand == "stop":
-                    print("Stopping video capture")
 
             return 0
         except Exception as e:
