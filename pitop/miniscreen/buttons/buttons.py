@@ -7,6 +7,7 @@ from pitopcommon.ptdm import (
 from pitopcommon.lock import PTLock
 from pitopcommon.singleton import Singleton
 
+from os import getenv
 import atexit
 
 
@@ -29,13 +30,11 @@ class Buttons(metaclass=Singleton):
     SELECT = "SELECT"
     CANCEL = "CANCEL"
 
-    def __init__(self, _exclusive_mode=True):
+    def __init__(self):
         self.up = MiniscreenButtonLegacy(self.UP)
         self.down = MiniscreenButtonLegacy(self.DOWN)
         self.select = MiniscreenButtonLegacy(self.SELECT)
         self.cancel = MiniscreenButtonLegacy(self.CANCEL)
-
-        self.__exclusive_mode = _exclusive_mode
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -43,7 +42,8 @@ class Buttons(metaclass=Singleton):
         atexit.register(self.__clean_up)
 
         self.lock = PTLock("pt-buttons")
-        if self.__exclusive_mode:
+
+        if getenv('PT_MINISCREEN_SYSTEM', "0") != "1":
             self.lock.acquire()
 
     @property
