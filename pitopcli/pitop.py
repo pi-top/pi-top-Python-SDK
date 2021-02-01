@@ -54,9 +54,7 @@ def run(args):
         pass
     except PitopCliInvalidArgument:
         if cli:
-            print(
-                cli.parser.print_help()
-            )
+            cli.parser.print_help()
     except Exception as e:
         print(f"Error on pitop.run: {e}")
         pass
