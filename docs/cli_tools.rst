@@ -34,7 +34,7 @@ Where:
         Expansion Plate IMU utilities
 
     oled:
-        Quickly display text in pi-top [4]'s OLED screen
+        Quickly display text in pi-top [4]'s miniscreen OLED display
 
 
 pi-top battery
@@ -117,7 +117,8 @@ pi-top display brightness
 
 Request or change the value of the display's brightness.
 
-Note: this only works for the original pi-top, pi-topCEED and pi-top [3]. The pi-top [4] Full HD Touch Display uses hardware buttons to control the brightness, and is not controllable via this SDK.
+.. note::
+   This only works for the original pi-top, pi-topCEED and pi-top [3]. The pi-top [4] Full HD Touch Display uses hardware buttons to control the brightness, and is not controllable via this SDK.
 
 .. code-block:: bash
 
@@ -145,7 +146,8 @@ brightness_value
 
 Using `pi-top display brightness` without arguments will return the current brightness value.
 
-Note that the `brightness_value` range differs for different devices: for pi-top [3] is from 0-16; pi-top [1] and CEED is 0-10.
+.. note::
+   The `brightness_value` range differs for different devices: for pi-top [3] is from 0-16; pi-top [1] and CEED is 0-10.
 
 
 Example:
@@ -292,7 +294,7 @@ Example:
 pi-top oled
 ==================
 
-Configure and display text/images directly onto pi-top [4]'s OLED screen.
+Configure and display text/images directly onto pi-top [4]'s miniscreen OLED display.
 
 .. code-block:: bash
 
@@ -315,7 +317,7 @@ spi
 pi-top oled display
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Display text and images directly onto pi-top [4]'s OLED screen.
+Display text and images directly onto pi-top [4]'s miniscreen OLED display.
 
 .. code-block:: bash
 

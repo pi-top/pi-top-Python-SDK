@@ -1,5 +1,10 @@
 from pitop.camera import Camera
-from time import sleep
+from time import (
+    localtime,
+    sleep,
+    strftime,
+)
+
 from datetime import datetime
 
 # Example code for Camera
@@ -18,20 +23,18 @@ def motion_detected():
     if cam.is_recording() is False:
 
         print("Motion detected! Starting recording...")
-        cam.start_video_capture()
+        output_file_name = f"/home/pi/Desktop/My Motion Recording {strftime('%Y-%m-%d %H:%M:%S', localtime(last_motion_detected))}.avi"
+        cam.start_video_capture(output_file_name=output_file_name)
 
         while (datetime.now().timestamp() - last_motion_detected) < 3:
             sleep(1)
 
         cam.stop_video_capture()
-        print("Recording completed")
-
-    else:
-        print("Further motion detected. Continue recording...")
+        print(f"Recording completed - saved to {output_file_name}")
 
 
 print("Motion detector starting...")
-cam.start_detecting_motion(motion_detected, 350)
+cam.start_detecting_motion(callback_on_motion=motion_detected, moving_object_minimum_area=350)
 
 sleep(60)
 

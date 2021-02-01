@@ -52,6 +52,8 @@ Recommends:
 # Required for OLED examples
  pt-project-files,
 Suggests:
+# OLED system menu is optional, but useful for [4] users
+ pt-sys-oled,
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
 Breaks:

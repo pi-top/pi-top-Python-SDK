@@ -4,7 +4,7 @@ from time import sleep, strftime
 
 from pitopcommon.formatting import is_url
 
-from pitop.miniscreen import OLED
+from pitop.miniscreen import Miniscreen
 from .cli_base import CliBaseClass, PitopCliInvalidArgument
 
 
@@ -40,7 +40,7 @@ class OledCLI(CliBaseClass):
         try:
             if self.args.oled_subcommand == "display":
                 # Do take control of OLED to display
-                oled = OLED(_exclusive_mode=True)
+                oled = Miniscreen(_exclusive_mode=True)
 
                 if self.args.force:
                     oled.set_control_to_pi()
@@ -62,7 +62,7 @@ class OledCLI(CliBaseClass):
 
             elif self.args.oled_subcommand == "spi":
                 # Do not take control of OLED just to change its internal state
-                oled = OLED(_exclusive_mode=False)
+                oled = Miniscreen(_exclusive_mode=False)
 
                 if self.args.spi_bus is not None:
                     oled.spi_bus = self.args.spi_bus

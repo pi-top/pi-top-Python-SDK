@@ -19,6 +19,23 @@ from time import sleep
 
 
 class AlexRobot(PiTop):
+    """
+    Abstraction of a pi-top [4] and Robotics Kit, assembled in an 'Alex' configuration.
+
+    Inherits from :class:`PiTop`: all methods, attributes and properties from that
+    class are also available through an `AlexRobot` object. This class builds on top of
+    :class:`PiTop` to make available to the user all the methods to move the robot and
+    to interact with all the features available in a pi-top [4].
+
+    :param int camera_device_index: ID of the video capturing device to open. To open the default camera, use 0.
+    :param tuple camera_resolution: Tuple with the camera resolution, as (width, height). Defaults to (640, 480).
+    :param str ultrasonic_sensor_port: Port where the ultrasonic sensor is connected.
+    :param str motor_left_port: Port where the left wheel motor is connected.
+    :param str motor_right_port: Port where the right wheel motor is connected.
+    :param str servo_pan_port: Port where the servo motor used to pan the camera is connected.
+    :param int servo_tilt_port: Port where the servo motor used to tilt the camera is connected.
+
+    """
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
     CALIBRATION_FILE_NAME = "alex.conf"
 
@@ -31,7 +48,6 @@ class AlexRobot(PiTop):
                  servo_pan_port="S0",
                  servo_tilt_port="S3",
                  ):
-
         super().__init__()
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
@@ -51,33 +67,101 @@ class AlexRobot(PiTop):
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
 
     def forward(self, speed_factor, hold=False):
+        """
+        Move the robot forward.
+
+        :param float speed_factor:
+            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+            Using negative values will cause the robot to move backwards.
+        :param bool hold:
+            Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
+        """
         self._drive_controller.forward(speed_factor, hold)
 
     def backward(self, speed_factor, hold=False):
+        """
+        Move the robot backward.
+
+        :param float speed_factor:
+            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+            Using negative values will cause the robot to move forwards.
+        :param bool hold:
+            Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
+        """
         self._drive_controller.backward(speed_factor, hold)
 
     def left(self, speed_factor, turn_radius=0):
+        """
+        Make the robot move to the left, using a circular trajectory.
+
+        :param float speed_factor:
+            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+            Using negative values will cause the robot to turn right.
+        :param float turn_radius:
+            Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
+        """
         self._drive_controller.left(speed_factor, turn_radius)
 
     def right(self, speed_factor, turn_radius=0):
+        """
+        Make the robot move to the right, using a circular trajectory.
+
+        :param float speed_factor:
+            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+            Using negative values will cause the robot to turn left.
+        :param float turn_radius:
+            Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
+        """
         self._drive_controller.right(speed_factor, turn_radius)
 
     def rotate(self, angle, time_to_take):
+        """
+        Rotate the robot in place by a given angle and stop.
+
+        :param float angle: Angle of the turn.
+        :param float time_to_take: Expected duration of the rotation, in seconds.
+        """
+        assert time_to_take > 0.0
         angle_radians = radians(angle)
         angular_speed = angle_radians / time_to_take
         self._drive_controller.rotate(angle, angular_speed)
         sleep(time_to_take)
 
     def stop_rotation(self):
+        """
+        Stops any angular movement performed by the robot.
+
+        In the case where linear and rotational movements are being performed at
+        the same time (e.g.: during a left turn with a turn radius different to 0),
+        calling this method will cause the robot to continue the linear movement,
+        so it will continue to move forward.
+        """
         self._drive_controller.stop_rotation()
 
     def stop(self):
+        """
+        Completely stops the robot.
+        """
         self._drive_controller.stop()
 
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
 
     def calibrate(self, save=True, reset=False):
+        """
+        Calibrates the robot to work in optimal conditions.
+
+        Based on the provided arguments, it will either load the calibration
+        values stored in the pi-top, or it will run the calibration process,
+        requesting the user input in an interactive fashion.
+
+        :param bool reset:
+            If `true`, the existing calibration values will be reset, and the calibration process will be started.
+            If set to `false`, the calibration values will be retrieved from the calibration file.
+        :param bool save:
+            If `reset` is `true`, this parameter will cause the calibration values to be stored to the calibration file if set to `true`.
+            If `save=False`, the calibration values will only be used for the current session.
+        """
         if not reset and exists(self.__calibration_file_path):
             return self.__load_calibration()
 

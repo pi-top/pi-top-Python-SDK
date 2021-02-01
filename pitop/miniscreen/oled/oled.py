@@ -28,7 +28,7 @@ from time import sleep
 
 class OLED:
     """
-    Provides access to the OLED screen on the pi-top [4], and exposes methods
+    Provides access to the miniscreen display on the pi-top [4], and exposes methods
     for simple rendering of text or images to the screen.
     """
 
@@ -62,9 +62,24 @@ class OLED:
         register(self.__cleanup)
 
     def prepare_image(self, image_to_prepare):
+        """
+        Formats the given image into one that can be used directly by the OLED.
+
+        :type image_to_prepare: :class:`PIL.Image.Image`
+        :param image_to_prepare: Image to be formatted.
+        :rtype: :class:`PIL.Image.Image`
+        """
         return self.canvas.process_image(image_to_prepare)
 
     def should_redisplay(self, image_to_display=None):
+        """
+        Determines if the miniscreen display needs to be refreshed, based on the provided image.
+        If no image is provided, the content of the display's deprecated internal canvas property will be used.
+
+        :type image_to_display: :class:`PIL.Image.Image` or None
+        :param image_to_display: Image to be displayed.
+        :rtype: bool
+        """
         # Use canvas image if no image is offered
         if image_to_display is None:
             image_to_display = self._image
@@ -74,26 +89,54 @@ class OLED:
 
     @property
     def spi_bus(self):
+        """
+        Gets the SPI bus used by the miniscreen display to receive data as an integer.
+        Setting this property will modify the SPI bus that the OLED uses.
+        You might notice a flicker in the screen.
+
+        :param int bus: Number of the SPI bus for the OLED to use. Accepted values are `0` or `1`.
+        """
         return self.__controller.spi_bus
 
     @spi_bus.setter
     def spi_bus(self, bus):
+        assert bus in (0, 1)
         self.__controller.spi_bus = bus
 
     @property
     def device(self):
+        """
+        Gets the miniscreen display device instance.
+
+        :rtype: :class:`luma.oled.device.sh1106`
+        """
         return self.__controller.get_device()
 
     @property
     def size(self):
+        """
+        Gets the size of the miniscreen display as a (width, height) tuple.
+
+        :rtype: tuple
+        """
         return self.device.size
 
     @property
     def width(self):
+        """
+        Gets the width of the miniscreen display.
+
+        :rtype: int
+        """
         return self.size[0]
 
     @property
     def height(self):
+        """
+        Gets the height of the miniscreen display.
+
+        :rtype: int
+        """
         return self.size[1]
 
     @property
@@ -102,26 +145,39 @@ class OLED:
 
     @property
     def is_active(self):
+        """
+        Determine if the current OLED instance is in control of the OLED hardware.
+
+        :return: whether the OLED instance is in control of the OLED hardware.
+        :rtype: bool
+        """
         return self.__controller.device_is_active()
 
     @property
     def visible(self):
         """
-        Returns whether the device is currently in low power state
-        :return: whether the the screen is in low power mode
+        Gets whether the device is currently in low power state.
+
+        :return: whether the screen is in low power mode
         :rtype: bool
         """
         return not self.__visible
 
     def set_control_to_pi(self):
+        """
+        Signals the pi-top hub to give control of the miniscreen display to the Raspberry Pi.
+        """
         self.__controller.set_control_to_pi()
 
     def set_control_to_hub(self):
+        """
+        Signals the pi-top hub to take control of the miniscreen display.
+        """
         self.__controller.set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """
-        Set the maximum frames per second that the OLED screen can
+        Set the maximum frames per second that the miniscreen display can
         display. This method can be useful to control or limit the speed
         of animations.
 
@@ -134,7 +190,7 @@ class OLED:
 
     def show(self):
         """
-        The pi-top OLED display comes out of low power mode showing the
+        The miniscreen display comes out of low power mode showing the
         previous image shown before hide() was called (so long as display()
         has not been called)
         """
@@ -143,7 +199,7 @@ class OLED:
 
     def hide(self):
         """
-        The pi-top OLED display is put into low power mode. The previously
+        The miniscreen display is put into low power mode. The previously
         shown image will re-appear when show() is given, even if the
         internal frame buffer has been changed (so long as display() has not
         been called).
@@ -152,17 +208,33 @@ class OLED:
         self.__visible = False
 
     def contrast(self, new_contrast_value):
+        """
+        Sets the contrast value of the miniscreen display to the provided value.
+
+        :param int new_contrast_value: contrast value to set, between 0 and 255.
+        """
         assert new_contrast_value in range(0, 256)
 
         self.device.contrast(new_contrast_value)
 
     def wake(self):
+        """
+        The miniscreen display is set to high contrast mode, without modifying
+        the content of the screen
+        """
         self.contrast(255)
 
     def sleep(self):
+        """
+        The miniscreen display in set to low contrast mode, without modifying
+        the content of the screen.
+        """
         self.contrast(0)
 
     def clear(self):
+        """
+        Clears any content displayed in the miniscreen display.
+        """
         self.canvas.rectangle(self.bounding_box, fill=0)
         self.__display(self._image, force=True)
 
@@ -180,7 +252,7 @@ class OLED:
 
     def reset(self, force=True):
         """
-        Gives the caller access to the OLED screen (i.e. in the case the the system is
+        Gives the caller access to the miniscreen display (i.e. in the case the system is
         currently rendering information to the screen) and clears the screen.
         """
         self.clear()
@@ -195,8 +267,8 @@ class OLED:
         """
         Render a static image to the screen from a file or URL at a given position.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
-        `xy` position parameter, e.g. `top_left`, `top_right`.
+        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
+        specifying the `xy` position parameter.
 
         :param str file_path_or_url: A file path or URL to the image
         :param tuple xy: The position on the screen to render the image. If not
@@ -205,7 +277,7 @@ class OLED:
         """
         self.display_image(ImageFunctions.get_pil_image_from_path(file_path_or_url), xy)
 
-    # TODO: add 'size' parameter for images being rendered to canvas
+    # TODO: add 'size' parameter
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
     def display_image(self, image, xy=None):
         """
@@ -221,8 +293,8 @@ class OLED:
         """
         Renders a single line of text to the screen at a given position and size.
 
-        The helper methods in the pitop.miniscreen.oled.core.Canvas class can be used to specify the
-        position, e.g. `top_left`, `top_right`.
+        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
+        specifying the `xy` position parameter.
 
         :param string text: The text to render
         :param tuple xy: The position on the screen to render the image. If not
@@ -267,8 +339,8 @@ class OLED:
         Renders multi-lined text to the screen at a given position and size. Text that
         is too long for the screen will automatically wrap to the next line.
 
-        The helper methods in the `pitop.miniscreen.oled.core.Canvas` class can be used to specify the
-        position, e.g. `top_left`, `top_right`.
+        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
+        specifying the `xy` position parameter.
 
         :param string text: The text to render
         :param tuple xy: The position on the screen to render the image. If not
@@ -364,9 +436,9 @@ class OLED:
     @property
     def bounding_box(self):
         """
-        Gets the bounding box of the pi-top OLED display.
+        Gets the bounding box of the miniscreen display.
 
-        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :return: The device's bounding box as an (top-left x, top-left y, bottom-right x, bottom-right y) tuple.
         :rtype: tuple
         """
         return self.device.bounding_box
@@ -374,9 +446,9 @@ class OLED:
     @property
     def center(self):
         """
-        Gets the center of the pi-top OLED display.
+        Gets the center of the miniscreen display.
 
-        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -387,9 +459,9 @@ class OLED:
     @property
     def top_left(self):
         """
-        Gets the top left corner of the pi-top OLED display.
+        Gets the top left corner of the miniscreen display.
 
-        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -400,9 +472,9 @@ class OLED:
     @property
     def top_right(self):
         """
-        Gets the top-right corner of the pi-top OLED display.
+        Gets the top-right corner of the miniscreen display.
 
-        :return: The top-right coordinates of the canvas bounding box as a tuple
+        :return: The coordinates of the top right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -413,9 +485,9 @@ class OLED:
     @property
     def bottom_left(self):
         """
-        Gets the bottom-left corner of the pi-top OLED display.
+        Gets the bottom-left corner of the miniscreen display.
 
-        :return: The bottom-left coordinates of the canvas bounding box as a tuple
+        :return: The coordinates of the bottom left of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -426,9 +498,9 @@ class OLED:
     @property
     def bottom_right(self):
         """
-        Gets the bottom-right corner of the pi-top OLED display.
+        Gets the bottom-right corner of the miniscreen display.
 
-        :return: The bottom-right coordinates of the canvas bounding box as a tuple
+        :return: The coordinates of the bottom right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -443,6 +515,9 @@ class OLED:
         """
         Displays what is on the current canvas to the screen as a single frame.
 
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
         This method does not need to be called when using the other `draw`
         functions in this class, but is used when the caller wants to use
         the *canvas* object to draw composite objects and then render them
@@ -452,22 +527,45 @@ class OLED:
         self.__display(self._image)
 
     def draw(self):
+        """
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        Calls :func:`display`.
+
+        """
         print("'draw()' is now deprecated. Using 'display()'...")
         self.display()
 
     def draw_image_file(self, file_path_or_url, xy=None):
+        """
+        .. warning::
+            This method is deprecated in favor of :func:`display_image_file`, and will be deleted on the next major release of the SDK.
+        """
         print("draw_image_file is now deprecated. Using display_image_file...")
         self.display_image_file(file_path_or_url, xy)
 
     def draw_image(self, image, xy=None):
+        """
+        .. warning::
+            This method is deprecated in favor of :func:`display_image`, and will be deleted on the next major release of the SDK.
+        """
         print("draw_image is now deprecated. Using display_image...")
         self.display_image(image, xy)
 
     def draw_text(self, text, xy=None, font_size=None):
+        """
+        .. warning::
+            This method is deprecated in favor of :func:`display_text`, and will be deleted on the next major release of the SDK.
+        """
         print("draw_text is now deprecated. Using display_text...")
         self.display_text(text, xy, font_size)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
+        """
+        .. warning::
+            This method is deprecated in favor of :func:`display_multiline_text`, and will be deleted on the next major release of the SDK.
+        """
         print("draw_multiline_text is now deprecated. Using display_multiline_text...")
         self.display_multiline_text(text, xy, font_size)
 

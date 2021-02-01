@@ -2,58 +2,31 @@
 Recipes
 =====================================================
 
+In addition to the examples provided for each component/device in the API reference section of this documentation, the following recipes demonstrate some of the more advanced capabilities of the pi-top Python SDK. In particular, these recipes focus on practical use-cases that make use of multiple components/devices within the pi-top Python SDK.
+
+Be sure to check out each component/device separately for simple examples of how to use them.
+
 PMA: Using a Button to Control an LED
 -------------------------------------
 
 .. literalinclude:: ../examples/pma/button_led.py
 
-Adding Motion Detection to a USB Camera
----------------------------------------
-
-.. literalinclude:: ../examples/camera/camera_motion_detector.py
-
-Processing Camera Frames with OpenCV
----------------------------------------
-
-.. literalinclude:: ../examples/camera/camera_opencv_processing.py
-
-Processing Camera Frames in the Background
-------------------------------------------
-
-.. literalinclude:: ../examples/camera/camera_background_processing.py
-
-PMA (with Robotics Kit): Rover
-------------------------------
+Robotics Kit: DIY Rover
+-----------------------
 
 .. literalinclude:: ../examples/pma/encoder_motor_rover.py
 
-PMA (with Robotics Kit): Line detection
----------------------------------------
+Robotics Kit: Alex Robot - Moving Randomly
+------------------------------------------
 
-.. literalinclude:: ../examples/robotics/line_detection.py
+.. literalinclude:: ../examples/robotics/alex_move_random.py
 
-PMA (with Robotics Kit): Alex Robot
------------------------------------
+Robotics Kit: Alex Robot - Line Detection
+-----------------------------------------
 
-.. literalinclude:: ../examples/robotics/alex.py
+.. literalinclude:: ../examples/robotics/alex_line_detect.py
 
-pi-topPULSE: Fancy Light Show!
-------------------------------
-
-.. literalinclude:: ../examples/pulse/leds-fancy_demo.py
-
-
-pi-topPULSE: Show battery level
--------------------------------
+Using the pi-topPULSE's LED matrix to show the battery level
+------------------------------------------------------------
 
 .. literalinclude:: ../examples/pulse/leds-battery.py
-
-pi-topPULSE: Show CPU temperature
----------------------------------
-
-.. literalinclude:: ../examples/pulse/leds-cpu_temp.py
-
-pi-topPULSE: Show CPU usage
----------------------------------
-
-.. literalinclude:: ../examples/pulse/leds-cpu_usage.py

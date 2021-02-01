@@ -76,14 +76,14 @@ modules available in the library:
 
     from time import sleep
     from pitop.pma import UltrasonicSensor
-    from pitop.miniscreen import OLED
+    from pitop.miniscreen import Miniscreen
 
-    oled = OLED()
+    miniscreen = Miniscreen()
     utrasonic = PMAUltrasonicSensor("D1")
 
     while True:
         distance = utrasonic.distance
-        oled.display_multiline_text(str(distance))
+        miniscreen.display_multiline_text(str(distance))
         sleep(0.1)
 
 Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.

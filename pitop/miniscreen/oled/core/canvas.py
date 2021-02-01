@@ -204,7 +204,7 @@ class Canvas:
         """
         Draws a line between the coordinates in the **xy** list.
 
-        :param tuple xy: Sequence of either 2-tuples like ``[(x, y), (x, y), ...]`` or
+        :param tuple xy: Sequence of either 2-tuples like ``[(x,y), (x,y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         :param width: The line width, in pixels
@@ -230,7 +230,7 @@ class Canvas:
         """
         Draws points (individual pixels) at the given coordinates.
 
-        :param tuple xy: Sequence of either 2-tuples like ``[(x, y), (x, y), ...]`` or
+        :param tuple xy: Sequence of either 2-tuples like ``[(x,y), (x,y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         """
@@ -244,7 +244,7 @@ class Canvas:
         coordinates, plus a straight line between the last and the first
         coordinate.
 
-        :param tuple xy: Sequence of either 2-tuples like ``[(x, y), (x, y), ...]`` or
+        :param tuple xy: Sequence of either 2-tuples like ``[(x,y), (x,y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
         :param int fill: Color to use (1 pixel "on", 0 pixel "off")
         """
