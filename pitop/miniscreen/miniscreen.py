@@ -12,7 +12,7 @@ class Miniscreen(OLED):
     """
     Represents a pi-top [4]'s miniscreen display.
     Also owns the surrounding 4 buttons as properties (:class:`up_button`, :class:`down_button`, :class:`select_button`, :class:`cancel_button`).
-    See :class:`pitop.miniscreen.buttons.MiniscreenButton` for how to use these buttons.
+    See :class:`pitop.miniscreen.MiniscreenButton` for how to use these buttons.
     """
 
     def __init__(self, _exclusive_mode=True):

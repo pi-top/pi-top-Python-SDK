@@ -121,13 +121,13 @@ The :class:`pitop.miniscreen.Miniscreen` class provides these buttons as propert
     >>> from pitop.miniscreen import Miniscreen
     >>> miniscreen = Miniscreen()
     >>> miniscreen.up_button
-    <pitop.miniscreen.MiniscreenButton object at 0xb3e44e50>
+    <pitop.miniscreen.miniscreen.MiniscreenButton object at 0xb3e44e50>
     >>> miniscreen.down_button
-    <pitop.miniscreen.MiniscreenButton object at 0xb3e44d30>
+    <pitop.miniscreen.miniscreen.MiniscreenButton object at 0xb3e44d30>
     >>> miniscreen.select_button
-    <pitop.miniscreen.MiniscreenButton object at 0xb3e44e90>
+    <pitop.miniscreen.miniscreen.MiniscreenButton object at 0xb3e44e90>
     >>> miniscreen.cancel_button
-    <pitop.miniscreen.MiniscreenButton object at 0xb3e44e70>
+    <pitop.miniscreen.miniscreen.MiniscreenButton object at 0xb3e44e70>
 
 Here is an example demonstrating 2 ways to make use of these buttons:
 

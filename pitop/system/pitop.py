@@ -75,7 +75,7 @@ class PiTop(metaclass=Singleton):
     @property
     def up_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.UpButton` object to interact with
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
         the miniscreen up button.
 
         This will return None if not on a pi-top [4].
@@ -85,7 +85,7 @@ class PiTop(metaclass=Singleton):
     @property
     def down_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.DownButton` object to interact with
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
         the miniscreen down button.
 
         This will return None if not on a pi-top [4].
@@ -95,7 +95,7 @@ class PiTop(metaclass=Singleton):
     @property
     def select_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.SelectButton` object to interact with
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
         the miniscreen select button.
 
         This will return None if not on a pi-top [4].
@@ -106,7 +106,7 @@ class PiTop(metaclass=Singleton):
     @property
     def cancel_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.buttons.CancelButton` object to interact with
+        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
         the miniscreen cancel button.
 
         This will return None if not on a pi-top [4].
