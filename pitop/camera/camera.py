@@ -224,7 +224,7 @@ class Camera:
         image = self.__frame_handler.frame
 
         if self.format.lower() == "opencv":
-            image = ImageFunctions.pil_to_opencv(image)
+            image = ImageFunctions.convert(image, format="opencv")
 
         return image
 

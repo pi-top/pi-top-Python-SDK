@@ -40,7 +40,7 @@ def calculate_blue_limits():
 
 def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     cv2 = import_opencv()
-    cv_frame = ImageFunctions.pil_to_opencv(frame)
+    cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
     hsv_lower, hsv_upper = calculate_blue_limits()
@@ -60,7 +60,7 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
     if image_format.lower() != 'opencv':
-        robot_view_img = ImageFunctions.opencv_to_pil(robot_view_img)
+        robot_view_img = ImageFunctions.convert(robot_view_img, format="PIL")
 
     class dotdict(dict):
         """dot.notation access to dictionary attributes"""
