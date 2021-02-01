@@ -43,7 +43,7 @@ class Buttons(metaclass=Singleton):
 
         self.lock = PTLock("pt-buttons")
 
-        if getenv('PT_MINISCREEN_SYSTEM', 0) != "1":
+        if getenv('PT_MINISCREEN_SYSTEM', "0") != "1":
             self.lock.acquire()
 
     @property

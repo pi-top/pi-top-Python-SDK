@@ -68,7 +68,7 @@ class OledDeviceController:
             request_client.send_message(message)
 
     def __setup_device(self):
-        if getenv('PT_MINISCREEN_SYSTEM', 0) != "1":
+        if getenv('PT_MINISCREEN_SYSTEM', "0") != "1":
             self.lock.acquire()
             atexit.register(self.reset_device)
 
