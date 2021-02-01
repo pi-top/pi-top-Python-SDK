@@ -56,11 +56,10 @@ modules available in the library:
     from pitop.miniscreen import Miniscreen
 
     miniscreen = Miniscreen()
-    utrasonic = PMAUltrasonicSensor("D1")
+    utrasonic = UltrasonicSensor("D1")
 
     while True:
-        distance = utrasonic.distance
-        miniscreen.display_multiline_text(str(distance))
+        miniscreen.display_text(utrasonic.distance)
         sleep(0.1)
 
 

@@ -38,13 +38,9 @@ class OLED:
     def __init__(self, _exclusive_mode=True):
         self.__controller = OledDeviceController(self._redraw_last_image, _exclusive_mode)
 
-        self.image = Image.new(
-            self.device.mode,
-            self.device.size
-        )
+        self.image = self.__empty_image
 
-        self._image = self.image.copy()
-
+        self._image = self.__empty_image
         self.canvas = Canvas(self._image)
 
         self.__fps_regulator = FPS_Regulator()
@@ -60,6 +56,13 @@ class OLED:
         self.reset()
 
         register(self.__cleanup)
+
+    @property
+    def __empty_image(self):
+        return Image.new(
+            self.device.mode,
+            self.device.size
+        )
 
     def prepare_image(self, image_to_prepare):
         """
@@ -310,20 +313,14 @@ class OLED:
             font_size = 30
 
         # Create empty image
-        image = Image.new(
-            self.device.mode,
-            self.device.size
-        )
-
-        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
-        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+        image = self.__empty_image
 
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).text(
             xy,
-            text,
+            str(text),
             font=ImageFont.truetype(
-                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                self.__font_path(),
                 size=font_size
             ),
             fill=1,
@@ -356,22 +353,50 @@ class OLED:
             font_size = 30
 
         # Create empty image
-        image = Image.new(
-            self.device.mode,
-            self.device.size
+        image = self.__empty_image
+
+        # Create font
+        font = ImageFont.truetype(
+            self.__font_path(),
+            size=font_size
         )
 
-        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
-        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+        def format_multiline_text(text):
+            def get_text_size(text):
+                return ImageDraw.Draw(self.__empty_image).textsize(
+                    text=str(text),
+                    font=font,
+                    spacing=0,
+                )
+
+            remaining = self.width
+            space_width, _ = get_text_size(" ")
+            # use this list as a stack, push/popping each line
+            output_text = []
+            # split on whitespace...
+            for word in text.split(None):
+                word_width, _ = get_text_size(word)
+                if word_width + space_width > remaining:
+                    output_text.append(word)
+                    remaining = self.width - word_width
+                else:
+                    if not output_text:
+                        output_text.append(word)
+                    else:
+                        output = output_text.pop()
+                        output += " %s" % word
+                        output_text.append(output)
+                    remaining = remaining - (word_width + space_width)
+            return "\n".join(output_text)
+
+        # Format text
+        text = format_multiline_text(text)
 
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).multiline_text(
             xy,
-            text,
-            font=ImageFont.truetype(
-                primary_font_path if isfile(primary_font_path) else fallback_font_path,
-                size=font_size
-            ),
+            str(text),
+            font=font,
             fill=1,
             spacing=0,
             align="left"
@@ -640,3 +665,8 @@ class OLED:
     def __cleanup(self):
         if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
+
+    def __font_path(self):
+        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
+        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+        return primary_font_path if isfile(primary_font_path) else fallback_font_path
