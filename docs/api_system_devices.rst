@@ -38,6 +38,14 @@ property to "OpenCV":
     c = Camera()
     c.format = "OpenCV"
 
+This can be also be done by passing the format to the camera's constructor:
+
+.. code-block:: python
+
+    from pitop.camera import Camera
+
+    c = Camera(format="OpenCV")
+
 Using a USB Camera to Access Image Data
 ---------------------------------------
 
@@ -81,7 +89,7 @@ GPIO-based button.
 
 You can listen for any standard keyboard key input. For example, using ``a`` or ``A`` will provide the ability to 'listen' for the A-key being pressed - with or without shift.
 
-.. literalinclude:: ../examples/keyboard/keyboard.py
+.. literalinclude:: ../examples/keyboard/keyboard_button.py
 
 Class Reference: KeyboardButton
 --------------------------------------------

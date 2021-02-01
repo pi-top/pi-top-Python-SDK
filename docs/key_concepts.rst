@@ -177,7 +177,7 @@ whether or not the OLED display or the buttons were intended to be used.
 
    Here is one way of achieving this:
 
-   .. literalinclude:: ../examples/miniscreen/exit_with_cancel_button.py
+   .. literalinclude:: ../examples/miniscreen/miniscreen_exit_cancel_button.py
 
 If you wish to make use of any of the functionality in system menu, have a go at implementing
 it yourself in your own project!

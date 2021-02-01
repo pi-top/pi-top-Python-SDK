@@ -52,7 +52,8 @@ def do_lid_opened_thing():
 # display.when_lid_opened = do_lid_opened_thing
 
 
-# Another way to react to display events is to poll
+# Another way to react to display events is to poll...
+print("Polling for if lid is open (Original pi-top/pi-top [3] only)")
 while True:
     if display.lid_is_open:
         do_lid_opened_thing()

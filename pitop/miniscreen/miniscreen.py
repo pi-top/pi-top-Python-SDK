@@ -8,7 +8,9 @@ from .buttons import (
 
 
 class Miniscreen(OLED):
-    def __init__(self):
+    def __init__(self, _exclusive_mode=True):
+        super(Miniscreen, self).__init__(_exclusive_mode)
+
         self._up_button = UpButton()
         self._down_button = DownButton()
         self._select_button = SelectButton()

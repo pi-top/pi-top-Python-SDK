@@ -56,52 +56,52 @@ The :class:`pitop.miniscreen.Miniscreen` class directly provides display functio
 Displaying text
 ~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/hello_world.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_hello_world.py
 
 Showing an image
 ~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/display_an_image.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_image_file.py
 
 Loop a GIF
 ~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/animated_image_loop.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_animated_image_loop.py
 
 Displaying an GIF once
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/animated_image_once_simple_way.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_animated_image_once_simple_way.py
 
 Displaying an GIF once through frame by frame
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/animated_image_once.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_animated_image_once.py
 
 Displaying an GIF looping in background
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/animated_image_loop_in_background.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_animated_image_loop_in_background.py
 
 Handling basic 2D graphics drawing and displaying
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/drawing_2d_graphics.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_2d_graphics.py
 
 Displaying a clock
 ~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/clock.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_clock.py
 
 Display a particle~based screensaver in the OLED
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/particles.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_particles.py
 
 Prim's algorithm
 ~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../examples/miniscreen/oled/prims_algorithm.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_display_prims_algorithm.py
 
 Class Reference: pi-top [4] Miniscreen
 --------------------------------------
@@ -127,7 +127,7 @@ The :class:`pitop.miniscreen.Miniscreen` class provides these buttons as propert
 
 Here is an example demonstrating 2 ways to make use of these buttons:
 
-.. literalinclude:: ../examples/miniscreen/buttons/buttons.py
+.. literalinclude:: ../examples/miniscreen/miniscreen_buttons.py
 
 
 Class Reference: pi-top [4] Miniscreen Buttons
