@@ -59,8 +59,7 @@ modules available in the library:
     utrasonic = PMAUltrasonicSensor("D1")
 
     while True:
-        distance = utrasonic.distance
-        miniscreen.display_multiline_text(distance)
+        miniscreen.display_multiline_text(utrasonic.distance)
         sleep(0.1)
 
 
