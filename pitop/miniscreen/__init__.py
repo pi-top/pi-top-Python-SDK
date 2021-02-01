@@ -1,4 +1,5 @@
 from .miniscreen import Miniscreen
+from .buttons import MiniscreenButton
 
 # Deprecated:
 from .oled import OLED

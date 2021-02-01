@@ -52,9 +52,12 @@ class KeyboardButton:
     @property
     def when_pressed(self):
         """
-        Set a callback method to be called when the key is pressed.
+        Get or set the 'when pressed' button state callback function.
+        When set, this callback function will be invoked when this event happens.
 
-        :param method callback: A method to be called when the button is pressed
+        :type callback: Function
+        :param callback:
+            Callback function to run when a button is pressed.
         """
 
     @when_pressed.setter
@@ -66,9 +69,12 @@ class KeyboardButton:
     @property
     def when_released(self):
         """
-        Set a callback method to be called when the key is released.
+        Get or set the 'when released' button state callback function.
+        When set, this callback function will be invoked when this event happens.
 
-        :param method callback: A method to be called when the button is released
+        :type callback: Function
+        :param callback:
+            Callback function to run when a button is released.
         """
 
     @when_released.setter
@@ -80,9 +86,8 @@ class KeyboardButton:
     @property
     def is_pressed(self) -> bool:
         """
-        Determine whether the key is pressed.
+        Get or set the button state as a boolean value.
 
-        :return: True if the key is pressed, False otherwise
         :rtype: bool
         """
         if self.__key_pressed is True:

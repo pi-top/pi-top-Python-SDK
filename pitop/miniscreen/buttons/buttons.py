@@ -8,10 +8,14 @@ from pitopcommon.singleton import Singleton
 import atexit
 
 
-class MiniscreenButtonBase:
-    def __init__(self, button_type):
+class MiniscreenButton:
+    """
+    Represents one of the 4 buttons around the miniscreen display on a pi-top [4].
+    Should not be created directly - instead, use :class:`pitop.miniscreen.Miniscreen`.
+    """
+
+    def __init__(self):
         # State parameters
-        self.type = button_type
         self._is_pressed = False
         # Event-based functions
         self._when_pressed = None
@@ -20,9 +24,9 @@ class MiniscreenButtonBase:
     @property
     def is_pressed(self):
         """
-        Returns a boolean value, representing the button state.
+        Get or set the button state as a boolean value.
 
-        :type callback: bool
+        :rtype: bool
         """
         return self._is_pressed
 
@@ -33,9 +37,8 @@ class MiniscreenButtonBase:
     @property
     def when_pressed(self):
         """
-        Event based procedure, executed when a button is pressed.
-
-        Setting this property will set the function to call when this event happens.
+        Get or set the 'when pressed' button state callback function.
+        When set, this callback function will be invoked when this event happens.
 
         :type callback: Function
         :param callback:
@@ -50,9 +53,8 @@ class MiniscreenButtonBase:
     @property
     def when_released(self):
         """
-        Event based procedure, executed when a button is released.
-
-        Setting this property will set the function to call when this event happens.
+        Get or set the 'when released' button state callback function.
+        When set, this callback function will be invoked when this event happens.
 
         :type callback: Function
         :param callback:
@@ -63,6 +65,14 @@ class MiniscreenButtonBase:
     @when_released.setter
     def when_released(self, callback):
         self._when_released = callback
+
+
+class MiniscreenButtonLegacy(MiniscreenButton):
+    def __init__(self, button_type):
+        super(MiniscreenButtonLegacy, self).__init__()
+
+        # State parameters
+        self.type = button_type
 
 
 class Buttons(metaclass=Singleton):
@@ -77,10 +87,10 @@ class Buttons(metaclass=Singleton):
     CANCEL = "CANCEL"
 
     def __init__(self, _exclusive_mode=True):
-        self.up = MiniscreenButtonBase(self.UP)
-        self.down = MiniscreenButtonBase(self.DOWN)
-        self.select = MiniscreenButtonBase(self.SELECT)
-        self.cancel = MiniscreenButtonBase(self.CANCEL)
+        self.up = MiniscreenButtonLegacy(self.UP)
+        self.down = MiniscreenButtonLegacy(self.DOWN)
+        self.select = MiniscreenButtonLegacy(self.SELECT)
+        self.cancel = MiniscreenButtonLegacy(self.CANCEL)
 
         self.__exclusive_mode = _exclusive_mode
 
@@ -97,6 +107,7 @@ class Buttons(metaclass=Singleton):
     def is_active(self):
         """
         Determine if the current instance is in control of the buttons.
+
         :rtype: bool
         """
         return self.lock.is_locked()
@@ -139,7 +150,7 @@ class Buttons(metaclass=Singleton):
             pass
 
 
-class UpButton(MiniscreenButtonBase):
+class UpButton(MiniscreenButton):
     """
     pi-top [4] Miniscreen 'Up' button.
     """
@@ -151,7 +162,7 @@ class UpButton(MiniscreenButtonBase):
         return Buttons().up
 
 
-class DownButton(MiniscreenButtonBase):
+class DownButton(MiniscreenButton):
     """
     pi-top [4] Miniscreen 'Down' button.
     """
@@ -163,7 +174,7 @@ class DownButton(MiniscreenButtonBase):
         return Buttons().down
 
 
-class SelectButton(MiniscreenButtonBase):
+class SelectButton(MiniscreenButton):
     """
     pi-top [4] Miniscreen 'Select' button.
     """
@@ -175,7 +186,7 @@ class SelectButton(MiniscreenButtonBase):
         return Buttons().select
 
 
-class CancelButton(MiniscreenButtonBase):
+class CancelButton(MiniscreenButton):
     """
     pi-top [4] Miniscreen 'Cancel' button.
     """

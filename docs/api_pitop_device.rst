@@ -121,26 +121,21 @@ The :class:`pitop.miniscreen.Miniscreen` class provides these buttons as propert
     >>> from pitop.miniscreen import Miniscreen
     >>> miniscreen = Miniscreen()
     >>> miniscreen.up_button
+    <pitop.miniscreen.buttons.buttons.MiniscreenButtonBase object at 0xb3e44e50>
     >>> miniscreen.down_button
+    <pitop.miniscreen.buttons.buttons.MiniscreenButtonBase object at 0xb3e44d30>
     >>> miniscreen.select_button
-    >>> miniscreen.button_button
+    <pitop.miniscreen.buttons.buttons.MiniscreenButtonBase object at 0xb3e44e90>
+    >>> miniscreen.cancel_button
+    <pitop.miniscreen.buttons.buttons.MiniscreenButtonBase object at 0xb3e44e70>
 
 Here is an example demonstrating 2 ways to make use of these buttons:
 
 .. literalinclude:: ../examples/miniscreen/miniscreen_buttons.py
 
 
-Class Reference: pi-top [4] Miniscreen Buttons
-----------------------------------------------
+Class Reference: pi-top [4] Miniscreen Button
+---------------------------------------------
 
-.. autoclass:: pitop.miniscreen.UpButton
-    :inherited-members:
-
-.. autoclass:: pitop.miniscreen.DownButton
-    :inherited-members:
-
-.. autoclass:: pitop.miniscreen.SelectButton
-    :inherited-members:
-
-.. autoclass:: pitop.miniscreen.CancelButton
+.. autoclass:: pitop.miniscreen.buttons.MiniscreenButton
     :inherited-members:

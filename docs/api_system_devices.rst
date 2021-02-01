@@ -85,7 +85,7 @@ GPIO-based button.
 You can listen for any standard keyboard key input. For example, using ``a`` or ``A`` will provide the ability to 'listen' for the A-key being pressed - with or without shift.
 
 .. warning::
-   This class depends on pynput, which interfaces with Xorg to handle the key press events. This means that this component cannot be used via SSH, or in a headless environment (that is, without a desktop environment).
+   This class depends on pynput, which interfaces with Xorg to handle key press events. This means that this component cannot be used via SSH, or in a headless environment (that is, without a desktop environment).
 
 .. note::
    The DISPLAY environment variable is required to be set in order for this component to work.
