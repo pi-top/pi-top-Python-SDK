@@ -11,20 +11,20 @@ PMA: Using a Button to Control an LED
 
 .. literalinclude:: ../examples/pma/button_led.py
 
-Robotics Kit: Rover
--------------------
+Robotics Kit: DIY Rover
+-----------------------
 
 .. literalinclude:: ../examples/pma/encoder_motor_rover.py
 
-Robotics Kit: Line detection
-----------------------------
+Robotics Kit: Alex Robot - Moving Randomly
+------------------------------------------
 
-.. literalinclude:: ../examples/robotics/line_detection.py
+.. literalinclude:: ../examples/robotics/alex_move_random.py
 
-Robotics Kit: Alex Robot
-------------------------
+Robotics Kit: Alex Robot - Line Detection
+-----------------------------------------
 
-.. literalinclude:: ../examples/robotics/alex.py
+.. literalinclude:: ../examples/robotics/alex_line_detect.py
 
 Using the pi-topPULSE's LED matrix to show the battery level
 ------------------------------------------------------------

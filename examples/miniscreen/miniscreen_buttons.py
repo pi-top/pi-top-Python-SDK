@@ -1,4 +1,5 @@
 from pitop.miniscreen import Miniscreen
+from time import sleep
 
 
 miniscreen = Miniscreen()
@@ -35,3 +36,4 @@ print("Polling for if select button is pressed...")
 while True:
     if miniscreen.select_button.is_pressed:
         select_something()
+        sleep(0.1)

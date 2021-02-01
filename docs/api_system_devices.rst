@@ -56,25 +56,20 @@ Using a USB Camera to Capture Video
 
 .. literalinclude:: ../examples/camera/camera_capture_video.py
 
-Convert USB Camera image to grayscale
--------------------------------------
-
-.. literalinclude:: ../examples/camera/camera_opencv_processing.py
-
 Adding Motion Detection to a USB Camera
 ---------------------------------------
 
 .. literalinclude:: ../examples/camera/camera_motion_detector.py
 
-Processing Camera Frames with OpenCV
----------------------------------------
+Processing Camera Frame
+-----------------------
 
-.. literalinclude:: ../examples/camera/camera_opencv_processing.py
+.. literalinclude:: ../examples/camera/camera_image_processing.py
 
-Processing Camera Frames in the Background
-------------------------------------------
+Processing Camera Frame Stream with OpenCV (Convert to grayscale)
+-----------------------------------------------------------------
 
-.. literalinclude:: ../examples/camera/camera_background_processing.py
+.. literalinclude:: ../examples/camera/camera_image_processing_stream_opencv.py
 
 Class Reference: USB Camera
 ---------------------------
@@ -88,6 +83,16 @@ This class makes it easy to handle a keyboard button in the same way as a
 GPIO-based button.
 
 You can listen for any standard keyboard key input. For example, using ``a`` or ``A`` will provide the ability to 'listen' for the A-key being pressed - with or without shift.
+
+.. warning::
+   This class depends on pynput, which interfaces with Xorg to handle the key press events. This means that this component cannot be used via SSH, or in a headless environment (that is, without a desktop environment).
+
+.. note::
+   The DISPLAY environment variable is required to be set in order for this component to work.
+
+.. note::
+   If your code is being run from a terminal window, then the key presses will be captured in the terminal output. This can cause confusion and issues around reading output.
+
 
 .. literalinclude:: ../examples/keyboard/keyboard_button.py
 
