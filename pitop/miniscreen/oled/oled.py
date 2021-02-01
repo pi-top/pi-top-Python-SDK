@@ -448,7 +448,7 @@ class OLED:
         """
         Gets the center of the miniscreen display.
 
-        :return: The coordinates of the center of the display's bounding box as an (x, y) tuple.
+        :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -461,7 +461,7 @@ class OLED:
         """
         Gets the top left corner of the miniscreen display.
 
-        :return: The coordinates of the center of the display's bounding box as an (x, y) tuple.
+        :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -474,7 +474,7 @@ class OLED:
         """
         Gets the top-right corner of the miniscreen display.
 
-        :return: The coordinates of the top right of the display's bounding box as an (x, y) tuple.
+        :return: The coordinates of the top right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -487,7 +487,7 @@ class OLED:
         """
         Gets the bottom-left corner of the miniscreen display.
 
-        :return: The coordinates of the bottom left of the display's bounding box as an (x, y) tuple.
+        :return: The coordinates of the bottom left of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
@@ -500,7 +500,7 @@ class OLED:
         """
         Gets the bottom-right corner of the miniscreen display.
 
-        :return: The coordinates of the bottom right of the display's bounding box as an (x, y) tuple.
+        :return: The coordinates of the bottom right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (
