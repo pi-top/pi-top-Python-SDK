@@ -318,7 +318,7 @@ class OLED:
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).text(
             xy,
-            text,
+            str(text),
             font=ImageFont.truetype(
                 self.__font_path(),
                 size=font_size
@@ -364,7 +364,7 @@ class OLED:
         def format_multiline_text(text):
             def get_text_size(text):
                 return ImageDraw.Draw(self.__empty_image).textsize(
-                    text=text,
+                    text=str(text),
                     font=font,
                     spacing=0,
                 )
@@ -395,7 +395,7 @@ class OLED:
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).multiline_text(
             xy,
-            text,
+            str(text),
             font=font,
             fill=1,
             spacing=0,
