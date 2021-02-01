@@ -1,3 +1,9 @@
+py-pitop-sdk (0.15.1) buster; urgency=medium
+
+  * Fix text wrapping when displaying multiline text
+
+ -- Jorge Capona <jorge@pi-top.com>  Mon, 01 Feb 2021 12:44:45 -0300
+
 py-pitop-sdk (0.15.0) buster; urgency=medium
 
   * Docs update and refactor
