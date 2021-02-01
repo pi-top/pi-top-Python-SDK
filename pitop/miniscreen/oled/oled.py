@@ -38,13 +38,9 @@ class OLED:
     def __init__(self, _exclusive_mode=True):
         self.__controller = OledDeviceController(self._redraw_last_image, _exclusive_mode)
 
-        self.image = Image.new(
-            self.device.mode,
-            self.device.size
-        )
+        self.image = self.__empty_image
 
-        self._image = self.image.copy()
-
+        self._image = self.__empty_image
         self.canvas = Canvas(self._image)
 
         self.__fps_regulator = FPS_Regulator()
@@ -60,6 +56,13 @@ class OLED:
         self.reset()
 
         register(self.__cleanup)
+
+    @property
+    def __empty_image(self):
+        return Image.new(
+            self.device.mode,
+            self.device.size
+        )
 
     def prepare_image(self, image_to_prepare):
         """
@@ -310,10 +313,7 @@ class OLED:
             font_size = 30
 
         # Create empty image
-        image = Image.new(
-            self.device.mode,
-            self.device.size
-        )
+        image = self.__empty_image
 
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).text(
@@ -346,25 +346,36 @@ class OLED:
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
         """
+        if xy is None:
+            xy = self.top_left
 
-        def textsize(img_draw, text):
-            return img_draw.textsize(
-                text=text,
-                font=ImageFont.truetype(
-                    self.__font_path(),
-                    size=font_size
-                ),
-                spacing=0,
-            )
+        if font_size is None:
+            font_size = 30
 
-        def format_multiline_text(img_draw, text):
+        # Create empty image
+        image = self.__empty_image
+
+        # Create font
+        font = ImageFont.truetype(
+            self.__font_path(),
+            size=font_size
+        )
+
+        def format_multiline_text(text):
+            def get_text_size(text):
+                return ImageDraw.Draw(self.__empty_image).textsize(
+                    text=text,
+                    font=font,
+                    spacing=0,
+                )
+
             remaining = self.width
-            space_width, _ = textsize(img_draw, " ")
+            space_width, _ = get_text_size(" ")
             # use this list as a stack, push/popping each line
             output_text = []
             # split on whitespace...
             for word in text.split(None):
-                word_width, _ = textsize(img_draw, word)
+                word_width, _ = get_text_size(word)
                 if word_width + space_width > remaining:
                     output_text.append(word)
                     remaining = self.width - word_width
@@ -378,29 +389,14 @@ class OLED:
                     remaining = remaining - (word_width + space_width)
             return "\n".join(output_text)
 
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        # Create empty image
-        image = Image.new(
-            self.device.mode,
-            self.device.size
-        )
-
-        img_draw = ImageDraw.Draw(image)
-        text = format_multiline_text(img_draw, text)
+        # Format text
+        text = format_multiline_text(text)
 
         # 'Draw' text to empty image, using desired font size
-        img_draw.multiline_text(
+        ImageDraw.Draw(image).multiline_text(
             xy,
             text,
-            font=ImageFont.truetype(
-                self.__font_path(),
-                size=font_size
-            ),
+            font=font,
             fill=1,
             spacing=0,
             align="left"
