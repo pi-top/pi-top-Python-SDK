@@ -315,15 +315,12 @@ class OLED:
             self.device.size
         )
 
-        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
-        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
-
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).text(
             xy,
             text,
             font=ImageFont.truetype(
-                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                self.__font_path(),
                 size=font_size
             ),
             fill=1,
@@ -349,6 +346,38 @@ class OLED:
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
         """
+
+        def textsize(img_draw, text):
+            return img_draw.textsize(
+                text=text,
+                font=ImageFont.truetype(
+                    self.__font_path(),
+                    size=font_size
+                ),
+                spacing=0,
+            )
+
+        def format_multiline_text(img_draw, text):
+            remaining = self.width
+            space_width, _ = textsize(img_draw, " ")
+            # use this list as a stack, push/popping each line
+            output_text = []
+            # split on whitespace...
+            for word in text.split(None):
+                word_width, _ = textsize(img_draw, word)
+                if word_width + space_width > remaining:
+                    output_text.append(word)
+                    remaining = self.width - word_width
+                else:
+                    if not output_text:
+                        output_text.append(word)
+                    else:
+                        output = output_text.pop()
+                        output += " %s" % word
+                        output_text.append(output)
+                    remaining = remaining - (word_width + space_width)
+            return "\n".join(output_text)
+
         if xy is None:
             xy = self.top_left
 
@@ -361,15 +390,15 @@ class OLED:
             self.device.size
         )
 
-        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
-        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+        img_draw = ImageDraw.Draw(image)
+        text = format_multiline_text(img_draw, text)
 
         # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).multiline_text(
+        img_draw.multiline_text(
             xy,
             text,
             font=ImageFont.truetype(
-                primary_font_path if isfile(primary_font_path) else fallback_font_path,
+                self.__font_path(),
                 size=font_size
             ),
             fill=1,
@@ -640,3 +669,8 @@ class OLED:
     def __cleanup(self):
         if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
+
+    def __font_path(self):
+        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
+        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+        return primary_font_path if isfile(primary_font_path) else fallback_font_path
