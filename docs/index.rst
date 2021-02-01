@@ -60,7 +60,7 @@ modules available in the library:
 
     while True:
         distance = utrasonic.distance
-        miniscreen.display_multiline_text(str(distance))
+        miniscreen.display_multiline_text(distance)
         sleep(0.1)
 
 
