@@ -1,6 +1,7 @@
-py-pitop-sdk (0.14.1) buster; urgency=medium
+py-pitop-sdk (0.15.0) buster; urgency=medium
 
   * Docs update and refactor
+  * Added miniscreen class
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 28 Jan 2021 12:50:55 -0300
 
