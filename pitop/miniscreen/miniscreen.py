@@ -5,7 +5,6 @@ from pitopcommon.ptdm import (
     PTDMSubscribeClient,
     Message
 )
-from pitopcommon.lock import PTLock
 
 import atexit
 
@@ -25,16 +24,10 @@ class Miniscreen(OLED):
         self._select_button = MiniscreenButton()
         self._cancel_button = MiniscreenButton()
 
-        self.__exclusive_mode = _exclusive_mode
-
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
 
         atexit.register(self.__clean_up)
-
-        self.lock = PTLock("pt-miniscreen")
-        if self.__exclusive_mode:
-            self.lock.acquire()
 
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed):
@@ -61,13 +54,7 @@ class Miniscreen(OLED):
         )
         self.__ptdm_subscribe_client.start_listening()
 
-    def __clean_up_lock(self):
-        if self.is_active:
-            self.lock.release()
-
     def __clean_up(self):
-        self.__clean_up_lock()
-
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
