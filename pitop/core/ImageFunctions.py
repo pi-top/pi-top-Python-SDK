@@ -1,9 +1,4 @@
 from PIL import Image
-from cv2 import (
-    cvtColor,
-    COLOR_BGR2RGB,
-    COLOR_RGB2BGR,
-)
 from numpy import (
     asarray,
     ndarray,
@@ -14,6 +9,16 @@ from pitopcommon.formatting import is_url
 
 
 def convert(image, format="PIL"):
+    try:
+        from cv2 import (
+            cvtColor,
+            COLOR_BGR2RGB,
+            COLOR_RGB2BGR,
+        )
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
+
     assert isinstance(format, str)
     format = format.lower()
     assert format in ("pil", "opencv")
