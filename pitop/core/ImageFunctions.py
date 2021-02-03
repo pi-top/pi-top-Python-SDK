@@ -44,6 +44,7 @@ def convert(image, format="PIL"):
     elif isinstance(image, ndarray) and format == "pil":
         # Convert OpenCV to PIL
         if len(image.shape) > 2 and image.shape[2] == 3:
+            # If incoming image has 3 channels, convert from BGR to RGB
             image = cvtColor(image, COLOR_BGR2RGB)
         return Image.fromarray(image)
 
