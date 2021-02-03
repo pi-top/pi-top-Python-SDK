@@ -1,3 +1,13 @@
+py-pitop-sdk (0.16.0) buster; urgency=medium
+
+  * Add standard function to convert between different image formats
+  * Fix drive controller's 'right turn' method
+  * Use environment variable for miniscreen non-'exclusive mode'
+  * Fix 'None' print when printing CLI's parser help
+  * Import Listener from pynput only when creating KeyboardButton
+
+ -- Jorge Capona <jorge@pi-top.com>  Tue, 02 Feb 2021 16:02:15 -0300
+
 py-pitop-sdk (0.15.1) buster; urgency=medium
 
   * Fix text wrapping when displaying multiline text

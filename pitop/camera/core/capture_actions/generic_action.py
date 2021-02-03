@@ -30,7 +30,7 @@ class GenericAction(CaptureActionBase):
 
     def process(self, frame):
         if isinstance(self.__format, str) and self.__format.lower() == 'opencv':
-            frame = ImageFunctions.pil_to_opencv(frame)
+            frame = ImageFunctions.convert(frame, format="opencv")
 
         if self.__elapsed_frames % self.__frame_interval == 0:
             if self.callback_has_argument:

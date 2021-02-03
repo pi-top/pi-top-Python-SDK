@@ -15,8 +15,8 @@ class Miniscreen(OLED):
     See :class:`pitop.miniscreen.MiniscreenButton` for how to use these buttons.
     """
 
-    def __init__(self, _exclusive_mode=True):
-        super(Miniscreen, self).__init__(_exclusive_mode)
+    def __init__(self):
+        super(Miniscreen, self).__init__()
 
         self._up_button = MiniscreenButton()
         self._down_button = MiniscreenButton()

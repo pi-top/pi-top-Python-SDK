@@ -39,8 +39,7 @@ class OledCLI(CliBaseClass):
 
         try:
             if self.args.oled_subcommand == "display":
-                # Do take control of OLED to display
-                oled = Miniscreen(_exclusive_mode=True)
+                oled = Miniscreen()
 
                 if self.args.force:
                     oled.set_control_to_pi()
@@ -61,8 +60,7 @@ class OledCLI(CliBaseClass):
                     pass
 
             elif self.args.oled_subcommand == "spi":
-                # Do not take control of OLED just to change its internal state
-                oled = Miniscreen(_exclusive_mode=False)
+                oled = Miniscreen()
 
                 if self.args.spi_bus is not None:
                     oled.spi_bus = self.args.spi_bus
