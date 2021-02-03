@@ -31,6 +31,15 @@ Displaying camera stream in pi-top [4]'s miniscreen
 
 .. literalinclude:: ../examples/recipes/camera_display_in_miniscreen.py
 
+Robotics Kit: Alex Robot - Control using Bluedot
+-------------------------------------------------
+
+.. note::
+
+   `BlueDot <https://bluedot.readthedocs.io/en/latest/>`_ is a Python library that allows you to control Raspberry Pi projects remotely. This example demonstrates a way to control the Robotics Kit's Alex configuration with a virtual joystick.
+
+.. literalinclude:: ../examples/recipes/alex_bluedot.py
+
 Using the pi-topPULSE's LED matrix to show the battery level
 ------------------------------------------------------------
 
