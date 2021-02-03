@@ -4,18 +4,10 @@ from pitop.processing.utils.vision_functions import (
     colour_mask,
     find_centroid,
     find_largest_contour,
+    import_opencv,
     scale_frame,
 )
 from pitop.core import ImageFunctions
-
-
-def import_opencv():
-    try:
-        import cv2
-        return cv2
-    except (ImportError, ModuleNotFoundError):
-        raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
 
 
 def calculate_blue_limits():

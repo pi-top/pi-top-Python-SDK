@@ -25,7 +25,7 @@ def convert(image, format="PIL"):
         )
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
+            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
 
     format = image_format_check(format)
 

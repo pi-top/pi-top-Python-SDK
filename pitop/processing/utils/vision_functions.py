@@ -4,7 +4,7 @@ def import_opencv():
         return cv2
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
+            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
 
 
 def colour_mask(frame, hsv_lower, hsv_upper):
