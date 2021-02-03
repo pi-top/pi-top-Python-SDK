@@ -62,17 +62,17 @@ class DisplayCLI(CliBaseClass):
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
         subparser = parser.add_subparsers(title="pi-top display utility",
-                                          description="Interface to communicate with the device's display",
+                                          description="Interface to communicate with pi-top device's onboard display",
                                           dest="display_subcommand")
 
         # "pi-top display brightness"
         brightness_parser = subparser.add_parser("brightness",
-                                                 help="Control display brightness")
+                                                 help="Control onboard pi-top display brightness (Original pi-top, pi-topCEED, pi-top [3])")
         cls.add_brightness_arguments(brightness_parser)
 
         # "pi-top display backlight"
         backlight_parser = subparser.add_parser("backlight",
-                                                help="Control display backlight")
+                                                help="Control onboard pi-top display backlight")
         backlight_parser.add_argument("backlight_value",
                                       help="Set the screen backlight state",
                                       choices=("on", "off", 0, 1),
@@ -107,7 +107,7 @@ def main():
 
 
 def brightness():
-    parser = ArgumentParser("brightness", description="Control display brightness")
+    parser = ArgumentParser("brightness", description="Control onboard pi-top display brightness (Original pi-top, pi-topCEED, pi-top [3])")
     DisplayCLI.add_brightness_arguments(parser)
     args = parser.parse_args()
     args = vars(args)

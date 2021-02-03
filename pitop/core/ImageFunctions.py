@@ -23,17 +23,20 @@ def convert(image, format="PIL"):
     format = format.lower()
     assert format in ("pil", "opencv")
 
+    # Image type is already correct - return image
     if any([
         isinstance(image, Image.Image) and format == "pil",
         isinstance(image, ndarray) and format == "opencv"
     ]):
         return image
     elif isinstance(image, Image.Image) and format == "opencv":
+        # Convert PIL to OpenCV
         cv_image = asarray(image)
         if image.mode == "RGB":
             cv_image = cvtColor(cv_image, COLOR_RGB2BGR)
         return cv_image
     elif isinstance(image, ndarray) and format == "pil":
+        # Convert OpenCV to PIL
         if len(image.shape) > 2 and image.shape[2] == 3:
             image = cvtColor(image, COLOR_BGR2RGB)
         return Image.fromarray(image)
