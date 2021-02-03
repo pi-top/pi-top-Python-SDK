@@ -53,17 +53,18 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build', '.api_advanced_usage.rst']
 
 
 # -- Intersphinx configuration --------------------------------------------
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.7', None),
     'gpiozero': ('https://gpiozero.readthedocs.io/en/latest', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
     'imageio': ('https://imageio.readthedocs.io/en/stable/', None),
-    'Pillow': ('https://pillow.readthedocs.io/en/stable/', None)
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'luma-oled': ('https://luma-oled.readthedocs.io/en/latest/', None),
+    'Pillow': ('https://pillow.readthedocs.io/en/stable/', None),
+    'python': ('https://docs.python.org/3.7', None),
 }
 
 # -- Options for HTML output -------------------------------------------------
@@ -131,5 +132,3 @@ autodoc_mock_imports = [
     'RPIO',
     'pigpio',
 ]
-
-exclude_patterns = ['_build']

@@ -1,10 +1,10 @@
-=================
- Getting Started
-=================
+===============
+Getting Started
+===============
 
---------------------
- Installing the SDK
---------------------
+------------------
+Installing the SDK
+------------------
 
 pi-topOS
 ========
@@ -56,9 +56,9 @@ Building from source is simple:
 
 Note: this will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
 
-------------------------------------------------
- Checking that the SDK is installed and working
-------------------------------------------------
+----------------------------------------------
+Checking that the SDK is installed and working
+----------------------------------------------
 
 Try and run the following:
 
@@ -67,3 +67,9 @@ Try and run the following:
     pi-top devices hub
 
 If this works, then you should be good to go! Go and check out the Examples section!
+
+-----------
+What next!?
+-----------
+
+Now that you're ready to go, check out the :ref:`overview:Overview` chapter for more information on what you can do.

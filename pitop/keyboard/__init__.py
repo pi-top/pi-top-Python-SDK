@@ -1,1 +1,4 @@
-from .key_listener import KeyPressListener
+from .keyboard_button import KeyboardButton
+
+# Deprecated
+from .keyboard_button import KeyboardButton as KeyPressListener

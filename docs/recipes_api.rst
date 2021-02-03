@@ -2,58 +2,45 @@
 Recipes
 =====================================================
 
+In addition to the examples provided for each component/device in the API reference section of this documentation, the following recipes demonstrate some of the more advanced capabilities of the pi-top Python SDK. In particular, these recipes focus on practical use-cases that make use of multiple components/devices within the pi-top Python SDK.
+
+Be sure to check out each component/device separately for simple examples of how to use them.
+
 PMA: Using a Button to Control an LED
 -------------------------------------
 
-.. literalinclude:: ../examples/pma/button_led.py
+.. literalinclude:: ../examples/recipes/button_led.py
 
-Adding Motion Detection to a USB Camera
----------------------------------------
+Robotics Kit: DIY Rover
+-----------------------
 
-.. literalinclude:: ../examples/camera/camera_motion_detector.py
+.. literalinclude:: ../examples/recipes/encoder_motor_rover.py
 
-Processing Camera Frames with OpenCV
----------------------------------------
-
-.. literalinclude:: ../examples/camera/camera_opencv_processing.py
-
-Processing Camera Frames in the Background
+Robotics Kit: Alex Robot - Moving Randomly
 ------------------------------------------
 
-.. literalinclude:: ../examples/camera/camera_background_processing.py
+.. literalinclude:: ../examples/recipes/alex_move_random.py
 
-PMA (with Robotics Kit): Rover
-------------------------------
+Robotics Kit: Alex Robot - Line Detection
+-----------------------------------------
 
-.. literalinclude:: ../examples/pma/encoder_motor_rover.py
+.. literalinclude:: ../examples/recipes/alex_line_detect.py
 
-PMA (with Robotics Kit): Line detection
----------------------------------------
+Displaying camera stream in pi-top [4]'s miniscreen
+---------------------------------------------------
 
-.. literalinclude:: ../examples/robotics/line_detection.py
+.. literalinclude:: ../examples/recipes/camera_display_in_miniscreen.py
 
-PMA (with Robotics Kit): Alex Robot
------------------------------------
+Robotics Kit: Alex Robot - Control using Bluedot
+-------------------------------------------------
 
-.. literalinclude:: ../examples/robotics/alex.py
+.. note::
 
-pi-topPULSE: Fancy Light Show!
-------------------------------
+   `BlueDot <https://bluedot.readthedocs.io/en/latest/>`_ is a Python library that allows you to control Raspberry Pi projects remotely. This example demonstrates a way to control the Robotics Kit's Alex configuration with a virtual joystick.
 
-.. literalinclude:: ../examples/pulse/leds-fancy_demo.py
+.. literalinclude:: ../examples/recipes/alex_bluedot.py
 
+Using the pi-topPULSE's LED matrix to show the battery level
+------------------------------------------------------------
 
-pi-topPULSE: Show battery level
--------------------------------
-
-.. literalinclude:: ../examples/pulse/leds-battery.py
-
-pi-topPULSE: Show CPU temperature
----------------------------------
-
-.. literalinclude:: ../examples/pulse/leds-cpu_temp.py
-
-pi-topPULSE: Show CPU usage
----------------------------------
-
-.. literalinclude:: ../examples/pulse/leds-cpu_usage.py
+.. literalinclude:: ../examples/recipes/leds-battery.py
