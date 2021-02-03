@@ -30,6 +30,7 @@ def convert(image, format="PIL"):
     ]):
         return image
     elif isinstance(image, Image.Image) and format == "opencv":
+        # Convert PIL to OpenCV
         cv_image = asarray(image)
         if image.mode == "RGB":
             cv_image = cvtColor(cv_image, COLOR_RGB2BGR)
