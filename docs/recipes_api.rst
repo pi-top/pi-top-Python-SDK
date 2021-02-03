@@ -26,6 +26,22 @@ Robotics Kit: Alex Robot - Line Detection
 
 .. literalinclude:: ../examples/robotics/alex_line_detect.py
 
+Robotics Kit: Alex Robot - Control using Bluedot
+-------------------------------------------------
+
+`BlueDot <https://bluedot.readthedocs.io/en/latest/>`_ is a python library that allows you to control Raspberry Pi projects remotely, with a device that runs Android. In this case, we'll use it as a Joystick to control Alex.
+
+Please follow these instructions to setup your pi-top with BlueDot:
+
+1. Download the BlueDot app from the Google Play Store in your Android device.
+2. Pair the pi-top [4] with your cellphone. If you don't know how to, please follow `this guide <https://bluedot.readthedocs.io/en/latest/pairpiandroid.html>`_
+3. Install `bluedot` in your pi-top [4]: open a terminal and run `pip3 install bluedot`
+4. Run the example code. It will pause until you complete step 5.
+5. Open the BlueDot app in your device and tap `pi-top` from the list of devices.
+6. Start moving your robot!
+
+.. literalinclude:: ../examples/robotics/alex_bluedot.py
+
 Using the pi-topPULSE's LED matrix to show the battery level
 ------------------------------------------------------------
 
