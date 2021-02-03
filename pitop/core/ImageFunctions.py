@@ -23,6 +23,7 @@ def convert(image, format="PIL"):
     format = format.lower()
     assert format in ("pil", "opencv")
 
+    # Image type is already correct - return image
     if any([
         isinstance(image, Image.Image) and format == "pil",
         isinstance(image, ndarray) and format == "opencv"
