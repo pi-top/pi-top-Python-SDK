@@ -1,12 +1,12 @@
-======================================
-API - System Devices
-======================================
+===============================
+API - System Peripheral Devices
+===============================
 
 
-The pi-top Python SDK provides classes which represent devices, including some that can be used by generic devices, such as USB cameras. These classes are intended to simplify connecting common system devices with pi-top devices.
+The pi-top Python SDK provides classes which represent devices, including some that can be used by generic devices, such as USB cameras. These classes are intended to simplify using these common system peripheral devices.
 
 USB Camera
-=====================================
+==========
 
 This class provides an easy way to:
 

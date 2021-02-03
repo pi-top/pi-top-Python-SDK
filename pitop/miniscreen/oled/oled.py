@@ -34,9 +34,8 @@ class OLED:
 
     __LOCK_FILE_PATH = "/tmp/pt-oled.lock"
 
-    # Exclusive mode only intended to be used privately (pt-sys-oled, some CLI operations)
-    def __init__(self, _exclusive_mode=True):
-        self.__controller = OledDeviceController(self._redraw_last_image, _exclusive_mode)
+    def __init__(self):
+        self.__controller = OledDeviceController(self._redraw_last_image)
 
         self.image = self.__empty_image
 
