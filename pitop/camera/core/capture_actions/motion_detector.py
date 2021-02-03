@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
 from numpy import asarray
 
+from pitop.processing.utils.vision_functions import import_opencv
 from .capture_action_base import CaptureActionBase
 
 
@@ -16,12 +17,7 @@ class MotionDetector(CaptureActionBase):
     """
 
     def __init__(self, callback_on_motion, moving_object_minimum_area):
-        try:
-            import cv2
-            self.cv2 = cv2
-        except (ImportError, ModuleNotFoundError):
-            raise ModuleNotFoundError(
-                "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
+        self.cv2 = import_opencv()
 
         self.__motion_detect_previous_frame = None
         self.__motion_detect_threshold = moving_object_minimum_area**2
