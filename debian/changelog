@@ -5,6 +5,8 @@ py-pitop-sdk (0.16.0) buster; urgency=medium
   * Use environment variable for miniscreen non-'exclusive mode'
   * Fix 'None' print when printing CLI's parser help
   * Import Listener from pynput only when creating KeyboardButton
+  * Add Bluedot example
+  * 'System Devices' --> 'System Peripheral Devices'
 
  -- Jorge Capona <jorge@pi-top.com>  Tue, 02 Feb 2021 16:02:15 -0300
 
