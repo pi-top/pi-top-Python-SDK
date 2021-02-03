@@ -73,10 +73,8 @@ class Camera:
 
     @format.setter
     def format(self, format_value):
-        format_value = str(format_value).lower()
-        if format_value not in self.__VALID_FORMATS:
-            raise ValueError(f"Invalid format '{format_value}'. Use one of the following: {self.__VALID_FORMATS}")
-        self._format = format_value
+        ImageFunctions.image_format_check(format_value)
+        self._format = format_value.lower()
 
     @classmethod
     @type_check

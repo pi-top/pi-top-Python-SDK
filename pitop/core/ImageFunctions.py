@@ -10,9 +10,7 @@ from pitopcommon.formatting import is_url
 
 def image_format_check(format):
     assert isinstance(format, str)
-    format = format.lower()
-    assert format in ("pil", "opencv")
-    return format
+    assert format.lower() in ("pil", "opencv")
 
 
 def convert(image, format="PIL"):
@@ -27,7 +25,8 @@ def convert(image, format="PIL"):
         raise ModuleNotFoundError(
             "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
 
-    format = image_format_check(format)
+    image_format_check(format)
+    format = format.lower()
 
     # Image type is already correct - return image
     if any([
