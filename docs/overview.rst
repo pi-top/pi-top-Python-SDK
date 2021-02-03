@@ -11,7 +11,7 @@ Choose your pi-top device to go to the relevant section:
 * :ref:`pi-topCEED<overview:pi-topCEED>`
 * :ref:`Original pi-top<overview:pi-top laptops>`
 
-This API provides some convenience classes for :ref:`common system devices<api_system_devices:API - System Devices>`, such as:
+This API provides some convenience classes for :ref:`common System Peripheral Devices<api_system_devices:API - System Peripheral Devices>`, such as:
 
 * Camera
 * Keyboard
