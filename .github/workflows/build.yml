@@ -73,7 +73,7 @@ jobs:
             path: "${{ github.workspace }}/debian"
 
       - name: Build Debian package
-        uses: pi-top/action-debian-package@v0.2.0
+        uses: pi-top/action-debian-package@v0.2.2
         with:
           source_directory: "./"
           artifacts_directory: "./artifacts/bin"
