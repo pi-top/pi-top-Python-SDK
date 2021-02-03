@@ -8,7 +8,15 @@ from urllib.request import urlopen
 from pitopcommon.formatting import is_url
 
 
+def image_format_check(format):
+    assert isinstance(format, str)
+    format = format.lower()
+    assert format in ("pil", "opencv")
+    return format
+
+
 def convert(image, format="PIL"):
+
     try:
         from cv2 import (
             cvtColor,
@@ -19,9 +27,7 @@ def convert(image, format="PIL"):
         raise ModuleNotFoundError(
             "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
 
-    assert isinstance(format, str)
-    format = format.lower()
-    assert format in ("pil", "opencv")
+    format = image_format_check(format)
 
     # Image type is already correct - return image
     if any([
