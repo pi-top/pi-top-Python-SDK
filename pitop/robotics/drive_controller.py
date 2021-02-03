@@ -87,7 +87,7 @@ class DriveController:
         self.__robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
 
     def right(self, speed_factor, turn_radius):
-        self.left(-speed_factor, turn_radius)
+        self.left(-speed_factor, -turn_radius)
 
     def target_lock_drive_angle(self, angle):
         angular_speed = self.__target_lock_pid_controller.control_state_update(angle)
