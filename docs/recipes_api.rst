@@ -27,7 +27,7 @@ Robotics Kit: Alex Robot - Line Detection
 .. literalinclude:: ../examples/robotics/alex_line_detect.py
 
 Displaying camera stream in pi-top [4]'s miniscreen
-------------------------------------------------------------
+---------------------------------------------------
 
 .. literalinclude:: ../examples/camera/camera_display_in_miniscreen.py
 
