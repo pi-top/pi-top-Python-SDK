@@ -14,9 +14,10 @@ class Service:
         self._load_state = ""
         self._active_state = ""
         self._enabled = ""
+        self._description = ""
 
     def set_name(self, value):
-        self._name = value.strip(" \t\n\r")
+        self._name = value.strip(" \t\n\r").replace(".service", "")
 
     def set_load_state(self, value):
         self._load_state = value.strip(" \t\n\r")
@@ -26,6 +27,9 @@ class Service:
 
     def set_enabled(self, value):
         self._enabled = value.strip(" \t\n\r")
+
+    def set_description(self, value):
+        self._description = value.strip(" \t\n\r")
 
     def name(self):
         return self._name
@@ -39,6 +43,9 @@ class Service:
     def enabled(self):
         return self._enabled
 
+    def description(self):
+        return self._description
+
 
 class PiTopSoftware:
     def format_service(self, input_string):
@@ -49,8 +56,20 @@ class PiTopSoftware:
         return StdoutFormat.RED + input_string + StdoutFormat.ENDC
 
     def print_pt_systemd_status(self):
-        pt_service_names = self.get_pt_systemd_services()
-        services = []
+        services = self.get_pt_systemd_services()
+
+        for active_state, services_arr in services.items():
+            if active_state == "inactive":
+                continue
+            StdoutFormat.print_line(f"{self.format_service(active_state)}")
+            for service in services_arr:
+                StdoutFormat.print_line(StdoutFormat.bold(service.name()), level=2)
+                StdoutFormat.print_line(f"Description: {service.description()}", level=3)
+                StdoutFormat.print_line(f"Status: {self.format_service(service.load_state())}, {self.format_service(service.enabled())}", level=3)
+
+    def get_pt_systemd_services(self):
+        pt_service_names = self.get_pt_systemd_service_names()
+        services = {}
 
         for service_name in pt_service_names:
             output = check_output(
@@ -77,40 +96,17 @@ class PiTopSoftware:
                     service.set_active_state(line.replace("ActiveState=", ""))
                 elif "UnitFileState=" in line:
                     service.set_enabled(line.replace("UnitFileState=", ""))
+                elif "Description=" in line:
+                    service.set_description(line.replace("Description=", ""))
 
-            services.append(service)
+            active_state = service.active_state()
+            if active_state not in services:
+                services[active_state] = []
+            services[active_state].append(service)
 
-        longest_service_name = 0
-        longest_load_state = 0
-        longest_active_state = 0
-        longest_enabled = 0
+        return services
 
-        for service in services:
-            if len(service.name()) > longest_service_name:
-                longest_service_name = len(service.name())
-            if len(service.load_state()) > longest_load_state:
-                longest_load_state = len(service.load_state())
-            if len(service.active_state()) > longest_active_state:
-                longest_active_state = len(service.active_state())
-            if len(service.enabled()) > longest_enabled:
-                longest_enabled = len(service.enabled())
-
-        for service in services:
-            StdoutFormat.print_line(
-                StdoutFormat.bold(service.name().ljust(longest_service_name))
-                + "  "
-                + self.format_service(
-                    service.load_state().ljust(longest_load_state)
-                )
-                + " "
-                + self.format_service(service.enabled().ljust(longest_enabled))
-                + " "
-                + self.format_service(
-                    service.active_state().ljust(longest_active_state)
-                )
-            )
-
-    def get_pt_systemd_services(self):
+    def get_pt_systemd_service_names(self):
         pt_service_names = []
         for systemd_service_file in sorted(listdir("/lib/systemd/system")):
             if systemd_service_file.startswith("pt-"):
