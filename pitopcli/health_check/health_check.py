@@ -17,24 +17,80 @@ from pitopcommon.command_runner import run_command
 
 class HealthCheck:
 
-    RASPI_CONFIG_SETTINGS = ("get_can_expand",
-                             "get_hostname",
-                             "get_boot_cli",
-                             "get_autologin",
-                             "get_boot_wait",
-                             "get_boot_splash",
-                             "get_overscan",
-                             "get_camera",
-                             "get_ssh",
-                             "get_vnc",
-                             "get_spi",
-                             "get_i2c",
-                             "get_serial",
-                             "get_serial_hw",
-                             "get_onewire",
-                             "get_rgpio",
-                             "get_pi_type",
-                             "get_wifi_country")
+    RASPI_CONFIG_SETTINGS = {
+        "get_can_expand": {
+            "description": "Filesystem can be expanded?",
+            "type": bool,
+        },
+        "get_hostname": {
+            "description": "Hostname:",
+            "type": str,
+        },
+        "get_boot_cli": {
+            "description": "Boot to CLI?",
+            "type": bool,
+        },
+        "get_autologin": {
+            "description": "Autologin?",
+            "type": bool,
+        },
+        "get_boot_wait": {
+            "description": "Boot waits until a network connection is established?",
+            "type": bool,
+        },
+        "get_boot_splash": {
+            "description": "Show splash screen at boot?",
+            "type": bool,
+        },
+        "get_overscan": {
+            "description": "Compensation for displays with overscan?",
+            "type": bool,
+        },
+        "get_camera": {
+            "description": "Camera interface enabled?",
+            "type": bool,
+        },
+        "get_ssh": {
+            "description": "SSH interface enabled?",
+            "type": bool,
+        },
+        "get_vnc": {
+            "description": "VNC interface enabled?",
+            "type": bool,
+        },
+        "get_spi": {
+            "description": "SPI interface enabled?",
+            "type": bool,
+        },
+        "get_i2c": {
+            "description": "I2C interface enabled?",
+            "type": bool,
+        },
+        "get_serial": {
+            "description": "Login shell accessible over serial?",
+            "type": bool,
+        },
+        "get_serial_hw": {
+            "description": "Serial interface is enabled?",
+            "type": bool,
+        },
+        "get_onewire": {
+            "description": "One-wire interface enabled?",
+            "type": bool,
+        },
+        "get_rgpio": {
+            "description": "GPIO server to be accessible over the network?",
+            "type": bool,
+        },
+        "get_pi_type": {
+            "description": "Raspberry Pi Type:",
+            "type": int,
+        },
+        "get_wifi_country": {
+            "description": "WiFi country:",
+            "type": str,
+        },
+    }
 
     NETWORK_ENUM_LOOKUP = {AF_LINK: 'LINK LAYER',
                            AF_INET: 'IPv4',
@@ -124,8 +180,11 @@ class HealthCheck:
             except Exception:
                 return "Error getting setting"
 
-        for setting in self.RASPI_CONFIG_SETTINGS:
-            StdoutFormat.print_line(f"{StdoutFormat.bold(setting)}: {get_setting_value(setting)}")
+        for setting, setting_dict in self.RASPI_CONFIG_SETTINGS.items():
+            setting_value = get_setting_value(setting)
+            if setting_dict.get("type"):
+                setting_value = setting_dict.get("type")(setting_value)
+            StdoutFormat.print_line(f"{StdoutFormat.bold(setting_dict.get('description'))} {setting_value}")
 
     def print_network_settings(self):
         def print_interface_info(interface_name):
