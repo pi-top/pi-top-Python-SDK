@@ -130,12 +130,23 @@ class HealthCheck:
     def print_network_settings(self):
         def print_interface_info(interface_name):
             iface_info = ifaddresses(interface_name)
-            # get network layer, ipv4 and ipv6 info
-            for netiface_enum, section_name in self.NETWORK_ENUM_LOOKUP.items():
+            # get network layer, ipv4 and ipv6 info for the provided interface
+            for netiface_enum, address_family in self.NETWORK_ENUM_LOOKUP.items():
                 interface_info = iface_info.get(netiface_enum)
-                if interface_info:
-                    for info in interface_info:
-                        StdoutFormat.print_line(f"{section_name}: {info}")
+                if not interface_info:
+                    continue
+
+                # Print interface information for a particular "address family"
+                StdoutFormat.print_line(f"{address_family}")
+                for address_number, address_info in enumerate(interface_info):
+                    # An interface can have more than one address associated to it
+                    if len(interface_info) > 1:
+                        StdoutFormat.print_line(f"Subaddress #{address_number + 1}",
+                                                level=2)
+                    # Print interface attributes & values for the address
+                    for addr_attribute, addr_attribute_value in address_info.items():
+                        StdoutFormat.print_line(f"{addr_attribute}: {addr_attribute_value}",
+                                                level=3 if len(interface_info) > 1 else 2)
 
         interfaces_list = interfaces()
         for iface in interfaces_list:

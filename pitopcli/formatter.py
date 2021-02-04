@@ -39,8 +39,9 @@ class StdoutFormat:
         print(f"{cls.dim(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}")
 
     @classmethod
-    def print_line(cls, content):
-        print(f"  {cls.DIM}└{cls.ENDC} {content}")
+    def print_line(cls, content, level=1):
+        indentation_level = "  "*level
+        print(f"{indentation_level}{cls.DIM}└{cls.ENDC} {content}")
 
     @classmethod
     def clickable_text(cls, text, url):
