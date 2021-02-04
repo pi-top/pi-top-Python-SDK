@@ -117,10 +117,23 @@ class PiTopSoftware:
         regex = "^pt-|-pt-|pitop|pi-top"
         apt_cache = Cache()
 
+        pt_packages = []
+        longest_package_name = 0
+        longest_version = 0
+
         for pkg in apt_cache:
             match = search(regex, pkg.name)
             if apt_cache[pkg.name].is_installed and match:
-                StdoutFormat.print_line(f"{pkg.shortname} v{pkg.installed.version}")
+                pt_packages.append((pkg.shortname, pkg.installed.version))
+                if len(pkg.shortname) > longest_package_name:
+                    longest_package_name = len(pkg.shortname)
+                if len(pkg.installed.version) > longest_version:
+                    longest_version = len(pkg.installed.version)
+
+        for pkg_name, pkg_version in pt_packages:
+            StdoutFormat.print_line(f"{pkg_name.ljust(longest_package_name)}" +
+                                    " " +
+                                    f"v{pkg_version.ljust(longest_version)}")
 
     def print_apt_sources(self):
         sources_list_obj = apt_pkg.SourceList()
