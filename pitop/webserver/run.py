@@ -71,9 +71,7 @@ def send_static_file(path):
 
 
 def handle_command(m_type, data):
-    if m_type == 'FORWARD':
-        alex.forward(1)
-    elif m_type == 'STOP':
+    if m_type == 'motor_stop':
         alex.stop()
     elif m_type == 'motor_move':
         data = data.get("data")
