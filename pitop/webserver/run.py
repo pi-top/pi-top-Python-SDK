@@ -88,22 +88,25 @@ lock = Lock()
 
 
 def move(angle, distance):
-    print(angle)
     global lock
     if lock.locked():
         return
 
-    if angle < 20 or angle > 340:
+    if 70 < angle < 110:
         alex.forward(distance, hold=True)
-    elif 20 <= angle <= 160:
-        turn_radius = 0 if 70 < angle < 110 else distance
-        speed_factor = -distance if angle > 110 else distance
+    elif 0 <= angle <= 70 or 290 <= angle <= 360:
+        turn_radius = distance
+        if 0 <= angle <= 20 or 340 <= angle <= 360:
+            turn_radius = 0
+        speed_factor = -distance if angle > 290 else distance
         alex.right(speed_factor, turn_radius)
-    elif 200 <= angle <= 340:
-        turn_radius = 0 if 250 < angle < 290 else distance
-        speed_factor = -distance if angle < 250 else distance
+    elif 110 <= angle <= 250:
+        turn_radius = distance
+        if 160 <= angle <= 200:
+            turn_radius = 0
+        speed_factor = -distance if angle > 200 else distance
         alex.left(speed_factor, turn_radius)
-    elif angle > 160 or angle < 200:
+    elif 250 < angle < 290:
         alex.backward(distance, hold=True)
 
 
