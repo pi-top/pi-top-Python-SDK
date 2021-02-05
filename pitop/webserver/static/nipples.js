@@ -14,5 +14,5 @@ nipple.on('move', (evt, data) => {
 nipple.on('end', (evt) => {
   nipple.frontPosition.x = 0;
   nipple.frontPosition.y = 0;
-  window.command['stop']();
+  window.command['motor_stop']();
 });
