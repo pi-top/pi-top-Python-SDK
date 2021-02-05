@@ -13,12 +13,8 @@ const stop = () => socketReady.then(() =>
   socket.send(JSON.stringify({ type: 'STOP' }))
 );
 
-const leftMotor = (speed) => socketReady.then(() =>
-  socket.send(JSON.stringify({ type: 'LEFT_MOTOR', data: { speed } }))
-);
-
-const rightMotor = (speed) => socketReady.then(() =>
-  socket.send(JSON.stringify({ type: 'RIGHT_MOTOR', data: { speed } }))
+const motor_move = (data) => socketReady.then(() =>
+  socket.send(JSON.stringify({ type: 'motor_move', data: { data } }))
 );
 
 const text = () => {
@@ -32,7 +28,6 @@ const text = () => {
 window.command = {
   forward,
   stop,
-  leftMotor,
-  rightMotor,
+  motor_move,
   text,
 }

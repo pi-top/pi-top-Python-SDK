@@ -1,4 +1,5 @@
 import json
+from threading import Lock
 from io import BytesIO
 from flask import Flask, send_from_directory, Response
 from flask_sockets import Sockets
@@ -71,15 +72,52 @@ def send_static_file(path):
 
 def handle_command(m_type, data):
     if m_type == 'FORWARD':
-        alex.forward(data['speed'])
+        alex.forward(1)
     elif m_type == 'STOP':
         alex.stop()
-    elif m_type == 'LEFT_MOTOR':
-        alex.left(data['speed'])
-    elif m_type == 'RIGHT_MOTOR':
-        alex.right(data['speed'])
+    elif m_type == 'motor_move':
+        data = data.get("data")
+        angle = data.get("angle").get("degree")
+        distance = data.get("distance") / 100.0
+        move(angle, distance)
     else:
         print('Unrecognised command: ', m_type)
+
+
+lock = Lock()
+
+
+def move(angle, distance):
+    print(angle)
+    global lock
+    if lock.locked():
+        return
+
+    if angle < 20 or angle > 340:
+        alex.forward(distance, hold=True)
+    elif 20 <= angle <= 160:
+        turn_radius = 0 if 70 < angle < 110 else distance
+        speed_factor = -distance if angle > 110 else distance
+        alex.right(speed_factor, turn_radius)
+    elif 200 <= angle <= 340:
+        turn_radius = 0 if 250 < angle < 290 else distance
+        speed_factor = -distance if angle < 250 else distance
+        alex.left(speed_factor, turn_radius)
+    elif angle > 160 or angle < 200:
+        alex.backward(distance, hold=True)
+
+
+def stop(pos):
+    global lock
+    lock.acquire()
+    alex.stop()
+
+
+def start(pos):
+    global lock
+    if lock.locked():
+        lock.release()
+    move(pos)
 
 
 if __name__ == "__main__":
