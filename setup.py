@@ -124,6 +124,12 @@ __requires__ = [
     # Algorithms #
     ##############
     "simple_pid",
+
+    #############
+    # Webserver #
+    #############
+    "Flask",
+    "Flask-Sockets",
 ]
 
 __extra_requires__ = {

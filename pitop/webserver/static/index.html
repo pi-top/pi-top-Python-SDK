@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>Alex Controller</title>
+    <script type="text/javascript" src="./vendor/nipplejs.min.js"></script>
+  </head>
+  <body style="background-color: teal; margin: 0">
+    <div id="main" style="width: 100vw; height: 60vh;">
+      <div id="nipples" style="display: flex; justify-content: space-between; padding: 80px;">
+        <div id="leftNippleContainer" style="position: relative; width: 200px; height: 200px"></div>
+        <div id="rightNippleContainer" style="position: relative; width: 200px; height: 200px"></div>
+      </div>
+    </div>
+    <br/>
+    <button type="button" onmouseup="command.stop()" onmousedown="command.forward(100)">Forward</button>
+    <form onsubmit="event.preventDefault(); command.text(); return false">
+      <input id="text-command" type="text">
+    </form>
+    <br/>
+    <img src="video.mjpg" style="height: 100vh; position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: -1;" />
+    <script type="text/javascript" src="./command.js"></script>
+    <script type="text/javascript" src="./nipples.js"></script>
+  </body>
+</html>
