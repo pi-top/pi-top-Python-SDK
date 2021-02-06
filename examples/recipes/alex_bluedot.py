@@ -13,7 +13,6 @@ lock = Lock()
 
 
 def move(pos):
-    global lock
     if lock.locked():
         return
 
@@ -38,13 +37,11 @@ def move(pos):
 
 
 def stop(pos):
-    global lock
     lock.acquire()
     alex.stop()
 
 
 def start(pos):
-    global lock
     if lock.locked():
         lock.release()
     move(pos)

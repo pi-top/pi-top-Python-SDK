@@ -1,5 +1,4 @@
 import json
-from threading import Lock
 from io import BytesIO
 from flask import Flask, send_from_directory, Response
 from flask_sockets import Sockets
@@ -12,28 +11,18 @@ app = Flask(__name__)
 sockets = Sockets(app)
 
 
-def parse_message(message):
-    m = json.loads(message)
-    m_type = m.get('type')
-    m_data = m.get('data')
-
-    m_type = m_type if isinstance(m_type, str) else ''
-    m_data = m_data if isinstance(m_data, dict) else {}
-
-    return m_type, m_data
-
-
 @sockets.route('/command')
 def command(ws):
     print('Command socket connected')
     while not ws.closed:
         message = ws.receive()
         if message:
-            try:
-                m_type, m_data = parse_message(message)
-                handle_command(m_type, m_data)
-            except Exception as e:
-                print('Bad message: ', message, e)
+            # try:
+            handle_command(message)
+
+            # except Exception as e:
+            #     print('Bad message: ', message, e)
+
     print('Command socket disconnected')
 
 
@@ -70,65 +59,105 @@ def send_static_file(path):
     return send_from_directory('static', path)
 
 
-def handle_command(m_type, data):
-    if m_type == 'motor_stop':
-        alex.stop()
-    elif m_type == 'motor_move':
-        data = data.get("data")
-        angle = data.get("angle").get("degree")
-        distance = data.get("distance") / 100.0
-        move(angle, distance)
+def handle_command(message):
+    m = json.loads(message)
+
+    msg_type = m.get('type', '')
+    msg_data = m.get('data', dict()).get('data', dict())
+
+    # print(msg_data)
+
+    if msg_type == 'motor_move':
+
+        motor_move(
+            pos_x=msg_data.get("instance", dict()).get("frontPosition", dict()).get("x"),
+            pos_y=msg_data.get("instance", dict()).get("frontPosition", dict()).get("y"),
+        )
+
+    elif msg_type == 'motor_stop':
+        motor_stop()
+
+    elif msg_type == 'servo_move':
+        servo_move(
+            angle=msg_data.get("angle", dict()).get("degree"),
+            distance=msg_data.get("distance")
+        )
+
+    elif msg_type == 'servo_stop':
+        servo_stop()
+
     else:
-        print('Unrecognised command: ', m_type)
+        print(f"Unrecognised command: {msg_type}")
 
 
-lock = Lock()
+def motor_move(pos_x, pos_y):
+    x_speed_factor = abs(pos_x) / 100.0
+    y_speed_factor = abs(pos_y) / 100.0
+
+    # TODO: implement gradual left/right rotation
+    turn_radius = 0
+
+    if pos_x < 0:
+        alex.left(x_speed_factor, turn_radius)
+    elif pos_x > 0:
+        alex.right(x_speed_factor, turn_radius)
+    else:
+        if pos_y < 0:
+            alex.forward(y_speed_factor, hold=True)
+        elif pos_y > 0:
+            alex.backward(y_speed_factor, hold=True)
 
 
-def move(angle, distance):
-    global lock
-    if lock.locked():
-        return
-
-    if 70 < angle < 110:
-        alex.forward(distance, hold=True)
-    elif 0 <= angle <= 70 or 290 <= angle <= 360:
-        turn_radius = distance
-        if 0 <= angle <= 20 or 340 <= angle <= 360:
-            turn_radius = 0
-        speed_factor = -distance if angle > 290 else distance
-        alex.right(speed_factor, turn_radius)
-    elif 110 <= angle <= 250:
-        turn_radius = distance
-        if 160 <= angle <= 200:
-            turn_radius = 0
-        speed_factor = -distance if angle > 200 else distance
-        alex.left(speed_factor, turn_radius)
-    elif 250 < angle < 290:
-        alex.backward(distance, hold=True)
-
-
-def stop(pos):
-    global lock
-    lock.acquire()
+def motor_stop():
     alex.stop()
 
 
-def start(pos):
-    global lock
-    if lock.locked():
-        lock.release()
-    move(pos)
+def servo_move(angle, distance):
+    print(f"Servo move angle: {angle}")
+
+    if 70 < angle < 110:
+
+        print("TODO: Move tilt up")
+        pass
+
+    elif 0 <= angle <= 70 or 290 <= angle <= 360:
+
+        print("TODO: Move pan right")
+        pass
+
+    elif 110 <= angle <= 250:
+
+        print("TODO: Move pan left")
+        pass
+
+    elif 250 < angle < 290:
+
+        print("TODO: Move tilt down")
+        pass
+
+
+def servo_stop():
+    alex.stop()
 
 
 if __name__ == "__main__":
-    from gevent import pywsgi
+    from gevent.pywsgi import WSGIServer
     from geventwebsocket.handler import WebSocketHandler
 
     alex = AlexRobot()
-    alex.camera.on_frame = handle_frame
     frame_bytes = None
 
-    print("Server starting on port 8070")
-    server = pywsgi.WSGIServer(('', 8070), app, handler_class=WebSocketHandler)
-    server.serve_forever()
+    port = 8070
+
+    alex.camera.on_frame = handle_frame
+
+    print(f"Server starting on port {port}")
+    try:
+        WSGIServer(
+            ('', port),
+            app,
+            handler_class=WebSocketHandler
+        ).serve_forever()
+
+    except KeyboardInterrupt:
+        pass

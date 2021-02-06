@@ -18,8 +18,12 @@ class UsbCamera:
             raise IOError(f"Error opening camera {index}. Make sure it's correctly connected via USB.") from None
 
     def __del__(self):
-        if hasattr(self.__camera, "close"):
-            self.__camera.close()
+        try:
+            if hasattr(self.__camera, "close"):
+                self.__camera.close()
+        except AttributeError:
+            # Camera was not initialized
+            pass
 
     def get_frame(self):
         # Always PIL format
