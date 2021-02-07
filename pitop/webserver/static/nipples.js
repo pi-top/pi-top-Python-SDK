@@ -6,7 +6,7 @@ var twist_data = {
     'z': 0.0
   }
 };
-var publishImmidiately = true;
+var publishImmediately = true;
 
 function twistPublisher(linear, angular) {
     if (linear !== undefined && angular !== undefined) {
@@ -41,13 +41,13 @@ function twistPublisher(linear, angular) {
           console.log("LEFT")
             let linear = Math.cos(direction / 57.29) * nipple.distance * 0.008;
             let angular = Math.sin(direction / 57.29) * nipple.distance * 0.03;
-            if (publishImmidiately) {
-              publishImmidiately = false;
+            if (publishImmediately) {
+              publishImmediately = false;
               twistPublisher(linear, angular);
               setTimeout(function () {
-                publishImmidiately = true;
+                publishImmediately = true;
               }, 50);
-            } 
+            }
         } else {
             window.command['servo_move'](nipple);
         }
@@ -57,7 +57,11 @@ function twistPublisher(linear, angular) {
         nipple.frontPosition.x = 0;
         nipple.frontPosition.y = 0;
         if (position === "left") {
-            twistPublisher(0, 0);
+          for (let i = 0; i < 3; i++) {
+              setTimeout(function () {
+                twistPublisher(0, 0);
+              }, i * 10);
+          }
         } else {
             window.command['servo_stop']();
         }
