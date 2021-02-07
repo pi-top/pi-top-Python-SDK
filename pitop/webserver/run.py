@@ -80,10 +80,6 @@ def handle_command(message):
         print(f"Unrecognised command: {msg_type}")
 
 
-def servo_stop():
-    alex.stop()
-
-
 if __name__ == "__main__":
     from gevent.pywsgi import WSGIServer
     from geventwebsocket.handler import WebSocketHandler
