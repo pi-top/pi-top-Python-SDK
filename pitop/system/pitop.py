@@ -143,4 +143,4 @@ class PiTop(metaclass=Singleton):
 
         :param str port: name of the PMA port where the component to be retrieved is connected.
         """
-        self._port_manager.get_component_on_pma_port(port)
+        return self._port_manager.get_component_on_pma_port(port)
