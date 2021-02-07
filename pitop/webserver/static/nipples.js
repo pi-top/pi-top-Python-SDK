@@ -17,8 +17,6 @@ var pan_tilt_twist = {
 const MAX_LINEAR_SPEED = 0.44;
 const MAX_ANGULAR_SPEED = 5.12;
 const MAX_SERVO_SPEED = 100;
-
-
 var publishCmdVelImmediately = true;
 var publishPanTiltImmediately = true;
 
