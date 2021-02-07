@@ -144,6 +144,9 @@ class AlexRobot(PiTop):
         """
         self._drive_controller.stop()
 
+    def robot_move(self, linear_speed, angular_speed):
+        self._drive_controller.robot_move(linear_speed, angular_speed)
+
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
 

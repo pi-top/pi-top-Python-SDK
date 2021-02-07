@@ -65,7 +65,7 @@ class DriveController:
 
         return rpm_left, rpm_right
 
-    def __robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
+    def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
@@ -78,20 +78,20 @@ class DriveController:
             self._linear_speed_x_hold = linear_speed_x
         else:
             self._linear_speed_x_hold = 0
-        self.__robot_move(linear_speed_x, 0)
+        self.robot_move(linear_speed_x, 0)
 
     def backward(self, speed_factor, hold):
         self.forward(-speed_factor, hold)
 
     def left(self, speed_factor, turn_radius):
-        self.__robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
+        self.robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
 
     def right(self, speed_factor, turn_radius):
         self.left(-speed_factor, -turn_radius)
 
     def target_lock_drive_angle(self, angle):
         angular_speed = self.__target_lock_pid_controller.control_state_update(angle)
-        self.__robot_move(self._linear_speed_x_hold, angular_speed)
+        self.robot_move(self._linear_speed_x_hold, angular_speed)
 
     def rotate(self, angle, angular_speed):
         angular_speed = angular_speed * angle / abs(angle)
@@ -104,10 +104,10 @@ class DriveController:
 
     def stop(self):
         self._linear_speed_x_hold = 0
-        self.__robot_move(0, 0)
+        self.robot_move(0, 0)
 
     def stop_rotation(self):
-        self.__robot_move(self._linear_speed_x_hold, 0)
+        self.robot_move(self._linear_speed_x_hold, 0)
 
     def _speed_to_rpm(self, speed):
         rpm = round(60.0 * speed / self._wheel_circumference, 1)
