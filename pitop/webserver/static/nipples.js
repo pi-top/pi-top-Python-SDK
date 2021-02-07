@@ -1,4 +1,3 @@
-
 var twist_data = {
   'linear': {
     'x': 0.0
@@ -7,6 +6,19 @@ var twist_data = {
     'z': 0.0
   }
 };
+var publishImmidiately = true;
+
+function twistPublisher(linear, angular) {
+    if (linear !== undefined && angular !== undefined) {
+        twist_data.linear.x = linear;
+        twist_data.angular.z = angular;
+    } else {
+        twist_data.linear.x = 0;
+        twist_data.angular.z = 0;
+    }
+    // console.log(linear)
+    window.command['cmd_vel'](twist_data);
+}
 
 ['left', 'right'].forEach((position) => {
     const nippleZone = document.getElementById(position + 'NippleContainer');
@@ -28,9 +40,7 @@ var twist_data = {
         if (position === "left") {
             var linear = Math.cos(direction / 57.29) * nipple.distance * 0.008;
             var angular = Math.sin(direction / 57.29) * nipple.distance * 0.03;
-            twist_data.linear.x = linear;
-            twist_data.angular.z = angular;
-            window.command['cmd_vel'](twist_data);
+            twistPublisher(linear, angular);
         } else {
             window.command['servo_move'](nipple);
         }
@@ -40,9 +50,7 @@ var twist_data = {
         nipple.frontPosition.x = 0;
         nipple.frontPosition.y = 0;
         if (position === "left") {
-            twist_data.linear.x = 0.0;
-            twist_data.angular.z = 0.0;
-            window.command['cmd_vel'](twist_data);
+            twistPublisher(0, 0);
         } else {
             window.command['servo_stop']();
         }
