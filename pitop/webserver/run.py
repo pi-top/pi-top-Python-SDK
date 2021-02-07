@@ -68,16 +68,13 @@ def handle_command(message):
     # print(msg_data)
 
     if msg_type == 'cmd_vel':
-        alex.robot_move(
-            msg_data.get("linear", dict()).get("x"),
-            msg_data.get("angular", dict()).get("z")
-        )
+        linear_speed = msg_data.get("linear", dict()).get("x")
+        angular_speed = msg_data.get("angular", dict()).get("z")
+        alex.robot_move(linear_speed, angular_speed)
 
-    elif msg_type == 'servo_move':
-        servo_move(
-            angle=msg_data.get("angle", dict()).get("degree"),
-            distance=msg_data.get("distance")
-        )
+    elif msg_type == 'pan_tilt':
+        alex.pan_servo.target_speed = msg_data.get("angular", dict()).get("z")
+        alex.tilt_servo.target_speed = msg_data.get("angular", dict()).get("y")
 
     elif msg_type == 'servo_stop':
         servo_stop()

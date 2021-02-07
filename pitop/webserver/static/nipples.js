@@ -1,4 +1,4 @@
-var twist_data = {
+var cmd_vel_twist = {
   'linear': {
     'x': 0.0
   },
@@ -6,18 +6,44 @@ var twist_data = {
     'z': 0.0
   }
 };
-var publishImmediately = true;
 
-function twistPublisher(linear, angular) {
+var pan_tilt_twist = {
+  'angular': {
+    'y': 0.0,
+    'z': 0.0
+  }
+};
+
+const MAX_LINEAR_SPEED = 0.44;
+const MAX_ANGULAR_SPEED = 5.12;
+const MAX_SERVO_SPEED = 100;
+
+
+var publishCmdVelImmediately = true;
+var publishPanTiltImmediately = true;
+
+function cmdVelTwistPublisher(linear, angular) {
     if (linear !== undefined && angular !== undefined) {
-        twist_data.linear.x = linear;
-        twist_data.angular.z = angular;
+        cmd_vel_twist.linear.x = linear;
+        cmd_vel_twist.angular.z = angular;
     } else {
-        twist_data.linear.x = 0;
-        twist_data.angular.z = 0;
+        cmd_vel_twist.linear.x = 0;
+        cmd_vel_twist.angular.z = 0;
     }
     // console.log(linear)
-    window.command['cmd_vel'](twist_data);
+    window.command['cmd_vel'](cmd_vel_twist);
+}
+
+function panTiltTwistPublisher(angular_y, angular_z) {
+    if (angular_y !== undefined && angular_z !== undefined) {
+        pan_tilt_twist.angular.y = angular_y;
+        pan_tilt_twist.angular.z = angular_z;
+    } else {
+        pan_tilt_twist.linear.x = 0;
+        pan_tilt_twist.angular.z = 0;
+    }
+    // console.log(linear)
+    window.command['pan_tilt'](pan_tilt_twist);
 }
 
 ['left', 'right'].forEach((position) => {
@@ -38,18 +64,27 @@ function twistPublisher(linear, angular) {
         }
 
         if (position === "left") {
-          console.log("LEFT")
-            let linear = Math.cos(direction / 57.29) * nipple.distance * 0.008;
-            let angular = Math.sin(direction / 57.29) * nipple.distance * 0.03;
-            if (publishImmediately) {
-              publishImmediately = false;
-              twistPublisher(linear, angular);
+            // nipple distance max is 100, so set that to be maximum speeds
+            let linear = Math.cos(direction / 57.29) * nipple.distance * MAX_LINEAR_SPEED / 100.0;
+            let angular = Math.sin(direction / 57.29) * nipple.distance * MAX_ANGULAR_SPEED / 100.0;
+            if (publishCmdVelImmediately) {
+              publishCmdVelImmediately = false;
+              cmdVelTwistPublisher(linear, angular);
               setTimeout(function () {
-                publishImmediately = true;
+                publishCmdVelImmediately = true;
               }, 50);
             }
         } else {
-            window.command['servo_move'](nipple);
+            let angular_y = -Math.cos(direction / 57.29) * nipple.distance * MAX_SERVO_SPEED / 100.0;
+            let angular_z = Math.sin(direction / 57.29) * nipple.distance * MAX_SERVO_SPEED / 100.0;
+            if (publishPanTiltImmediately) {
+              publishPanTiltImmediately = false;
+              panTiltTwistPublisher(angular_y, angular_z);
+              setTimeout(function () {
+                publishPanTiltImmediately = true;
+              }, 50);
+            }
+
         }
     });
 
@@ -59,11 +94,15 @@ function twistPublisher(linear, angular) {
         if (position === "left") {
           for (let i = 0; i < 3; i++) {
               setTimeout(function () {
-                twistPublisher(0, 0);
+                cmdVelTwistPublisher(0, 0);
               }, i * 10);
           }
         } else {
-            window.command['servo_stop']();
+            for (let i = 0; i < 3; i++) {
+              setTimeout(function () {
+                panTiltTwistPublisher(0, 0);
+              }, i * 10);
+          }
         }
     });
 });
