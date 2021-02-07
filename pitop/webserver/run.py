@@ -28,7 +28,7 @@ def command(ws):
 
 def handle_frame(frame):
     buffered = BytesIO()
-    frame.save(buffered, format="JPEG", optimize=True)
+    frame.save(buffered, format="JPEG", optimize=True, quality=30)
     global frame_bytes
     frame_bytes = buffered.getvalue()
 
