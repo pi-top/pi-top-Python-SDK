@@ -76,36 +76,8 @@ def handle_command(message):
         alex.pan_servo.target_speed = msg_data.get("angular", dict()).get("z")
         alex.tilt_servo.target_speed = msg_data.get("angular", dict()).get("y")
 
-    elif msg_type == 'servo_stop':
-        servo_stop()
-
     else:
         print(f"Unrecognised command: {msg_type}")
-
-
-
-def servo_move(angle, distance):
-    print(f"Servo move angle: {angle}")
-
-    if 70 < angle < 110:
-
-        print("TODO: Move tilt up")
-        pass
-
-    elif 0 <= angle <= 70 or 290 <= angle <= 360:
-
-        print("TODO: Move pan right")
-        pass
-
-    elif 110 <= angle <= 250:
-
-        print("TODO: Move pan left")
-        pass
-
-    elif 250 < angle < 290:
-
-        print("TODO: Move tilt down")
-        pass
 
 
 def servo_stop():
