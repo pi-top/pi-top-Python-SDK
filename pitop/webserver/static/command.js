@@ -5,12 +5,8 @@ const commandUri = `${commandProtocol}//${commandHost}/command`;
 const socket = new WebSocket(commandUri);
 const socketReady = new Promise(resolve => socket.onopen = resolve);
 
-const motor_move = (data) => socketReady.then(() =>
-  socket.send(JSON.stringify({ type: 'motor_move', data: { data } }))
-);
-
-const motor_stop = () => socketReady.then(() =>
-  socket.send(JSON.stringify({ type: 'motor_stop' }))
+const cmd_vel = (data) => socketReady.then(() =>
+  socket.send(JSON.stringify({ type: 'cmd_vel', data: { data } }))
 );
 
 const servo_move = (data) => socketReady.then(() =>
@@ -22,8 +18,7 @@ const servo_stop = () => socketReady.then(() =>
 );
 
 window.command = {
-  motor_move,
-  motor_stop,
+  cmd_vel,
   servo_move,
   servo_stop,
 }

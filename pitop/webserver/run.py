@@ -67,15 +67,11 @@ def handle_command(message):
 
     # print(msg_data)
 
-    if msg_type == 'motor_move':
-
-        motor_move(
-            pos_x=msg_data.get("instance", dict()).get("frontPosition", dict()).get("x"),
-            pos_y=msg_data.get("instance", dict()).get("frontPosition", dict()).get("y"),
+    if msg_type == 'cmd_vel':
+        alex.robot_move(
+            msg_data.get("linear", dict()).get("x"),
+            msg_data.get("angular", dict()).get("z")
         )
-
-    elif msg_type == 'motor_stop':
-        motor_stop()
 
     elif msg_type == 'servo_move':
         servo_move(
@@ -89,27 +85,6 @@ def handle_command(message):
     else:
         print(f"Unrecognised command: {msg_type}")
 
-
-def motor_move(pos_x, pos_y):
-    x_speed_factor = abs(pos_x) / 100.0
-    y_speed_factor = abs(pos_y) / 100.0
-
-    # TODO: implement gradual left/right rotation
-    turn_radius = 0
-
-    if pos_x < 0:
-        alex.left(x_speed_factor, turn_radius)
-    elif pos_x > 0:
-        alex.right(x_speed_factor, turn_radius)
-    else:
-        if pos_y < 0:
-            alex.forward(y_speed_factor, hold=True)
-        elif pos_y > 0:
-            alex.backward(y_speed_factor, hold=True)
-
-
-def motor_stop():
-    alex.stop()
 
 
 def servo_move(angle, distance):
