@@ -1,3 +1,9 @@
+py-pitop-sdk (0.16.1) buster; urgency=medium
+
+  * Fix bug in get_component - no return
+
+ -- Mike Roberts <mike@pi-top.com>  Sun, 07 Feb 2021 18:02:10 +0000
+
 py-pitop-sdk (0.16.0) buster; urgency=medium
 
   * Add standard function to convert between different image formats
