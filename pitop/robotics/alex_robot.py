@@ -52,19 +52,42 @@ class AlexRobot(PiTop):
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
 
-        self.camera = Camera(camera_device_index, camera_resolution)
-        self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
-        self.register_pma_component(self.ultrasonic_sensor)
-
-        self._drive_controller = DriveController(motor_left_port, motor_right_port)
-        self.left_motor = self.get_component_on_pma_port(motor_left_port)
-        self.right_motor = self.get_component_on_pma_port(motor_right_port)
-
-        self._pan_tilt_controller = PanTiltController(servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
-        self.pan_servo = self.get_component_on_pma_port(servo_pan_port)
-        self.tilt_servo = self.get_component_on_pma_port(servo_tilt_port)
-
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
+
+        # System peripherals
+        self._camera = Camera(camera_device_index, camera_resolution)
+
+        # Standalone PMA components
+        self._ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
+        self.register_pma_component(self._ultrasonic_sensor)
+
+        # Motor controllers
+        self._drive_controller = DriveController(motor_left_port, motor_right_port)
+        self._pan_tilt_controller = PanTiltController(servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
+
+    @property
+    def camera(self):
+        return self._camera
+
+    @property
+    def ultrasonic_sensor(self):
+        return self._ultrasonic_sensor
+
+    @property
+    def left_motor(self):
+        return self._drive_controller._left_motor
+
+    @property
+    def right_motor(self):
+        return self._drive_controller._right_motor
+
+    @property
+    def pan_servo(self):
+        return self._pan_tilt_controller._pan_servo
+
+    @property
+    def tilt_servo(self):
+        return self._pan_tilt_controller._tilt_servo
 
     def forward(self, speed_factor, hold=False):
         """
@@ -187,7 +210,7 @@ class AlexRobot(PiTop):
 
         while True:
             servo_obj.target_angle = 0
-            print("Enter a angle to use as zero point.")
+            print("Enter an angle to use as zero point.")
             user_zero_setting = input("Value: ")
             try:
                 user_zero_setting = int(user_zero_setting)
