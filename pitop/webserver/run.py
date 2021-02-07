@@ -85,6 +85,8 @@ if __name__ == "__main__":
     from geventwebsocket.handler import WebSocketHandler
 
     alex = AlexRobot()
+    alex.pan_servo.target_angle = 0
+    alex.tilt_servo.target_angle = 0
     frame_bytes = None
 
     port = 8070
