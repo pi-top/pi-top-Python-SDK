@@ -32,15 +32,22 @@ function twistPublisher(linear, angular) {
 
     nipple.on('move', (evt, nipple) => {
 
-        var direction = nipple.angle.degree - 90;
+        let direction = nipple.angle.degree - 90;
         if (direction > 180) {
             direction = -(450 - nipple.angle.degree);
         }
 
         if (position === "left") {
-            var linear = Math.cos(direction / 57.29) * nipple.distance * 0.008;
-            var angular = Math.sin(direction / 57.29) * nipple.distance * 0.03;
-            twistPublisher(linear, angular);
+          console.log("LEFT")
+            let linear = Math.cos(direction / 57.29) * nipple.distance * 0.008;
+            let angular = Math.sin(direction / 57.29) * nipple.distance * 0.03;
+            if (publishImmidiately) {
+              publishImmidiately = false;
+              twistPublisher(linear, angular);
+              setTimeout(function () {
+                publishImmidiately = true;
+              }, 50);
+            } 
         } else {
             window.command['servo_move'](nipple);
         }
