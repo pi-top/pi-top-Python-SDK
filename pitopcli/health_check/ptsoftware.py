@@ -1,6 +1,5 @@
 from apt import Cache
-from aptsources import apt_pkg
-from os import listdir
+from os import listdir, walk, path
 from re import search
 from subprocess import check_output
 
@@ -58,13 +57,10 @@ class PiTopSoftware:
     def print_pt_systemd_status(self):
         services = self.get_pt_systemd_services()
 
-        for active_state, services_arr in services.items():
-            if active_state == "inactive":
-                continue
+        for active_state, services_arr in sorted(services.items()):
             StdoutFormat.print_line(f"{self.format_service(active_state)}")
             for service in services_arr:
-                StdoutFormat.print_line(StdoutFormat.bold(service.name()), level=2)
-                StdoutFormat.print_line(f"Description: {service.description()}", level=3)
+                StdoutFormat.print_line(f"{StdoutFormat.bold(service.name())} ({service.description()})", level=2)
                 StdoutFormat.print_line(f"Status: {self.format_service(service.load_state())}, {self.format_service(service.enabled())}", level=3)
 
     def get_pt_systemd_services(self):
@@ -136,7 +132,17 @@ class PiTopSoftware:
                                     f"v{pkg_version.ljust(longest_version)}")
 
     def print_apt_sources(self):
-        sources_list_obj = apt_pkg.SourceList()
-        sources_list_obj.read_main_list()
-        for source in sources_list_obj.list:
-            print(f"  └ {source.uri} - {source.dist}")
+        sources_directory = "/etc/apt/"
+
+        for root, dirs, files in walk(sources_directory):
+            for file in files:
+                if file.endswith(".list"):
+                    path_to_source = path.join(root, file)
+                    StdoutFormat.print_line(path_to_source)
+
+                    with open(path_to_source, 'r') as f:
+                        lines = f.readlines()
+
+                    for line in lines:
+                        if not line.startswith("#"):
+                            StdoutFormat.print_line(f"{line.strip()}", level=2)
