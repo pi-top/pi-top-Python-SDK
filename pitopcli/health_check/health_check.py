@@ -22,10 +22,6 @@ class HealthCheck:
             "description": "Filesystem can be expanded?",
             "type": bool,
         },
-        "get_hostname": {
-            "description": "Hostname:",
-            "type": str,
-        },
         "get_boot_cli": {
             "description": "Boot to CLI?",
             "type": bool,
@@ -81,14 +77,6 @@ class HealthCheck:
         "get_rgpio": {
             "description": "GPIO server to be accessible over the network?",
             "type": bool,
-        },
-        "get_pi_type": {
-            "description": "Raspberry Pi Type:",
-            "type": int,
-        },
-        "get_wifi_country": {
-            "description": "WiFi country:",
-            "type": str,
         },
     }
 
