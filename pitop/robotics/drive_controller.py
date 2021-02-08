@@ -1,11 +1,7 @@
+from pitop.pma import EncoderMotor
+
 from math import floor, pi
 
-from pitop.pma import (
-    EncoderMotor,
-    ForwardDirection,
-)
-
-from pitop.system.port_manager import PortManager
 from .pid_controller import PIDController
 
 
@@ -24,25 +20,20 @@ class DriveController:
             e.g. positive angular z velocity is a rotation of the robot anti-clockwise
     """
 
-    def __init__(self, left_motor_port="M3", right_motor_port="M0"):
+    def __init__(self, left_motor: EncoderMotor, right_motor: EncoderMotor):
+        self._left_motor = left_motor
+        self._right_motor = right_motor
+
         # TODO: increase accuracy of wheel_base and wheel_diameter with empirical testing
         self._wheel_separation = 0.1725
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x_hold = 0
 
-        self._left_motor = EncoderMotor(port_name=left_motor_port,
-                                        forward_direction=ForwardDirection.CLOCKWISE)
-        self._right_motor = EncoderMotor(port_name=right_motor_port,
-                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
         self._max_motor_rpm = floor(min(self._left_motor.max_rpm, self._right_motor.max_rpm))
 
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
-
-        self.__port_manager = PortManager()
-        self.__port_manager.register_pma_component(self._left_motor)
-        self.__port_manager.register_pma_component(self._right_motor)
 
         self.__target_lock_pid_controller = PIDController(lower_limit=-self._max_robot_angular_speed,
                                                           upper_limit=self._max_robot_angular_speed,

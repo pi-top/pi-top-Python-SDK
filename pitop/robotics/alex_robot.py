@@ -1,6 +1,11 @@
 from pitop import PiTop
 from pitop.camera import Camera
-from pitop.pma import UltrasonicSensor
+from pitop.pma import (
+    EncoderMotor,
+    ForwardDirection,
+    ServoMotor,
+    UltrasonicSensor,
+)
 
 from pitopcommon.common_ids import FirmwareDeviceID
 
@@ -59,11 +64,38 @@ class AlexRobot(PiTop):
 
         # Standalone PMA components
         self._ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
-        self.register_pma_component(self._ultrasonic_sensor)
+
+        # Motors
+        self._left_motor = EncoderMotor(port_name=motor_left_port,
+                                        forward_direction=ForwardDirection.CLOCKWISE)
+        self._right_motor = EncoderMotor(port_name=motor_right_port,
+                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
+
+        # Servos
+        self._pan_servo = ServoMotor(servo_pan_port)
+        self._tilt_servo = ServoMotor(servo_tilt_port)
+
+        # Register PMA components with ports
+        pma_components = [
+            self._ultrasonic_sensor,
+            self._left_motor,
+            self._right_motor,
+            self._pan_servo,
+            self._tilt_servo,
+        ]
+
+        for component in pma_components:
+            self.register_pma_component(component)
 
         # Motor controllers
-        self._drive_controller = DriveController(motor_left_port, motor_right_port)
-        self._pan_tilt_controller = PanTiltController(servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
+        self._drive_controller = DriveController(
+            left_motor=self._left_motor,
+            right_motor=self._right_motor
+        )
+        self._pan_tilt_controller = PanTiltController(
+            pan_servo=self._pan_servo,
+            tilt_servo=self._tilt_servo
+        )
 
     @property
     def camera(self):
@@ -75,19 +107,19 @@ class AlexRobot(PiTop):
 
     @property
     def left_motor(self):
-        return self._drive_controller._left_motor
+        return self._left_motor
 
     @property
     def right_motor(self):
-        return self._drive_controller._right_motor
+        return self._right_motor
 
     @property
     def pan_servo(self):
-        return self._pan_tilt_controller._pan_servo
+        return self._pan_servo
 
     @property
     def tilt_servo(self):
-        return self._pan_tilt_controller._tilt_servo
+        return self._tilt_servo
 
     def forward(self, speed_factor, hold=False):
         """
