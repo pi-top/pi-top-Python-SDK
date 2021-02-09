@@ -194,12 +194,10 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb"
             path: "./"
 
-      # TODO: unzip
-
-      - name: Download packages
-        uses: "actions/download-artifact@v2"
-        with:
-          path: ./
+      - name: Unzip debs from artifact
+        run: |
+          unzip ${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb
+          rm ${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb
 
       - name: Create Release
         id: create_release
@@ -218,16 +216,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_armhf.deb/${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_armhf.deb"
-          asset_name: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_armhf.deb"
+          asset_path: "python3-pitop_0.16.0_arm64.deb"
+          asset_name: "python3-pitop_0.16.0_arm64.deb"
           asset_content_type: application/vnd.debian.binary-package
 
-      - name: Upload Debian package (arm64)
+      - name: Upload Debian package (armhf)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_arm64.deb/${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_arm64.deb"
-          asset_name: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_arm64.deb"
+          asset_path: "python3-pitop-doc_0.16.0_all.deb"
+          asset_name: "python3-pitop-doc_0.16.0_all.deb"
           asset_content_type: application/vnd.debian.binary-package
