@@ -1,4 +1,4 @@
-name: GitHub Draft Release from Tag
+name: Create GitHub Draft Release from Tag
 
 on:
   push:
