@@ -1,230 +1,228 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Miniscreen
 from PIL import Image, ImageDraw, ImageFont
-import random
+from random import randrange
 from time import sleep
 
-# globals
-WIDTH = 128
-HEIGHT = 64
-LEFT_SCORE_POSITION = (1 * WIDTH // 3, 2)
-RIGHT_SCORE_POSITION = (2 * WIDTH // 3, 2)
-BALL_RADIUS = 4
-PAD_WIDTH = 4
-PAD_HEIGHT = 20
-HALF_PAD_WIDTH = PAD_WIDTH // 2
-HALF_PAD_HEIGHT = PAD_HEIGHT // 2
-ball_pos = [0, 0]
-ball_vel = [0, 0]
-paddle1_vel = 0
-paddle2_vel = 0
-PADDLE_CONTROL_VELOCITY = 4
-l_score = 0
-r_score = 0
 
-# canvas declaration
+# Game variables
+BALL_RADIUS = 2
+PADDLE_SIZE = (2, 20)
+PADDLE_CTRL_VEL = 4
+
+
+class Ball:
+    def __init__(self):
+        self.pos = [0, 0]
+        self.vel = [0, 0]
+
+        # 50/50 chance of direction
+        self.init(move_right=randrange(0, 2) == 0)
+
+    def init(self, move_right):
+        self.pos = [miniscreen.width // 2, miniscreen.height // 2]
+
+        horz = randrange(1, 3)
+        vert = randrange(1, 3)
+
+        if move_right is False:
+            horz = -horz
+
+        self.vel = [horz, -vert]
+
+    @property
+    def x_pos(self):
+        return self.pos[0]
+
+    @property
+    def y_pos(self):
+        return self.pos[1]
+
+    def is_aligned_with_paddle_horizontally(self, paddle):
+        return abs(self.x_pos - paddle.x_pos) <= BALL_RADIUS + PADDLE_SIZE[0] // 2
+
+    def is_aligned_with_paddle_vertically(self, paddle):
+        return abs(self.y_pos - paddle.y_pos) <= BALL_RADIUS + PADDLE_SIZE[1] // 2
+
+    def is_touching_paddle(self, paddle):
+        hor = self.is_aligned_with_paddle_horizontally(paddle)
+        ver = self.is_aligned_with_paddle_vertically(paddle)
+        return hor and ver
+
+    @property
+    def is_touching_vertical_walls(self):
+        return self.y_pos <= BALL_RADIUS or self.y_pos >= miniscreen.height + 1 - BALL_RADIUS
+
+    def change_direction(self, change_x=False, change_y=False, speed_factor=1.0):
+        x_vel = -self.vel[0] if change_x else self.vel[0]
+        self.vel[0] = speed_factor * x_vel
+
+        y_vel = -self.vel[1] if change_y else self.vel[1]
+        self.vel[1] = speed_factor * y_vel
+
+    def update(self):
+        self.pos = [x + y for x, y in zip(self.pos, self.vel)]
+
+        if self.is_touching_vertical_walls:
+            self.change_direction(change_y=True, speed_factor=1.0)
+
+    @property
+    def bounding_box(self):
+        def get_circle_bounds(center, radius):
+            x0 = center[0] - radius
+            y0 = center[1] - radius
+            x1 = center[0] + radius
+            y1 = center[1] + radius
+            return (x0, y0, x1, y1)
+
+        return get_circle_bounds(self.pos, BALL_RADIUS)
+
+
+class Paddle:
+    def __init__(self, start_pos=[0, 0]):
+        self.pos = start_pos
+        self.vel = 0
+        self.score = 0
+
+    def increase_score(self):
+        self.score += 1
+
+    @property
+    def x_pos(self):
+        return self.pos[0]
+
+    @property
+    def y_pos(self):
+        return self.pos[1]
+
+    @y_pos.setter
+    def y_pos(self, new_y):
+        self.pos[1] = new_y
+
+    def update(self):
+        if PADDLE_SIZE[1] // 2 < self.y_pos < miniscreen.height - PADDLE_SIZE[1] // 2:
+            # print("pad is in the middle")
+            self.y_pos += self.vel
+        elif self.y_pos < PADDLE_SIZE[1] // 2 and self.vel > 0:
+            # print("pad is at the top")
+            self.y_pos += self.vel
+        elif self.y_pos > miniscreen.height - PADDLE_SIZE[1] // 2 and self.vel < 0:
+            # print("pad is at the bottom")
+            self.y_pos += self.vel
+
+    @property
+    def bounding_box(self):
+        return (
+            self.x_pos,
+            self.y_pos - PADDLE_SIZE[1] // 2,
+            self.x_pos,
+            self.y_pos + PADDLE_SIZE[1] // 2
+        )
+
+
+def update_button_state():
+    down_pressed = miniscreen.down_button.is_pressed
+    up_pressed = miniscreen.up_button.is_pressed
+    select_pressed = miniscreen.select_button.is_pressed
+    cancel_pressed = miniscreen.cancel_button.is_pressed
+
+    if down_pressed == up_pressed:
+        l_paddle.vel = 0
+    elif down_pressed:
+        l_paddle.vel = PADDLE_CTRL_VEL
+    elif up_pressed:
+        l_paddle.vel = -PADDLE_CTRL_VEL
+
+    if select_pressed == cancel_pressed:
+        r_paddle.vel = 0
+    elif select_pressed:
+        r_paddle.vel = PADDLE_CTRL_VEL
+    elif cancel_pressed:
+        r_paddle.vel = -PADDLE_CTRL_VEL
+
+
+def update_positions():
+    round_finished = False
+
+    l_paddle.update()
+    r_paddle.update()
+    ball.update()
+
+    paddles = {l_paddle, r_paddle}
+    for paddle in paddles:
+        if ball.is_aligned_with_paddle_horizontally(paddle):
+            # print(f"Ball, pos {ball.pos}, is touching paddle, pos {paddle.pos}")
+            if ball.is_touching_paddle(paddle):
+                ball.change_direction(change_x=True, speed_factor=1.1)
+            else:
+                other_paddle = paddles - {paddle}
+                other_paddle = other_paddle.pop()
+                other_paddle.increase_score()
+
+                ball.init(move_right=other_paddle == r_paddle)
+                paddle.y_pos = miniscreen.height // 2
+                other_paddle.y_pos = miniscreen.height // 2
+
+                round_finished = True
+
+            break
+
+    return round_finished
+
+
+def draw(wait=False):
+    canvas = ImageDraw.Draw(image)
+
+    # Clear screen
+    canvas.rectangle(miniscreen.bounding_box, fill=0)
+
+    # Draw ball
+    canvas.ellipse(ball.bounding_box, fill=1)
+
+    # Draw paddles
+    canvas.line(
+        l_paddle.bounding_box,
+        fill=1,
+        width=PADDLE_SIZE[0]
+    )
+
+    canvas.line(
+        r_paddle.bounding_box,
+        fill=1,
+        width=PADDLE_SIZE[0]
+    )
+
+    # Draw score
+    font = ImageFont.truetype("VeraMono.ttf", size=12)
+    canvas.multiline_text((1 * miniscreen.width // 3, 2), str(l_paddle.score), fill=1, font=font, align="center")
+    canvas.multiline_text((2 * miniscreen.width // 3, 2), str(r_paddle.score), fill=1, font=font, align="center")
+
+    # Display image
+    miniscreen.display_image(image)
+
+    if wait:
+        sleep(1.5)
+
+
+# Internal variables
 miniscreen = Miniscreen()
+miniscreen.set_max_fps(30)
+
+ball = Ball()
+
+l_paddle = Paddle([PADDLE_SIZE[0] // 2 - 1, miniscreen.height // 2])
+r_paddle = Paddle([miniscreen.width - 1 - PADDLE_SIZE[0] // 2, miniscreen.height // 2])
+
 image = Image.new(
     miniscreen.mode,
     miniscreen.size,
 )
-canvas = ImageDraw.Draw(image)
-font = ImageFont.truetype("VeraMono.ttf", 8)
-miniscreen.set_max_fps(30)
-bounding_box = miniscreen.bounding_box
 
 
-# helper function that spawns a ball, returns a position vector and a velocity vector
-# if right is True, spawn to the right, else spawn to the left
-def ball_init(move_right):
-    global ball_pos, ball_vel  # these are vectors stored as lists
-    ball_pos = [WIDTH // 2, HEIGHT // 2]
-    horz = random.randrange(2, 4)
-    vert = random.randrange(1, 3)
-
-    if move_right is False:
-        horz = - horz
-
-    ball_vel = [horz, -vert]
+def main():
+    while True:
+        update_button_state()
+        draw(update_positions())
 
 
-# define event handlers
-def initialise_game():
-    global paddle1_pos, paddle2_pos, paddle1_vel, paddle2_vel, l_score, r_score  # these are floats
-    global score1, score2  # these are ints
-    paddle1_pos = [HALF_PAD_WIDTH - 1, HEIGHT // 2]
-    paddle2_pos = [WIDTH - 1 - HALF_PAD_WIDTH, HEIGHT // 2]
-    l_score = 0
-    r_score = 0
-    if random.randrange(0, 2) == 0:
-        ball_init(move_right=True)
-    else:
-        ball_init(move_right=False)
-
-
-def get_circle_bounds(center, radius):
-    x0 = center[0] - radius
-    y0 = center[1] - radius
-    x1 = center[0] + radius
-    y1 = center[1] + radius
-    bound = (x0, y0, x1, y1)
-    return bound
-
-
-# draw function of canvas
-def draw():
-    global paddle1_pos, paddle2_pos, ball_pos, ball_vel, l_score, r_score
-
-    canvas.rectangle(bounding_box, fill=0)
-
-    if HALF_PAD_HEIGHT < paddle1_pos[1] < HEIGHT - HALF_PAD_HEIGHT:
-        # print("pad is in the middle")
-        paddle1_pos[1] += paddle1_vel
-    elif paddle1_pos[1] < HALF_PAD_HEIGHT and paddle1_vel > 0:
-        # print("pad is at the top")
-        paddle1_pos[1] += paddle1_vel
-    elif paddle1_pos[1] > HEIGHT - HALF_PAD_HEIGHT and paddle1_vel < 0:
-        # print("pad is at the bottom")
-        paddle1_pos[1] += paddle1_vel
-
-    if HALF_PAD_HEIGHT < paddle2_pos[1] < HEIGHT - HALF_PAD_HEIGHT:
-        # print("pad is in the middle")
-        paddle2_pos[1] += paddle2_vel
-    elif paddle2_pos[1] < HALF_PAD_HEIGHT and paddle2_vel > 0:
-        # print("pad is at the top")
-        paddle2_pos[1] += paddle2_vel
-    elif paddle2_pos[1] > HEIGHT - HALF_PAD_HEIGHT and paddle2_vel < 0:
-        # print("pad is at the bottom")
-        paddle2_pos[1] += paddle2_vel
-
-    # update ball
-    ball_pos[0] += int(ball_vel[0])
-    ball_pos[1] += int(ball_vel[1])
-
-    # draw paddles and ball
-    canvas.ellipse(get_circle_bounds(ball_pos, BALL_RADIUS), fill=1)
-
-    canvas.line([(paddle1_pos[0], paddle1_pos[1] - HALF_PAD_HEIGHT),
-                 (paddle1_pos[0], paddle1_pos[1] + HALF_PAD_HEIGHT)],
-                fill=1,
-                width=PAD_WIDTH)
-
-    # print(paddle2_pos)
-    canvas.line([(paddle2_pos[0], paddle2_pos[1] - HALF_PAD_HEIGHT),
-                 (paddle2_pos[0], paddle2_pos[1] + HALF_PAD_HEIGHT)],
-                fill=1,
-                width=PAD_WIDTH)
-
-    # ball collision check on top and bottom walls
-    if int(ball_pos[1]) <= BALL_RADIUS:
-        ball_vel[1] = - ball_vel[1]
-    if int(ball_pos[1]) >= HEIGHT + 1 - BALL_RADIUS:
-        ball_vel[1] = -ball_vel[1]
-
-    # ball collision check on gutters or paddles
-    if int(ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH \
-            and int(ball_pos[1]) in range(paddle1_pos[1] - HALF_PAD_HEIGHT, paddle1_pos[1] + HALF_PAD_HEIGHT, 1):
-        ball_vel[0] = -ball_vel[0]
-        ball_vel[0] *= 1.1
-        ball_vel[1] *= 1.1
-    elif int(ball_pos[0]) <= BALL_RADIUS + PAD_WIDTH:
-        r_score += 1
-        ball_init(move_right=True)
-
-    if int(ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH and \
-            int(ball_pos[1]) in range(paddle2_pos[1] - HALF_PAD_HEIGHT, paddle2_pos[1] + HALF_PAD_HEIGHT, 1):
-        ball_vel[0] = -ball_vel[0]
-        ball_vel[0] *= 1.1
-        ball_vel[1] *= 1.1
-    elif int(ball_pos[0]) >= WIDTH + 1 - BALL_RADIUS - PAD_WIDTH:
-        l_score += 1
-        ball_init(move_right=False)
-
-    # using multiline so align works, even though it doesn't seem to work right now
-    canvas.multiline_text(LEFT_SCORE_POSITION, f'{l_score}', fill=1, font=font, align="center")
-    canvas.multiline_text(RIGHT_SCORE_POSITION, f'{r_score}', fill=1, font=font, align="center")
-
-    miniscreen.display_image(image)
-    # update scores
-
-    # myfont1 = pygame.font.SysFont("Comic Sans MS", 20)
-    # label1 = myfont1.render("Score " + str(l_score), 1, (255, 255, 0))
-    # canvas.blit(label1, (50, 20))
-    #
-    # myfont2 = pygame.font.SysFont("Comic Sans MS", 20)
-    # label2 = myfont2.render("Score " + str(r_score), 1, (255, 255, 0))
-    # canvas.blit(label2, (470, 20))
-
-
-def paddle_2_down_action():
-    global paddle2_vel
-    paddle2_vel = PADDLE_CONTROL_VELOCITY
-
-
-def paddle_2_up_action():
-    global paddle2_vel
-    paddle2_vel = -PADDLE_CONTROL_VELOCITY
-
-
-def paddle_2_stop():
-    global paddle2_vel
-    paddle2_vel = 0
-
-
-def paddle_1_down_action():
-    global paddle1_vel
-    paddle1_vel = PADDLE_CONTROL_VELOCITY
-
-
-def paddle_1_up_action():
-    global paddle1_vel
-    paddle1_vel = -PADDLE_CONTROL_VELOCITY
-
-def paddle_1_stop():
-    global paddle1_vel
-    paddle1_vel = 0
-
-
-initialise_game()
-paddle_1_key_states = [0, 0]
-paddle_2_key_states = [0, 0]
-# game loop
-while True:
-    draw()
-
-    if miniscreen.select_button.is_pressed:
-        paddle_2_key_states[0] = 1
-    else:
-        paddle_2_key_states[0] = 0
-
-    if miniscreen.cancel_button.is_pressed:
-        paddle_2_key_states[1] = 1
-    else:
-        paddle_2_key_states[1] = 0
-
-    if paddle_2_key_states[0] == 1 and paddle_2_key_states[1] == 1:
-        paddle_2_stop()
-    elif paddle_2_key_states[0] == 0 and paddle_2_key_states[1] == 0:
-        paddle_2_stop()
-    elif paddle_2_key_states[0] == 1:
-        paddle_2_down_action()
-    elif paddle_2_key_states[1] == 1:
-        paddle_2_up_action()
-
-    if miniscreen.down_button.is_pressed:
-        paddle_1_key_states[0] = 1
-    else:
-        paddle_1_key_states[0] = 0
-
-    if miniscreen.up_button.is_pressed:
-        paddle_1_key_states[1] = 1
-    else:
-        paddle_1_key_states[1] = 0
-
-    if paddle_1_key_states[0] == 1 and paddle_1_key_states[1] == 1:
-        paddle_1_stop()
-    elif paddle_1_key_states[0] == 0 and paddle_1_key_states[1] == 0:
-        paddle_1_stop()
-    elif paddle_1_key_states[0] == 1:
-        paddle_1_down_action()
-    elif paddle_1_key_states[1] == 1:
-        paddle_1_up_action()
+if __name__ == "__main__":
+    main()
