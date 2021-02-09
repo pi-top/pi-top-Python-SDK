@@ -93,8 +93,8 @@ Displaying a clock
 
 .. literalinclude:: ../examples/miniscreen/miniscreen_display_clock.py
 
-Display a particle~based screensaver in the OLED
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Display a particle-based screensaver
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../examples/miniscreen/miniscreen_display_particles.py
 
@@ -102,6 +102,11 @@ Prim's algorithm
 ~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../examples/miniscreen/miniscreen_display_prims_algorithm.py
+
+2-Player Pong Game
+~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../examples/miniscreen/miniscreen_play_pong_game.py
 
 Class Reference: pi-top [4] Miniscreen
 --------------------------------------
