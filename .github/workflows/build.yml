@@ -196,6 +196,7 @@ jobs:
 
       - name: Unzip debs from artifact
         run: |
+          ls ./
           unzip ${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb
           rm ${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb
 
