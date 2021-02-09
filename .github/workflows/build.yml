@@ -51,7 +51,10 @@ jobs:
           path: debian/changelog
 
   debian:
-    # if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
+    # Does not require patch-src to have actually run
+    # But does need to wait for it if it has
+    if: ${{ always() }}
+    needs: [ patch-src ]
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -115,7 +118,7 @@ jobs:
     # But does need to wait for it if it has
     if: ${{ always() }}
     # Python building will not catch errors, but Debian building will
-    # so we wait for that to complete before continuing
+    # so we wait for that to complete before continuing, to prevent releasing to PyPI
     needs: [ patch-src, debian ]
     runs-on: ubuntu-20.04
     steps:
