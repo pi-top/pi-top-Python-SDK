@@ -17,6 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
       - name: Set up Debian Docker container for changelog patching
         # '--ignore-branch' for testing on feature branch
         run: |
@@ -82,8 +85,8 @@ jobs:
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.2
         with:
-          source_directory: "/home/runner/work/pi-top-Python-SDK/pi-top-Python-SDK/"
-          artifacts_directory: "/home/runner/work/pi-top-Python-SDK/pi-top-Python-SDK/artifacts/bin"
+          source_directory: "${{ github.workspace }}"
+          artifacts_directory: "${{ github.workspace }}/artifacts/bin"
 
           docker_image: "pitop/deb-build:latest"
           distribution: "buster-backports"
@@ -119,7 +122,7 @@ jobs:
     if: ${{ always() }}
     # Python building will not catch errors, but Debian building will
     # so we wait for that to complete before continuing, to prevent releasing to PyPI
-    needs: [ patch-src, debian ]
+    needs: [ debian ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
