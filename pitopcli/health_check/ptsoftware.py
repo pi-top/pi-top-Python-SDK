@@ -127,7 +127,7 @@ class PiTopSoftware:
                     longest_version = len(pkg.installed.version)
 
         for pkg_name, pkg_version in pt_packages:
-            StdoutFormat.print_line(f"{pkg_name.ljust(longest_package_name)}" +
+            StdoutFormat.print_line(f"{pkg_name.ljust(longest_package_name + 10)}" +
                                     " " +
                                     f"v{pkg_version.ljust(longest_version)}")
 

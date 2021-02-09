@@ -232,5 +232,5 @@ class HealthCheck:
         if "lo" in interfaces_list:
             interfaces_list.remove("lo")
         for iface in interfaces_list:
-            StdoutFormat.print_subsection(f"Interface: {StdoutFormat.bold(iface)}")
+            StdoutFormat.print_subsection(f"Interface: {iface}")
             print_interface_info(iface)

@@ -26,9 +26,9 @@ class StdoutFormat:
 
     @classmethod
     def print_header(cls, header):
-        print(f"{'='*(get_terminal_size().columns - 2)}")
+        print(f"{'='*(get_terminal_size().columns)}")
         print(f"{cls.bold(header)}")
-        print(f"{'='*(get_terminal_size().columns - 2)}")
+        print(f"{'='*(get_terminal_size().columns)}")
 
     @classmethod
     def print_section(cls, section):
@@ -36,7 +36,7 @@ class StdoutFormat:
 
     @classmethod
     def print_subsection(cls, section):
-        print(f"{cls.dim(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}")
+        print(f"- {cls.dim(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}")
 
     @classmethod
     def print_line(cls, content, level=1):
