@@ -200,11 +200,17 @@ class HealthCheck:
             return "Error getting setting"
 
     def print_raspi_config_settings(self, raspi_config_settings_dict):
+        data_to_print = []
+
         for setting, setting_dict in raspi_config_settings_dict.items():
             setting_value = self.get_raspi_config_setting_value(setting)
             if setting_dict.get("conversion_func"):
                 setting_value = setting_dict.get("conversion_func")(setting_value)
-            StdoutFormat.print_line(f"{StdoutFormat.bold(setting_dict.get('description'))} {setting_value}")
+            setting_value = str(setting_value)
+
+            data_to_print.append((setting_dict.get('description'), setting_value))
+
+        StdoutFormat.print_table(data_to_print)
 
     def print_network_settings(self):
         def print_interface_info(interface_name):

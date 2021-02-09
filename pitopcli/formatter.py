@@ -52,3 +52,45 @@ class StdoutFormat:
         print(f"[ {cls.GREEN}{'✓' if status else ' '}{cls.ENDC} ]", end=" ")
         print(f"{cls.bold(title)}: {text}\n\t{cls.clickable_text(url, url) if status else url}", end=" ")
         print("")
+
+    @classmethod
+    def print_table(cls, data_arr, column_separation=5):
+        """
+        Prints an array of data as a table. `data_arr` must be an array of arrays, containing the row data to
+        be printed.
+        """
+        if len(data_arr) == 0:
+            return
+        if len(data_arr[0]) < 2:
+            return
+
+        longest_description = 0
+        longest_value = [0]*len(data_arr[0][1:])
+
+        # Iterate through data to format
+        for data in data_arr:
+            description = data[0]
+            values = data[1:]
+
+            if len(str(description)) > longest_description:
+                longest_description = len(str(description))
+
+            for i, value in enumerate(values):
+                if len(str(value)) > longest_value[i]:
+                    longest_value[i] = len(str(value))
+
+        # Print
+        for data in data_arr:
+            line = ""
+            description = data[0]
+            values = data[1:]
+
+            line += f"{description.ljust(longest_description + column_separation)}"
+
+            for i, value in enumerate(values):
+                string_length = longest_value[i] + column_separation
+                if i == len(values) - 1:
+                    string_length = longest_value[i]
+                line += f"{value.ljust(string_length)}"
+
+            cls.print_line(line)
