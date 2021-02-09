@@ -4,7 +4,7 @@ on:
   push:
     tags:
       - 'v*'
-    branches: [ "release/*" ]
+    branches: [ "ci-test-release-*" ]
 
 jobs:
   build-python:
