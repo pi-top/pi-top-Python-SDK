@@ -98,16 +98,30 @@ class Paddle:
     def y_pos(self, new_y):
         self.pos[1] = new_y
 
+    @property
+    def touching_top(self):
+        return self.y_pos - PADDLE_SIZE[1] // 2 <= 0
+
+    @property
+    def touching_bottom(self):
+        return self.y_pos + PADDLE_SIZE[1] // 2 >= miniscreen.height - 1
+
     def update(self):
-        if PADDLE_SIZE[1] // 2 < self.y_pos < miniscreen.height - PADDLE_SIZE[1] // 2:
-            # print("pad is in the middle")
-            self.y_pos += self.vel
-        elif self.y_pos < PADDLE_SIZE[1] // 2 and self.vel > 0:
-            # print("pad is at the top")
-            self.y_pos += self.vel
-        elif self.y_pos > miniscreen.height - PADDLE_SIZE[1] // 2 and self.vel < 0:
-            # print("pad is at the bottom")
-            self.y_pos += self.vel
+        moving_down = self.vel > 0
+
+        if self.touching_top and not moving_down:
+            return
+
+        if self.touching_bottom and moving_down:
+            return
+
+        self.y_pos += self.vel
+
+        if self.touching_top:
+            self.y_pos = PADDLE_SIZE[1] // 2
+
+        if self.touching_bottom:
+            self.y_pos = miniscreen.height - PADDLE_SIZE[1] // 2 - 1
 
     @property
     def bounding_box(self):
