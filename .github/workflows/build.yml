@@ -26,7 +26,7 @@ jobs:
           docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
           docker start chglog
           docker exec chglog git config --global user.name "GitHub Build Action"
-          docker exec chglog git config --global user.email "https://github.com/${{ env.GITHUB_REPOSITORY_NAME }}"
+          docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
 
       - name: Patch changelog (snapshot)
         # '--ignore-branch' for testing on feature branch
