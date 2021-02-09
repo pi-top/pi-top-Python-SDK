@@ -7,7 +7,7 @@ from netifaces import (
 )
 from distutils.util import strtobool
 from os import path, uname
-from time import asctime, gmtime
+from time import strftime
 
 
 from ..formatter import StdoutFormat
@@ -100,7 +100,7 @@ class HealthCheck:
 
     def run(self):
         StdoutFormat.print_header("SYSTEM HEALTH CHECK")
-        print(f"Current time (GMT): {asctime(gmtime())}")
+        print(f"Current time: {strftime('%a, %d %b %Y %I:%M:%S %p %Z')}")
         print("")
 
         StdoutFormat.print_section("Raspberry Pi Device Information")
