@@ -164,7 +164,6 @@ def update_positions():
     paddles = {l_paddle, r_paddle}
     for paddle in paddles:
         if ball.is_aligned_with_paddle_horizontally(paddle):
-            # print(f"Ball, pos {ball.pos}, is touching paddle, pos {paddle.pos}")
             if ball.is_touching_paddle(paddle):
                 ball.change_direction(change_x=True, speed_factor=1.1)
             else:
