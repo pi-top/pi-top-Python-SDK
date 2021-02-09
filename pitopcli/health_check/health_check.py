@@ -159,6 +159,9 @@ class HealthCheck:
             StdoutFormat.print_subsection('EEPROM Configuration')
             eeprom_info = run_command("sudo rpi-eeprom-config", timeout=5)
             print(f"{eeprom_info.strip()}")
+            StdoutFormat.print_subsection('EEPROM Information')
+            eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5)
+            print(f"{eeprom_info.strip()}")
 
     def print_uname_output(self):
         u = uname()
