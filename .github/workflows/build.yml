@@ -1,14 +1,17 @@
 name: Build
 
+# on:
+#   release:
+#     types: [created]
 on:
-  release:
-    types: [created]
   push:
+    tags:
+      - '*'
     branches: [ "master", "build/*" ]
 
 jobs:
   patch-src:
-    if: github.event_name != 'release'
+    if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -30,7 +33,7 @@ jobs:
       # Release changelogs are currently handled manually
       #
       # - name: Patch changelog (release)
-      #   if: github.event_name == 'release'
+      # if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
       #   run: |
       #     docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
 
@@ -48,11 +51,12 @@ jobs:
           path: debian/changelog
 
   debian:
-    if: github.event_name == 'release'
+    # if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        target_arch: ["armhf", "arm64"]
+        # target_arch: ["armhf", "arm64"]
+        target_arch: ["amd64"]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
@@ -61,12 +65,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Delete unpatched changelog
-        if: github.event_name != 'release'
+        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
         run: |
           rm ${{ github.workspace }}/debian/changelog
 
       - name: Download patched changelog
-        if: github.event_name != 'release'
+        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
@@ -86,22 +90,23 @@ jobs:
           # Package uses latest packaging syntax and Lintian opts/tags
           dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
 
-      - name: Separate source (tar.xz) from build files
+      - name: Separate Debian source package files from binary
         run: |
-          mkdir -p ${{ github.workspace }}/artifacts/src
-          mv ${{ github.workspace }}/artifacts/bin/*.tar.xz ${{ github.workspace }}/artifacts/src
+          mkdir -p ${{ github.workspace }}/artifacts/src/
+          mv ${{ github.workspace }}/artifacts/bin/* ${{ github.workspace }}/artifacts/src/
+          mv ${{ github.workspace }}/artifacts/src/*.deb ${{ github.workspace }}/artifacts/bin/
 
-      - name: Upload Debian source artifacts
+      - name: Upload Debian source package files
         uses: "actions/upload-artifact@v2"
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb-src"
           path: "${{ github.workspace }}/artifacts/src"
 
-      - name: Upload Debian binary artifacts
+      - name: Upload Debian binary package
         uses: "actions/upload-artifact@v2"
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
-          path: "${{ github.workspace }}/artifacts/bin"
+          path: "${{ github.workspace }}/artifacts/bin/${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_${{matrix.target_arch}}.deb"
 
       # TODO: publish to APT server
 
@@ -121,12 +126,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Delete unpatched changelog
-        if: github.event_name != 'release'
+        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
         run: |
           rm ${{ github.workspace }}/debian/changelog
 
       - name: Download patched changelog
-        if: github.event_name != 'release'
+        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
@@ -154,10 +159,68 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "${{ github.workspace }}/dist"
 
-      - name: Publish to PyPI
-        if: github.event_name == 'release'
+      # - name: Publish to PyPI
+      #   if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
+      #   env:
+      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      #   run: |
+      #     twine upload --verbose dist/*
+
+  create-release:
+    # if: github.event_name == 'push' || github.ref == 'refs/tags/v*.*.*'
+    runs-on: ubuntu-20.04
+    needs: [ debian, python ]
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Download Python artifact
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "./"
+
+      - name: Download Debian artifact (armhf)
+        uses: "actions/download-artifact@v2"
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-armhf-deb"
+            path: "./"
+
+      # TODO: unzip
+
+      - name: Download packages
+        uses: "actions/download-artifact@v2"
+        with:
+          path: ./
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose dist/*
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.GITHUB_REF_NAME }}
+          release_name: ${{ env.GITHUB_REF_NAME }}
+          draft: true
+          prerelease: false
+
+      - name: Upload Debian package (armhf)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_armhf.deb/${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_armhf.deb"
+          asset_name: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_armhf.deb"
+          asset_content_type: application/vnd.debian.binary-package
+
+      - name: Upload Debian package (arm64)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_arm64.deb/${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_arm64.deb"
+          asset_name: "${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_arm64.deb"
+          asset_content_type: application/vnd.debian.binary-package
