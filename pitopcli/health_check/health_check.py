@@ -108,10 +108,7 @@ class HealthCheck:
         print("")
 
         StdoutFormat.print_section("System Information")
-        sys_info_arr = self.print_debian_version()
-        sys_info_arr += self.print_uname_output()
-        sys_info_arr += self.print_if_pitopOS()
-        StdoutFormat.print_table(sys_info_arr)
+        self.print_system_information()
         print("")
 
         StdoutFormat.print_section("Interfaces (via raspi-config)")
@@ -167,14 +164,14 @@ class HealthCheck:
             eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5)
             print(f"{eeprom_info.strip()}")
 
-    def print_uname_output(self):
+    def get_uname_output(self):
         data_arr = []
         u = uname()
         data_arr.append(("Kernel Version", u.release))
         data_arr.append(("Kernel Release", u.version))
         return data_arr
 
-    def print_if_pitopOS(self):
+    def get_pitopOS_info(self):
         data_arr = []
         ptissue_path = "/etc/pt-issue"
         if not path.exists(ptissue_path):
@@ -192,13 +189,19 @@ class HealthCheck:
             data_arr.append((k, v))
         return data_arr
 
-    def print_debian_version(self):
+    def get_debian_version(self):
         debian_version_file = "/etc/debian_version"
         if not path.exists(debian_version_file):
-            return
+            return None
         with open(debian_version_file, 'r') as reader:
             content = reader.read()
         return [("Debian Version", content.strip())]
+
+    def print_system_information(self):
+        sys_info_arr = self.get_debian_version()
+        sys_info_arr += self.get_uname_output()
+        sys_info_arr += self.get_pitopOS_info()
+        StdoutFormat.print_table(sys_info_arr)
 
     def get_raspi_config_setting_value(self, setting):
         try:
