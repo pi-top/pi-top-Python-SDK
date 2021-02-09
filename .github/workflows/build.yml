@@ -6,7 +6,7 @@ name: Build
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
     branches: [ "master", "build/*" ]
 
 jobs:
@@ -194,12 +194,6 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb"
             path: "./"
 
-      - name: Unzip debs from artifact
-        run: |
-          ls ./
-          unzip ${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb
-          rm ${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -211,22 +205,38 @@ jobs:
           draft: true
           prerelease: false
 
-      - name: Upload Debian package (armhf)
+      - name: Get main package filename (amd64)
+        id: get_amd64_main_pkg_filename
+        run: |
+          PKG_NAME=$(ls | grep "^python3-pitop_.*amd64.deb$")
+          echo "::set-output name=filename::$PKG_NAME"
+
+      - name: Get docs package filename (amd64)
+        id: get_amd64_docs_pkg_filename
+        run: |
+          PKG_NAME=$(ls | grep "^python3-pitop_.*amd64.deb$")
+          echo "::set-output name=filename::$PKG_NAME"
+
+        # This pulls from the CREATE RELEASE step above
+        # referencing its ID to get its outputs object
+        # which include a `upload_url`
+        # More info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+      - name: Upload main Debian package (amd64)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "python3-pitop_0.16.0_arm64.deb"
-          asset_name: "python3-pitop_0.16.0_arm64.deb"
+          asset_path: ./${{ steps.get_amd64_main_pkg_filename.outputs.filename }}
+          asset_name: ${{ steps.get_amd64_main_pkg_filename.outputs.filename }}
           asset_content_type: application/vnd.debian.binary-package
 
-      - name: Upload Debian package (armhf)
+      - name: Upload docs Debian package (amd64)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "python3-pitop-doc_0.16.0_all.deb"
-          asset_name: "python3-pitop-doc_0.16.0_all.deb"
+          asset_path: ./${{ steps.get_amd64_docs_pkg_filename.outputs.filename }}
+          asset_name: ${{ steps.get_amd64_docs_pkg_filename.outputs.filename }}
           asset_content_type: application/vnd.debian.binary-package
