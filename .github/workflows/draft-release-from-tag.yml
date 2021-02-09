@@ -1,63 +1,44 @@
-name: Build
+name: GitHub Draft Release from Tag
 
-# on:
-#   release:
-#     types: [created]
 on:
   push:
     tags:
       - 'v*'
-    branches: [ "master", "build/*" ]
+    branches: [ "release/*" ]
 
 jobs:
-  patch-src:
-    if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
+  build-python:
     runs-on: ubuntu-20.04
     steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
 
-      - name: Set up Debian Docker container for changelog patching
-        # '--ignore-branch' for testing on feature branch
+      - name: Install dependencies
         run: |
-          docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
-          docker start chglog
-          docker exec chglog git config --global user.name "GitHub Build Action"
-          docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
 
-      - name: Patch changelog (snapshot)
-        # '--ignore-branch' for testing on feature branch
+      - name: Build
+        # Create source distribution (sdist) and wheel (bdist_wheel)
+        # By default, both will be placed in dist/ under the current directory
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --ignore-branch --snapshot
+          python setup.py sdist bdist_wheel
 
-      # Release changelogs are currently handled manually
-      #
-      # - name: Patch changelog (release)
-      # if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
-      #   run: |
-      #     docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
-
-      - name: Show updated changelog
-        run: |
-          cat debian/changelog
-
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Upload patched src as artifact
+      - name: Upload Python distribution artifacts
         uses: "actions/upload-artifact@v2"
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-          path: debian/changelog
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+            path: "${{ github.workspace }}/dist"
 
-  debian:
-    # Does not require patch-src to have actually run
-    # But does need to wait for it if it has
-    if: ${{ always() }}
-    needs: [ patch-src ]
+  build-debian:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -68,18 +49,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Delete unpatched changelog
-        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
-        run: |
-          rm ${{ github.workspace }}/debian/changelog
-
-      - name: Download patched changelog
-        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/debian"
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.2
@@ -113,69 +82,9 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
           path: "${{ github.workspace }}/artifacts/bin/"
 
-      # TODO: publish to APT server
-
-  python:
-    # Does not require patch-src to have actually run
-    # But does need to wait for it if it has
-    if: ${{ always() }}
-    # Python building will not catch errors, but Debian building will
-    # so we wait for that to complete before continuing, to prevent releasing to PyPI
-    needs: [ debian ]
-    runs-on: ubuntu-20.04
-    steps:
-      - name: GitHub Environment Variables Action
-        uses: FranzDiebold/github-env-vars-action@v1.2.1
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Delete unpatched changelog
-        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
-        run: |
-          rm ${{ github.workspace }}/debian/changelog
-
-      - name: Download patched changelog
-        if: github.event_name != 'push' || github.ref != 'refs/tags/v*.*.*'
-        uses: "actions/download-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-changelog"
-            path: "${{ github.workspace }}/debian"
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-
-      - name: Build
-        # Create source distribution (sdist) and wheel (bdist_wheel)
-        # By default, both will be placed in dist/ under the current directory
-        run: |
-          python setup.py sdist bdist_wheel
-
-      - name: Upload Python distribution artifacts
-        uses: "actions/upload-artifact@v2"
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "${{ github.workspace }}/dist"
-
-      # - name: Publish to PyPI
-      #   if: github.event_name == 'push' && github.ref == 'refs/tags/v*.*.*'
-      #   env:
-      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      #   run: |
-      #     twine upload --verbose dist/*
-
   create-release:
-    # if: github.event_name == 'push' || github.ref == 'refs/tags/v*.*.*'
     runs-on: ubuntu-20.04
-    needs: [ debian, python ]
+    needs: [ build-debian, build-python ]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
@@ -190,14 +99,34 @@ jobs:
           release_name: ${{ env.GITHUB_REF_NAME }}
           draft: true
           prerelease: false
+          body: |
+            The SDK and its related CI workflows are still in active development and subject to breaking changes.
+            However, this release is regarded as "fairly stable" and the SDK itself should work in most of the detailed use-cases.
 
       - name: Download Python artifact
         uses: "actions/download-artifact@v2"
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "./"
+            path: "./py"
 
-# pitop-0.16.2+1.gbp02bd47-py3-none-any.whl
+      - name: Get Python wheel filename
+        id: get_py_whl_filename
+        run: |
+          cd ./py
+          WHL_NAME=$(ls | grep "^pitop-.*.whl$")
+          echo "::set-output name=filename::$WHL_NAME"
+
+      # More info:
+      # https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+      - name: Upload Python wheel
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./armhf/${{ steps.get_py_whl_filename.outputs.filename }}
+          asset_name: ${{ steps.get_py_whl_filename.outputs.filename }}
+          asset_content_type: application/vnd.debian.binary-package
 
       - name: Download Debian artifact (armhf)
         uses: "actions/download-artifact@v2"
@@ -212,8 +141,6 @@ jobs:
           PKG_NAME=$(ls | grep "^python3-pitop_.*armhf.deb$")
           echo "::set-output name=filename::$PKG_NAME"
 
-      # More info:
-      # https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
       - name: Upload main Debian package (armhf)
         uses: actions/upload-release-asset@v1
         env:
