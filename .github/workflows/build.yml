@@ -106,13 +106,13 @@ jobs:
         uses: "actions/upload-artifact@v2"
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb-src"
-          path: "${{ github.workspace }}/artifacts/src"
+          path: "${{ github.workspace }}/artifacts/src/"
 
-      - name: Upload Debian binary package
+      - name: Upload Debian binary packages
         uses: "actions/upload-artifact@v2"
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
-          path: "${{ github.workspace }}/artifacts/bin/${{ env.GITHUB_REPOSITORY_NAME }}_${{ env.GITHUB_REF_NAME }}_${{matrix.target_arch}}.deb"
+          path: "${{ github.workspace }}/artifacts/bin/"
 
       # TODO: publish to APT server
 
@@ -187,10 +187,11 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "./"
 
-      - name: Download Debian artifact (armhf)
+      # TODO - swap for arm!
+      - name: Download Debian artifact (amd64)
         uses: "actions/download-artifact@v2"
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-armhf-deb"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-amd64-deb"
             path: "./"
 
       # TODO: unzip
