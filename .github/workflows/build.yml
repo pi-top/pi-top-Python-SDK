@@ -208,15 +208,13 @@ jobs:
       - name: Get main package filename (amd64)
         id: get_amd64_main_pkg_filename
         run: |
-          ls
           PKG_NAME=$(ls | grep "^python3-pitop_.*amd64.deb$")
           echo "::set-output name=filename::$PKG_NAME"
 
       - name: Get docs package filename (amd64)
         id: get_amd64_docs_pkg_filename
         run: |
-          ls
-          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*amd64.deb$")
+          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*all.deb$")
           echo "::set-output name=filename::$PKG_NAME"
 
         # This pulls from the CREATE RELEASE step above
