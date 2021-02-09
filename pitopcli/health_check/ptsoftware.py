@@ -4,46 +4,7 @@ from re import search
 from subprocess import check_output
 
 from ..formatter import StdoutFormat
-
-
-class Service:
-    def __init__(self):
-
-        self._name = ""
-        self._load_state = ""
-        self._active_state = ""
-        self._enabled = ""
-        self._description = ""
-
-    def set_name(self, value):
-        self._name = value.strip(" \t\n\r").replace(".service", "")
-
-    def set_load_state(self, value):
-        self._load_state = value.strip(" \t\n\r")
-
-    def set_active_state(self, value):
-        self._active_state = value.strip(" \t\n\r")
-
-    def set_enabled(self, value):
-        self._enabled = value.strip(" \t\n\r")
-
-    def set_description(self, value):
-        self._description = value.strip(" \t\n\r")
-
-    def name(self):
-        return self._name
-
-    def load_state(self):
-        return self._load_state
-
-    def active_state(self):
-        return self._active_state
-
-    def enabled(self):
-        return self._enabled
-
-    def description(self):
-        return self._description
+from .systemd_service import SystemdService
 
 
 class PiTopSoftware:
@@ -60,8 +21,8 @@ class PiTopSoftware:
         for active_state, services_arr in sorted(services.items()):
             StdoutFormat.print_line(f"{self.format_service(active_state)}")
             for service in services_arr:
-                StdoutFormat.print_line(f"{StdoutFormat.bold(service.name())} ({service.description()})", level=2)
-                StdoutFormat.print_line(f"Status: {self.format_service(service.load_state())}, {self.format_service(service.enabled())}", level=3)
+                StdoutFormat.print_line(f"{StdoutFormat.bold(service.name)} ({service.description})", level=2)
+                StdoutFormat.print_line(f"Status: {self.format_service(service.load_state)}, {self.format_service(service.enabled)}", level=3)
 
     def get_pt_systemd_services(self):
         pt_service_names = self.get_pt_systemd_service_names()
@@ -81,21 +42,9 @@ class PiTopSoftware:
             )
             output = output.decode("UTF-8")
             lines = output.split("\n")
-            service = Service()
+            service = SystemdService.from_lines(lines)
 
-            for line in lines:
-                if "Id=" in line:
-                    service.set_name(line.replace("Id=", ""))
-                elif "LoadState=" in line:
-                    service.set_load_state(line.replace("LoadState=", ""))
-                elif "ActiveState=" in line:
-                    service.set_active_state(line.replace("ActiveState=", ""))
-                elif "UnitFileState=" in line:
-                    service.set_enabled(line.replace("UnitFileState=", ""))
-                elif "Description=" in line:
-                    service.set_description(line.replace("Description=", ""))
-
-            active_state = service.active_state()
+            active_state = service.active_state
             if active_state not in services:
                 services[active_state] = []
             services[active_state].append(service)
