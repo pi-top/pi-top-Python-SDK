@@ -108,9 +108,10 @@ class HealthCheck:
         print("")
 
         StdoutFormat.print_section("System Information")
-        self.print_debian_version()
-        self.print_uname_output()
-        self.print_if_pitopOS()
+        sys_info_arr = self.print_debian_version()
+        sys_info_arr += self.print_uname_output()
+        sys_info_arr += self.print_if_pitopOS()
+        StdoutFormat.print_table(sys_info_arr)
         print("")
 
         StdoutFormat.print_section("Interfaces (via raspi-config)")
@@ -152,8 +153,11 @@ class HealthCheck:
             print(f"{e}")
 
     def print_raspberry_pi_device_info(self):
-        StdoutFormat.print_line(f"Device: {run_command('cat /proc/device-tree/model', timeout=2)}")
-        StdoutFormat.print_line(f"Architecture: {uname().machine}")
+        data_arr = [
+            ("Device", f"{run_command('cat /proc/device-tree/model', timeout=2)}"),
+            ("Architecture", f"{uname().machine}"),
+        ]
+        StdoutFormat.print_table(data_arr)
 
         if device_type() == DeviceName.pi_top_4.value:
             StdoutFormat.print_subsection('EEPROM Configuration')
@@ -164,12 +168,14 @@ class HealthCheck:
             print(f"{eeprom_info.strip()}")
 
     def print_uname_output(self):
+        data_arr = []
         u = uname()
-        StdoutFormat.print_line(f"Hostname: {u.nodename}")
-        StdoutFormat.print_line(f"Kernel Version: {u.release}")
-        StdoutFormat.print_line(f"Kernel Release: {u.version}")
+        data_arr.append(("Kernel Version", u.release))
+        data_arr.append(("Kernel Release", u.version))
+        return data_arr
 
     def print_if_pitopOS(self):
+        data_arr = []
         ptissue_path = "/etc/pt-issue"
         if not path.exists(ptissue_path):
             return
@@ -183,7 +189,8 @@ class HealthCheck:
         for k, v in data.items():
             if k in headers_to_skip:
                 continue
-            StdoutFormat.print_line(f"{k}: {v}")
+            data_arr.append((k, v))
+        return data_arr
 
     def print_debian_version(self):
         debian_version_file = "/etc/debian_version"
@@ -191,7 +198,7 @@ class HealthCheck:
             return
         with open(debian_version_file, 'r') as reader:
             content = reader.read()
-        StdoutFormat.print_line(f"Debian Version: {content.strip()}")
+        return [("Debian Version", content.strip())]
 
     def get_raspi_config_setting_value(self, setting):
         try:
@@ -229,12 +236,17 @@ class HealthCheck:
                         StdoutFormat.print_line(f"Subaddress #{address_number + 1}",
                                                 level=2)
                     # Print interface attributes & values for the address
+                    data_arr = []
                     for addr_attribute, addr_attribute_value in address_info.items():
-                        StdoutFormat.print_line(f"{addr_attribute}: {addr_attribute_value}",
-                                                level=3 if len(interface_info) > 1 else 2)
+                        data_arr.append((addr_attribute, addr_attribute_value))
 
-        StdoutFormat.print_line(f"Hostname: {self.get_raspi_config_setting_value('get_hostname')}")
-        StdoutFormat.print_line(f"WiFi Country: {self.get_raspi_config_setting_value('get_wifi_country')}")
+                    StdoutFormat.print_table(data_arr, level=3 if len(interface_info) > 1 else 2)
+
+        data_arr = [
+            ("Hostname", f"{self.get_raspi_config_setting_value('get_hostname')}"),
+            ("WiFi Country", f"{self.get_raspi_config_setting_value('get_wifi_country')}"),
+        ]
+        StdoutFormat.print_table(data_arr)
 
         interfaces_list = interfaces()
         # Omit loopback interface

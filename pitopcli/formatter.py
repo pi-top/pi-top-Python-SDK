@@ -54,7 +54,7 @@ class StdoutFormat:
         print("")
 
     @classmethod
-    def print_table(cls, data_arr, column_separation=5):
+    def print_table(cls, data_arr, column_separation=5, level=1):
         """
         Prints an array of data as a table. `data_arr` must be an array of arrays, containing the row data to
         be printed.
@@ -93,4 +93,4 @@ class StdoutFormat:
                     string_length = longest_value[i]
                 line += f"{value.ljust(string_length)}"
 
-            cls.print_line(line)
+            cls.print_line(line, level)
