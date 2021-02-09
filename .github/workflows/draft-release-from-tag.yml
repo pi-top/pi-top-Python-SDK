@@ -82,7 +82,7 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
           path: "${{ github.workspace }}/artifacts/bin/"
 
-  create-release:
+  create-draft-release:
     runs-on: ubuntu-20.04
     needs: [ build-debian, build-python ]
     steps:
