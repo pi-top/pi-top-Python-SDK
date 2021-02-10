@@ -9,9 +9,6 @@ on:
 jobs:
   publish-release:
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        target_arch: ["armhf", "arm64"]
     steps:
       - name: Download and extract latest release
         run: |
@@ -34,11 +31,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
 
-      # - name: Publish to PyPI
-      #   env:
-      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      #   run: |
-      #     twine upload --verbose dist/*
+      - name: Publish to TestPyPI
+        if: github.event_name != 'release' || github.event.action != 'published'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --repository testpypi --verbose *.whl
+
+      - name: Publish to PyPI
+        if: github.event_name == 'release' && github.event.action == 'published'
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          twine upload --verbose *.whl
 
       # TODO: publish to apt repository
