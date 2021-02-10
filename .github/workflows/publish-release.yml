@@ -14,10 +14,14 @@ jobs:
         target_arch: ["armhf", "arm64"]
     steps:
       - name: Download and extract latest release
-        uses: pozetroninc/github-action-get-latest-release@1baec92
+        uses: pozetroninc/github-action-get-latest-release@1baec92e388e5b710066b984207cdb9e48cc375a
         with:
           repository: ${{ github.repository }}
           # excludes: prerelease, draft
+
+      - name: Debug
+        run: |
+          ls
 
       # - name: Download and extract latest release
       #   run: |
@@ -40,11 +44,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
 
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose dist/*
+      # - name: Publish to PyPI
+      #   env:
+      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      #   run: |
+      #     twine upload --verbose dist/*
 
       # TODO: publish to apt repository
