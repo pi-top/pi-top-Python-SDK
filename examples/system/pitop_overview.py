@@ -1,11 +1,11 @@
 from PIL import Image
 from time import sleep
 
-from pitop import PiTop
+from pitop import Pitop
 
 
 # Set up pi-top
-pitop = PiTop()
+pitop = Pitop()
 
 # Say hi!
 pitop.miniscreen.display_text("Hello!")

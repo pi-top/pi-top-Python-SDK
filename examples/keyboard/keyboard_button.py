@@ -1,4 +1,4 @@
-from pitop.keyboard import KeyboardButton
+from pitop import KeyboardButton
 from time import sleep
 
 

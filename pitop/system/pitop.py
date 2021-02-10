@@ -1,5 +1,6 @@
 from pitop.battery import Battery
 from pitop.miniscreen import Miniscreen
+
 from pitop.system import device_type
 from pitop.system.peripherals import connected_plate
 from pitop.system.port_manager import PortManager
@@ -8,17 +9,17 @@ from pitopcommon.common_names import DeviceName
 from pitopcommon.singleton import Singleton
 
 
-class PiTop(metaclass=Singleton):
+class Pitop(metaclass=Singleton):
     """
     Abstraction of a pi-top device.
 
-    When creating a PiTop object, a set of attributes will be set,
+    When creating a Pitop object, a set of attributes will be set,
     depending on the pi-top device that it's running the code. For example, if run on
     a pi-top [4], an `oled` attribute will be created as an interface to control the
     miniscreen OLED display, but that won't be available for other pi-top devices.
 
-    The PiTop class is a Singleton. This means that only one instance per process will
-    be created. In practice, this means that if in a particular project you instance a PiTop
+    The Pitop class is a Singleton. This means that only one instance per process will
+    be created. In practice, this means that if in a particular project you instance a Pitop
     class in 2 different files, they will share the internal state: you should be able to
     register components in one file (using :meth:`register_pma_component`) and retrieve
     it to use it in another file (using :meth:`get_component_on_pma_port`).

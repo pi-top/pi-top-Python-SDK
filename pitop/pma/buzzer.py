@@ -33,8 +33,7 @@ class Buzzer(gpiozero_Buzzer):
         For example, if you have a buzzer connected to port D4, but then wish
         to attach an LED instead:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> bz = Buzzer("D4")
             >>> bz.on()
             >>> bz.off()
@@ -45,8 +44,7 @@ class Buzzer(gpiozero_Buzzer):
         :class:`Device` descendents can also be used as context managers using
         the :keyword:`with` statement. For example:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> with Buzzer("D4") as bz:
             ...     bz.on()
             ...

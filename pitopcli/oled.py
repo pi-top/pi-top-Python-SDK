@@ -4,7 +4,7 @@ from time import sleep, strftime
 
 from pitopcommon.formatting import is_url
 
-from pitop.miniscreen import Miniscreen
+from pitop import Miniscreen
 from .cli_base import CliBaseClass, PitopCliInvalidArgument
 
 

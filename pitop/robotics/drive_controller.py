@@ -1,6 +1,6 @@
 from math import floor, pi
 
-from pitop.pma import (
+from pitop import (
     EncoderMotor,
     ForwardDirection,
 )

@@ -1,4 +1,4 @@
-from pitop.pma import ServoMotor
+from pitop import ServoMotor
 from pitop.system.port_manager import PortManager
 
 

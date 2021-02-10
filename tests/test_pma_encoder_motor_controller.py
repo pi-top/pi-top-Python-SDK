@@ -12,17 +12,17 @@ modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
 from pitopcommon.bitwise_ops import join_bytes
-from pitop.pma.encoder_motor_controller import (
+from pitop.encoder_motor_controller import (
     EncoderMotorController,
     split_into_bytes
 )
-from pitop.pma.common.encoder_motor_registers import (
+from pitop.common.encoder_motor_registers import (
     MotorControlRegisters,
     MotorRegisterTypes,
     MotorControlModes,
     EncoderMotorM1
 )
-from pitop.pma.parameters import BrakingType
+from pitop.parameters import BrakingType
 from unittest import TestCase, skip
 from unittest.mock import patch
 

@@ -75,8 +75,8 @@ modules available in the library:
 .. code-block:: python
 
     from time import sleep
-    from pitop.pma import UltrasonicSensor
-    from pitop.miniscreen import Miniscreen
+    from pitop import UltrasonicSensor
+    from pitop import Miniscreen
 
     miniscreen = Miniscreen()
     utrasonic = UltrasonicSensor("D1")

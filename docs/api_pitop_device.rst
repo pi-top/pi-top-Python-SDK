@@ -123,7 +123,7 @@ The miniscreen's buttons are simple, and behave in a similar way to the other bu
 
 The :class:`pitop.miniscreen.Miniscreen` class provides these buttons as properties:
 
-    >>> from pitop.miniscreen import Miniscreen
+    >>> from pitop import Miniscreen
     >>> miniscreen = Miniscreen()
     >>> miniscreen.up_button
     <pitop.miniscreen.miniscreen.MiniscreenButton object at 0xb3e44e50>

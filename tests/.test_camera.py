@@ -1,5 +1,5 @@
-from pitop.camera import Camera
-from pitop.camera.core import (
+from pitop import Camera
+from pitop.core import (
     FrameHandler,
     CaptureActions,
     UsbCamera,

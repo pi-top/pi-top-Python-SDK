@@ -1,5 +1,4 @@
-from pitop.camera import Camera
-from pitop.miniscreen import Miniscreen
+from pitop import Camera, Miniscreen
 
 
 camera = Camera()

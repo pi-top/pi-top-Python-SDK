@@ -1,4 +1,4 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Miniscreen
 
 from datetime import datetime
 from PIL import Image, ImageDraw

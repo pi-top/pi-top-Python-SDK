@@ -1,4 +1,4 @@
-from pitop import PiTop
+from pitop.system.pitop import Pitop
 from pitop.camera import Camera
 from pitop.pma import UltrasonicSensor
 
@@ -18,13 +18,13 @@ from pathlib import Path
 from time import sleep
 
 
-class AlexRobot(PiTop):
+class AlexRobot(Pitop):
     """
     Abstraction of a pi-top [4] and Robotics Kit, assembled in an 'Alex' configuration.
 
-    Inherits from :class:`PiTop`: all methods, attributes and properties from that
+    Inherits from :class:`Pitop`: all methods, attributes and properties from that
     class are also available through an `AlexRobot` object. This class builds on top of
-    :class:`PiTop` to make available to the user all the methods to move the robot and
+    :class:`Pitop` to make available to the user all the methods to move the robot and
     to interact with all the features available in a pi-top [4].
 
     :param int camera_device_index: ID of the video capturing device to open. To open the default camera, use 0.

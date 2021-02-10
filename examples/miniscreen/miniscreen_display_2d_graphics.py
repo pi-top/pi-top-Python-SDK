@@ -1,5 +1,4 @@
-# Example code showing how to draw various shapes
-from pitop.miniscreen import Miniscreen
+from pitop import Miniscreen
 from PIL import Image, ImageDraw, ImageFont
 
 miniscreen = Miniscreen()

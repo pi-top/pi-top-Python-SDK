@@ -16,7 +16,7 @@ modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
-from pitop.miniscreen import Miniscreen
+from pitop import Miniscreen
 from unittest import TestCase, skip
 from PIL import Image
 from os import environ, path

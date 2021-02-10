@@ -1,4 +1,4 @@
-from pitop.pma import Button
+from pitop import Button
 from time import sleep
 
 button = Button("D5")

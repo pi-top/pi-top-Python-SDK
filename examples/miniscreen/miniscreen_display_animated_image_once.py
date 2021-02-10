@@ -1,4 +1,4 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Miniscreen
 from PIL import Image, ImageSequence
 
 miniscreen = Miniscreen()

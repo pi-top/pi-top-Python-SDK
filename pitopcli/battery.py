@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from pitop.battery import Battery
+from pitop import Battery
 from .cli_base import CliBaseClass
 
 

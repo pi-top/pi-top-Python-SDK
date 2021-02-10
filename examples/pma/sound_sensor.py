@@ -1,4 +1,4 @@
-from pitop.pma import SoundSensor
+from pitop import SoundSensor
 from time import sleep
 
 sound_sensor = SoundSensor("A2")
