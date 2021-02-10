@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Download and extract latest release
         run: |
-          apt-get install -y curl jq
+          sudo apt-get install -y curl jq
 
           zipball_url="$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".zipball_url")"
           tag_name="$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".tag_name")"
