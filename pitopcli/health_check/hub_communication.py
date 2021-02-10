@@ -5,7 +5,7 @@ from datetime import datetime
 
 from pitopcommon.i2c_device import I2CDevice
 
-from ..formatter import StdoutFormat
+from ..formatter import StdoutTable, StdoutFormat
 
 
 class HubCommunication:
@@ -51,7 +51,9 @@ class HubCommunication:
 
     def print_hub_registers(self):
         try:
-            StdoutFormat.print_subsection("Hardware Control and Status")
+            t = StdoutTable()
+            t.title_format = StdoutFormat.print_subsection
+
             data_arr = [
                 ("BRD_DETECT", f"{self.int_to_binary(self.device.read_unsigned_byte(0x10))}"),
                 ("MODULE_DETECT", f"{self.device.read_unsigned_byte(0x11)}"),
@@ -59,10 +61,8 @@ class HubCommunication:
                 ("UI_OLED_CTRL", f"{self.int_to_binary(self.device.read_unsigned_byte(0x14))}"),
                 ("UI_BUTTON_CTRL", f"{self.int_to_binary(self.device.read_unsigned_byte(0x15))}"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Hardware Control and Status", data_arr)
 
-            StdoutFormat.print_subsection("Diagnostics")
             data_arr = [
                 ("UPTIME_STDBY", f"{self.device.read_n_unsigned_bytes(0x20, number_of_bytes=4)} min"),
                 ("UPTIME_RAILSON", f"{self.device.read_n_unsigned_bytes(0x21, number_of_bytes=4)} min"),
@@ -70,10 +70,8 @@ class HubCommunication:
                 ("LIFETIME_RAILSON", f"{self.device.read_n_unsigned_bytes(0x23, number_of_bytes=4)} hour"),
                 ("LIFETIME_ONOFFCYC", f"{self.device.read_unsigned_word(0x24)} cycle"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Diagnostics", data_arr)
 
-            StdoutFormat.print_subsection("Keyboard Control and Status")
             data_arr = [
                 ("KEYBOARD_MAC_ADDRESS", f"{self.int_to_mac_address(self.device.read_n_unsigned_bytes(0x50, number_of_bytes=6))}"),
                 ("DOCK_FLAG", f"{self.device.read_unsigned_byte(0x51)}"),
@@ -86,10 +84,8 @@ class HubCommunication:
                 ("BATT_LEVEL", f"{self.device.read_unsigned_byte(0x58)}"),
                 ("PAIRING_STATUS", f"{self.device.read_unsigned_byte(0x5A)}"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Keyboard Cotnrol and Status", data_arr)
 
-            StdoutFormat.print_subsection("Advanced Power and Debug")
             data_arr = [
                 ("VOLT_BATT_IN", f"{self.device.read_unsigned_word(0x70)} mV"),
                 ("VOLT_DC_IN", f"{self.device.read_unsigned_word(0x71)} mV"),
@@ -100,10 +96,7 @@ class HubCommunication:
                 ("VOLT_5V_USB", f"{self.device.read_unsigned_word(0x78)} mV"),
                 ("VOLT_3V3", f"{self.device.read_unsigned_word(0x7A)} mV"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
-
-            StdoutFormat.print_subsection("Power Controls")
+            t.add_section("Advanced Power and Debug", data_arr)
 
             data_arr = [
                 ("SHUTDOWN_CTRL", f"{self.int_to_binary(self.device.read_unsigned_byte(0xA0))}"),
@@ -117,10 +110,8 @@ class HubCommunication:
                 ("M3_TIMEOUT", f"{self.device.read_unsigned_word(0xAE)} sec"),
                 ("USB_5V_TIMEOUT", f"{self.int_to_hex(self.device.read_unsigned_word(0xAF))}"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Power Controls", data_arr)
 
-            StdoutFormat.print_subsection("Battery Control and Status")
             data_arr = [
                 ("STORAGE_MODE", f"{self.device.read_unsigned_byte(0xB0)}"),
                 ("TEMPERATURE", f"{float(self.device.read_unsigned_word(0xB1)) / 10} K"),
@@ -138,28 +129,22 @@ class HubCommunication:
                 ("MANUF_DATE", f"{self.int_to_date(self.device.read_unsigned_word(0xBD))}"),
                 ("CHARGING_ERROR", f"{self.device.read_unsigned_byte(0xBF)}"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Battery Control and Status", data_arr)
 
-            StdoutFormat.print_subsection("Miscellaneous Features")
             data_arr = [
                 ("AUD_CONFIG", f"{self.int_to_binary(self.device.read_unsigned_byte(0xC0))}"),
                 ("REAL_TIME_COUNTER", f"{self.int_to_date_unix(self.device.read_n_unsigned_bytes(0xC1, number_of_bytes=4))}"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Miscellaneous Features", data_arr)
 
-            StdoutFormat.print_subsection("Display")
             data_arr = [
                 ("TEST_MODE", f"{self.device.read_unsigned_byte(0xD0)}"),
                 ("BACKLIGHT", f"{self.int_to_binary(self.device.read_unsigned_byte(0xD1))}"),
                 ("STATUS", f"{self.int_to_binary(self.device.read_unsigned_byte(0xD2))}"),
                 ("MUX_CONTROL", f"{self.int_to_binary(self.device.read_unsigned_byte(0xD3))}"),
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Display", data_arr)
 
-            StdoutFormat.print_subsection("Device Information")
             data_arr = [
                 ("MCU_SOFT_VERS_MAJOR", f"{self.device.read_unsigned_byte(0xE0)}"),
                 ("MCU_SOFT_VERS_MINOR", f"{self.device.read_unsigned_byte(0xE1)}"),
@@ -179,9 +164,9 @@ class HubCommunication:
                 ("DISPLAY_SERIAL_ID", f"{self.int_to_hex(self.device.read_n_unsigned_bytes(0xEF, number_of_bytes=4))}"),
 
             ]
-            StdoutFormat.print_table(data_arr)
-            print("")
+            t.add_section("Device Information", data_arr)
 
             self.device.disconnect()
+            t.print()
         except Exception as e:
             print(f"Error getting pi-topHUB hardware diagnostics: {e}")

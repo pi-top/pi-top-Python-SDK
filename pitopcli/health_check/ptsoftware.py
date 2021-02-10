@@ -58,7 +58,7 @@ class PiTopSoftware:
                 pt_service_names.append(systemd_service_file)
         return pt_service_names
 
-    def print_pt_installed_software(self):
+    def get_pt_installed_software(self):
         regex = "^pt-|-pt-|pitop|pi-top"
         apt_cache = Cache()
 
@@ -67,8 +67,7 @@ class PiTopSoftware:
             match = search(regex, pkg.name)
             if apt_cache[pkg.name].is_installed and match:
                 pt_packages.append((pkg.shortname, pkg.installed.version))
-
-        StdoutFormat.print_table(pt_packages)
+        return pt_packages
 
     def print_apt_sources(self):
         sources_directory = "/etc/apt/"

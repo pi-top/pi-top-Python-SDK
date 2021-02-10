@@ -10,7 +10,7 @@ from os import path, uname
 from time import strftime
 
 
-from ..formatter import StdoutFormat
+from ..formatter import StdoutFormat, StdoutTable
 from .ptsoftware import PiTopSoftware
 from .hub_communication import HubCommunication
 
@@ -103,24 +103,15 @@ class HealthCheck:
         print(f"Current time: {strftime('%a, %d %b %Y %I:%M:%S %p %Z')}")
         print("")
 
-        StdoutFormat.print_section("Raspberry Pi Device Information")
         self.print_raspberry_pi_device_info()
         print("")
 
-        StdoutFormat.print_section("System Information")
-        self.print_system_information()
-        print("")
-
-        StdoutFormat.print_section("Interfaces (via raspi-config)")
-        self.print_raspi_config_settings(self.RASPI_CONFIG_INTERFACES)
-        print("")
-
-        StdoutFormat.print_section("Boot Settings (via raspi-config)")
-        self.print_raspi_config_settings(self.RASPI_CONFIG_BOOT_SETTINGS)
-        print("")
-
-        StdoutFormat.print_section("Misc (via raspi-config)")
-        self.print_raspi_config_settings(self.RASPI_CONFIG_MISC)
+        t = StdoutTable()
+        t.add_section("System Information", self.get_system_information())
+        t.add_section("Interfaces (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_INTERFACES))
+        t.add_section("Boot Settings (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_BOOT_SETTINGS))
+        t.add_section("Misc (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_MISC))
+        t.print()
         print("")
 
         StdoutFormat.print_section("Network Settings")
@@ -128,15 +119,14 @@ class HealthCheck:
         print("")
 
         StdoutFormat.print_section("pi-top Software Information")
-        print("")
         pt_sw = PiTopSoftware()
         StdoutFormat.print_subsection("pi-top Systemd Services")
         pt_sw.print_pt_systemd_status()
-        print("")
 
-        StdoutFormat.print_subsection("pi-top Installed Software")
-        pt_sw.print_pt_installed_software()
-        print("")
+        t = StdoutTable()
+        t.title_format = StdoutFormat.print_subsection
+        t.add_section("pi-top Installed Software", pt_sw.get_pt_installed_software())
+        t.print()
 
         StdoutFormat.print_subsection("APT Sources")
         pt_sw.print_apt_sources()
@@ -154,13 +144,16 @@ class HealthCheck:
             ("Device", f"{run_command('cat /proc/device-tree/model', timeout=2)}"),
             ("Architecture", f"{uname().machine}"),
         ]
-        StdoutFormat.print_table(data_arr)
+
+        t = StdoutTable()
+        t.add_section("Raspberry Pi Device Information", data_arr)
+        t.print()
 
         if device_type() == DeviceName.pi_top_4.value:
-            StdoutFormat.print_subsection('EEPROM Configuration')
+            StdoutFormat.print_subsection('Raspberry Pi 4 Bootloader Configuration')
             eeprom_info = run_command("sudo rpi-eeprom-config", timeout=5)
             print(f"{eeprom_info.strip()}")
-            StdoutFormat.print_subsection('EEPROM Information')
+            StdoutFormat.print_subsection('Raspberry Pi 4 EEPROM Information')
             eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5)
             print(f"{eeprom_info.strip()}")
 
@@ -197,11 +190,11 @@ class HealthCheck:
             content = reader.read()
         return [("Debian Version", content.strip())]
 
-    def print_system_information(self):
+    def get_system_information(self):
         sys_info_arr = self.get_debian_version()
         sys_info_arr += self.get_uname_output()
         sys_info_arr += self.get_pitopOS_info()
-        StdoutFormat.print_table(sys_info_arr)
+        return sys_info_arr
 
     def get_raspi_config_setting_value(self, setting):
         try:
@@ -209,7 +202,7 @@ class HealthCheck:
         except Exception:
             return "Error getting setting"
 
-    def print_raspi_config_settings(self, raspi_config_settings_dict):
+    def get_raspi_config_settings(self, raspi_config_settings_dict):
         data_to_print = []
 
         for setting, setting_dict in raspi_config_settings_dict.items():
@@ -220,7 +213,7 @@ class HealthCheck:
 
             data_to_print.append((setting_dict.get('description'), setting_value))
 
-        StdoutFormat.print_table(data_to_print)
+        return data_to_print
 
     def print_network_settings(self):
         def print_interface_info(interface_name):
@@ -243,13 +236,12 @@ class HealthCheck:
                     for addr_attribute, addr_attribute_value in address_info.items():
                         data_arr.append((addr_attribute, addr_attribute_value))
 
-                    StdoutFormat.print_table(data_arr, level=3 if len(interface_info) > 1 else 2)
+                    t = StdoutTable(indent_level=3 if len(interface_info) > 1 else 2)
+                    t.print_data(data_arr)
 
-        data_arr = [
-            ("Hostname", f"{self.get_raspi_config_setting_value('get_hostname')}"),
-            ("WiFi Country", f"{self.get_raspi_config_setting_value('get_wifi_country')}"),
-        ]
-        StdoutFormat.print_table(data_arr)
+        t = StdoutTable()
+        t.print_data([("Hostname", f"{self.get_raspi_config_setting_value('get_hostname')}"),
+                      ("WiFi Country", f"{self.get_raspi_config_setting_value('get_wifi_country')}")])
 
         interfaces_list = interfaces()
         # Omit loopback interface

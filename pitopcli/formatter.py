@@ -53,44 +53,48 @@ class StdoutFormat:
         print(f"{cls.bold(title)}: {text}\n\t{cls.clickable_text(url, url) if status else url}", end=" ")
         print("")
 
-    @classmethod
-    def print_table(cls, data_arr, column_separation=5, level=1):
-        """
-        Prints an array of data as a table. `data_arr` must be an array of arrays, containing the row data to
-        be printed.
-        """
-        if len(data_arr) == 0:
-            return
-        if len(data_arr[0]) < 2:
-            return
 
-        longest_description = 0
-        longest_value = [0]*len(data_arr[0][1:])
+class StdoutTable:
+    def __init__(self, column_separation=5, indent_level=1):
+        self.longest_values_arr = []
+        self.column_separation = column_separation
+        self.indent_level = indent_level
+        self.print_data_dict = {}
+        self.title_format = StdoutFormat.print_section
 
-        # Iterate through data to format
+    def clear(self):
+        self.longest_values_arr = []
+        self.print_data_dict = {}
+
+    def add_section(self, title, data_arr):
+        self.analyze_data(data_arr)
+        self.print_data_dict[title] = data_arr
+
+    def analyze_data(self, data_arr):
+        while len(self.longest_values_arr) < len(data_arr):
+            self.longest_values_arr.append(0)
+
         for data in data_arr:
-            description = data[0]
-            values = data[1:]
+            for i, value in enumerate(data):
+                if len(str(value)) > self.longest_values_arr[i]:
+                    self.longest_values_arr[i] = len(str(value))
 
-            if len(str(description)) > longest_description:
-                longest_description = len(str(description))
+    def print_data(self, data_arr):
+        self.title_format = None
+        self.add_section("", data_arr)
+        self.print()
 
-            for i, value in enumerate(values):
-                if len(str(value)) > longest_value[i]:
-                    longest_value[i] = len(str(value))
+    def print(self):
+        for title, data_arr in self.print_data_dict.items():
+            if self.title_format:
+                self.title_format(title)
 
-        # Print
-        for data in data_arr:
-            line = ""
-            description = data[0]
-            values = data[1:]
+            for data in data_arr:
+                line = ""
+                for i, value in enumerate(data):
+                    string_length = self.longest_values_arr[i] + self.column_separation
+                    if i == len(data) - 1:
+                        string_length = self.longest_values_arr[i]
+                    line += f"{value.ljust(string_length)}"
 
-            line += f"{description.ljust(longest_description + column_separation)}"
-
-            for i, value in enumerate(values):
-                string_length = longest_value[i] + column_separation
-                if i == len(values) - 1:
-                    string_length = longest_value[i]
-                line += f"{value.ljust(string_length)}"
-
-            cls.print_line(line, level)
+                StdoutFormat.print_line(line, level=self.indent_level)
