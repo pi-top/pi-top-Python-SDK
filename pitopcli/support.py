@@ -27,12 +27,15 @@ class SupportCLI(CliBaseClass):
         self.args = args
 
     def __get_online_sdk_docs_url(self):
-        return self.ONLINE_BASE_URI + "en/v" + run_command(
-            "dpkg -s python3-pitop",
-            timeout=10,
-            check=True,
-            log_errors=False
-        ).split("\n")[8].split()[1]
+        try:
+            return self.ONLINE_BASE_URI + "en/v" + run_command(
+                "dpkg -s python3-pitop",
+                timeout=10,
+                check=True,
+                log_errors=False
+            ).split("\n")[8].split()[1]
+        except Exception:
+            return self.ONLINE_BASE_URI
 
     def __is_connected_to_internet(self) -> bool:
         try:
