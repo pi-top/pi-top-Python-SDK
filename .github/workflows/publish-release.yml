@@ -13,15 +13,22 @@ jobs:
       matrix:
         target_arch: ["armhf", "arm64"]
     steps:
-      - name: Download latest release
-        uses: robinraju/release-downloader@v1
+      - name: Download and extract latest release
+        uses: pozetroninc/github-action-get-latest-release@1baec92
         with:
-          repository: "pi-top/pi-top-Python-SDK"
-          latest: true
-          # fileName: "python3-pitop_${{ github.ref }}_${{ matrix.target_arch }}.deb"
-          tarBall: true
+          repository: ${{ github.repository }}
+          # excludes: prerelease, draft
 
-      # TODO: untar release
+      # - name: Download and extract latest release
+      #   run: |
+      #   apt-get install -y curl jq
+
+      #   zipball_url="$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".zipball_url")"
+      #   tag_name="$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".tag_name")"
+
+      #   curl -L ${zipball_url} --output "${tag_name}.zip"
+      #   unzip "${tag_name}.zip"
+      #   rm "${tag_name}.zip"
 
       - name: Set up Python
         uses: actions/setup-python@v2
