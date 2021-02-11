@@ -57,8 +57,11 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: Update debian/changelog
-          title: Update debian/changelog for next release
-          body: Automated changelog change proposing changelog for next version. Make changes here, as necessary, then merge to create a new version tag and draft GitHub Release!
           branch: release-updated-changelog
+          commit-message: Bump debian/changelog with proposed change for next release
+          title: Update debian/changelog for next release
+          body: |
+            Automated changelog change proposing changelog for next version.
+            Make changes here, as necessary, then merge to create a new version tag and draft GitHub Release!
           draft: true
+          labels: next-release
