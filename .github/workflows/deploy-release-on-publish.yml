@@ -36,8 +36,8 @@ jobs:
       - name: Download latest release's assets
         run: |
           sudo apt-get install -y curl jq wget
-          echo 'curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget'
-          curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget
+          echo 'curl -s ${{ env.GITHUB_API_URL }}/repos/${{ GITHUB_REPOSITORY }}/releases/latest | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget'
+          curl -s ${{ GITHUB_API_URL }}/repos/${{ GITHUB_REPOSITORY }}/releases/latest | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget
 
       - name: Set up Python
         uses: actions/setup-python@v2
