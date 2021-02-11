@@ -2,7 +2,7 @@ name: Create/Update Changelog PR on Commits to 'master'
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "ci-test-changelog-pr-*" ]
 
 jobs:
   create-pr:
@@ -17,9 +17,12 @@ jobs:
           docker exec chglog git config --global user.name "pi-top"
           docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
 
+      # Use git information, not system information
+      # Set release to 'stable'
+      # Don't run editor
       - name: Patch changelog (release)
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable
+          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable --spawn-editor=snapshot
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
