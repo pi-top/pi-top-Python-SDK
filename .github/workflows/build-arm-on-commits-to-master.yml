@@ -3,7 +3,7 @@ name: Build ARM Packages on Commit to 'master'
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "ci-test-build-arm-*" ]
 
 jobs:
   build-debian:
@@ -16,7 +16,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Debian Docker container for changelog patching
         run: |
@@ -27,7 +29,12 @@ jobs:
 
       - name: Patch changelog (snapshot)
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --snapshot
+          tag=$(git tag -l v* | sort -V | tail -n1)
+          commit=$(git show-ref -s ${tag})
+          commit_diff=$(git rev-list --count ${commit}..HEAD)
+
+          docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
+            --since=${commit} --snapshot-number=${commit_diff}
 
       - name: Show updated changelog
         run: |

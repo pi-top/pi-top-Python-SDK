@@ -1,26 +1,18 @@
-name: Create New Tag For Release Version On Merging Changelog PR
+name: Create Draft GitHub Release And Tag On Merging Changelog PR
 
-# Merging changelog PR will delete the branch, so we use that as a trigger
 on:
-  delete
+  pull_request:
+    types: [closed]
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Print debug information
-        run: |
-          echo "github.sha: ${{ github.sha }}"
-          echo "github.ref: ${{ github.ref }}"
-          echo "github.event.ref_type: ${{ github.event.ref_type }}"
-          echo "github.event.ref: ${{ github.event.ref }}"
-
   add-version-tag:
-    if: ${{ github.event.ref_type }} == "branch" && ${{ github.event.ref_type }} == "release-updated-changelog"
+    if: ${{ github.head_ref }} == "release-updated-changelog" && ${{ github.event.pull_request.merged }} == true
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Get Debian Version
         id: get_deb_version
@@ -32,24 +24,19 @@ jobs:
         uses: anothrNick/github-tag-action@1.34.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: ${{ steps.get_deb_version.outputs.deb_ver }}
-          WITH_V: true
+          CUSTOM_TAG: "v${{ steps.get_deb_version.outputs.deb_ver }}"
 
   build-python:
     needs: [ add-version-tag ]
     runs-on: ubuntu-20.04
     steps:
-      - name: run build
-        run: |
-          echo "GITHUB_SHA is ${{ github.sha }}"
-          echo "GITHUB_REF is ${{ github.ref }}"
-          echo "${{ github.event.ref }} - ${{ github.event.ref_type }}"
-
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -84,7 +71,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.2
@@ -126,7 +115,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Get Debian Version
         id: get_deb_version
@@ -140,8 +131,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.get_deb_version.outputs.deb_ver }}
-          release_name: ${{ steps.get_deb_version.outputs.deb_ver }}
+          tag_name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
+          release_name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
           draft: true
           prerelease: false
           body: |
