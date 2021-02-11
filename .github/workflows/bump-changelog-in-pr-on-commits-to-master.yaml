@@ -28,8 +28,13 @@ jobs:
       - name: Patch changelog (snapshot)
         run: |
           tag=$(git tag -l v* | sort -V | tail -n1)
-          commit=$(git show-ref -s $(tag))
+          commit=$(git show-ref -s ${tag})
           commit_diff=$(git rev-list --count ${commit}..HEAD)
+
+          echo "Tag: $tag"
+          echo "Commit: $commit"
+          echo "Diff: $commit_diff"
+          echo "SHA: ${{ env.GITHUB_SHA }}"
 
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
             --since=${commit} --snapshot-number=${commit_diff}
