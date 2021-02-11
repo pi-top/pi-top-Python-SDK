@@ -27,24 +27,17 @@ jobs:
           docker exec chglog git config --global user.name "pi-top"
           docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
 
-      - name: Get latest version tag ID
+      - name: Get latest version tag
         id: get_latest_version_tag
         uses: WyriHaximus/github-action-get-previous-tag@v1
 
-      - name: Get latest version tag commit
-        id: get_latest_version_tag_commit
-        run: |
-          ls -la
-          LATEST_TAG_COMMIT=$(git show-ref -s ${{ steps.get_latest_version_tag.outputs.tag }})
-          echo "::set-output name=latest_version_tag_commit::$LATEST_TAG_COMMIT"
-
       - name: Patch changelog (snapshot)
         run: |
-          commit=${{ steps.get_latest_version_tag_commit.outputs.latest_version_tag_commit }}
-          commit_diff=$(git rev-list --count ${{ steps.get_latest_version_tag_commit.outputs.latest_version_tag_commit }}..HEAD)
+          commit=$(git show-ref -s ${{ steps.get_latest_version_tag.outputs.tag }})
+          commit_diff=$(git rev-list --count ${commit}..HEAD)
 
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
-            --since=${commit} --snapshot-number=${commit_diff}
+            --since=${commit} --snapshot-number='${commit_diff}'
 
       - name: Show updated changelog
         run: |
