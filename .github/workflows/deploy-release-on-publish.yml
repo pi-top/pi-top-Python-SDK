@@ -7,6 +7,25 @@ on:
     types: [published]
 
 jobs:
+  add-stable-tag:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Get latest release's version
+        id: release_version
+        run: |
+          sudo apt-get install -y curl jq wget
+
+          TAG_NAME=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".tag_name")
+          echo "::set-output name=version::$TAG_NAME"
+
+      - name: Tag release commit as 'stable' for ReadTheDocs
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "stable"
+          message: "Stable release"
+          commit_sha: ${{ steps.release_version.outputs.version }}
+          force_push_tag: true
+
   publish-release:
     runs-on: ubuntu-20.04
     steps:
