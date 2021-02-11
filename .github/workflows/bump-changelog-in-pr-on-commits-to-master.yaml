@@ -63,6 +63,5 @@ jobs:
           body: |
             Automated changelog change proposing changelog for next version.
             Make changes here, as necessary, then merge to create a new version tag and draft GitHub Release!
-            IMPORTANT: DO NOT CHANGE THE TITLE!
           draft: true
           labels: next-release
