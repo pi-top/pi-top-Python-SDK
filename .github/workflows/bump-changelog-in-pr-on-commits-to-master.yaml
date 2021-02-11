@@ -61,3 +61,4 @@ jobs:
           title: Update debian/changelog for next release
           body: Automated changelog change proposing changelog for next version. Make changes here, as necessary, then merge to create a new version tag and draft GitHub Release!
           branch: release-updated-changelog
+          draft: true
