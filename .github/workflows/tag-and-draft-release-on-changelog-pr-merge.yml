@@ -20,7 +20,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Get Debian Version
         id: get_deb_version
@@ -49,7 +51,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -84,7 +88,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.2
@@ -126,7 +132,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Get Debian Version
         id: get_deb_version

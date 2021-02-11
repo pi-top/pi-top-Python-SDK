@@ -7,7 +7,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Lint code
         uses: ricardochaves/python-lint@v1.3.0
@@ -55,8 +57,9 @@ jobs:
           pip install ./pi-top-Python-Common-Library
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
         with:
+          fetch-depth: 0
           path: main
 
       - name: Install dependencies
@@ -72,7 +75,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -95,7 +100,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Build Debian package
         uses: pi-top/action-debian-package@v0.2.0
