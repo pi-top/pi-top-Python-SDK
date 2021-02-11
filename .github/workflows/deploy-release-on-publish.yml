@@ -15,18 +15,22 @@ jobs:
         run: |
           sudo apt-get install -y curl jq wget
 
-          TAG_NAME=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".tag_name")
-          echo "::set-output name=version::$TAG_NAME"
+          LATEST_VERSION=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".target_commitish")
+          echo "::set-output name=latest_version_commit::$LATEST_VERSION"
+
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Tag release commit as 'stable' for ReadTheDocs
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "stable"
-          message: "Stable release"
-          commit_sha: ${{ steps.release_version.outputs.version }}
+          commit_sha: ${{ steps.release_version.outputs.latest_version_commit }}
           force_push_tag: true
 
-  publish-release:
+  deploy-release:
     runs-on: ubuntu-20.04
     steps:
       - name: Download latest release's assets
@@ -44,7 +48,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
 
-      - name: Publish to TestPyPI
+      - name: Deploy to TestPyPI
         if: github.event_name != 'release' || github.event.action != 'published'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
@@ -52,7 +56,7 @@ jobs:
         run: |
           twine upload --repository testpypi --verbose *.whl
 
-      - name: Publish to PyPI
+      - name: Deploy to PyPI
         if: github.event_name == 'release' && github.event.action == 'published'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
