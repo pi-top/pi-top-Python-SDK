@@ -1,4 +1,5 @@
 name: Build ARM Packages on Commit to 'master'
+# TODO: convert to latest commit as pre-release GitHub Release
 
 on:
   push:

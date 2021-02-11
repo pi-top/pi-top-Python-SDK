@@ -23,7 +23,7 @@ jobs:
       # Ignore branch in case of debugging
       - name: Patch changelog (release)
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable --spawn-editor=snapshot --ignore-branch
+          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=buster --spawn-editor=snapshot --ignore-branch
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
