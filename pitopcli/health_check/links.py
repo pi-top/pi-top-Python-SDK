@@ -13,7 +13,7 @@ def is_connected_to_internet() -> bool:
 
 
 class Links:
-    ONLINE_URI = "https://docs.pi-top.com/python-sdk/"
+    ONLINE_BASE_URI = "https://docs.pi-top.com/python-sdk/"
     LOCAL_URI = "/usr/share/doc/python3-pitop/html/index.html"
     KNOWLEDGE_BASE_URI = "https://knowledgebase.pi-top.com/"
     FORUM_URI = "https://forum.pi-top.com/"
@@ -25,9 +25,20 @@ class Links:
         except Exception:
             return False
 
+    def __get_online_sdk_docs_url(self):
+        try:
+            return self.ONLINE_BASE_URI + "en/v" + run_command(
+                "dpkg -s python3-pitop",
+                timeout=10,
+                check=True,
+                log_errors=False
+            ).split("\n")[8].split()[1]
+        except Exception:
+            return self.ONLINE_BASE_URI
+
     def get_docs_url(self):
         if is_connected_to_internet():
-            return self.ONLINE_URI
+            return self.__get_online_sdk_docs_url()
         elif self._is_doc_package_installed():
             return self.LOCAL_URI
         else:
@@ -38,7 +49,8 @@ class Links:
     def print_docs(self):
         is_connected = is_connected_to_internet()
         StdoutFormat.print_header("DOCS")
-        StdoutFormat.print_checkbox_line("pi-top Python SDK documentation", "online version, recommended", self.ONLINE_URI, is_connected)
+        StdoutFormat.print_checkbox_line("pi-top Python SDK documentation", "online version, recommended",
+                                         self.__get_online_sdk_docs_url(), is_connected)
         StdoutFormat.print_checkbox_line("pi-top Python SDK documentation", "offline version", self.LOCAL_URI, self._is_doc_package_installed())
 
     def print_other(self):

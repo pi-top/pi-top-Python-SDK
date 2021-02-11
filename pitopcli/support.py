@@ -11,7 +11,6 @@ class SupportCLI(CliBaseClass):
         self.args = args
 
     def run(self) -> int:
-
         if self.args.help_subcommand == "links":
             links = Links()
             if self.args.docs_subcommand == "docs":
