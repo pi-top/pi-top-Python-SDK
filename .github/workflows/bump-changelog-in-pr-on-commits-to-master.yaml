@@ -34,12 +34,20 @@ jobs:
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
             --since=${commit} --snapshot-number=${commit_diff}
 
+      - name: Show updated changelog
+        run: |
+          cat debian/changelog
+
       # Then squash into one release
       #   '--spawn-editor=snapshot' = don't try to open text editor
       - name: Patch changelog (release)
         run: |
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --release \
             --distribution=buster --spawn-editor=snapshot
+
+      - name: Show updated changelog
+        run: |
+          cat debian/changelog
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
