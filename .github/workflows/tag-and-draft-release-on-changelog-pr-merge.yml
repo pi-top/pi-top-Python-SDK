@@ -1,8 +1,8 @@
 name: Create New Tag For Release Version On Merging Changelog PR
 
-# Merging changelog PR will delete the branch, so we use that as a trigger
 on:
-  delete
+  pull_request:
+    types: [closed]
 
 jobs:
   debug:
@@ -14,9 +14,11 @@ jobs:
           echo "github.ref: ${{ github.ref }}"
           echo "github.event.ref_type: ${{ github.event.ref_type }}"
           echo "github.event.ref: ${{ github.event.ref }}"
+          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
 
   add-version-tag:
-    if: ${{ github.event.ref_type }} == "branch" && ${{ github.event.ref_type }} == "release-updated-changelog"
+    # if: ${{ github.ref }} == "release-updated-changelog" && ${{ github.event.pull_request.merged }} == true
+    if: false
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -41,12 +43,6 @@ jobs:
     needs: [ add-version-tag ]
     runs-on: ubuntu-20.04
     steps:
-      - name: run build
-        run: |
-          echo "GITHUB_SHA is ${{ github.sha }}"
-          echo "GITHUB_REF is ${{ github.ref }}"
-          echo "${{ github.event.ref }} - ${{ github.event.ref_type }}"
-
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
