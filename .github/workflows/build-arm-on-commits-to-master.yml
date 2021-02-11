@@ -16,7 +16,9 @@ jobs:
         uses: FranzDiebold/github-env-vars-action@v1.2.1
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Debian Docker container for changelog patching
         run: |
@@ -35,7 +37,12 @@ jobs:
       # Bump changelog to latest snapshot, as with CI builds
       - name: Patch changelog (snapshot)
         run: |
-          docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot --since=${{ steps.get_latest_version_tag.outputs.latest_version_tag_commit }}
+          tag=$(git tag -l v* | sort -V | tail -n1)
+          commit=$(git show-ref -s $(tag))
+          commit_diff=$(git rev-list --count ${commit}..HEAD)
+
+          docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
+            --since=${commit} --snapshot-number=${commit_diff}
 
       - name: Show updated changelog
         run: |

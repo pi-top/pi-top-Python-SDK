@@ -8,7 +8,10 @@ jobs:
   create-pr:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Debian Docker container for changelog patching
         run: |
@@ -21,19 +24,15 @@ jobs:
       #     Use git information, not system information
       #     Ignore branch in case of debugging
 
-      - name: Get latest version tag
-        id: get_latest_version_tag
-        run: |
-          LATEST_TAG_REF=$(git describe --tags --abbrev=0)
-          LATEST_TAG_COMMIT=$(git show-ref -s ${LATEST_TAG})
-          echo "::set-output name=latest_version_tag_commit::$LATEST_TAG_COMMIT"
-
       # Bump changelog to latest snapshot, as with CI builds
       - name: Patch changelog (snapshot)
         run: |
+          tag=$(git tag -l v* | sort -V | tail -n1)
+          commit=$(git show-ref -s $(tag))
+          commit_diff=$(git rev-list --count ${commit}..HEAD)
+
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
-            --since=${{ steps.get_latest_version_tag.outputs.latest_version_tag_commit }} \
-            --snapshot-number=$(git rev-list --count v0.16.2..HEAD)
+            --since=${commit} --snapshot-number=${commit_diff}
 
       # Then squash into one release
       #   '--spawn-editor=snapshot' = don't try to open text editor
