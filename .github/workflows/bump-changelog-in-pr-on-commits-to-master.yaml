@@ -20,9 +20,10 @@ jobs:
       # Use git information, not system information
       # Set release to 'stable'
       # Don't run editor
+      # Ignore branch in case of debugging
       - name: Patch changelog (release)
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable --spawn-editor=snapshot
+          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=stable --spawn-editor=snapshot --ignore-branch
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
