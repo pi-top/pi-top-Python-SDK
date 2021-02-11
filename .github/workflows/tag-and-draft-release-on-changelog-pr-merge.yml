@@ -1,4 +1,4 @@
-name: Create New Tag For Release Version On Merging Changelog PR
+name: Create Draft GitHub Release And Tag On Merging Changelog PR
 
 on:
   pull_request:
