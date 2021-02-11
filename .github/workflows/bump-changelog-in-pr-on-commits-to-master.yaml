@@ -1,0 +1,33 @@
+name: Create/Update Changelog PR on Commits to 'master'
+
+on:
+  push:
+    branches: [ "master", "ci-test-changelog-pr-*" ]
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Debian Docker container for changelog patching
+        run: |
+          docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
+          docker start chglog
+          docker exec chglog git config --global user.name "pi-top"
+          docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
+
+      # Use git information, not system information
+      # Set release to 'stable'
+      # Don't run editor
+      # Ignore branch in case of debugging
+      - name: Patch changelog (release)
+        run: |
+          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=buster --spawn-editor=snapshot --ignore-branch
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Update debian/changelog
+          title: Update debian/changelog for next release
+          branch: release-updated-changelog

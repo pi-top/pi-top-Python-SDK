@@ -1,8 +1,9 @@
 py-pitop-sdk (0.16.2) buster; urgency=medium
 
+  [ Mike Roberts ]
   * Add 2-player pong miniscreen example
 
- -- Mike Roberts <mike@pi-top.com>  Tue, 09 Feb 2021 18:10:22 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 14:00:34 +0000
 
 py-pitop-sdk (0.16.1) buster; urgency=medium
 
