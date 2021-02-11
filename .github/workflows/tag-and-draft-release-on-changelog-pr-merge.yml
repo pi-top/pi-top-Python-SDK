@@ -16,7 +16,7 @@ jobs:
           echo "github.event.ref: ${{ github.event.ref }}"
 
   add-version-tag:
-    if: ${{ github.event.ref_type }} == "branch" and ${{ github.event.ref_type }} == "release-updated-changelog"
+    if: ${{ github.event.ref_type }} == "branch" && ${{ github.event.ref_type }} == "release-updated-changelog"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -33,6 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CUSTOM_TAG: ${{ steps.get_deb_version.outputs.deb_ver }}
+          WITH_V: true
 
   build-python:
     needs: [ add-version-tag ]
