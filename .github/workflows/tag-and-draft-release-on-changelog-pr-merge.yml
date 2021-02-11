@@ -5,21 +5,8 @@ on:
     types: [closed]
 
 jobs:
-  debug:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Print debug information
-        run: |
-          echo "github.sha: ${{ github.sha }}"
-          echo "github.ref: ${{ github.ref }}"
-          echo "github.head_ref: ${{ github.head_ref }}"
-          echo "github.event.ref_type: ${{ github.event.ref_type }}"
-          echo "github.event.ref: ${{ github.event.ref }}"
-          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
-
   add-version-tag:
-    # if: ${{ github.ref }} == "release-updated-changelog" && ${{ github.event.pull_request.merged }} == true
-    if: false
+    if: ${{ github.head_ref }} == "release-updated-changelog" && ${{ github.event.pull_request.merged }} == true
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
