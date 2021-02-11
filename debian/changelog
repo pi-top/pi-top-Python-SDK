@@ -1,15 +1,6 @@
 py-pitop-sdk (0.16.5) buster; urgency=medium
 
-  [ Mike Roberts ]
-  * Attempt fix for 'stable' tagging when publishing Release
-  * Migrate diagnostics from pt-diagnostics to pi-top CLI (#156)
-
-  [ Jorge Capona ]
-  * Print debug message (#228)
-  * Debug2 (#229)
-  * Try to get enviroment variables (#230)
-  * Print debug information on publish (#231)
-  * Add debug prints when deploying (#232)
+  * Finalise MVP CI 3
 
  -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 19:55:18 +0000
 
