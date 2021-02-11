@@ -1,3 +1,5 @@
+from ..formatter import StdoutFormat
+
 
 class SystemdService:
     def __init__(self):
@@ -9,6 +11,8 @@ class SystemdService:
         self._description = ""
         self._fragment_path = ""
         self._vendor_preset = ""
+        self._sub_state = ""
+        self._active_enter_timestamp = ""
 
     @classmethod
     def from_lines(cls, lines):
@@ -28,6 +32,10 @@ class SystemdService:
                 service.vendor_preset = line.replace("UnitFilePreset=", "")
             elif "FragmentPath=" in line:
                 service.fragment_path = line.replace("FragmentPath=", "")
+            elif "SubState=" in line:
+                service.sub_state = line.replace("SubState=", "")
+            elif "ActiveEnterTimestamp=" in line:
+                service.active_enter_timestamp = line.replace("ActiveEnterTimestamp=", "")
         return service
 
     @property
@@ -58,11 +66,13 @@ class SystemdService:
     def fragment_path(self):
         return self._fragment_path
 
-    def get_loaded_line(self):
-        return f"Loaded: {self.load_state} ({self.fragment_path}; {1}; vendor preset: {self.vendor_preset})"
+    @property
+    def sub_state(self):
+        return self._sub_state
 
-    def get_active_line(self):
-        return f"Active: {self.active_state} ({self.enabled}) since {1}; {1} ago"
+    @property
+    def active_enter_timestamp(self):
+        return self._active_enter_timestamp
 
     @name.setter
     def name(self, value):
@@ -91,3 +101,36 @@ class SystemdService:
     @fragment_path.setter
     def fragment_path(self, value):
         self._fragment_path = value.strip(" \t\n\r")
+
+    @sub_state.setter
+    def sub_state(self, value):
+        self._sub_state = value.strip(" \t\n\r")
+
+    @active_enter_timestamp.setter
+    def active_enter_timestamp(self, value):
+        self._active_enter_timestamp = value.strip(" \t\n\r")
+
+    def ____get_loaded_line(self):
+        line = f"Loaded: {self.format_service(self.load_state)}"
+        if self.load_state != "masked":
+            line += f" ({self.fragment_path}; {self.format_service(self.enabled)}; vendor preset: {self.vendor_preset})"
+        return line
+
+    def __get_active_line(self):
+        line = f"Active: {self.format_service(self.active_state)} ({self.format_service(self.sub_state)})"
+        if self.active_state == "active":
+            line += f" since {self.active_enter_timestamp}"
+        return line
+
+    @classmethod
+    def format_service(cls, input_string):
+        if input_string.strip(" \t\n\r") in ("loaded", "active", "enabled", "running"):
+            return StdoutFormat.GREEN + input_string + StdoutFormat.ENDC
+        elif input_string.strip(" \t\n\r") in ("inactive", "disabled", "exited", "dead"):
+            return StdoutFormat.DIM + input_string + StdoutFormat.ENDC
+        return StdoutFormat.RED + input_string + StdoutFormat.ENDC
+
+    def print(self):
+        StdoutFormat.print_line(f"{StdoutFormat.bold(self.name)} ({self.description})", level=2)
+        StdoutFormat.print_line(self.____get_loaded_line(), level=3)
+        StdoutFormat.print_line(self.__get_active_line(), level=3)

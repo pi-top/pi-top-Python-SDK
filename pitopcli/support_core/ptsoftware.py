@@ -7,21 +7,13 @@ from .systemd_service import SystemdService
 
 
 class PiTopSoftware:
-    def format_service(self, input_string):
-        if input_string.strip(" \t\n\r") in ("loaded", "active", "enabled"):
-            return StdoutFormat.GREEN + input_string + StdoutFormat.ENDC
-        elif input_string.strip(" \t\n\r") in ("inactive", "disabled"):
-            return StdoutFormat.DIM + input_string + StdoutFormat.ENDC
-        return StdoutFormat.RED + input_string + StdoutFormat.ENDC
-
     def print_pt_systemd_status(self):
         services = self.get_pt_systemd_services()
 
         for active_state, services_arr in sorted(services.items()):
-            StdoutFormat.print_line(f"{self.format_service(active_state)}")
+            StdoutFormat.print_line(f"{SystemdService.format_service(active_state)}")
             for service in services_arr:
-                StdoutFormat.print_line(f"{StdoutFormat.bold(service.name)} ({service.description})", level=2)
-                StdoutFormat.print_line(f"Status: {self.format_service(service.load_state)}, {self.format_service(service.enabled)}", level=3)
+                service.print()
 
     def get_pt_systemd_services(self):
         pt_service_names = self.get_pt_systemd_service_names()
