@@ -1,4 +1,3 @@
-from apt import Cache
 from os import listdir, walk, path
 from re import search
 from subprocess import check_output
@@ -59,6 +58,13 @@ class PiTopSoftware:
         return pt_service_names
 
     def get_pt_installed_software(self):
+        try:
+            from apt import Cache
+        except ModuleNotFoundError:
+            # probably running in virtualenv. python3-pip is not pip installable
+            print("Error: couldn't find python APT library. Skipping...")
+            return []
+
         regex = "^pt-|-pt-|pitop|pi-top"
         apt_cache = Cache()
 

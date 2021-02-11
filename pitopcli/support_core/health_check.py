@@ -123,10 +123,8 @@ class HealthCheck:
         StdoutFormat.print_subsection("pi-top Systemd Services")
         pt_sw.print_pt_systemd_status()
 
-        t = StdoutTable()
-        t.title_format = StdoutFormat.print_subsection
-        t.add_section("pi-top Installed Software", pt_sw.get_pt_installed_software())
-        t.print()
+        StdoutFormat.print_subsection("pi-top Installed Software")
+        StdoutTable().print_data(pt_sw.get_pt_installed_software())
 
         StdoutFormat.print_subsection("APT Sources")
         pt_sw.print_apt_sources()

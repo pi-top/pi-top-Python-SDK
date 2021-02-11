@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 from .cli_base import CliBaseClass
-from .health_check import HealthCheck, Links
+from .support_core import HealthCheck, Links
 
 
 class SupportCLI(CliBaseClass):
