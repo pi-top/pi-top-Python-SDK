@@ -20,13 +20,39 @@ jobs:
           docker exec chglog git config --global user.name "pi-top"
           docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
 
-      # Use git information, not system information
-      # Set release to 'stable'
-      # Don't run editor
-      # Ignore branch in case of debugging
+      # General settings:
+      #     Use git information, not system information
+      #     Ignore branch in case of debugging
+
+      # Bump changelog to latest snapshot, as with CI builds
+      - name: Patch changelog (snapshot)
+        run: |
+          tag=$(git tag -l v* | sort -V | tail -n1)
+          commit=$(git show-ref -s ${tag})
+          commit_diff=$(git rev-list --count ${commit}..HEAD)
+
+          echo "Tag: $tag"
+          echo "Commit: $commit"
+          echo "Diff: $commit_diff"
+          echo "SHA: ${{ env.GITHUB_SHA }}"
+
+          docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
+            --since=${commit} --snapshot-number=${commit_diff}
+
+      - name: Show updated changelog
+        run: |
+          cat debian/changelog
+
+      # Then squash into one release
+      #   '--spawn-editor=snapshot' = don't try to open text editor
       - name: Patch changelog (release)
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=buster --spawn-editor=snapshot --ignore-branch
+          docker exec chglog gbp dch --verbose --git-author --ignore-branch --release \
+            --distribution=buster --spawn-editor=snapshot
+
+      - name: Show updated changelog
+        run: |
+          cat debian/changelog
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
