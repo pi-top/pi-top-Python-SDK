@@ -376,27 +376,75 @@ Example:
 
 
 pi-top support
-==================
+==============
+
+Find information about support topics for your device.
+
+.. code-block:: bash
+
+    pi-top support [-h] {links,health_check} ...
+
+Where:
+
+-h, --help
+     Show a help message and exits
+
+{links,health_check}
+     Subcommands, please refer to the next sections.
+
+pi-top support links
+~~~~~~~~~~~~~~~~~~~~
 
 Find resources to learn how to use your device and get help if needed.
 
 .. code-block:: bash
 
-    pi-top support
+    pi-top support links [-h] {docs,help}
 
+Where:
+
+-h, --help
+     Show a help message and exits
+
+{docs,help}
+    docs: Print links to pi-top documentation
+
+    help: Print links to places where to look for help
 
 Example:
 
 .. code-block:: bash
 
-    pi@pi-top:~ $ pi-top support
-    DOCS ==========================================
+   $ pi-top support links docs
+    ===============================================
+    DOCS
+    ===============================================
     [ ✓ ] pi-top Python SDK documentation: online version, recommended
       https://docs.pi-top.com/python-sdk/
     [ ✓ ] pi-top Python SDK documentation: offline version
       /usr/share/doc/python3-pitop/html/index.html
-    OTHER ========================================
+
+    pi@pi-top:~ $ pi-top support links
+    ===============================================
+    DOCS
+    ===============================================
+    [ ✓ ] pi-top Python SDK documentation: online version, recommended
+      https://docs.pi-top.com/python-sdk/
+    [ ✓ ] pi-top Python SDK documentation: offline version
+      /usr/share/doc/python3-pitop/html/index.html
+    ===============================================
+    OTHER
+    ===============================================
     [ ✓ ] Knowledge Base: Find answers to commonly asked questions
       https://knowledgebase.pi-top.com/
     [ ✓ ] Forum: Discuss and search through support topics.
       https://forum.pi-top.com/
+
+pi-top support health_check
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Perform a system wide check to help troubleshooting any problems with pi-top software and hardware.
+
+.. code-block:: bash
+
+   pi-top support health_check
