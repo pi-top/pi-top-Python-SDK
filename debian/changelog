@@ -1,30 +1,6 @@
 py-pitop-sdk (0.16.4) buster; urgency=medium
 
-  [ Mike Roberts ]
-  * Add release publishing GitHub Actions workflow (#213)
-  * Link to current docs' current API version on ReadTheDocs (#214)
-  * Update workflow to automate releases (#215)
-  * Fix changelog PR workflow (#217)
-  * Use buster as distribution in release changelog
-
-  [ github-actions[bot] ]
-  * CI TEST: Update debian/changelog (#216)
-  * Try to fix version tagging
-
-  [ github-actions[bot] ]
-  * CI TEST: Update debian/changelog (#218)
-  * Use better snapshot version number when building on master
-  * CI: fix snapshot version on latest builds (#220)
-  * Fix changelog bumping (#222)
-  * Drop dev branch
-  * Improve changelog PR body text
-  * Create changelog PR as draft
-  * Update PR stuff
-  * Test if conditions are correct for 'Merging Changelog PR' action
-
-  [ github-actions[bot] ]
-  * Update debian/changelog for next release (#223)
-  * Debug print head_ref
+  * Finalise MVP CI
 
  -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 16:21:26 +0000
 
