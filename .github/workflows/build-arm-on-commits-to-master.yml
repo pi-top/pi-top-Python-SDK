@@ -40,9 +40,11 @@ jobs:
 
       - name: Patch changelog (snapshot)
         run: |
+          commit=${{ steps.get_latest_version_tag_commit.outputs.latest_version_tag_commit }}
+          commit_diff=$(git rev-list --count ${{ steps.get_latest_version_tag_commit.outputs.latest_version_tag_commit }}..HEAD)
+
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
-            --since=${{ steps.get_latest_version_tag_commit.outputs.latest_version_tag_commit }}
-        # --snapshot-number=$(git rev-list --count ${{ steps.get_latest_version_tag_commit.outputs.latest_version_tag_commit }}..HEAD)
+            --since=${commit} --snapshot-number=${commit_diff}
 
       - name: Show updated changelog
         run: |
