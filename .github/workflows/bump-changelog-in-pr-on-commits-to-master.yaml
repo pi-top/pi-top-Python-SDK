@@ -2,7 +2,7 @@ name: Create/Update Changelog PR on Commits to 'master'
 
 on:
   push:
-    branches: [ "master", "ci-test-changelog-pr-*" ]
+    branches: [ "master" ]
 
 jobs:
   create-pr:
