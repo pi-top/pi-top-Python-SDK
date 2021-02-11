@@ -17,13 +17,30 @@ jobs:
           docker exec chglog git config --global user.name "pi-top"
           docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
 
-      # Use git information, not system information
-      # Set release to 'stable'
-      # Don't run editor
-      # Ignore branch in case of debugging
+      # General settings:
+      #     Use git information, not system information
+      #     Ignore branch in case of debugging
+
+      - name: Get latest version tag
+        id: get_latest_version_tag
+        run: |
+          LATEST_TAG_REF=$(git describe --tags --abbrev=0)
+          LATEST_TAG_COMMIT=$(git show-ref -s ${LATEST_TAG})
+          echo "::set-output name=latest_version_tag_commit::$LATEST_TAG_COMMIT"
+
+      # Bump changelog to latest snapshot, as with CI builds
+      - name: Patch changelog (snapshot)
+        run: |
+          docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
+            --since=${{ steps.get_latest_version_tag.outputs.latest_version_tag_commit }} \
+            --snapshot-number=$(git rev-list --count v0.16.2..HEAD)
+
+      # Then squash into one release
+      #   '--spawn-editor=snapshot' = don't try to open text editor
       - name: Patch changelog (release)
         run: |
-          docker exec chglog gbp dch --verbose --auto --git-author --release --distribution=buster --spawn-editor=snapshot --ignore-branch
+          docker exec chglog gbp dch --verbose --git-author --ignore-branch --release \
+            --distribution=buster --spawn-editor=snapshot
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
