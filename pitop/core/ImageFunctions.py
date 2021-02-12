@@ -1,8 +1,9 @@
-from PIL import Image
 from numpy import (
     asarray,
     ndarray,
 )
+from PIL import Image, ImageDraw
+from re import split
 from urllib.request import urlopen
 
 from pitopcommon.formatting import is_url
@@ -63,3 +64,42 @@ def get_pil_image_from_path(file_path_or_url):
     test_image.verify()
 
     return image
+
+
+def get_word_wrapped_text_for_image(text, font, xy, image):
+    max_width = image.width - xy[0]
+
+    # Push and pop each line to stack
+    output_text = list()
+
+    remaining = max_width
+
+    # Split up text based on all whitespace
+    for field in split(r'(\s+)', text):
+        # Get text size
+        field_width, field_height = ImageDraw.Draw(image).textsize(
+            text=str(field),
+            font=font,
+            spacing=0,
+        )
+        if field_width > remaining:
+            # Update remaining width
+            remaining = max_width - field_width
+
+            # Not enough space to add to current line - start new one
+            output_text.append(field)
+        else:
+            # Update remaining width
+            remaining = remaining - field_width
+
+            # Is enough space
+            if not output_text:
+                # First time - just append
+                output_text.append(field)
+            else:
+                # Pop latest line from list
+                # Append the field with a space
+                # Add back to list
+                output_text.append(output_text.pop() + f" {field}")
+
+    return "\n".join(output_text)

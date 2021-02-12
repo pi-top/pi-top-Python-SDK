@@ -291,9 +291,16 @@ class OLED:
         """
         self.__display(self.prepare_image(image))
 
-    def display_text(self, text, xy=None, font_size=None):
+    # TODO: also add align!
+    def display_text(
+        self,
+        text,
+        xy=None,
+        font_size=30,
+        auto_word_wrap=True
+    ):
         """
-        Renders a single line of text to the screen at a given position and size.
+        Renders text to the screen at a given position and size.
 
         The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
         specifying the `xy` position parameter.
@@ -304,95 +311,27 @@ class OLED:
             the screen.
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
+        :param auto_word_wrap: Add newlines to text that is too wide for the display
         """
         if xy is None:
             xy = self.top_left
 
         if font_size is None:
+            # Possible future feature - dynamic font size calculation?
             font_size = 30
 
-        # Create empty image
         image = self.__empty_image
 
-        # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).text(
-            xy,
-            str(text),
-            font=ImageFont.truetype(
-                self.__font_path(),
-                size=font_size
-            ),
-            fill=1,
-            spacing=0,
-            align="left"
-        )
-
-        # Display image
-        self.display_image(image)
-
-    def display_multiline_text(self, text, xy=None, font_size=None):
-        """
-        Renders multi-lined text to the screen at a given position and size. Text that
-        is too long for the screen will automatically wrap to the next line.
-
-        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
-        specifying the `xy` position parameter.
-
-        :param string text: The text to render
-        :param tuple xy: The position on the screen to render the image. If not
-            provided or passed as `None` the image will be drawn in the top-left of
-            the screen.
-        :param int font_size: The font size in pixels. If not provided or passed as
-            `None`, the default font size will be used
-        """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        # Create empty image
-        image = self.__empty_image
-
-        # Create font
         font = ImageFont.truetype(
             self.__font_path(),
             size=font_size
         )
 
-        def format_multiline_text(text):
-            def get_text_size(text):
-                return ImageDraw.Draw(self.__empty_image).textsize(
-                    text=str(text),
-                    font=font,
-                    spacing=0,
-                )
-
-            remaining = self.width
-            space_width, _ = get_text_size(" ")
-            # use this list as a stack, push/popping each line
-            output_text = []
-            # split on whitespace...
-            for word in text.split(None):
-                word_width, _ = get_text_size(word)
-                if word_width + space_width > remaining:
-                    output_text.append(word)
-                    remaining = self.width - word_width
-                else:
-                    if not output_text:
-                        output_text.append(word)
-                    else:
-                        output = output_text.pop()
-                        output += " %s" % word
-                        output_text.append(output)
-                    remaining = remaining - (word_width + space_width)
-            return "\n".join(output_text)
-
-        # Format text
-        text = format_multiline_text(text)
+        if auto_word_wrap:
+            text = ImageFunctions.get_word_wrapped_text_for_image(text, font, xy, image)
 
         # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).multiline_text(
+        ImageDraw.Draw(image).text(
             xy,
             str(text),
             font=font,
@@ -535,6 +474,25 @@ class OLED:
     #######################
     # Deprecation support #
     #######################
+    def display_multiline_text(self, text, xy=None, font_size=None):
+        """
+        Renders multi-lined text to the screen at a given position and size.
+
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
+        specifying the `xy` position parameter.
+
+        :param string text: The text to render
+        :param tuple xy: The position on the screen to render the image. If not
+            provided or passed as `None` the image will be drawn in the top-left of
+            the screen.
+        :param int font_size: The font size in pixels. If not provided or passed as
+            `None`, the default font size will be used
+        """
+        self.display_text(text, xy=None, font_size=None, auto_word_wrap=True)
+
     def display(self, force=False):
         """
         Displays what is on the current canvas to the screen as a single frame.
