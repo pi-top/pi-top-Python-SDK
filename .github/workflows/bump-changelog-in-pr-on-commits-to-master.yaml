@@ -31,11 +31,6 @@ jobs:
           commit=$(git show-ref -s ${tag})
           commit_diff=$(git rev-list --count ${commit}..HEAD)
 
-          echo "Tag: $tag"
-          echo "Commit: $commit"
-          echo "Diff: $commit_diff"
-          echo "SHA: ${{ env.GITHUB_SHA }}"
-
           docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
             --since=${commit} --snapshot-number=${commit_diff}
 
@@ -57,11 +52,14 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          branch: release-updated-changelog
+          branch: ci-update-changelog-next-release
           commit-message: Bump debian/changelog with proposed change for next release
-          title: Update debian/changelog for next release
+          title: "[CI] Update debian/changelog for next release"
           body: |
-            Automated changelog change proposing changelog for next version.
-            Make changes here, as necessary, then merge to create a new version tag and draft GitHub Release!
+            This pull request is automatically updated on each push to master.
+            This pull request submits a proposal for the changelog for next version.
+            When ready to release, modify the changelog as necessary (e.g. amend version, tidy format) and merge.
+            This will trigger a workflow that [prepares a GitHub Release](tag-and-draft-release-on-changelog-pr-merge.yml) by tagging the released version in the changelog and creating a draft release.
+            Publishing this Release will trigger the [release deployment](deploy-release-on-publish.yml)' workflow, that uploads to public release repositories, etc.
           draft: true
-          labels: next-release
+          labels: "ci"
