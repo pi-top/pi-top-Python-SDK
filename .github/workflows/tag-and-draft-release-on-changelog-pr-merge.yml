@@ -17,17 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Debian Version
-        id: get_deb_version
+      - name: Create and push Debian version tag
         run: |
-          DEB_VER=$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")
-          echo "::set-output name=deb_ver::$DEB_VER"
-
-      - name: Create and push tag
-        uses: anothrNick/github-tag-action@1.34.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_TAG: "v${{ steps.get_deb_version.outputs.deb_ver }}"
+          new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
+          git tag "v${new_version}"
+          git push --tags
 
   build-python:
     needs: [ add-version-tag ]
