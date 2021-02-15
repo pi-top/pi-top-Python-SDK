@@ -5,7 +5,7 @@ on:
     branches: [ "master" ]
 
 env:
-  changelog_branch: ci-update-changelog-next-release
+  CHANGELOG_BRANCH: ci-update-changelog-next-release
 
 jobs:
   create-pr:
@@ -55,7 +55,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          branch: ${{ env.changelog_branch }}
+          branch: ${{ env.CHANGELOG_BRANCH }}
           commit-message: Bump debian/changelog with proposed change for next release
           title: "[CI] Update debian/changelog for next release"
           body: |
