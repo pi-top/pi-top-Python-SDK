@@ -4,12 +4,9 @@ on:
   pull_request:
     types: [closed]
 
-env:
-  CHANGELOG_BRANCH: ci-update-changelog-next-release
-
 jobs:
   add-version-tag:
-    if: ${{ github.head_ref }} == ${{ env.CHANGELOG_BRANCH }} && ${{ github.event.pull_request.merged }} == true
+    if: ${{ github.head_ref }} == ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }} && ${{ github.event.pull_request.merged }} == true
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
