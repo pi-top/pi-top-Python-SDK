@@ -2,7 +2,8 @@ name: Create/Update Changelog PR on Commits to 'master'
 
 on:
   push:
-    branches: [ "master" ]
+    # Temporary!
+    branches: [ "ci-test-changelog-pr" ]
 
 env:
   CHANGELOG_BRANCH: ci-update-changelog-next-release
@@ -52,7 +53,7 @@ jobs:
         run: |
           cat debian/changelog
 
-      - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@v1.3.0
         id: generate-token
         with:
           app_id: ${{ secrets.GET_RW_TOKEN_APP_ID }}
