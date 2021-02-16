@@ -7,19 +7,15 @@ from os.path import (
 from pathlib import Path
 
 from pitop.pma import ServoMotor
-from pitop.system.port_manager import PortManager
 
 
 class PanTiltController:
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
     CALIBRATION_FILE_NAME = "alex.conf"
 
-    def __init__(self, servo_pan_port="S0", servo_tilt_port="S3"):
-        self.pan_servo = ServoMotor(servo_pan_port)
-        self.tilt_servo = ServoMotor(servo_tilt_port)
-        self.__port_manager = PortManager()
-        self.__port_manager.register_pma_component(self.pan_servo)
-        self.__port_manager.register_pma_component(self.tilt_servo)
+    def __init__(self, pan_servo: ServoMotor, tilt_servo: ServoMotor):
+        self.pan_servo = pan_servo
+        self.tilt_servo = tilt_servo
 
     def calibrate(self, save=True, reset=False):
         """

@@ -54,22 +54,14 @@ class PortManager(metaclass=Singleton):
         component_instance = None
         self.__pma_port_lookup[component_instance._pma_port] = None
 
-    def get_or_create_component(self, component=None, port=None, component_name=None):
-        if hasattr(self, component_name):
-            component_from_name = getattr(self, component_name)
-            if component and not isinstance(component, component_from_name):
-                raise Exception(f"Component {component_name} already exists but has a different type than the one provided")
-            if port and port != component_from_name.port_name:
-                raise Exception(f"Component {component_name} already exists but it's using a different port than the one provided")
-            return component_from_name
-
+    def get_or_create_pma_component(self, component_cls=None, port=None, **kwargs):
         component_in_port = self.get_component_on_pma_port(port)
         if component_in_port:
-            if component is None or isinstance(component, component_in_port):
+            if component_cls is None or isinstance(component_cls, component_in_port):
                 return component_in_port
             raise Exception(f"There's a component from a different type attached to the {port} port")
 
-        if component and port:
-            component_obj = component(port)
+        if component_cls and port:
+            component_obj = component_cls(port, **kwargs)
             self.register_pma_component(component_obj)
             return component_obj
