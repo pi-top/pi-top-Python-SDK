@@ -4,9 +4,6 @@ on:
   push:
     branches: [ "master" ]
 
-env:
-  CHANGELOG_BRANCH: ci-update-changelog-next-release
-
 jobs:
   create-pr:
     runs-on: ubuntu-20.04
@@ -52,17 +49,10 @@ jobs:
         run: |
           cat debian/changelog
 
-      - uses: tibdex/github-app-token@v1
-        id: generate-token
-        with:
-          app_id: ${{ secrets.GET_RW_TOKEN_APP_ID }}
-          private_key: ${{ secrets.GET_RW_TOKEN_APP_PRIVATE_KEY }}
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ steps.generate-token.outputs.token }}
-          branch: ${{ env.CHANGELOG_BRANCH }}
+          branch: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
           commit-message: Bump debian/changelog with proposed change for next release
           title: "[CI] Update debian/changelog for next release"
           body: |
@@ -71,5 +61,8 @@ jobs:
             When ready to release, modify the changelog as necessary (e.g. amend version, tidy format) and merge.
             This will trigger a workflow that [prepares a GitHub Release](tag-and-draft-release-on-changelog-pr-merge.yml) by tagging the released version in the changelog and creating a draft release.
             Publishing this Release will trigger the [release deployment](deploy-release-on-publish.yml)' workflow, that uploads to public release repositories, etc.
+
+            Note: tests will not run on this branch until a user acts upon this PR/branch. Close the PR and reopen to trigger tests.
+            See [https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#triggering-further-workflow-runs](here) for more info.
           draft: true
           labels: "ci"
