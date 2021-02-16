@@ -9,7 +9,7 @@ from pitop.pma import EncoderMotor
 from simple_pid import PID
 
 
-class DriveController:
+class DriveBase:
     """
     Abstraction of a vehicle with two wheels connected by an axis,
     and an optional support wheel or caster.

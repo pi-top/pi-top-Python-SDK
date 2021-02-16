@@ -9,7 +9,7 @@ from pitop.pma import (
 from pitop.system import device_type
 from pitop.system.peripherals import connected_plate
 from pitop.system.port_manager import PortManager
-from pitop.robotics.drive_controller import DriveController
+from pitop.robotics.drive_controller import DriveBase
 from pitop.robotics.pan_tilt_controller import PanTiltController
 
 from pitopcommon.common_ids import FirmwareDeviceID
@@ -81,7 +81,7 @@ class SupportsPanTilt(PanTiltController):
             print("No PanTilt")
 
 
-class SupportsDriving(DriveController):
+class SupportsDriving(DriveBase):
     def __init__(self, left_motor_port, right_motor_port):
         try:
             port_manager = PortManager()
@@ -91,6 +91,6 @@ class SupportsDriving(DriveController):
             right_motor = port_manager.get_or_create_pma_component(EncoderMotor,
                                                                    right_motor_port,
                                                                    forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
-            DriveController.__init__(self, left_motor, right_motor)
+            DriveBase.__init__(self, left_motor, right_motor)
         except Exception:
-            print("No DriveController")
+            print("No DriveBase")
