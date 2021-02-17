@@ -80,6 +80,10 @@ jobs:
           docker start gcsfuse-docker
           docker exec gcsfuse-docker gcsfuse --implicit-dirs -o allow_other ${{ secrets.APT_GCS_BUCKET_NAME }} /mnt
 
+      - name: Debug - show contents
+        run: |
+          ls ./mnt
+
       - name: Deploy to APT repository
         if: github.event_name == 'release' && github.event.action == 'published'
         run: |
