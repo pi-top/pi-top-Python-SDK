@@ -85,6 +85,9 @@ jobs:
 
       - name: Debug - show contents
         run: |
+          docker exec gcsfuse-docker pwd
+          docker exec gcsfuse-docker ls -l
+          docker exec gcsfuse-docker ls -l /mnt
           ls -l ${{ github.workspace }}/mnt
 
       - name: Deploy to APT repository
