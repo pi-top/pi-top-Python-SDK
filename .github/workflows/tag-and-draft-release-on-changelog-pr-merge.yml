@@ -57,9 +57,6 @@ jobs:
   build-debian:
     needs: [ add-version-tag ]
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        target_arch: ["armhf", "arm64"]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
@@ -77,7 +74,6 @@ jobs:
 
           docker_image: "pitop/deb-build:latest"
           distribution: "buster-backports"
-          target_architecture: ${{ matrix.target_arch }}
 
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
           # Package uses latest packaging syntax and Lintian opts/tags
@@ -92,13 +88,13 @@ jobs:
       - name: Upload Debian source package files
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb-src"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
           path: "${{ github.workspace }}/artifacts/src/"
 
       - name: Upload Debian binary packages
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "${{ github.workspace }}/artifacts/bin/"
 
   create-draft-release:
@@ -158,65 +154,42 @@ jobs:
           asset_name: ${{ steps.get_py_whl_filename.outputs.filename }}
           asset_content_type: text/plain
 
-      - name: Download Debian artifact (armhf)
+      - name: Download Debian artifacts
         uses: actions/download-artifact@v2
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-armhf-deb"
-            path: "./armhf/"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+            path: "./deb/"
 
-      - name: Get main package filename (armhf)
-        id: get_armhf_main_pkg_filename
+      - name: Get main package filename
+        id: get_deb_main_pkg_filename
         run: |
-          cd ./armhf
-          PKG_NAME=$(ls | grep "^python3-pitop_.*armhf.deb$")
+          cd ./deb
+          PKG_NAME=$(ls | grep "^python3-pitop_.*.deb$")
           echo "::set-output name=filename::$PKG_NAME"
 
-      - name: Upload main Debian package (armhf)
+      - name: Upload main Debian package
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./armhf/${{ steps.get_armhf_main_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_armhf_main_pkg_filename.outputs.filename }}
+          asset_path: ./deb/${{ steps.get_deb_main_pkg_filename.outputs.filename }}
+          asset_name: ${{ steps.get_deb_main_pkg_filename.outputs.filename }}
           asset_content_type: application/vnd.debian.binary-package
 
-      - name: Get docs package filename (armhf)
-        id: get_armhf_docs_pkg_filename
+      - name: Get docs package filename
+        id: get_deb_docs_pkg_filename
         run: |
-          cd ./armhf
-          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*all.deb$")
+          cd ./deb
+          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*.deb$")
           echo "::set-output name=filename::$PKG_NAME"
 
-      - name: Upload docs Debian package (armhf)
+      - name: Upload docs Debian package
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./armhf/${{ steps.get_armhf_docs_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_armhf_docs_pkg_filename.outputs.filename }}
-          asset_content_type: application/vnd.debian.binary-package
-
-      - name: Download Debian artifact (arm64)
-        uses: actions/download-artifact@v2
-        with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-arm64-deb"
-            path: "./arm64/"
-
-      - name: Get main package filename (arm64)
-        id: get_arm64_main_pkg_filename
-        run: |
-          cd ./arm64
-          PKG_NAME=$(ls | grep "^python3-pitop_.*arm64.deb$")
-          echo "::set-output name=filename::$PKG_NAME"
-
-      - name: Upload main Debian package (arm64)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./arm64/${{ steps.get_arm64_main_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_arm64_main_pkg_filename.outputs.filename }}
+          asset_path: ./deb/${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
+          asset_name: ${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
           asset_content_type: application/vnd.debian.binary-package
