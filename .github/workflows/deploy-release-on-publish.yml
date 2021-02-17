@@ -60,7 +60,6 @@ jobs:
       - name: Create directories
         run: |
           mkdir -p ./gcloud ./mnt
-          chmod -R 755 ./gcloud ./mnt
 
       - name: Write GCS service account key to file
         shell: bash
