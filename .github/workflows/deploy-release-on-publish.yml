@@ -48,14 +48,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
 
-      - name: Deploy to TestPyPI
-        if: github.event_name != 'release' || github.event.action != 'published'
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --repository testpypi --verbose *.whl
-
       - name: Deploy to PyPI
         if: github.event_name == 'release' && github.event.action == 'published'
         env:
@@ -64,4 +56,25 @@ jobs:
         run: |
           twine upload --verbose *.whl
 
-      # TODO: publish to apt repository
+      - name: Prepare for Docker container
+        run: |
+          mkdir -p ./gcloud ./mnt
+          echo "${{ secrets.APT_GCS_SERVICE_ACCT_KEY }}" > ./gcloud/service-account.json
+
+      - name: Start Docker container
+        run: |
+          docker create \
+            --name gcsfuse-docker \
+            --volume ${{ github.workspace }}/gcloud:/etc/gcloud \
+            --volume ${{ github.workspace }}/mnt:/mnt \
+            --tty \
+            levkuznetsov/gcsfuse-docker \
+            sleep inf
+
+          docker start gcsfuse-docker
+          docker exec gcsfuse-docker gcsfuse --implicit-dirs -o allow_other ${{ secrets.APT_GCS_BUCKET_NAME }} /mnt
+
+      - name: Deploy to APT repository
+        if: github.event_name == 'release' && github.event.action == 'published'
+        run: |
+          docker exec gcsfuse ls
