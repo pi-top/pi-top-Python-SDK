@@ -57,34 +57,31 @@ jobs:
         run: |
           twine upload --verbose *.whl
 
-      - name: Create directories
-        run: |
-          mkdir -p ${{ github.workspace }}/gcloud ${{ github.workspace }}/mnt
-
       - name: Write GCS service account key to file
         shell: bash
         env:
           APT_GCS_SERVICE_ACCT_KEY: ${{secrets.APT_GCS_SERVICE_ACCT_KEY}}
-        run: 'echo "$APT_GCS_SERVICE_ACCT_KEY" > ${{ github.workspace }}/gcloud/service-account.json'
+        run: |
+          'echo "$APT_GCS_SERVICE_ACCT_KEY" > ${{ github.workspace }}/gcloud/service-account.json'
+          mkdir -p ${{ github.workspace }}/gcloud
 
       - name: Mount GCS to filesystem
         run: |
           docker create \
             --privileged \
-            --name gcsfuse-docker \
-            --volume ${{ github.workspace }}/gcloud:/etc/gcloud \
-            --volume ${{ github.workspace }}/mnt:/mnt \
+            --name reprepro-gcs \
+            --volume ${{ github.workspace }}/gcloud:/gcloud \
             --tty \
             pitop/reprepro-gcs \
             sleep inf
-          docker start gcsfuse-docker
-          docker exec gcsfuse-docker gcsfuse --implicit-dirs -o allow_other ${{ secrets.APT_GCS_BUCKET_NAME }} /mnt
+          docker start reprepro-gcs
+          docker exec reprepro-gcs gcsfuse --implicit-dirs -o allow_other ${{ secrets.APT_GCS_BUCKET_NAME }} /mnt
 
       - name: Debug - show contents
         run: |
-          docker exec gcsfuse-docker ls -lRa
+          docker exec reprepro-gcs ls -lRa
 
       - name: Deploy to APT repository
         if: github.event_name == 'release' && github.event.action == 'published'
         run: |
-          docker exec gcsfuse-docker ls
+          docker exec reprepro-gcs ls
