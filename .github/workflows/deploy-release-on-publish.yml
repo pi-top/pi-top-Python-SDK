@@ -59,15 +59,15 @@ jobs:
 
       - name: Create directories
         run: |
-          mkdir -p ./gcloud ./mnt
+          mkdir -p ${{ github.workspace }}/gcloud ${{ github.workspace }}/mnt
 
       - name: Write GCS service account key to file
         shell: bash
         env:
           APT_GCS_SERVICE_ACCT_KEY: ${{secrets.APT_GCS_SERVICE_ACCT_KEY}}
-        run: 'echo "$APT_GCS_SERVICE_ACCT_KEY" > ./gcloud/service-account.json'
+        run: 'echo "$APT_GCS_SERVICE_ACCT_KEY" > ${{ github.workspace }}/gcloud/service-account.json'
 
-      - name: Start Docker container
+      - name: Mount GCS to filesystem
         run: |
           docker create \
             --privileged \
@@ -82,7 +82,7 @@ jobs:
 
       - name: Debug - show contents
         run: |
-          ls ./mnt
+          ls -l ${{ github.workspace }}/mnt
 
       - name: Deploy to APT repository
         if: github.event_name == 'release' && github.event.action == 'published'
