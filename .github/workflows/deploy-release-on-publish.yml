@@ -82,7 +82,7 @@ jobs:
 
       - name: Debug - show contents
         run: |
-          ls -l ${{ github.workspace }}/mnt
+          docker exec gcsfuse-docker ls -l /mnt
 
       - name: Deploy to APT repository
         if: github.event_name == 'release' && github.event.action == 'published'
