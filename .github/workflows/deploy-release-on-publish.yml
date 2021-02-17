@@ -57,10 +57,14 @@ jobs:
         run: |
           twine upload --verbose *.whl
 
-      - name: Prepare for Docker container
-        run: |
-          mkdir -p ./gcloud ./mnt
-          echo "${{ secrets.APT_GCS_SERVICE_ACCT_KEY }}" > ./gcloud/service-account.json
+      - name: Create directories
+        run: mkdir -p ./gcloud ./mnt
+
+      - name: Write GCS service account key to file
+        shell: bash
+        env:
+          APT_GCS_SERVICE_ACCT_KEY: ${{secrets.APT_GCS_SERVICE_ACCT_KEY}}
+        run: 'echo "$APT_GCS_SERVICE_ACCT_KEY" > ./gcloud/service-account.json'
 
       - name: Start Docker container
         run: |
