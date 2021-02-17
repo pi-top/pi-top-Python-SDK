@@ -8,6 +8,7 @@ on:
 
 jobs:
   add-stable-tag:
+    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-20.04
     steps:
       - name: Get latest release's version
@@ -63,7 +64,7 @@ jobs:
 
       - name: Start Docker container
         run: |
-          docker create \
+          docker run \
             --name gcsfuse-docker \
             --volume ${{ github.workspace }}/gcloud:/etc/gcloud \
             --volume ${{ github.workspace }}/mnt:/mnt \
@@ -71,7 +72,6 @@ jobs:
             levkuznetsov/gcsfuse-docker \
             sleep inf
 
-          docker start gcsfuse-docker
           docker exec gcsfuse-docker gcsfuse --implicit-dirs -o allow_other ${{ secrets.APT_GCS_BUCKET_NAME }} /mnt
 
       - name: Deploy to APT repository
