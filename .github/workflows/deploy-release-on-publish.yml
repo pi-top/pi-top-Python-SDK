@@ -69,7 +69,8 @@ jobs:
 
       - name: Start Docker container
         run: |
-          docker --privileged create \
+          docker create \
+            --privileged \
             --name gcsfuse-docker \
             --volume ${{ github.workspace }}/gcloud:/etc/gcloud \
             --volume ${{ github.workspace }}/mnt:/mnt \
