@@ -75,7 +75,7 @@ jobs:
             --volume ${{ github.workspace }}/gcloud:/etc/gcloud \
             --volume ${{ github.workspace }}/mnt:/mnt \
             --tty \
-            pi-top/reprepro-gcs \
+            pitop/reprepro-gcs \
             sleep inf
           docker start gcsfuse-docker
           docker exec gcsfuse-docker gcsfuse --implicit-dirs -o allow_other ${{ secrets.APT_GCS_BUCKET_NAME }} /mnt
