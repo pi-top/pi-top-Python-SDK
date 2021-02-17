@@ -62,8 +62,8 @@ jobs:
         env:
           APT_GCS_SERVICE_ACCT_KEY: ${{secrets.APT_GCS_SERVICE_ACCT_KEY}}
         run: |
-          echo "$APT_GCS_SERVICE_ACCT_KEY" > ${{ github.workspace }}/gcloud/service-account.json
           mkdir -p ${{ github.workspace }}/gcloud
+          echo "$APT_GCS_SERVICE_ACCT_KEY" > ${{ github.workspace }}/gcloud/service-account.json
 
       - name: Mount GCS to filesystem
         run: |
