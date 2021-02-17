@@ -1,16 +1,13 @@
-name: Build ARM Packages on Commit to 'master'
+name: Build Packages on Commit to 'master'
 # TODO: convert to latest commit as pre-release GitHub Release
 
 on:
   push:
-    branches: [ "master", "ci-test-build-arm-*" ]
+    branches: [ "master", "ci-test-build-*" ]
 
 jobs:
   build-debian:
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        target_arch: ["armhf", "arm64"]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
@@ -48,7 +45,6 @@ jobs:
 
           docker_image: "pitop/deb-build:latest"
           distribution: "buster-backports"
-          target_architecture: ${{ matrix.target_arch }}
 
           lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
           # Package uses latest packaging syntax and Lintian opts/tags
@@ -63,11 +59,11 @@ jobs:
       - name: Upload Debian source package files
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb-src"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
           path: "${{ github.workspace }}/artifacts/src/"
 
       - name: Upload Debian binary packages
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "${{ github.workspace }}/artifacts/bin/"

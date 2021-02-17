@@ -1,2 +1,4 @@
 # Jenkins fails with 4.5.1, so need to ignore the Lintian info tag until this is resolved
 py-pitop-sdk source: out-of-date-standards-version 4.5.0 (released 2020-01-20) (current is 4.5.1)
+# python3-all-dev required to compile documentation. Ignore this warning for main packages
+py-pitop-sdk source: build-depends-on-python-dev-with-no-arch-any
