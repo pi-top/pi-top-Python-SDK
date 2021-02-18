@@ -1,8 +1,9 @@
 from gpiozero import Button as gpiozero_Button
 from .common import get_pin_for_port
+from pitop.system.pitop_component import PiTopComponent
 
 
-class Button(gpiozero_Button):
+class Button(PiTopComponent, gpiozero_Button):
     """
     Encapsulates the behaviour of a push-button.
 
@@ -14,7 +15,8 @@ class Button(gpiozero_Button):
     def __init__(self, port_name):
         self._pma_port = port_name
 
-        super(Button, self).__init__(get_pin_for_port(self._pma_port))
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
+        Button.__init__(self, get_pin_for_port(self._pma_port))
 
     def close(self):
         """

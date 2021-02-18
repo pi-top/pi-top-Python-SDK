@@ -1,4 +1,5 @@
 from .common import get_pin_for_port
+from pitop.system.pitop_component import PiTopComponent
 
 from pitopcommon.logger import PTLogger
 
@@ -11,7 +12,7 @@ from threading import Event, Lock
 #
 # Note: all private member variables are semi-private to follow upstream gpiozero convention
 # and to override inherited functions
-class UltrasonicSensor(SmoothedInputDevice):
+class UltrasonicSensor(PiTopComponent, SmoothedInputDevice):
     ECHO_LOCK = Lock()
 
     def __init__(
@@ -25,15 +26,16 @@ class UltrasonicSensor(SmoothedInputDevice):
 
         self._pma_port = port_name
 
-        super(UltrasonicSensor, self).__init__(
-            get_pin_for_port(self._pma_port),
-            pull_up=False,
-            queue_len=queue_len,
-            sample_wait=0.06,
-            partial=partial,
-            ignore=frozenset({None}),
-            pin_factory=NativeFactory(),
-        )
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
+        SmoothedInputDevice.__init__(self,
+                                     get_pin_for_port(self._pma_port),
+                                     pull_up=False,
+                                     queue_len=queue_len,
+                                     sample_wait=0.06,
+                                     partial=partial,
+                                     ignore=frozenset({None}),
+                                     pin_factory=NativeFactory(),
+                                     )
 
         try:
             if max_distance <= 0:

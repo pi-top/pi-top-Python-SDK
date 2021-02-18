@@ -1,4 +1,5 @@
 from .servo_controller import ServoController, ServoHardwareSpecs
+from pitop.system.pitop_component import PiTopComponent
 
 from pitopcommon.logger import PTLogger
 
@@ -12,7 +13,7 @@ class ServoMotorState:
     speed: float = 0.0
 
 
-class ServoMotor:
+class ServoMotor(PiTopComponent):
     """
     Represents a pi-top servo motor component.
 
@@ -45,6 +46,7 @@ class ServoMotor:
         # This bug is causing cleanup to be called every time, even if servo is not moving
         #
         # atexit.register(self.__cleanup)
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
 
     def __cleanup(self):
         if self.__has_set_angle and self.current_speed != 0.0:

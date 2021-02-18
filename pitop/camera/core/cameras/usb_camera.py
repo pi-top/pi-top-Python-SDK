@@ -9,6 +9,7 @@ class UsbCamera:
         self.index = index
 
         try:
+            self.__camera = None
             if resolution is not None:
                 self.__camera = V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
             else:

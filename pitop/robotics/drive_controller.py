@@ -5,26 +5,35 @@ from math import (
 )
 from time import sleep
 
-from pitop.pma import EncoderMotor
 from simple_pid import PID
 
+from pitop.pma import (
+    EncoderMotor,
+    ForwardDirection,
+)
+from pitop.system.pitop_component import PiTopComponent
 
-class DriveBase:
+
+class DriveController(PiTopComponent):
     """
     Abstraction of a vehicle with two wheels connected by an axis,
     and an optional support wheel or caster.
     """
 
-    def __init__(self, left_motor: EncoderMotor, right_motor: EncoderMotor):
+    def __init__(self, left_motor_port="M3", right_motor_port="M0"):
+        PiTopComponent.__init__(self, ports=[left_motor_port, right_motor_port], args=locals())
+
         # TODO: increase accuracy of wheel_base and wheel_diameter with empirical testing
         self._wheel_separation = 0.1725
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x_hold = 0
 
-        self.left_motor = left_motor
-        self.right_motor = right_motor
-        self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
+        self._left_motor = EncoderMotor(port_name=left_motor_port,
+                                        forward_direction=ForwardDirection.CLOCKWISE)
+        self._right_motor = EncoderMotor(port_name=right_motor_port,
+                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
+        self._max_motor_rpm = floor(min(self._left_motor.max_rpm, self._right_motor.max_rpm))
 
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
@@ -55,8 +64,8 @@ class DriveBase:
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
-        self.left_motor.set_target_rpm(target_rpm=rpm_left)
-        self.right_motor.set_target_rpm(target_rpm=rpm_right)
+        self._left_motor.set_target_rpm(target_rpm=rpm_left)
+        self._right_motor.set_target_rpm(target_rpm=rpm_right)
 
     def forward(self, speed_factor, hold=False):
         """
@@ -131,10 +140,10 @@ class DriveBase:
         angular_speed = angular_speed * angle / abs(angle)
         rpm_left, rpm_right = self.__calculate_motor_rpms(0, angular_speed, turn_radius=0)
         rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
-        self.left_motor.set_target_rpm(target_rpm=rpm_left,
-                                       total_rotations=rotations*rpm_left/abs(rpm_left))
-        self.right_motor.set_target_rpm(target_rpm=rpm_right,
-                                        total_rotations=rotations*rpm_right/abs(rpm_right))
+        self._left_motor.set_target_rpm(target_rpm=rpm_left,
+                                        total_rotations=rotations*rpm_left/abs(rpm_left))
+        self._right_motor.set_target_rpm(target_rpm=rpm_right,
+                                         total_rotations=rotations*rpm_right/abs(rpm_right))
         sleep(time_to_take)
 
     def stop(self):

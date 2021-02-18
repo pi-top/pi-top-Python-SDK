@@ -1,8 +1,9 @@
 from gpiozero import LED as gpiozero_LED
 from .common import get_pin_for_port
+from pitop.system.pitop_component import PiTopComponent
 
 
-class LED(gpiozero_LED):
+class LED(PiTopComponent, gpiozero_LED):
     """
     Encapsulates the behaviour of an LED.
 
@@ -14,7 +15,8 @@ class LED(gpiozero_LED):
     def __init__(self, port_name):
         self._pma_port = port_name
 
-        super(LED, self).__init__(get_pin_for_port(self._pma_port))
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
+        LED.__init__(self, get_pin_for_port(self._pma_port))
 
     def close(self):
         """

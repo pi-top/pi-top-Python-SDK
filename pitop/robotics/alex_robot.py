@@ -24,6 +24,7 @@ class AlexRobot(SupportsDriving, SupportsPanTilt, SupportsCamera, PiTop):
     :param str servo_pan_port: Port where the servo motor used to pan the camera is connected.
     :param str servo_tilt_port: Port where the servo motor used to tilt the camera is connected.
     """
+
     def __init__(self,
                  camera_device_index=0,
                  camera_resolution=(640, 480),
@@ -37,4 +38,4 @@ class AlexRobot(SupportsDriving, SupportsPanTilt, SupportsCamera, PiTop):
         SupportsCamera.__init__(self, camera_device_index, camera_resolution)
         SupportsDriving.__init__(self, motor_left_port, motor_right_port)
         SupportsPanTilt.__init__(self, servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
-        self.ultrasonic_sensor = self.get_or_create_pma_component(UltrasonicSensor, ultrasonic_sensor_port)
+        self.add_component(UltrasonicSensor(ultrasonic_sensor_port), name="ultrasonic_sensor")
