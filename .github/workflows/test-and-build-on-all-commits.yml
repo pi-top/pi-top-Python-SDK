@@ -1,7 +1,11 @@
 name: Test and Build Packages on All Commits
 # TODO: provide latest commit to 'master' as pre-release GitHub Release
 
-on: push
+# Don't run on branches intended for CI modifications
+on:
+  push:
+    branches-ignore:
+      - "ci-test-*"
 
 jobs:
   test-python-linting:
