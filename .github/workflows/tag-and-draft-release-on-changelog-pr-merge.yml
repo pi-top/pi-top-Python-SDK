@@ -154,11 +154,17 @@ jobs:
           asset_name: ${{ steps.get_py_whl_filename.outputs.filename }}
           asset_content_type: text/plain
 
-      - name: Download Debian artifacts
+      - name: Download Debian binary artifacts
         uses: actions/download-artifact@v2
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
             path: "./deb/"
+
+      - name: Download Debian source artifacts
+        uses: actions/download-artifact@v2
+        with:
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
+            path: "./deb-src/"
 
       - name: Get main package filename
         id: get_deb_main_pkg_filename
@@ -193,3 +199,67 @@ jobs:
           asset_path: ./deb/${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
           asset_name: ${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
           asset_content_type: application/vnd.debian.binary-package
+
+      - name: Get dsc filename
+        id: get_dsc_filename
+        run: |
+          cd ./deb-src
+          DSC_FILENAME=$(ls | grep "^py-pitop-sdk_.*.dsc$")
+          echo "::set-output name=filename::$DSC_FILENAME"
+
+      - name: Upload dsc filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb/${{ steps.get_dsc_filename.outputs.filename }}
+          asset_name: ${{ steps.get_dsc_filename.outputs.filename }}
+
+      - name: Get buildinfo filename
+        id: get_buildinfo_filename
+        run: |
+          cd ./deb-src
+          BUILDINFO_FILENAME=$(ls | grep "^py-pitop-sdk_.*.buildinfo$")
+          echo "::set-output name=filename::$BUILDINFO_FILENAME"
+
+      - name: Upload buildinfo filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb/${{ steps.get_buildinfo_filename.outputs.filename }}
+          asset_name: ${{ steps.get_buildinfo_filename.outputs.filename }}
+
+      - name: Get changes filename
+        id: get_changes_filename
+        run: |
+          cd ./deb-src
+          CHANGES_FILENAME=$(ls | grep "^py-pitop-sdk_.*.changes$")
+          echo "::set-output name=filename::$CHANGES_FILENAME"
+
+      - name: Upload changes filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb/${{ steps.get_changes_filename.outputs.filename }}
+          asset_name: ${{ steps.get_changes_filename.outputs.filename }}
+
+      - name: Get source filename
+        id: get_source_filename
+        run: |
+          cd ./deb-src
+          SOURCE_FILENAME=$(ls | grep "^py-pitop-sdk_.*.tar.xz$")
+          echo "::set-output name=filename::$SOURCE_FILENAME"
+
+      - name: Upload source filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb/${{ steps.get_source_filename.outputs.filename }}
+          asset_name: ${{ steps.get_source_filename.outputs.filename }}
