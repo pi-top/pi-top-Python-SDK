@@ -18,6 +18,7 @@ class PanTiltController(PiTopComponent):
         PiTopComponent.__init__(self, ports=[servo_pan_port, servo_tilt_port], args=locals())
         self.pan_servo = ServoMotor(servo_pan_port)
         self.tilt_servo = ServoMotor(servo_tilt_port)
+        self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
 
     def calibrate(self, save=True, reset=False):
         """
