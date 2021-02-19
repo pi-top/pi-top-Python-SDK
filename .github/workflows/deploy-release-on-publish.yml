@@ -97,6 +97,7 @@ jobs:
           docker exec reprepro-gcs /import-gpg-keys.sh
 
       - name: Deploy to APT repository
+        # TODO: re-enable before merging!
         # if: github.event_name == 'release' && github.event.action == 'published'
         run: |
           docker exec reprepro-gcs /include-changes-from-incoming.sh
