@@ -50,9 +50,9 @@ class ManagesPMAComponents(ComponentManager):
 
 
 class SupportsCamera():
-    def __init__(self, index, resolution):
+    def __init__(self, camera_device_index, camera_resolution, **kwargs):
         try:
-            self._camera = Camera(index, resolution)
+            self._camera = Camera(camera_device_index, camera_resolution)
         except Exception:
             self._camera = None
             print("No camera")
@@ -65,7 +65,7 @@ class SupportsCamera():
 
 
 class SupportsPanTilt(PanTiltController):
-    def __init__(self, servo_pan_port, servo_tilt_port):
+    def __init__(self, servo_pan_port, servo_tilt_port, **kwargs):
         try:
             PanTiltController.__init__(self, servo_pan_port, servo_tilt_port)
             if hasattr(self, "add_component"):
@@ -76,9 +76,9 @@ class SupportsPanTilt(PanTiltController):
 
 
 class SupportsDriving(DriveController):
-    def __init__(self, left_motor_port, right_motor_port):
+    def __init__(self, motor_left_port, motor_right_port, **kwargs):
         try:
-            DriveController.__init__(self, left_motor_port, right_motor_port)
+            DriveController.__init__(self, motor_left_port, motor_right_port)
             if hasattr(self, "add_component"):
                 self.add_component(self, "drive_controller")
         except Exception:

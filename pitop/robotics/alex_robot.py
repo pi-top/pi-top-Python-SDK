@@ -34,8 +34,11 @@ class AlexRobot(SupportsDriving, SupportsPanTilt, SupportsCamera, PiTop):
                  servo_pan_port="S0",
                  servo_tilt_port="S3",
                  ):
+        kwargs = locals()
+        kwargs.pop("self")
+
         PiTop.__init__(self)
-        SupportsCamera.__init__(self, camera_device_index, camera_resolution)
-        SupportsDriving.__init__(self, motor_left_port, motor_right_port)
-        SupportsPanTilt.__init__(self, servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
+        SupportsCamera.__init__(self, **kwargs)
+        SupportsDriving.__init__(self, **kwargs)
+        SupportsPanTilt.__init__(self, **kwargs)
         self.add_component(UltrasonicSensor(ultrasonic_sensor_port), name="ultrasonic_sensor")
