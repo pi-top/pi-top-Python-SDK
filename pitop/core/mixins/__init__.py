@@ -1,5 +1,6 @@
 from pitop.battery import Battery
 from pitop.camera import Camera
+from pitop.core.exceptions import UnavailableComponent
 from pitop.miniscreen import Miniscreen
 from pitop.system import device_type
 from pitop.system.peripherals import connected_plate
@@ -21,13 +22,13 @@ class SupportsMiniscreen():
     def miniscreen(self):
         if self._miniscreen:
             return self._miniscreen
-        raise Exception("No miniscreen")
+        raise UnavailableComponent("No miniscreen")
 
     @property
     def oled(self):
         if self._miniscreen:
             return self._miniscreen
-        raise Exception("No miniscreen")
+        raise UnavailableComponent("No miniscreen")
 
 
 class SupportsBattery():
@@ -40,7 +41,7 @@ class SupportsBattery():
     def battery(self):
         if self._battery:
             return self._battery
-        raise Exception("No battery")
+        raise UnavailableComponent("No battery")
 
 
 class ManagesPMAComponents(ComponentManager):
@@ -61,12 +62,14 @@ class SupportsCamera():
     def camera(self):
         if self._camera:
             return self._camera
-        raise Exception("Camera not available")
+        raise UnavailableComponent("Camera not available")
 
 
 class SupportsPanTilt(PanTiltController):
     def __init__(self, servo_pan_port, servo_tilt_port, **kwargs):
         try:
+            if connected_plate() != FirmwareDeviceID.pt4_expansion_plate:
+                raise Exception
             PanTiltController.__init__(self, servo_pan_port, servo_tilt_port)
             if hasattr(self, "add_component"):
                 self.add_component(self, "pan_tilt_controller")
@@ -78,6 +81,8 @@ class SupportsPanTilt(PanTiltController):
 class SupportsDriving(DriveController):
     def __init__(self, motor_left_port, motor_right_port, **kwargs):
         try:
+            if connected_plate() != FirmwareDeviceID.pt4_expansion_plate:
+                raise Exception
             DriveController.__init__(self, motor_left_port, motor_right_port)
             if hasattr(self, "add_component"):
                 self.add_component(self, "drive_controller")

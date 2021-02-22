@@ -6,6 +6,7 @@ from os.path import (
 )
 from pathlib import Path
 
+from pitop.core.exceptions import UninitializedComponent
 from pitop.pma import ServoMotor
 from pitop.system.pitop_component import PiTopComponent
 
@@ -13,13 +14,35 @@ from pitop.system.pitop_component import PiTopComponent
 class PanTiltController(PiTopComponent):
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
     CALIBRATION_FILE_NAME = "alex.conf"
+    _initialized = False
+    _pan_servo = None
+    _tilt_servo = None
 
     def __init__(self, servo_pan_port="S0", servo_tilt_port="S3"):
         PiTopComponent.__init__(self, ports=[servo_pan_port, servo_tilt_port], args=locals())
-        self.pan_servo = ServoMotor(servo_pan_port)
-        self.tilt_servo = ServoMotor(servo_tilt_port)
+        self._pan_servo = ServoMotor(servo_pan_port)
+        self._tilt_servo = ServoMotor(servo_tilt_port)
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
+        self._initialized = True
 
+    def is_initialized(fcn):
+        def check_initialization(self, *args, **kwargs):
+            if not self._initialized:
+                raise UninitializedComponent("PanTiltController not initialized")
+            return fcn(self, *args, **kwargs)
+        return check_initialization
+
+    @property
+    @is_initialized
+    def pan_servo(self):
+        return self._pan_servo
+
+    @property
+    @is_initialized
+    def tilt_servo(self):
+        return self._tilt_servo
+
+    @is_initialized
     def calibrate(self, save=True, reset=False):
         """
         Calibrates the robot to work in optimal conditions.
