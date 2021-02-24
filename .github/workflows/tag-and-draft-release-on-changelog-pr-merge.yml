@@ -8,11 +8,19 @@ on:
   push:
     branches: [ci-test-fix-release]
 
-# env:
-  # CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
-
 jobs:
+  get-ci-changelog-branch-name:
+    runs-on: ubuntu-20.04
+    outputs:
+      ci_changelog_bump_branch: ${{ steps.secret.outputs.ci_changelog_bump_branch }}
+    steps:
+      - name: Assign CI changelog bump branch to output variable - required for conditional check
+        id: secret
+        run: echo '::set-output name=ci_changelog_bump_branch::${{secrets.CI_CHANGELOG_BUMP_BRANCH}}'
+
   add-version-tag:
+    needs: [ get-ci-changelog-branch-name ]
+    if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -20,14 +28,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Assign variable
-        id: secret
-        run: echo '::set-output name=ci_changelog_bump_branch::${{secrets.CI_CHANGELOG_BUMP_BRANCH}}'
-
       - name: Create and push Debian version tag
-        # if: github.head_ref == env.CI_CHANGELOG_BUMP_BRANCH && github.event.pull_request.merged == true
-        if: steps.secret.outputs.ci_changelog_bump_branch == 'ci-update-changelog-next-release'
-        # if: github.head_ref == steps.secret.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
           git tag "v${new_version}"
