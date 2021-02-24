@@ -8,6 +8,9 @@ on:
   push:
     branches: [ci-test-fix-release]
 
+env:
+  CI_CHANGELOG_BUMP_BRANCH: ${{secrets.CI_CHANGELOG_BUMP_BRANCH}}
+
 jobs:
   get-ci-changelog-branch-name:
     runs-on: ubuntu-20.04
@@ -16,7 +19,7 @@ jobs:
     steps:
       - name: Assign CI changelog bump branch to output variable - required for conditional check
         id: secret
-        run: echo '::set-output name=ci_changelog_bump_branch::${{secrets.CI_CHANGELOG_BUMP_BRANCH}}'
+        run: echo '::set-output name=ci_changelog_bump_branch::${{env.CI_CHANGELOG_BUMP_BRANCH}}'
 
   add-version-tag:
     needs: [ get-ci-changelog-branch-name ]
