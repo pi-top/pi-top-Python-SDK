@@ -22,7 +22,7 @@ jobs:
           echo '::set-output name=should_run::false'
 
   add-version-tag:
-    needs: [ get-ci-changelog-branch-name ]
+    needs: [ get-should-run ]
     if: needs.get-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
