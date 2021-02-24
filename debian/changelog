@@ -1,37 +1,12 @@
-py-pitop-sdk (0.16.6) buster; urgency=medium
+py-pitop-sdk (0.17.0) buster; urgency=medium
 
-  * Update AlexRobot param type in description
-  * Refactor PID handling in drive controller
-  * Use "Architecture: all" to build deb package
-  * Improvements to CI workflow
+  * Architecture: all
+  * Added 'pi-top support health_check' to replace 'pt-diagnostics'
+  * ReadTheDocs URL in CLI now links to current API version
+  * Added 2-player pong miniscreen example
+  * Various minor cosmetic/internal improvements
 
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 15:58:54 +0000
-
-py-pitop-sdk (0.16.5) buster; urgency=medium
-
-  * Finalise MVP CI 3
-
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 19:55:18 +0000
-
-py-pitop-sdk (0.16.4) buster; urgency=medium
-
-  * Finalise MVP CI 2
-
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 16:21:26 +0000
-
-py-pitop-sdk (0.16.3) buster; urgency=medium
-
-  * CI: Test package build workflow with new version
-  * Link to current docs' current API version on ReadTheDocs (#214)
-
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 15:56:18 +0000
-
-py-pitop-sdk (0.16.2) buster; urgency=medium
-
-  [ Mike Roberts ]
-  * Add 2-player pong miniscreen example
-
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 14:00:34 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:25:13 +0000
 
 py-pitop-sdk (0.16.1) buster; urgency=medium
 
