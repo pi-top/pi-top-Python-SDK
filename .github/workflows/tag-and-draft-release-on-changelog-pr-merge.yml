@@ -235,6 +235,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./deb/${{ steps.get_dsc_filename.outputs.filename }}
           asset_name: ${{ steps.get_dsc_filename.outputs.filename }}
+          asset_content_type: text/plain
 
       - name: Get buildinfo filename
         id: get_buildinfo_filename
@@ -251,6 +252,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./deb/${{ steps.get_buildinfo_filename.outputs.filename }}
           asset_name: ${{ steps.get_buildinfo_filename.outputs.filename }}
+          asset_content_type: text/plain
 
       - name: Get changes filename
         id: get_changes_filename
@@ -267,6 +269,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./deb/${{ steps.get_changes_filename.outputs.filename }}
           asset_name: ${{ steps.get_changes_filename.outputs.filename }}
+          asset_content_type: text/plain
 
       - name: Get source filename
         id: get_source_filename
@@ -283,3 +286,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./deb/${{ steps.get_source_filename.outputs.filename }}
           asset_name: ${{ steps.get_source_filename.outputs.filename }}
+          asset_content_type: text/plain
