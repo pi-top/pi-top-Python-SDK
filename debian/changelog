@@ -1,3 +1,11 @@
+py-pitop-sdk (0.17.1) buster; urgency=medium
+
+  [ Mike Roberts ]
+  * Fix asset path for uploading Debian source files in releases
+  * Force tag when drafting release
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:37:33 +0000
+
 py-pitop-sdk (0.17.0) buster; urgency=medium
 
   * Architecture: all
