@@ -8,8 +8,8 @@ on:
   push:
     branches: [ci-test-fix-release]
 
-env:
-  CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+# env:
+#   CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
 
 jobs:
   add-version-tag:
@@ -21,8 +21,8 @@ jobs:
           fetch-depth: 0
 
       - name: Create and push Debian version tag
-        # if: ${{ github.head_ref }} == ${{ env.CI_CHANGELOG_BUMP_BRANCH }} && ${{ github.event.pull_request.merged }} == true
-        if: ${{ env.CI_CHANGELOG_BUMP_BRANCH }} == "ci-update-changelog-next-release"
+        # if: github.head_ref == env.CI_CHANGELOG_BUMP_BRANCH && github.event.pull_request.merged == true
+        if: secrets.CI_CHANGELOG_BUMP_BRANCH == ci-update-changelog-next-release
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
           git tag "v${new_version}"
