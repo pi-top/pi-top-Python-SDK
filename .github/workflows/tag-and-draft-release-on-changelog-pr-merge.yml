@@ -233,7 +233,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb/${{ steps.get_dsc_filename.outputs.filename }}
+          asset_path: ./deb-src/${{ steps.get_dsc_filename.outputs.filename }}
           asset_name: ${{ steps.get_dsc_filename.outputs.filename }}
           asset_content_type: text/plain
 
@@ -250,7 +250,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb/${{ steps.get_buildinfo_filename.outputs.filename }}
+          asset_path: ./deb-src/${{ steps.get_buildinfo_filename.outputs.filename }}
           asset_name: ${{ steps.get_buildinfo_filename.outputs.filename }}
           asset_content_type: text/plain
 
@@ -267,7 +267,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb/${{ steps.get_changes_filename.outputs.filename }}
+          asset_path: ./deb-src/${{ steps.get_changes_filename.outputs.filename }}
           asset_name: ${{ steps.get_changes_filename.outputs.filename }}
           asset_content_type: text/plain
 
@@ -284,6 +284,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb/${{ steps.get_source_filename.outputs.filename }}
+          asset_path: ./deb-src/${{ steps.get_source_filename.outputs.filename }}
           asset_name: ${{ steps.get_source_filename.outputs.filename }}
           asset_content_type: text/plain
