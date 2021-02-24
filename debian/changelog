@@ -1,3 +1,12 @@
+py-pitop-sdk (0.16.6) buster; urgency=medium
+
+  * Update AlexRobot param type in description
+  * Refactor PID handling in drive controller
+  * Use "Architecture: all" to build deb package
+  * Improvements to CI workflow
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 18 Feb 2021 18:02:36 +0000
+
 py-pitop-sdk (0.16.5) buster; urgency=medium
 
   * Finalise MVP CI 3
