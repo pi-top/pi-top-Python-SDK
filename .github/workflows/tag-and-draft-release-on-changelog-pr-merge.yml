@@ -26,7 +26,7 @@ jobs:
 
       - name: Create and push Debian version tag
         # if: github.head_ref == env.CI_CHANGELOG_BUMP_BRANCH && github.event.pull_request.merged == true
-        if: steps.secret.outputs.ci_changelog_bump_branch == ci-update-changelog-next-release
+        if: steps.secret.outputs.ci_changelog_bump_branch == 'ci-update-changelog-next-release'
         # if: github.head_ref == steps.secret.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
