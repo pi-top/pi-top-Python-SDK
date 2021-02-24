@@ -1,5 +1,5 @@
 py-pitop-sdk (0.16.6) buster; urgency=medium
-  
+
   * Update AlexRobot param type in description
   * Refactor PID handling in drive controller
   * Use "Architecture: all" to build deb package
