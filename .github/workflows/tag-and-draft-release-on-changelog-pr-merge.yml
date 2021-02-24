@@ -19,7 +19,7 @@ jobs:
         # if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.should_run && github.event.pull_request.merged == true
         id: secret
         run: |
-          echo '::set-output name=should_run::false'
+          echo '::set-output name=should_run::true'
 
   add-version-tag:
     needs: [ get-should-run ]
