@@ -3,10 +3,6 @@ name: Create Draft GitHub Release And Tag On Merging Changelog PR
 on:
   pull_request:
     types: [closed]
-  # This is temporary to ensure that the commit _after_ this was meant to run will trigger it
-  # This should be removed immediately after the pipeline is fixed
-  push:
-    branches: [ci-test-fix-release]
 
 jobs:
   check-should-run:
