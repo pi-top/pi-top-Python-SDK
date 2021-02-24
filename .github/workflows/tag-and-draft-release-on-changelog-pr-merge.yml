@@ -9,7 +9,7 @@ on:
     branches: [ci-test-fix-release]
 
 # env:
-#   CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+  # CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
 
 jobs:
   add-version-tag:
@@ -20,9 +20,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Assign variable
+        id: secret
+        run: echo '::set-output name=ci_changelog_bump_branch::${{secrets.CI_CHANGELOG_BUMP_BRANCH}}'
+
+      - name: Encode the project the project
+
+
       - name: Create and push Debian version tag
         # if: github.head_ref == env.CI_CHANGELOG_BUMP_BRANCH && github.event.pull_request.merged == true
-        if: secrets.CI_CHANGELOG_BUMP_BRANCH == ci-update-changelog-next-release
+        if: steps.secret.outputs.ci_changelog_bump_branch == ci-update-changelog-next-release
+        # if: github.head_ref == steps.secret.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
           git tag "v${new_version}"
