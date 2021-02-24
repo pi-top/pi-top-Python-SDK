@@ -38,7 +38,7 @@ jobs:
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
           git tag --force "v${new_version}"
-          git push --tags
+          git push --force --tags
 
   build-python:
     needs: [ add-version-tag ]
