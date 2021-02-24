@@ -1,14 +1,3 @@
-py-pitop-sdk (0.17.1) buster; urgency=medium
-
-  [ Mike Roberts ]
-  * Fix asset path for uploading Debian source files in releases
-  * Force tag when drafting release
-
-  [ github-actions[bot] ]
-  * [CI] Update debian/changelog for next release (#249)
-
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:39:30 +0000
-
 py-pitop-sdk (0.17.0) buster; urgency=medium
 
   * Architecture: all
@@ -17,7 +6,7 @@ py-pitop-sdk (0.17.0) buster; urgency=medium
   * Added 2-player pong miniscreen example
   * Various minor cosmetic/internal improvements
 
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:37:33 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:39:30 +0000
 
 py-pitop-sdk (0.16.1) buster; urgency=medium
 
