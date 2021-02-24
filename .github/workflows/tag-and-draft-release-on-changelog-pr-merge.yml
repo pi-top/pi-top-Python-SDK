@@ -3,10 +3,18 @@ name: Create Draft GitHub Release And Tag On Merging Changelog PR
 on:
   pull_request:
     types: [closed]
+  # This is temporary to ensure that the commit _after_ this was meant to run will trigger it
+  # This should be removed immediately after the pipeline is fixed
+  push:
+    branches: [master]
+
+env:
+  CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
 
 jobs:
   add-version-tag:
-    if: ${{ github.head_ref }} == ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }} && ${{ github.event.pull_request.merged }} == true
+    # if: ${{ github.head_ref }} == ${{ env.CI_CHANGELOG_BUMP_BRANCH }} && ${{ github.event.pull_request.merged }} == true
+    if: ${{ env.CI_CHANGELOG_BUMP_BRANCH }} == "ci-update-changelog-next-release"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
