@@ -1,37 +1,3 @@
-py-pitop-sdk (0.16.7) buster; urgency=medium
-
-  [ Mike Roberts ]
-  * Clean up CI
-  * Use env to manage variables shared between workflows
-  * Don't use GitHub Action for tagging version
-
-  [ duwudi ]
-  * Update AlexRobot param type in description
-  * Refactor PID handling in drive controller (#237)
-
-  [ Mike Roberts ]
-  * env.changelog_branch --> env.CHANGELOG_BRANCH
-  * Use token for CI PR to trigger further workflow runs
-  * Use secret for sharing branch name between jobs (#238)
-  * Fix links in changelog PR body text
-  * Fix links in changelog PR body text
-  * Use "Architecture: all" (#239)
-  * Upload artifacts when building package on all commits
-  * Add Debian source package files to releases (#241)
-  * Only add stable tag if a release was actually published
-  * Don't build on branches intended for CI modifications
-
-  [ github-actions[bot] ]
-  * [CI] Update debian/changelog for next release (#235)
-  * Fix release pipeline condition unable to use secret
-  * Fix release pipeline (#246)
-
-  [ github-actions[bot] ]
-  * [CI] Update debian/changelog for next release (#245)
-  * Fix release pipeline
-
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 15:58:54 +0000
-
 py-pitop-sdk (0.16.6) buster; urgency=medium
 
   * Update AlexRobot param type in description
@@ -39,7 +5,7 @@ py-pitop-sdk (0.16.6) buster; urgency=medium
   * Use "Architecture: all" to build deb package
   * Improvements to CI workflow
 
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 15:51:23 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 15:58:54 +0000
 
 py-pitop-sdk (0.16.5) buster; urgency=medium
 
