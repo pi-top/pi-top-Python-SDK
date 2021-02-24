@@ -9,20 +9,28 @@ on:
     branches: [ci-test-fix-release]
 
 jobs:
-  get-should-run:
+  check-should-run:
     runs-on: ubuntu-20.04
     outputs:
-      should_run: ${{ steps.secret.outputs.should_run }}
+      should_run: ${{ steps.check_should_run.outputs.should_run }}
     steps:
 
-      - name: Set should run variable
-        # if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.should_run && github.event.pull_request.merged == true
-        id: secret
+      - name: Set 'should run' variable
+        id: check_should_run
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
         run: |
-          echo '::set-output name=should_run::true'
+          if [[ "${HEAD_REF}" == "${CI_CHANGELOG_BUMP_BRANCH}" ]] && [[ "${PR_MERGED}" == "true" ]];
+            conditions_met="true"
+          else
+            conditions_met="false"
+          fi
+          echo "::set-output name=should_run::${conditions_met}"
 
   add-version-tag:
-    needs: [ get-should-run ]
+    needs: [ check-should-run ]
     if: needs.get-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
