@@ -8,23 +8,22 @@ on:
   push:
     branches: [ci-test-fix-release]
 
-env:
-  CI_CHANGELOG_BUMP_BRANCH: ${{secrets.CI_CHANGELOG_BUMP_BRANCH}}
-
 jobs:
-  get-ci-changelog-branch-name:
+  get-should-run:
     runs-on: ubuntu-20.04
     outputs:
-      ci_changelog_bump_branch: ${{ steps.secret.outputs.ci_changelog_bump_branch }}
+      should_run: ${{ steps.secret.outputs.should_run }}
     steps:
-      - name: Assign CI changelog bump branch to output variable - required for conditional check
+
+      - name: Set should run variable
+        # if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.should_run && github.event.pull_request.merged == true
         id: secret
-        run: echo '::set-output name=ci_changelog_bump_branch::${{env.CI_CHANGELOG_BUMP_BRANCH}}'
+        run: |
+          echo '::set-output name=should_run::false'
 
   add-version-tag:
     needs: [ get-ci-changelog-branch-name ]
-    if: github.head_ref != needs.get-ci-changelog-branch-name.outputs.ci_changelog_bump_branch
-    # if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
+    if: needs.get-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
