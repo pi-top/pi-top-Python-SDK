@@ -14,11 +14,10 @@ jobs:
       - name: Set 'should run' variable
         id: check_should_run
         env:
-          HEAD_REF: ${{ github.head_ref }}
           CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
           PR_MERGED: ${{ github.event.pull_request.merged }}
         run: |
-          if [[ "${HEAD_REF}" == "${CI_CHANGELOG_BUMP_BRANCH}" ]] && [[ "${PR_MERGED}" == "true" ]]; then
+          if [[ "${GITHUB_HEAD_REF}" == "${CI_CHANGELOG_BUMP_BRANCH}" ]] && [[ "${PR_MERGED}" == "true" ]]; then
             conditions_met="true"
           else
             conditions_met="false"
@@ -27,7 +26,7 @@ jobs:
 
   add-version-tag:
     needs: [ check-should-run ]
-    if: needs.get-should-run.outputs.should_run == 'true'
+    if: needs.check-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
