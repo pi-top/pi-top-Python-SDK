@@ -6,15 +6,13 @@ on:
   # This is temporary to ensure that the commit _after_ this was meant to run will trigger it
   # This should be removed immediately after the pipeline is fixed
   push:
-    branches: [master]
+    branches: [ci-test-fix-release]
 
 env:
   CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
 
 jobs:
   add-version-tag:
-    # if: ${{ github.head_ref }} == ${{ env.CI_CHANGELOG_BUMP_BRANCH }} && ${{ github.event.pull_request.merged }} == true
-    if: ${{ env.CI_CHANGELOG_BUMP_BRANCH }} == "ci-update-changelog-next-release"
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -23,6 +21,8 @@ jobs:
           fetch-depth: 0
 
       - name: Create and push Debian version tag
+        # if: ${{ github.head_ref }} == ${{ env.CI_CHANGELOG_BUMP_BRANCH }} && ${{ github.event.pull_request.merged }} == true
+        if: ${{ env.CI_CHANGELOG_BUMP_BRANCH }} == "ci-update-changelog-next-release"
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
           git tag "v${new_version}"
