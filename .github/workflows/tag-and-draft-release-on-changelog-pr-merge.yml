@@ -23,7 +23,8 @@ jobs:
 
   add-version-tag:
     needs: [ get-ci-changelog-branch-name ]
-    if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
+    if: github.head_ref != needs.get-ci-changelog-branch-name.outputs.ci_changelog_bump_branch
+    # if: github.head_ref == needs.get-ci-changelog-branch-name.outputs.ci_changelog_bump_branch && github.event.pull_request.merged == true
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
