@@ -1,3 +1,11 @@
+py-pitop-sdk (0.16.7) buster; urgency=medium
+
+  [ Mike Roberts ]
+  * 'asset_content_type: text/plain' where missing, when uploading assets to Release
+  * Remove Jenkinsfile from source tar
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:25:13 +0000
+
 py-pitop-sdk (0.16.6) buster; urgency=medium
 
   * Update AlexRobot param type in description
