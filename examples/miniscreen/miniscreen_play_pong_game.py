@@ -1,4 +1,4 @@
-from pitop import Miniscreen
+from pitop.miniscreen import Miniscreen
 from PIL import Image, ImageDraw, ImageFont
 from random import randrange
 from time import sleep
