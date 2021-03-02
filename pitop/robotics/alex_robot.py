@@ -33,7 +33,7 @@ class AlexRobot(Pitop):
     :param str motor_left_port: Port where the left wheel motor is connected.
     :param str motor_right_port: Port where the right wheel motor is connected.
     :param str servo_pan_port: Port where the servo motor used to pan the camera is connected.
-    :param int servo_tilt_port: Port where the servo motor used to tilt the camera is connected.
+    :param str servo_tilt_port: Port where the servo motor used to tilt the camera is connected.
 
     """
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"

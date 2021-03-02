@@ -7,13 +7,37 @@ on:
     types: [published]
 
 jobs:
-  publish-release:
+  add-stable-tag:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Get latest release's version
+        id: release_version
+        run: |
+          sudo apt-get install -y curl jq wget
+
+          LATEST_VERSION=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".target_commitish")
+          echo "::set-output name=latest_version_commit::$LATEST_VERSION"
+
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
+
+      - name: Tag release commit as 'stable' for ReadTheDocs
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "stable"
+          commit_sha: ${{ steps.release_version.outputs.latest_version_commit }}
+          force_push_tag: true
+
+  deploy-release:
     runs-on: ubuntu-20.04
     steps:
       - name: Download latest release's assets
         run: |
           sudo apt-get install -y curl jq wget
-          curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget
+          curl -s "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/latest" | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -25,7 +49,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install twine
 
-      - name: Publish to TestPyPI
+      - name: Deploy to TestPyPI
         if: github.event_name != 'release' || github.event.action != 'published'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
@@ -33,7 +57,7 @@ jobs:
         run: |
           twine upload --repository testpypi --verbose *.whl
 
-      - name: Publish to PyPI
+      - name: Deploy to PyPI
         if: github.event_name == 'release' && github.event.action == 'published'
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
