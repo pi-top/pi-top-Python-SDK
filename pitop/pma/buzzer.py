@@ -1,8 +1,9 @@
 from gpiozero import Buzzer as gpiozero_Buzzer
 from .common import get_pin_for_port
+from pitop.system.pitop_component import PiTopComponent
 
 
-class Buzzer(gpiozero_Buzzer):
+class Buzzer(PiTopComponent, gpiozero_Buzzer):
     """
     Encapsulates the behaviour of a simple buzzer that can be turned on and off.
 
@@ -12,7 +13,8 @@ class Buzzer(gpiozero_Buzzer):
     def __init__(self, port_name):
         self._pma_port = port_name
 
-        super(Buzzer, self).__init__(get_pin_for_port(self._pma_port))
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
+        Buzzer.__init__(self, get_pin_for_port(self._pma_port))
 
     def close(self):
         """

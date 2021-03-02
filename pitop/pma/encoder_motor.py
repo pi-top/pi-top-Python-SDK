@@ -1,12 +1,13 @@
 from .parameters import BrakingType, ForwardDirection, Direction
 from .encoder_motor_controller import EncoderMotorController
+from pitop.system.pitop_component import PiTopComponent
 
 import time
 from math import floor, pi
 import atexit
 
 
-class EncoderMotor:
+class EncoderMotor(PiTopComponent):
     """
     Represents a pi-top motor encoder component.
 
@@ -62,6 +63,7 @@ class EncoderMotor:
         self.__previous_reading_odometer = 0
 
         atexit.register(self.stop)
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
 
     @property
     def forward_direction(self):

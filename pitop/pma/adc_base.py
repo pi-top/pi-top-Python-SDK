@@ -1,9 +1,10 @@
 import time
 from .plate_interface import PlateInterface
 from .common import get_pin_for_port
+from pitop.system.pitop_component import PiTopComponent
 
 
-class ADCBase:
+class ADCBase(PiTopComponent):
     """
     Encapsulates the behaviour of an Analog-to-Digital Converter (ADC).
 
@@ -23,6 +24,7 @@ class ADCBase:
         self.is_current = False
         self.channel = get_pin_for_port(self._pma_port, pin_number)
         self.__adc_device = PlateInterface().get_device_mcu()
+        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
 
     def read(self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False):
         """

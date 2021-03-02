@@ -5,6 +5,7 @@ from .core import (
     CameraTypes)
 from .core.capture_actions import CaptureActions
 from pitop.core import ImageFunctions
+from pitop.system.pitop_component import PiTopComponent
 
 from pitop.pma.common import type_check
 
@@ -12,7 +13,7 @@ from threading import Thread, Event
 from inspect import signature
 
 
-class Camera:
+class Camera(PiTopComponent):
     """
     Provides a variety of high-level functionality for using the PMA USB Camera, including capturing
     images and video, and processing image data from the camera
@@ -31,6 +32,7 @@ class Camera:
                  path_to_images="",
                  format='PIL'
                  ):
+        PiTopComponent.__init__(self, ports=[f"Camera{index}"], args=locals())
 
         # Initialise private variables
         self._resolution = resolution
