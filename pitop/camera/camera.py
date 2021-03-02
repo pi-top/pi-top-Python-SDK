@@ -48,7 +48,7 @@ class Camera(Stateful, Recreatable):
 
         # Internal
         self._index = index
-        self._camera_type = camera_type
+        self._camera_type = CameraTypes(camera_type)
         self._path_to_images = path_to_images
 
         if self._camera_type == CameraTypes.USB_CAMERA:
@@ -68,7 +68,7 @@ class Camera(Stateful, Recreatable):
         Recreatable.__init__(self, config_dict={
             "index": index,
             "resolution": resolution,
-            "camera_type": camera_type,
+            "camera_type": camera_type.value,
             "path_to_images": path_to_images,
             "format": format,
             "name": self.name,
