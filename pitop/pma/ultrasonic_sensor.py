@@ -1,18 +1,21 @@
-from .common import get_pin_for_port
-from pitop.system.pitop_component import PiTopComponent
-
-from pitopcommon.logger import PTLogger
-
 from gpiozero.pins.native import NativeFactory
 from gpiozero import SmoothedInputDevice
 from threading import Event, Lock
+
+from pitopcommon.logger import PTLogger
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
 #
 # Note: all private member variables are semi-private to follow upstream gpiozero convention
 # and to override inherited functions
-class UltrasonicSensor(PiTopComponent, SmoothedInputDevice):
+class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
     ECHO_LOCK = Lock()
 
     def __init__(
@@ -21,12 +24,13 @@ class UltrasonicSensor(PiTopComponent, SmoothedInputDevice):
         queue_len=9,
         max_distance=3,
         threshold_distance=0.3,
-        partial=False
+        partial=False,
+        name="ultrasonic"
     ):
 
         self._pma_port = port_name
+        self.name = name
 
-        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
         SmoothedInputDevice.__init__(self,
                                      get_pin_for_port(self._pma_port),
                                      pull_up=False,
@@ -54,6 +58,18 @@ class UltrasonicSensor(PiTopComponent, SmoothedInputDevice):
         except Exception:
             self.close()
             raise
+
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name, "queue_len": queue_len, "partial": partial, "name": self.name})
+        # Added as lambdas since they may change on runtime
+        self.add_to_config("max_distance", lambda: self.max_distance)
+        self.add_to_config("threshold_distance", lambda: self.threshold_distance)
+
+    @property
+    def own_state(self):
+        return {
+            'distance': self.distance,
+        }
 
     def close(self):
         """

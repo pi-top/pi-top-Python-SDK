@@ -1,20 +1,33 @@
 from gpiozero import Buzzer as gpiozero_Buzzer
-from .common import get_pin_for_port
-from pitop.system.pitop_component import PiTopComponent
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
-class Buzzer(PiTopComponent, gpiozero_Buzzer):
+class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
     """
     Encapsulates the behaviour of a simple buzzer that can be turned on and off.
 
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name):
+    def __init__(self, port_name, name="buzzer"):
         self._pma_port = port_name
+        self.name = name
 
-        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
-        Buzzer.__init__(self, get_pin_for_port(self._pma_port))
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        gpiozero_Buzzer.__init__(self, get_pin_for_port(self._pma_port))
+
+    @property
+    def own_state(self):
+        return {
+            "is_active": self.is_active,
+            "value": self.value,
+        }
 
     def close(self):
         """

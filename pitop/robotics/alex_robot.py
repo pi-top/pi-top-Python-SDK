@@ -41,4 +41,4 @@ class AlexRobot(SupportsDriving, SupportsPanTilt, SupportsCamera, PiTop):
         SupportsCamera.__init__(self, **kwargs)
         SupportsDriving.__init__(self, **kwargs)
         SupportsPanTilt.__init__(self, **kwargs)
-        self.add_component(UltrasonicSensor(ultrasonic_sensor_port), name="ultrasonic_sensor")
+        self.add_component(UltrasonicSensor(ultrasonic_sensor_port, name="ultrasonic_sensor"))

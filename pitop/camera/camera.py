@@ -5,7 +5,10 @@ from .core import (
     CameraTypes)
 from .core.capture_actions import CaptureActions
 from pitop.core import ImageFunctions
-from pitop.system.pitop_component import PiTopComponent
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
 
 from pitop.pma.common import type_check
 
@@ -13,7 +16,7 @@ from threading import Thread, Event
 from inspect import signature
 
 
-class Camera(PiTopComponent):
+class Camera(Stateful, Recreatable):
     """
     Provides a variety of high-level functionality for using the PMA USB Camera, including capturing
     images and video, and processing image data from the camera
@@ -30,10 +33,9 @@ class Camera(PiTopComponent):
                  resolution=None,
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
-                 format='PIL'
+                 format='PIL',
+                 name="camera"
                  ):
-        PiTopComponent.__init__(self, ports=[f"Camera{index}"], args=locals())
-
         # Initialise private variables
         self._resolution = resolution
         self._format = None
@@ -60,6 +62,24 @@ class Camera(PiTopComponent):
         self.__new_frame_event = Event()
         self.__process_image_thread = Thread(target=self.__process_camera_output, daemon=True)
         self.__process_image_thread.start()
+
+        self.name = name
+        Stateful.__init__(self)
+        Recreatable.__init__(self, config_dict={
+            "index": index,
+            "resolution": resolution,
+            "camera_type": camera_type,
+            "path_to_images": path_to_images,
+            "format": format,
+            "name": self.name,
+        })
+
+    @property
+    def own_state(self):
+        return {
+            "running": lambda: self.__process_image_thread.is_alive(),
+            "capture_actions": lambda: self.__frame_handler.current_actions(),
+        }
 
     @classmethod
     @type_check

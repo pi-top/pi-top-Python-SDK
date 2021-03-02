@@ -1,9 +1,13 @@
 from gpiozero import LED as gpiozero_LED
-from .common import get_pin_for_port
-from pitop.system.pitop_component import PiTopComponent
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
-class LED(PiTopComponent, gpiozero_LED):
+class LED(Stateful, Recreatable, gpiozero_LED):
     """
     Encapsulates the behaviour of an LED.
 
@@ -12,11 +16,20 @@ class LED(PiTopComponent, gpiozero_LED):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name):
+    def __init__(self, port_name, name="led"):
         self._pma_port = port_name
+        self.name = name
 
-        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
-        LED.__init__(self, get_pin_for_port(self._pma_port))
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))
+
+    @property
+    def own_state(self):
+        return {
+            "is_lit": self.is_lit,
+            "value": self.value,
+        }
 
     def close(self):
         """

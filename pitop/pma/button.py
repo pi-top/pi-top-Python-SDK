@@ -1,9 +1,13 @@
 from gpiozero import Button as gpiozero_Button
-from .common import get_pin_for_port
-from pitop.system.pitop_component import PiTopComponent
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
-class Button(PiTopComponent, gpiozero_Button):
+class Button(Stateful, Recreatable, gpiozero_Button):
     """
     Encapsulates the behaviour of a push-button.
 
@@ -12,11 +16,21 @@ class Button(PiTopComponent, gpiozero_Button):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name):
+    def __init__(self, port_name, name="button"):
         self._pma_port = port_name
+        self.name = name
 
-        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
-        Button.__init__(self, get_pin_for_port(self._pma_port))
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port))
+
+    @property
+    def own_state(self):
+        return {
+            "is_held": self.is_held,
+            "is_pressed": self.is_pressed,
+            "value": self.value,
+        }
 
     def close(self):
         """

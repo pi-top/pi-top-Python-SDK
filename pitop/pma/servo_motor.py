@@ -1,5 +1,11 @@
-from .servo_controller import ServoController, ServoHardwareSpecs
-from pitop.system.pitop_component import PiTopComponent
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.servo_controller import (
+    ServoController,
+    ServoHardwareSpecs,
+)
 
 from pitopcommon.logger import PTLogger
 
@@ -13,7 +19,7 @@ class ServoMotorState:
     speed: float = 0.0
 
 
-class ServoMotor(PiTopComponent):
+class ServoMotor(Stateful, Recreatable):
     """
     Represents a pi-top servo motor component.
 
@@ -33,7 +39,7 @@ class ServoMotor(PiTopComponent):
     __HARDWARE_MAX_ANGLE = ServoHardwareSpecs.ANGLE_RANGE / 2
     __DEFAULT_SPEED = 50.0
 
-    def __init__(self, port_name, zero_point=0):
+    def __init__(self, port_name, zero_point=0, name="servo"):
         self._pma_port = port_name
 
         self.__controller = ServoController(self._pma_port)
@@ -46,7 +52,17 @@ class ServoMotor(PiTopComponent):
         # This bug is causing cleanup to be called every time, even if servo is not moving
         #
         # atexit.register(self.__cleanup)
-        PiTopComponent.__init__(self, ports=[self._pma_port], args=locals())
+
+        Stateful.__init__(self)
+        Recreatable.__init__(self, config_dict={'port_name': port_name, 'name': name})
+        # Added as lambdas since they may change on runtime
+        self.add_to_config("zero_point", lambda: self.zero_point)
+
+    @property
+    def own_state(self):
+        return {
+            'state': self.state
+        }
 
     def __cleanup(self):
         if self.__has_set_angle and self.current_speed != 0.0:

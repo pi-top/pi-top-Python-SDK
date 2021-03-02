@@ -7,23 +7,29 @@ from os.path import (
 from pathlib import Path
 
 from pitop.core.exceptions import UninitializedComponent
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
 from pitop.pma import ServoMotor
-from pitop.system.pitop_component import PiTopComponent
 
 
-class PanTiltController(PiTopComponent):
+class PanTiltController(Stateful, Recreatable):
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
     CALIBRATION_FILE_NAME = "alex.conf"
     _initialized = False
     _pan_servo = None
     _tilt_servo = None
 
-    def __init__(self, servo_pan_port="S0", servo_tilt_port="S3"):
-        PiTopComponent.__init__(self, ports=[servo_pan_port, servo_tilt_port], args=locals())
+    def __init__(self, servo_pan_port="S0", servo_tilt_port="S3", name="pan_tilt"):
+        self.name = name
         self._pan_servo = ServoMotor(servo_pan_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
         self._initialized = True
+
+        Stateful.__init__(self, children=['_pan_servo', '_tilt_servo'])
+        Recreatable.__init__(self, config_dict={'servo_pan_port': servo_pan_port, 'servo_tilt_port': servo_tilt_port, 'name': name})
 
     def is_initialized(fcn):
         def check_initialization(self, *args, **kwargs):
