@@ -23,7 +23,7 @@ repos:
     - id: autopep8
       # Default: E226,E24,W50,W690
       name: autopep8 - ignore import checks, include tests
-      args: ["-i", "--max-line-length=150", "--ignore", "E226,E24,W50,W690,E402"]
+      args: ["-i", "--max-line-length=150", "--ignore", "E226,E24,W50,W690,E402", "tests/"]
 
 -   repo: https://gitlab.com/PyCQA/flake8
     rev: 3.8.4
