@@ -8,8 +8,7 @@ from pitop.pma.common import get_pin_for_port
 
 
 class Button(Stateful, Recreatable, gpiozero_Button):
-    """
-    Encapsulates the behaviour of a push-button.
+    """Encapsulates the behaviour of a push-button.
 
     A push-button is a simple switch mechanism for controlling some aspect of a circuit.
 
@@ -33,9 +32,9 @@ class Button(Stateful, Recreatable, gpiozero_Button):
         }
 
     def close(self):
-        """
-        Shut down the device and release all associated resources. This method
-        can be called on an already closed device without raising an exception.
+        """Shut down the device and release all associated resources. This
+        method can be called on an already closed device without raising an
+        exception.
 
         This method is primarily intended for interactive use at the command
         line. It disables the device and releases its pin(s) for use by another
@@ -51,8 +50,7 @@ class Button(Stateful, Recreatable, gpiozero_Button):
         For example, if you have a buzzer connected to port D4, but then wish
         to attach an LED instead:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> bz = Buzzer("D4")
             >>> bz.on()
             >>> bz.off()
@@ -63,8 +61,7 @@ class Button(Stateful, Recreatable, gpiozero_Button):
         :class:`Device` descendents can also be used as context managers using
         the :keyword:`with` statement. For example:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> with Buzzer("D4") as bz:
             ...     bz.on()
             ...

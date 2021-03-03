@@ -1,20 +1,19 @@
 # Top-level
-from .system.pitop import PiTop
+from .system.pitop import Pitop
 
 # PMA
-from .pma.button import Button
-from .pma.buzzer import Buzzer
-from .pma.led import LED
-from .pma.light_sensor import LightSensor
-from .pma.potentiometer import Potentiometer
-from .pma.sound_sensor import SoundSensor
-from .pma.ultrasonic_sensor import UltrasonicSensor
-
-from .pma.imu import IMU
-from .pma.encoder_motor import EncoderMotor
-from .pma.servo_motor import (
+from .pma import (
+    Button,
+    Buzzer,
+    LED,
+    LightSensor,
+    Potentiometer,
+    SoundSensor,
+    UltrasonicSensor,
+    IMU,
+    EncoderMotor,
     ServoMotor,
-    ServoMotorState
+    ServoMotorState,
 )
 
 from .pma.parameters import (
@@ -23,9 +22,9 @@ from .pma.parameters import (
     BrakingType
 )
 
-# Robotics
+# # Robotics
 from .robotics.configurations import AlexRobot
 
-# System Devices
+# # System Devices
 from .camera import Camera
 from .keyboard import KeyboardButton

@@ -50,8 +50,7 @@ class PanTiltController(Stateful, Recreatable):
 
     @is_initialized
     def calibrate(self, save=True, reset=False):
-        """
-        Calibrates the robot to work in optimal conditions.
+        """Calibrates the robot to work in optimal conditions.
 
         Based on the provided arguments, it will either load the calibration
         values stored in the pi-top, or it will run the calibration process,

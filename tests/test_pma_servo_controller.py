@@ -27,16 +27,12 @@ class ServoControllerTestCase(TestCase):
         self.assertEquals(controller.registers, ServoMotorS0)
 
     def test_constructor_fails_on_incorrect_port(self):
-        """
-        Constructor fails if providing an invalid port
-        """
+        """Constructor fails if providing an invalid port."""
         with self.assertRaises(Exception):
             ServoController(port="invalid_port")
 
     def test_set_min_pulse_width_write(self):
-        """
-        Registers written when setting the minimum pulse width to MCU
-        """
+        """Registers written when setting the minimum pulse width to MCU."""
         # create instance
         controller = ServoController(port="S1")
 
@@ -49,9 +45,7 @@ class ServoControllerTestCase(TestCase):
         write_word_mock.assert_called_with(ServoMotorSetup.REGISTER_MIN_PULSE_WIDTH, min_pulse_width, signed=False, little_endian=True)
 
     def test_set_max_pulse_width_write(self):
-        """
-        Registers written when setting the maximum pulse width to MCU
-        """
+        """Registers written when setting the maximum pulse width to MCU."""
         # create instance
         controller = ServoController(port="S1")
 
@@ -64,9 +58,8 @@ class ServoControllerTestCase(TestCase):
         write_word_mock.assert_called_with(ServoMotorSetup.REGISTER_MAX_PULSE_WIDTH, max_pulse_width, signed=False, little_endian=True)
 
     def test_set_pwm_frequency_read_write(self):
-        """
-        Registers read/written when setting/reading PWM frequency to/from MCU
-        """
+        """Registers read/written when setting/reading PWM frequency to/from
+        MCU."""
         # create instance
         controller = ServoController(port="S0")
 
@@ -84,9 +77,7 @@ class ServoControllerTestCase(TestCase):
         read_unsigned_byte_mock.assert_called_with(ServoMotorSetup.REGISTER_PWM_FREQUENCY)
 
     def test_set_target_speed_fails_on_invalid_value(self):
-        """
-        set_target_speed fails if called with an invalid speed value
-        """
+        """set_target_speed fails if called with an invalid speed value."""
         controller = ServoController(port="S1")
 
         for speed in (-101, -1123, 212, 101):

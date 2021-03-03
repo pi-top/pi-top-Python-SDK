@@ -1,4 +1,4 @@
-from pitop.camera import Camera
+from pitop import Camera
 
 cam = Camera()
 

@@ -20,8 +20,7 @@ class ServoMotorState:
 
 
 class ServoMotor(Stateful, Recreatable):
-    """
-    Represents a pi-top servo motor component.
+    """Represents a pi-top servo motor component.
 
     Note that pi-top servo motors use an open-loop control system. As such, the output of the device (e.g.
     the angle and speed of the servo horn) cannot be measured directly. This means that you can set a target
@@ -70,8 +69,7 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def zero_point(self):
-        """
-        Represents the servo motor angle that the library treats as 'zero'.
+        """Represents the servo motor angle that the library treats as 'zero'.
         This value can be anywhere in the range of -90 to +90.
 
         For example, if the zero_point were set to be -30, then the valid range
@@ -96,20 +94,20 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def angle_range(self):
-        """
-        Returns a tuple with minimum and maximum possible angles where the servo horn can be moved to.
-        If :class:`zero_point` is set to 0 (default), the angle range will be (-90, 90).
+        """Returns a tuple with minimum and maximum possible angles where the
+        servo horn can be moved to.
 
-        .. note::
-            The maximum and minimum angles depend on the zero-point setting.
+        If :class:`zero_point` is set to 0 (default), the angle range
+        will be (-90, 90).
         """
 
         return self.__min_angle, self.__max_angle
 
     @property
     def state(self):
-        """
-        Returns the current state of the servo motor, giving curent angle and current speed.
+        """Returns the current state of the servo motor, giving curent angle
+        and current speed.
+
         :return: :class:'ServoMotorState` object that has angle and speed attributes.
         """
         if not self.__has_set_angle:
@@ -124,15 +122,15 @@ class ServoMotor(Stateful, Recreatable):
 
     @state.setter
     def state(self, target_state: ServoMotorState):
-        """
-        Sets the target state of the servo horn, relative to the zero position.
+        """Sets the target state of the servo horn, relative to the zero
+        position.
 
-        .. warning::
-            Using an :data:`target_state.angle` out of the valid angle range will cause the method to raise an
-            exception. To determine the valid angle range, use :meth:`ServoMotor.get_angle_range`.
+           .. warning::
+             Using an :data:`target_state.angle` out of the valid angle range will cause the method to raise an
+             exception. To determine the valid angle range, use :meth:`ServoMotor.get_angle_range`.
 
-        .. warning::
-            Using a :data:`target_state.speed` out of the valid speed range will cause the method to raise an exception.
+           .. warning::
+             Using a :data:`target_state.speed` out of the valid speed range will cause the method to raise an exception.
 
         :type target_state: :class:`ServoMotorState`
         :param target_state:
@@ -140,13 +138,12 @@ class ServoMotor(Stateful, Recreatable):
             :meth:`ServoMotorState.angle` must be passed. Example usage:
 
             .. code-block:: python
-                from pitop.pma import ServoMotor, ServoMotorState
+                from pitop import ServoMotor, ServoMotorState
                 servo = ServoMotor()
                 target_state = ServoMotorState()
                 target_state.angle = 45
                 target_state.speed = 20
                 servo.state = target_state
-
         """
         angle = target_state.angle
         speed = target_state.speed
@@ -166,30 +163,32 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def current_angle(self):
-        """
-        Returns the current angle that the servo motor is at.
+        """Returns the current angle that the servo motor is at.
+
+           .. note::
+             If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
+             current angle and current speed at the same time.
+
         :return: float value of the current angle of the servo motor in degrees.
-        .. note::
-        If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
-        current angle and current speed at the same time.
         """
         return self.state.angle
 
     @property
     def current_speed(self):
-        """
-        Returns the current speed the servo motor is at.
+        """Returns the current speed the servo motor is at.
+
+           .. note::
+             If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
+             current angle and current speed at the same time.
+
         :return: float value of the current speed of the servo motor in deg/s.
-        .. note::
-        If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
-        current angle and current speed at the same time.
         """
         return self.state.speed
 
     @property
     def target_angle(self):
-        """
-        Returns the last target angle that has been set.
+        """Returns the last target angle that has been set.
+
         :return: float value of the target angle of the servo motor in deg.
         """
         if not self.__has_set_angle:
@@ -198,8 +197,8 @@ class ServoMotor(Stateful, Recreatable):
 
     @target_angle.setter
     def target_angle(self, angle):
-        """
-        Set the target angle you want the servo motor to go to
+        """Set the target angle you want the servo motor to go to.
+
         :type angle: float
         :param angle: target servo motor angle.
         """
@@ -210,23 +209,23 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def target_speed(self):
-        """
-        Returns the last target speed that has been set.
+        """Returns the last target speed that has been set.
+
         :return: float value of the target speed of the servo motor in deg/s.
         """
         return self.__target_state.speed
 
     @target_speed.setter
     def target_speed(self, speed):
-        """
-        Move the servo horn from the current position to one of the servo motor limits (maximum/minimum possible angle),
-        moving at the specified speed. The speed value must be a number from -100.0 to 100.0 deg/s.
+        """Move the servo horn from the current position to one of the servo
+        motor limits (maximum/minimum possible angle), moving at the specified
+        speed. The speed value must be a number from -100.0 to 100.0 deg/s.
 
         Setting a :data:`speed` value higher than zero will move the horn to the maximum angle (90 degrees by default),
         while a value less than zero will move it to the minimum angle (-90 degress by default).
 
-        .. warning::
-            Using a :data:`speed` out of the valid speed range will cause the method to raise an exception.
+           .. warning::
+             Using a :data:`speed` out of the valid speed range will cause the method to raise an exception.
 
         :type speed: int or float
         :param speed:

@@ -1,11 +1,11 @@
 from json import load
 from pathlib import Path
 
-from pitop import PiTop
+from pitop import Pitop
 
 
 def AlexRobot():
-    return PiTop.from_dict(__load_json('alex.json'))
+    return Pitop.from_dict(__load_json('alex.json'))
 
 
 def __load_json(filename):

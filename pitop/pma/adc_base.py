@@ -9,8 +9,7 @@ from pitop.pma.common import get_pin_for_port
 
 
 class ADCBase(Stateful, Recreatable):
-    """
-    Encapsulates the behaviour of an Analog-to-Digital Converter (ADC).
+    """Encapsulates the behaviour of an Analog-to-Digital Converter (ADC).
 
     An internal class used as a base for other components.
 
@@ -40,9 +39,8 @@ class ADCBase(Stateful, Recreatable):
         }
 
     def read(self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False):
-        """
-        Take a reading from the chosen ADC channel, or get an average value over multiple
-        reads
+        """Take a reading from the chosen ADC channel, or get an average value
+        over multiple reads.
 
         :param number_of_samples: Number of samples to take.
         :param delay_between_samples: Delay between taking samples (if more than one)

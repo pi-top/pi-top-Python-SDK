@@ -9,10 +9,13 @@ import atexit
 
 
 class Miniscreen(OLED):
-    """
-    Represents a pi-top [4]'s miniscreen display.
-    Also owns the surrounding 4 buttons as properties (:class:`up_button`, :class:`down_button`, :class:`select_button`, :class:`cancel_button`).
-    See :class:`pitop.miniscreen.MiniscreenButton` for how to use these buttons.
+    """Represents a pi-top [4]'s miniscreen display.
+
+    Also owns the surrounding 4 buttons as properties
+    (:class:`up_button`, :class:`down_button`, :class:`select_button`,
+    :class:`cancel_button`). See
+    :class:`pitop.miniscreen.MiniscreenButton` for how to use these
+    buttons.
     """
 
     def __init__(self):
@@ -61,8 +64,7 @@ class Miniscreen(OLED):
 
     @property
     def up_button(self):
-        """
-        Gets the up button of the pi-top [4] miniscreen.
+        """Gets the up button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the up button of the pi-top [4] miniscreen.
         :rtype: :class:`pitop.miniscreen.MiniscreenButton`
@@ -71,8 +73,7 @@ class Miniscreen(OLED):
 
     @property
     def down_button(self):
-        """
-        Gets the down button of the pi-top [4] miniscreen.
+        """Gets the down button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the down button of the pi-top [4] miniscreen.
         :rtype: :class:`pitop.miniscreen.MiniscreenButton`
@@ -81,8 +82,7 @@ class Miniscreen(OLED):
 
     @property
     def select_button(self):
-        """
-        Gets the select button of the pi-top [4] miniscreen.
+        """Gets the select button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the select button of the pi-top [4] miniscreen.
         :rtype: :class:`pitop.miniscreen.MiniscreenButton`
@@ -91,8 +91,7 @@ class Miniscreen(OLED):
 
     @property
     def cancel_button(self):
-        """
-        Gets the cancel button of the pi-top [4] miniscreen.
+        """Gets the cancel button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the cancel button of the pi-top [4] miniscreen.
         :rtype: :class:`pitop.miniscreen.MiniscreenButton`
@@ -101,8 +100,9 @@ class Miniscreen(OLED):
 
 
 class MiniscreenButton:
-    """
-    Represents one of the 4 buttons around the miniscreen display on a pi-top [4].
+    """Represents one of the 4 buttons around the miniscreen display on a pi-
+    top [4].
+
     Should not be created directly - instead, use :class:`pitop.miniscreen.Miniscreen`.
     """
 
@@ -115,8 +115,7 @@ class MiniscreenButton:
 
     @property
     def is_pressed(self):
-        """
-        Get or set the button state as a boolean value.
+        """Get or set the button state as a boolean value.
 
         :rtype: bool
         """
@@ -128,9 +127,8 @@ class MiniscreenButton:
 
     @property
     def when_pressed(self):
-        """
-        Get or set the 'when pressed' button state callback function.
-        When set, this callback function will be invoked when this event happens.
+        """Get or set the 'when pressed' button state callback function. When
+        set, this callback function will be invoked when this event happens.
 
         :type callback: Function
         :param callback:
@@ -144,9 +142,8 @@ class MiniscreenButton:
 
     @property
     def when_released(self):
-        """
-        Get or set the 'when released' button state callback function.
-        When set, this callback function will be invoked when this event happens.
+        """Get or set the 'when released' button state callback function. When
+        set, this callback function will be invoked when this event happens.
 
         :type callback: Function
         :param callback:

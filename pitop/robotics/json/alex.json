@@ -1,5 +1,5 @@
 {
-    "classname": "PiTop",
+    "classname": "Pitop",
     "module": "pitop.system.pitop",
     "components": {
         "camera": {

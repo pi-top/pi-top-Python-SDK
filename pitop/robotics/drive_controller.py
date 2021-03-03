@@ -19,10 +19,8 @@ from pitop.pma import (
 
 
 class DriveController(Stateful, Recreatable):
-    """
-    Abstraction of a vehicle with two wheels connected by an axis,
-    and an optional support wheel or caster.
-    """
+    """Abstraction of a vehicle with two wheels connected by an axis, and an
+    optional support wheel or caster."""
     _initialized = False
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
@@ -88,8 +86,7 @@ class DriveController(Stateful, Recreatable):
 
     @is_initialized
     def forward(self, speed_factor, hold=False):
-        """
-        Move the robot forward.
+        """Move the robot forward.
 
         :param float speed_factor:
             Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
@@ -106,8 +103,7 @@ class DriveController(Stateful, Recreatable):
 
     @is_initialized
     def backward(self, speed_factor, hold=False):
-        """
-        Move the robot backward.
+        """Move the robot backward.
 
         :param float speed_factor:
             Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
@@ -119,8 +115,7 @@ class DriveController(Stateful, Recreatable):
 
     @is_initialized
     def left(self, speed_factor, turn_radius=0):
-        """
-        Make the robot move to the left, using a circular trajectory.
+        """Make the robot move to the left, using a circular trajectory.
 
         :param float speed_factor:
             Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
@@ -133,8 +128,7 @@ class DriveController(Stateful, Recreatable):
 
     @is_initialized
     def right(self, speed_factor, turn_radius=0):
-        """
-        Make the robot move to the right, using a circular trajectory.
+        """Make the robot move to the right, using a circular trajectory.
 
         :param float speed_factor:
             Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
@@ -151,8 +145,7 @@ class DriveController(Stateful, Recreatable):
 
     @is_initialized
     def rotate(self, angle, time_to_take):
-        """
-        Rotate the robot in place by a given angle and stop.
+        """Rotate the robot in place by a given angle and stop.
 
         :param float angle: Angle of the turn.
         :param float time_to_take: Expected duration of the rotation, in seconds.
@@ -171,20 +164,18 @@ class DriveController(Stateful, Recreatable):
         sleep(time_to_take)
 
     def stop(self):
-        """
-        Completely stops the robot.
-        """
+        """Completely stops the robot."""
         self._linear_speed_x_hold = 0
         self.__robot_move(0, 0)
 
     def stop_rotation(self):
-        """
-        Stops any angular movement performed by the robot.
+        """Stops any angular movement performed by the robot.
 
-        In the case where linear and rotational movements are being performed at
-        the same time (e.g.: during a left turn with a turn radius different to 0),
-        calling this method will cause the robot to continue the linear movement,
-        so it will continue to move forward.
+        In the case where linear and rotational movements are being
+        performed at the same time (e.g.: during a left turn with a turn
+        radius different to 0), calling this method will cause the robot
+        to continue the linear movement, so it will continue to move
+        forward.
         """
         self.__robot_move(self._linear_speed_x_hold, 0)
 

@@ -35,7 +35,10 @@ _temp_file_path = ""
 
 
 def __signal_handler(signal, frame):
-    """INTERNAL. Handles signals from the OS."""
+    """INTERNAL.
+
+    Handles signals from the OS.
+    """
 
     global _exiting
 
@@ -50,20 +53,29 @@ def __signal_handler(signal, frame):
 
 
 def __get_size(filename):
-    """INTERNAL. Gets the size of a file."""
+    """INTERNAL.
+
+    Gets the size of a file.
+    """
 
     file_stats = stat(filename)
     return file_stats.st_size
 
 
 def __from_hex(value):
-    """INTERNAL. Gets a bytearray from hex data."""
+    """INTERNAL.
+
+    Gets a bytearray from hex data.
+    """
 
     return bytearray.fromhex(value)
 
 
 def __space_separated_little_endian(integer_value, byte_len):
-    """INTERNAL. Get an integer in format for WAV file header."""
+    """INTERNAL.
+
+    Get an integer in format for WAV file header.
+    """
 
     if byte_len <= 1:
         pack_type = '<B'
@@ -83,7 +95,10 @@ def __space_separated_little_endian(integer_value, byte_len):
 
 
 def __init_header_information():
-    """INTERNAL. Create a WAV file header."""
+    """INTERNAL.
+
+    Create a WAV file header.
+    """
 
     RIFF = "52 49 46 46"
     WAVE = "57 41 56 45"
@@ -126,7 +141,10 @@ def __init_header_information():
 
 
 def __update_header_in_file(file, position, value):
-    """INTERNAL. Update the WAV header  """
+    """INTERNAL.
+
+    Update the WAV header
+    """
 
     hex_value = __space_separated_little_endian(value, 4)
     data = unhexlify(''.join(hex_value.split()))
@@ -136,7 +154,10 @@ def __update_header_in_file(file, position, value):
 
 
 def __finalise_wav_file(file_path):
-    """INTERNAL. Update the WAV file header with the size of the data."""
+    """INTERNAL.
+
+    Update the WAV file header with the size of the data.
+    """
 
     size_of_data = __get_size(file_path) - 44
 
@@ -153,13 +174,19 @@ def __finalise_wav_file(file_path):
 
 
 def __thread_method():
-    """INTERNAL. Thread method."""
+    """INTERNAL.
+
+    Thread method.
+    """
 
     __record_audio()
 
 
 def __record_audio():
-    """INTERNAL. Open the serial port and capture audio data into a temp file."""
+    """INTERNAL.
+
+    Open the serial port and capture audio data into a temp file.
+    """
 
     global _temp_file_path
 
@@ -266,7 +293,7 @@ def is_recording():
 
 
 def stop():
-    """Stops recording audio"""
+    """Stops recording audio."""
 
     global _thread_running
     global _continue_writing
@@ -300,26 +327,28 @@ def save(file_path, overwrite=False):
 
 
 def set_sample_rate_to_16khz():
-    """Set the appropriate I2C bits to enable 16,000Hz recording on the microphone"""
+    """Set the appropriate I2C bits to enable 16,000Hz recording on the
+    microphone."""
 
     configuration.set_microphone_sample_rate_to_16khz()
 
 
 def set_sample_rate_to_22khz():
-    """Set the appropriate I2C bits to enable 22,050Hz recording on the microphone"""
+    """Set the appropriate I2C bits to enable 22,050Hz recording on the
+    microphone."""
 
     configuration.set_microphone_sample_rate_to_22khz()
 
 
 def set_bit_rate_to_unsigned_8():
-    """Set bitrate to device default"""
+    """Set bitrate to device default."""
 
     global _bitrate
     _bitrate = 8
 
 
 def set_bit_rate_to_signed_16():
-    """Set bitrate to double that of device default by scaling the signal"""
+    """Set bitrate to double that of device default by scaling the signal."""
 
     global _bitrate
     _bitrate = 16

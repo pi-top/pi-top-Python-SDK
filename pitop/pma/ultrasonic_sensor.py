@@ -72,9 +72,9 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
         }
 
     def close(self):
-        """
-        Shut down the device and release all associated resources. This method
-        can be called on an already closed device without raising an exception.
+        """Shut down the device and release all associated resources. This
+        method can be called on an already closed device without raising an
+        exception.
 
         This method is primarily intended for interactive use at the command
         line. It disables the device and releases its pin(s) for use by another
@@ -90,8 +90,7 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
         For example, if you have a buzzer connected to port D4, but then wish
         to attach an LED instead:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> bz = Buzzer("D4")
             >>> bz.on()
             >>> bz.off()
@@ -102,8 +101,7 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
         :class:`Device` descendents can also be used as context managers using
         the :keyword:`with` statement. For example:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> with Buzzer("D4") as bz:
             ...     bz.on()
             ...
@@ -135,12 +133,13 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
 
     @property
     def max_distance(self):
-        """
-        The maximum distance that the sensor will measure in meters. This value
-        is specified in the constructor and is used to provide the scaling for
-        the :attr:`~SmoothedInputDevice.value` attribute. When :attr:`distance`
-        is equal to :attr:`max_distance`, :attr:`~SmoothedInputDevice.value`
-        will be 1.
+        """The maximum distance that the sensor will measure in meters.
+
+        This value is specified in the constructor and is used to
+        provide the scaling for the :attr:`~SmoothedInputDevice.value`
+        attribute. When :attr:`distance` is equal to
+        :attr:`max_distance`, :attr:`~SmoothedInputDevice.value` will be
+        1.
         """
         return self._max_distance
 
@@ -168,8 +167,9 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
 
     @property
     def distance(self):
-        """
-        Returns the current distance measured by the sensor in meters. Note
+        """Returns the current distance measured by the sensor in meters.
+
+        Note
         that this property will have a value between 0 and
         :attr:`max_distance`.
         """
@@ -177,19 +177,18 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
 
     @property
     def value(self):
-        """
-        Returns a value between 0, indicating that something is either touching
-        the sensor or is sufficiently near that the sensor can't tell the
-        difference, and 1, indicating that something is at or beyond the
-        specified *max_distance*.
-        """
+        """Returns a value between 0, indicating that something is either
+        touching the sensor or is sufficiently near that the sensor can't tell
+        the difference, and 1, indicating that something is at or beyond the
+        specified *max_distance*."""
         return super(UltrasonicSensor, self).value
 
     @property
     def pin(self):
-        """
-        Returns the :class:`Pin` that the sensor is connected to. This
-        is simply an alias for the usual :attr:`~GPIODevice.pin` attribute.
+        """Returns the :class:`Pin` that the sensor is connected to.
+
+        This is simply an alias for the usual :attr:`~GPIODevice.pin`
+        attribute.
         """
         return super(UltrasonicSensor, self).pin
 

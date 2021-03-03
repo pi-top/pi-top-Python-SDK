@@ -2,8 +2,7 @@ from pitop.pma.adc_base import ADCBase
 
 
 class SoundSensor(ADCBase):
-    """
-    Encapsulates the behaviour of a sound sensor.
+    """Encapsulates the behaviour of a sound sensor.
 
     A sound sensor component is typically a simple microphone that detects the vibrations
     of the air entering the sensor and produces an analog reading based on the amplitude
@@ -20,8 +19,7 @@ class SoundSensor(ADCBase):
 
     @property
     def reading(self):
-        """
-        Take a reading from the sensor
+        """Take a reading from the sensor.
 
         :return: A value representing the volume of sound detected by the sensor at the current time
         :rtype: float
@@ -31,8 +29,7 @@ class SoundSensor(ADCBase):
 
     @property
     def value(self):
-        """
-        Get a simple binary value based on a reading from the device
+        """Get a simple binary value based on a reading from the device.
 
         :return: 1 if the sensor is detecting any sound, 0 otherwise
         :rtype: integer
