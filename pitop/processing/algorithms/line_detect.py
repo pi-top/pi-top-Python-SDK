@@ -55,7 +55,7 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
         robot_view_img = ImageFunctions.convert(robot_view_img, format="PIL")
 
     class dotdict(dict):
-        """dot.notation access to dictionary attributes"""
+        """dot.notation access to dictionary attributes."""
         __getattr__ = dict.get
         __setattr__ = dict.__setitem__
         __delattr__ = dict.__delitem__

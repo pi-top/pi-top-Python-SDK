@@ -6,8 +6,7 @@ except ImportError:
 
 
 class FPS_Regulator(object):
-    """
-    Adapted from ``luma.core.spritesheet``
+    """Adapted from ``luma.core.spritesheet``
 
     Implements a variable sleep mechanism to give the appearance of a consistent
     frame rate. Using a fixed-time sleep will cause animations to be jittery
@@ -30,8 +29,7 @@ class FPS_Regulator(object):
         self.fps = 30
 
     def set_max_fps(self, max_fps):
-        """
-        Sets the max frame rate to the value provided
+        """Sets the max frame rate to the value provided.
 
         Parameters
         ----------
@@ -44,9 +42,7 @@ class FPS_Regulator(object):
         self.max_sleep_time = 1.0 / max_fps
 
     def throttle_fps_if_needed(self):
-        """
-        Sleep to ensure that max frame rate is not exceeded
-        """
+        """Sleep to ensure that max frame rate is not exceeded."""
         if self.max_sleep_time >= 0:
             last_frame_transit_time = monotonic() - self.last_time
             sleep_for = self.max_sleep_time - last_frame_transit_time
@@ -55,18 +51,18 @@ class FPS_Regulator(object):
                 sleep(sleep_for)
 
     def start_timer(self):
-        """
-        Starts internal timer so that time taken to render frame can be known
-        """
+        """Starts internal timer so that time taken to render frame can be
+        known."""
         self.enter_time = monotonic()
         if not self.start_time:
             self.start_time = self.enter_time
             self.last_time = self.enter_time
 
     def stop_timer(self):
-        """
-        Stops internal timer so that time taken to render frame can be known. Responsible for throttling frame rate as
-         required
+        """Stops internal timer so that time taken to render frame can be
+        known.
+
+        Responsible for throttling frame rate as required
         """
         try:
             self.total_transit_time += monotonic() - self.enter_time

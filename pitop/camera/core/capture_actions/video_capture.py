@@ -7,8 +7,8 @@ from .capture_action_base import CaptureActionBase
 
 
 class VideoCapture(CaptureActionBase):
-    """
-    Class that stores camera frames as a video in the given :data:`output_file_name`.
+    """Class that stores camera frames as a video in the given
+    :data:`output_file_name`.
 
     :param str output_file_name: The filename into which to write the video. If not provided, the file will
     be created in the directory ~/Camera/

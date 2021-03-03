@@ -13,8 +13,7 @@ class ServoMotorState:
 
 
 class ServoMotor:
-    """
-    Represents a pi-top servo motor component.
+    """Represents a pi-top servo motor component.
 
     Note that pi-top servo motors use an open-loop control system. As such, the output of the device (e.g.
     the angle and speed of the servo horn) cannot be measured directly. This means that you can set a target
@@ -52,8 +51,7 @@ class ServoMotor:
 
     @property
     def zero_point(self):
-        """
-        Represents the servo motor angle that the library treats as 'zero'.
+        """Represents the servo motor angle that the library treats as 'zero'.
         This value can be anywhere in the range of -90 to +90.
 
         For example, if the zero_point were set to be -30, then the valid range
@@ -78,20 +76,21 @@ class ServoMotor:
 
     @property
     def angle_range(self):
-        """
-        Returns a tuple with minimum and maximum possible angles where the servo horn can be moved to.
-        If :class:`zero_point` is set to 0 (default), the angle range will be (-90, 90).
+        """Returns a tuple with minimum and maximum possible angles where the
+        servo horn can be moved to. If :class:`zero_point` is set to 0
+        (default), the angle range will be (-90, 90).
 
-        .. note::
-            The maximum and minimum angles depend on the zero-point setting.
+        .. note::     The maximum and minimum angles depend on the zero-
+        point setting.
         """
 
         return self.__min_angle, self.__max_angle
 
     @property
     def state(self):
-        """
-        Returns the current state of the servo motor, giving curent angle and current speed.
+        """Returns the current state of the servo motor, giving curent angle
+        and current speed.
+
         :return: :class:'ServoMotorState` object that has angle and speed attributes.
         """
         if not self.__has_set_angle:
@@ -106,8 +105,8 @@ class ServoMotor:
 
     @state.setter
     def state(self, target_state: ServoMotorState):
-        """
-        Sets the target state of the servo horn, relative to the zero position.
+        """Sets the target state of the servo horn, relative to the zero
+        position.
 
         .. warning::
             Using an :data:`target_state.angle` out of the valid angle range will cause the method to raise an
@@ -128,7 +127,6 @@ class ServoMotor:
                 target_state.angle = 45
                 target_state.speed = 20
                 servo.state = target_state
-
         """
         angle = target_state.angle
         speed = target_state.speed
@@ -170,8 +168,8 @@ class ServoMotor:
 
     @property
     def target_angle(self):
-        """
-        Returns the last target angle that has been set.
+        """Returns the last target angle that has been set.
+
         :return: float value of the target angle of the servo motor in deg.
         """
         if not self.__has_set_angle:
@@ -180,8 +178,8 @@ class ServoMotor:
 
     @target_angle.setter
     def target_angle(self, angle):
-        """
-        Set the target angle you want the servo motor to go to
+        """Set the target angle you want the servo motor to go to.
+
         :type angle: float
         :param angle: target servo motor angle.
         """
@@ -192,17 +190,17 @@ class ServoMotor:
 
     @property
     def target_speed(self):
-        """
-        Returns the last target speed that has been set.
+        """Returns the last target speed that has been set.
+
         :return: float value of the target speed of the servo motor in deg/s.
         """
         return self.__target_state.speed
 
     @target_speed.setter
     def target_speed(self, speed):
-        """
-        Move the servo horn from the current position to one of the servo motor limits (maximum/minimum possible angle),
-        moving at the specified speed. The speed value must be a number from -100.0 to 100.0 deg/s.
+        """Move the servo horn from the current position to one of the servo
+        motor limits (maximum/minimum possible angle), moving at the specified
+        speed. The speed value must be a number from -100.0 to 100.0 deg/s.
 
         Setting a :data:`speed` value higher than zero will move the horn to the maximum angle (90 degrees by default),
         while a value less than zero will move it to the minimum angle (-90 degress by default).

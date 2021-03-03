@@ -27,13 +27,20 @@ def __get_addr_for_bit(bit):
 
 
 def __get_bit_string(value):
-    """INTERNAL. Get string representation of an int in binary"""
+    """INTERNAL.
+
+    Get string representation of an int in binary
+    """
 
     return "{0:b}".format(value).zfill(8)
 
 
 def __update_device_state_bit(bit, value):
-    """INTERNAL. Set a particular device state bit to enable or disable a particular function"""
+    """INTERNAL.
+
+    Set a particular device state bit to enable or disable a particular
+    function
+    """
 
     # Bits:  0x0000
     # Index:   3210
@@ -73,7 +80,10 @@ def __update_device_state_bit(bit, value):
 
 
 def __verify_device_state(expected_state):
-    """INTERNAL. Verify that that current device state matches that expected"""
+    """INTERNAL.
+
+    Verify that that current device state matches that expected
+    """
 
     current_state = __read_device_state()
 
@@ -87,7 +97,10 @@ def __verify_device_state(expected_state):
 
 
 def __write_device_state(state):
-    """INTERNAL. Send the state bits across the I2C bus"""
+    """INTERNAL.
+
+    Send the state bits across the I2C bus
+    """
 
     try:
         PTLogger.debug("Connecting to bus...")
@@ -114,7 +127,11 @@ def __write_device_state(state):
 
 
 def __read_device_state():
-    """INTERNAL. Read from the I2C bus to get the current state of the pulse. Caller should handle exceptions"""
+    """INTERNAL.
+
+    Read from the I2C bus to get the current state of the pulse. Caller
+    should handle exceptions
+    """
 
     try:
         PTLogger.debug("Connecting to bus...")
@@ -131,7 +148,7 @@ def __read_device_state():
 
 
 def __reset_device_state(enable):
-    """Reset the device state bits to the default enabled or disabled state"""
+    """Reset the device state bits to the default enabled or disabled state."""
 
     clean_enable_state = __get_addr_for_bit(_eeprom_bit)
     clean_disable_state = __get_addr_for_bit(
@@ -169,13 +186,15 @@ def disable_device():
 
 
 def set_microphone_sample_rate_to_16khz():
-    """Set the appropriate I2C bits to enable 16,000Hz recording on the microphone"""
+    """Set the appropriate I2C bits to enable 16,000Hz recording on the
+    microphone."""
 
     return __update_device_state_bit(_16khz_bit, 1)
 
 
 def set_microphone_sample_rate_to_22khz():
-    """Set the appropriate I2C bits to enable 22,050Hz recording on the microphone"""
+    """Set the appropriate I2C bits to enable 22,050Hz recording on the
+    microphone."""
 
     return __update_device_state_bit(_16khz_bit, 0)
 
@@ -183,30 +202,32 @@ def set_microphone_sample_rate_to_22khz():
 # GET STATE
 
 def speaker_enabled():
-    """Get whether the speaker is enabled"""
+    """Get whether the speaker is enabled."""
 
     return (__read_device_state() & __get_addr_for_bit(_speaker_bit)) == 0
 
 
 def mcu_enabled():
-    """Get whether the onboard MCU is enabled"""
+    """Get whether the onboard MCU is enabled."""
 
     return (__read_device_state() & __get_addr_for_bit(_mcu_bit)) == 0
 
 
 def eeprom_enabled():
-    """Get whether the eeprom is enabled"""
+    """Get whether the eeprom is enabled."""
 
     return (__read_device_state() & __get_addr_for_bit(_eeprom_bit)) != 0
 
 
 def microphone_sample_rate_is_16khz():
-    """Get whether the microphone is set to record at a sample rate of 16,000Hz"""
+    """Get whether the microphone is set to record at a sample rate of
+    16,000Hz."""
 
     return (__read_device_state() & __get_addr_for_bit(_16khz_bit)) != 0
 
 
 def microphone_sample_rate_is_22khz():
-    """Get whether the microphone is set to record at a sample rate of 22,050Hz"""
+    """Get whether the microphone is set to record at a sample rate of
+    22,050Hz."""
 
     return (__read_device_state() & __get_addr_for_bit(_16khz_bit)) == 0
