@@ -12,8 +12,9 @@ from pitop.core.mixins import (
 
 from pitop.pma.common import type_check
 
-from threading import Thread, Event
+from enum import Enum
 from inspect import signature
+from threading import Thread, Event
 
 
 class Camera(Stateful, Recreatable):
@@ -68,7 +69,7 @@ class Camera(Stateful, Recreatable):
         Recreatable.__init__(self, config_dict={
             "index": index,
             "resolution": resolution,
-            "camera_type": camera_type.value,
+            "camera_type": camera_type.value if isinstance(camera_type, Enum) else camera_type,
             "path_to_images": path_to_images,
             "format": format,
             "name": self.name,

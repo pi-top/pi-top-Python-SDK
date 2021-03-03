@@ -1,5 +1,3 @@
-import json
-
 from .recreatable import Recreatable
 from .stateful import Stateful
 
@@ -26,13 +24,6 @@ class Componentable(Stateful, Recreatable):
 
         return main_obj
 
-    @classmethod
-    def from_file(cls, path):
-        print(f"Loading configuration from {path}")
-        with open(path) as json_file:
-            config_dict = json.load(json_file)
-        return cls.from_dict(config_dict)
-
     def add_component(self, component):
         self.children.append(component.name)
         setattr(self, component.name, component)
@@ -47,8 +38,3 @@ class Componentable(Stateful, Recreatable):
                 if isinstance(child_obj, Recreatable):
                     cfg["components"][child_name] = child_obj.component_config
         return cfg
-
-    def save_config(self, path):
-        print(f"Storing configuration in {path}")
-        with open(path, "w") as writer:
-            json.dump(self.component_config, writer)
