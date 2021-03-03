@@ -10,18 +10,18 @@ from simple_pid import PID
 
 
 class DriveController:
-    """
-    Robot reference coordinate system:
-        linear
-            x = forward
-            y = left
-            z = up
-        angular:
-            x = roll
-            y = pitch
-            z = yaw
-            Positive and negative directions of angular velocities use the right hand rule
-            e.g. positive angular z velocity is a rotation of the robot anti-clockwise
+    """Robot reference coordinate system:
+
+    linear
+        x = forward
+        y = left
+        z = up
+    angular:
+        x = roll
+        y = pitch
+        z = yaw
+        Positive and negative directions of angular velocities use the right hand rule
+        e.g. positive angular z velocity is a rotation of the robot anti-clockwise
     """
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0"):

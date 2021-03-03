@@ -4,10 +4,8 @@ from os import environ
 
 class KeyboardButton:
     def __init__(self, key):
-        """
-        This class is designed to simulate a button press similar to the button in the gpiozero,
-         but with a key press from your keyboard.
-        """
+        """This class is designed to simulate a button press similar to the
+        button in the gpiozero, but with a key press from your keyboard."""
         self.key = key
         self.pressed_method = None
         self.released_method = None
@@ -52,9 +50,8 @@ class KeyboardButton:
 
     @property
     def when_pressed(self):
-        """
-        Get or set the 'when pressed' button state callback function.
-        When set, this callback function will be invoked when this event happens.
+        """Get or set the 'when pressed' button state callback function. When
+        set, this callback function will be invoked when this event happens.
 
         :type callback: Function
         :param callback:
@@ -69,9 +66,8 @@ class KeyboardButton:
 
     @property
     def when_released(self):
-        """
-        Get or set the 'when released' button state callback function.
-        When set, this callback function will be invoked when this event happens.
+        """Get or set the 'when released' button state callback function. When
+        set, this callback function will be invoked when this event happens.
 
         :type callback: Function
         :param callback:
@@ -86,8 +82,7 @@ class KeyboardButton:
 
     @property
     def is_pressed(self) -> bool:
-        """
-        Get or set the button state as a boolean value.
+        """Get or set the button state as a boolean value.
 
         :rtype: bool
         """

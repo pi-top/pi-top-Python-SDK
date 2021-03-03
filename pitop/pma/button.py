@@ -3,8 +3,7 @@ from .common import get_pin_for_port
 
 
 class Button(gpiozero_Button):
-    """
-    Encapsulates the behaviour of a push-button.
+    """Encapsulates the behaviour of a push-button.
 
     A push-button is a simple switch mechanism for controlling some aspect of a circuit.
 
@@ -17,9 +16,9 @@ class Button(gpiozero_Button):
         super(Button, self).__init__(get_pin_for_port(self._pma_port))
 
     def close(self):
-        """
-        Shut down the device and release all associated resources. This method
-        can be called on an already closed device without raising an exception.
+        """Shut down the device and release all associated resources. This
+        method can be called on an already closed device without raising an
+        exception.
 
         This method is primarily intended for interactive use at the command
         line. It disables the device and releases its pin(s) for use by another

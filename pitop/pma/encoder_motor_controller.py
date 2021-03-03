@@ -10,9 +10,7 @@ from .common.encoder_motor_registers import (
 
 
 class EncoderMotorController:
-    """
-    Class used to read/write motor encoder registers from the MCU
-    """
+    """Class used to read/write motor encoder registers from the MCU."""
 
     __MAX_DC_MOTOR_RPM = 6000
 
