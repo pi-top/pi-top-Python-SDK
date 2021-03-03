@@ -60,13 +60,14 @@ class PiTop(metaclass=Singleton):
 
     @property
     def oled(self):
-        """.. warning:: This property is deprecated and will be deleted on the
-        next major release of the SDK.
-
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
-        the miniscreen OLED display.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.Miniscreen` object to interact with the
+        miniscreen OLED display.
 
         This will return None if not on a pi-top [4].
+
+        .. warning::
+           This property is deprecated in favor of :func:`miniscreen`, and will be deleted on the next major release of the SDK.
         """
         return self._miniscreen
 
