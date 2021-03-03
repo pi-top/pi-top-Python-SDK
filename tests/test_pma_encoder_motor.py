@@ -10,8 +10,8 @@ modules["pitopcommon.logger"] = Mock()
 modules["pitopcommon.singleton"] = Mock()
 modules["pitop.pma.ultrasonic_sensor"] = Mock()
 
-from pitop.encoder_motor import EncoderMotor
-from pitop.parameters import (
+from pitop.pma.encoder_motor import EncoderMotor
+from pitop.pma.parameters import (
     BrakingType,
     ForwardDirection,
     Direction
