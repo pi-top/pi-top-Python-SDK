@@ -42,7 +42,7 @@ pitop.cancel_button.when_pressed = display_gif_and_exit
 pitop.up_button.when_pressed = display_gif_and_exit
 pitop.down_button.when_pressed = display_gif_and_exit
 
-pitop.miniscreen.display_multiline_text("Press any\nbutton...")
+pitop.miniscreen.display_multiline_text("Press any button...", font_size=25)
 
 # Sleep until `display_gif_and_exit` runs
 while keep_running:

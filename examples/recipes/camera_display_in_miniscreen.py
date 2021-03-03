@@ -1,6 +1,6 @@
-from pitop import Camera, Miniscreen
+from pitop import Camera, Pitop
 
 
 camera = Camera()
-miniscreen = Miniscreen()
-camera.on_frame = miniscreen.display_image
+pitop = Pitop()
+camera.on_frame = pitop.miniscreen.display_image
