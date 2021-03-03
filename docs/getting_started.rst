@@ -20,7 +20,9 @@ Check out `Using pi-top Hardware with Raspberry Pi OS`_ in the pi-top knowledge 
 
 .. _Using pi-top Hardware with Raspberry Pi OS: https://knowledgebase.pi-top.com/knowledge/pi-top-and-raspberry-pi-os
 
-Note: if you only want to install the SDK, then you can replace the "Install software packages" step:
+.. note::
+
+   If you only want to install the SDK, then you can replace the "Install software packages" step:
 
 .. code-block:: sh
 
@@ -39,7 +41,15 @@ You can also install the latest version of the SDK through PyPI in your pi-top w
 
     pip3 install pitop
 
-Note: this will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
+You'll need to install one extra dependency for the SDK to work when using pip:
+
+.. code-block:: sh
+
+    sudo apt install libatlas-base-dev -y
+
+.. note::
+
+   This will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
 
 Building from source
 ====================
@@ -54,7 +64,15 @@ Building from source is simple:
     cd pi-top-Python-SDK
     pip3 install -e .
 
-Note: this will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
+You'll need to install one extra dependency for the SDK to work when using pip:
+
+.. code-block:: sh
+
+    sudo apt install libatlas-base-dev -y
+
+.. note::
+
+   This will not install the system packages required for all areas of the SDK to work. This may be useful if you wish to use a virtualenv with a different version dependency to the system.
 
 ----------------------------------------------
 Checking that the SDK is installed and working

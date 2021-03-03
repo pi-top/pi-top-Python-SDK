@@ -34,7 +34,7 @@ def legacy_pitop_peripherals():
 
 
 def __get_fw_device_status(device_enum):
-    """ Returns a dictionary with the status of the given device enum """
+    """Returns a dictionary with the status of the given device enum."""
     human_readable_name = device_enum.name.replace(
         "_", " ").title().replace("Pt4", "pi-top [4]")
 
@@ -74,7 +74,8 @@ def connected_plate():
     """Detects which plate from the PMA is connected to the device.
 
     Returns:
-        FirmwareDeviceID: device ID of the connected plate. None if not detected"""
+        FirmwareDeviceID: device ID of the connected plate. None if not detected
+    """
     for plate_id in (FirmwareDeviceID.pt4_foundation_plate, FirmwareDeviceID.pt4_expansion_plate):
         status = __get_fw_device_status(plate_id)
         if status.get("connected") is True:
@@ -93,7 +94,7 @@ def usb_pitop_peripherals():
 
 
 def touchscreen_is_connected():
-    """Checks if pi-top touchscreen is connected to the device"""
+    """Checks if pi-top touchscreen is connected to the device."""
     resp = run_command("lsusb", timeout=3)
     for line in resp.split("\n"):
         fields = line.split(" ")
@@ -107,7 +108,7 @@ def touchscreen_is_connected():
 
 
 def pitop_keyboard_is_connected():
-    """Checks if pi-top keyboard is connected to the device"""
+    """Checks if pi-top keyboard is connected to the device."""
     resp = run_command("lsusb", timeout=3)
     for line in resp.split("\n"):
         fields = line.split(" ")
@@ -121,7 +122,7 @@ def pitop_keyboard_is_connected():
 
 
 def pitop_peripherals():
-    """Returns a list with the status of all pi-top peripherals
+    """Returns a list with the status of all pi-top peripherals.
 
     Returns:
         list: list of dictionaries with the status of pi-top peripherals

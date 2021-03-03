@@ -5,8 +5,8 @@ from pitop.pma.common import type_check
 
 
 class FrameHandler:
-    """
-    Class that processes actions performed on a camera frame.
+    """Class that processes actions performed on a camera frame.
+
     :data:`CaptureActions` must be registered, alongside an object using the :data:`register_action` method.
     These actions will be run whenever the :data:`process` method is called.
     """
@@ -30,9 +30,7 @@ class FrameHandler:
             self.__frame = frame
 
     def process(self) -> None:
-        """
-        Executes all the actions registered in the FrameHandler object
-        """
+        """Executes all the actions registered in the FrameHandler object."""
         with self.__process_lock:
             frame = self.frame
 
@@ -52,9 +50,9 @@ class FrameHandler:
 
     @type_check
     def register_action(self, action: CaptureActions, args_dict: dict) -> None:
-        """
-        Registers an action to be processed when running the :data:`process` method
-        Based on the action, an action object instance will be created, using :data:`args_dict` as arguments
+        """Registers an action to be processed when running the :data:`process`
+        method Based on the action, an action object instance will be created,
+        using :data:`args_dict` as arguments.
 
         :param CaptureActions action: action to be registered
         :param dict args_dict: dictionary with arguments used to create an action object instance
@@ -71,8 +69,8 @@ class FrameHandler:
 
     @type_check
     def remove_action(self, action: CaptureActions) -> None:
-        """
-        Unregisters an action from the internal action register, to stop being processed when running :data:`process`
+        """Unregisters an action from the internal action register, to stop
+        being processed when running :data:`process`
 
         :param CaptureActions action: type of action being removed
         """
@@ -82,8 +80,7 @@ class FrameHandler:
                 action_object.stop()
 
     def current_actions(self) -> list:
-        """
-        Returns a list with the currently registered actions
+        """Returns a list with the currently registered actions.
 
         :return: list
         """
@@ -91,8 +88,8 @@ class FrameHandler:
 
     @type_check
     def is_running_action(self, action: CaptureActions) -> bool:
-        """
-        Checks if the given :data:`action` is in the internal action register
+        """Checks if the given :data:`action` is in the internal action
+        register.
 
         :param CaptureActions action: type of action to check
         :return: bool, True if the action is being processed, False otherwise

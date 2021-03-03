@@ -43,16 +43,12 @@ class EncoderMotorControllerTestCase(TestCase):
         set_braking_type_mock.assert_called_once_with(braking_type)
 
     def test_constructor_fails_on_incorrect_port(self):
-        """
-        Constructor fails if providing an invalid port
-        """
+        """Constructor fails if providing an invalid port."""
         with self.assertRaises(Exception):
             EncoderMotorController(port="invalid_port")
 
     def test_set_power_fails_on_invalid_value(self):
-        """
-        set_power fails if called with an invalid power value
-        """
+        """set_power fails if called with an invalid power value."""
         controller = EncoderMotorController(port="M1")
 
         for power in (-1001, 1001):
@@ -60,9 +56,8 @@ class EncoderMotorControllerTestCase(TestCase):
                 controller.set_power(power)
 
     def test_set_braking_type_fails_on_invalid_value(self):
-        """
-        set_braking_type fails if called with an invalid brake_type value
-        """
+        """set_braking_type fails if called with an invalid brake_type
+        value."""
         controller = EncoderMotorController(port="M1")
 
         for brake_type in (-100, -1, 2, 30):
@@ -70,9 +65,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 controller.set_braking_type(brake_type)
 
     def test_power_returns_none_if_not_on_mode_0(self):
-        """
-        power() returns None if not on Mode 0
-        """
+        """power() returns None if not on Mode 0."""
         controller = EncoderMotorController(port="M1")
         mode_mock = controller.control_mode = Mock()
 
@@ -81,9 +74,7 @@ class EncoderMotorControllerTestCase(TestCase):
             self.assertEquals(controller.power(), None)
 
     def test_rpm_control_returns_none_if_not_on_mode_1(self):
-        """
-        rpm_control() returns None if not on Mode 1
-        """
+        """rpm_control() returns None if not on Mode 1."""
         controller = EncoderMotorController(port="M1")
         mode_mock = controller.control_mode = Mock()
 
@@ -92,9 +83,7 @@ class EncoderMotorControllerTestCase(TestCase):
             self.assertEquals(controller.rpm_control(), None)
 
     def test_rpm_with_rotations_returns_none_if_not_on_mode_2(self):
-        """
-        rpm_with_rotations() returns None if not on Mode 1
-        """
+        """rpm_with_rotations() returns None if not on Mode 1."""
         controller = EncoderMotorController(port="M1")
         mode_mock = controller.control_mode = Mock()
 
@@ -103,9 +92,7 @@ class EncoderMotorControllerTestCase(TestCase):
             self.assertEquals(controller.rpm_with_rotations(), None)
 
     def test_stop_works_on_all_modes(self):
-        """
-        stop() stops the motor in all modes
-        """
+        """stop() stops the motor in all modes."""
         controller = EncoderMotorController(port="M1")
         mode_mock = controller.control_mode = Mock()
 
@@ -125,9 +112,8 @@ class EncoderMotorControllerTestCase(TestCase):
             method_called.assert_called_with(*expected_args)
 
     def test_set_braking_type_read_write(self):
-        """
-        Registers read/written when setting/reading braking type from MCU
-        """
+        """Registers read/written when setting/reading braking type from
+        MCU."""
         for motor_port_registers in MotorControlRegisters:
             motor_port_name = motor_port_registers.name
             motor_registers = motor_port_registers.value
@@ -150,9 +136,8 @@ class EncoderMotorControllerTestCase(TestCase):
                 read_unsigned_byte_mock.assert_called_with(brake_type_register)
 
     def test_control_mode_read_write(self):
-        """
-        Registers read/written when setting/reading control modes from MCU
-        """
+        """Registers read/written when setting/reading control modes from
+        MCU."""
         for motor_port_registers in MotorControlRegisters:
             motor_port_name = motor_port_registers.name
             motor_registers = motor_port_registers.value
@@ -175,9 +160,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 read_unsigned_byte_mock.assert_called_with(control_mode_register)
 
     def test_control_mode_0_read_write(self):
-        """
-        Registers read/written when using control mode 0 methods
-        """
+        """Registers read/written when using control mode 0 methods."""
         power_value = 50
         for motor_port_registers in MotorControlRegisters:
             motor_port_name = motor_port_registers.name
@@ -204,9 +187,7 @@ class EncoderMotorControllerTestCase(TestCase):
             read_signed_word_mock.assert_called_with(mode_0_power_register, little_endian=True)
 
     def test_control_mode_1_read_write(self):
-        """
-        Registers read/written  when using control mode 1 methods
-        """
+        """Registers read/written  when using control mode 1 methods."""
         rpm_value = 500
         for motor_port_registers in MotorControlRegisters:
             motor_port_name = motor_port_registers.name
@@ -233,9 +214,7 @@ class EncoderMotorControllerTestCase(TestCase):
             read_signed_word_mock.assert_called_with(mode_1_register, little_endian=True)
 
     def test_control_mode_2_read_write(self):
-        """
-        Registers read/written  when using control mode 2 methods
-        """
+        """Registers read/written  when using control mode 2 methods."""
         rpm_value = 500
         rotations_value = 10
         # from rpm and rotations values, calculate byte values to use in mocks

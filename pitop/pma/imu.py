@@ -47,8 +47,9 @@ class IMU:
 
     @property
     def orientation_radians(self):
-        """
-        Gets the current orientation in radians using the aircraft principal axes of pitch, roll and yaw.
+        """Gets the current orientation in radians using the aircraft principal
+        axes of pitch, roll and yaw.
+
         :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
         representing the angle of the axis in radians.
         :rtype: Orientation()
@@ -60,8 +61,9 @@ class IMU:
 
     @property
     def orientation_degrees(self):
-        """
-        Gets the current orientation in degrees using the aircraft principal axes of pitch, roll and yaw.
+        """Gets the current orientation in degrees using the aircraft principal
+        axes of pitch, roll and yaw.
+
         :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
         representing the angle of the axis in degrees.
         :rtype: Orientation()
@@ -77,15 +79,14 @@ class IMU:
 
     @property
     def orientation(self):
-        """
-        Calls orientation_degrees above.
-        """
+        """Calls orientation_degrees above."""
         return self.orientation_degrees
 
     @property
     def accelerometer_orientation(self):
-        """
-        Calculates roll and pitch orientations using only accelerometer data.
+        """Calculates roll and pitch orientations using only accelerometer
+        data.
+
         :return: A :class:`Orientation` object with attributes of pitch, roll and yaw. The values are Floats
                 representing the angle of the axis in degrees. Yaw is always zero for this method.
         :rtype: Orientation()
@@ -103,8 +104,8 @@ class IMU:
 
     @property
     def accelerometer(self):
-        """
-        Gets the x, y and z axis accelerometer data.
+        """Gets the x, y and z axis accelerometer data.
+
         :return: A :class:`Vector3D` object with attributes x, y and z. The values are Floats representing the
                 acceleration intensity of the axis in Gs.
         :rtype: Vector3D()
@@ -120,8 +121,8 @@ class IMU:
 
     @property
     def gyroscope(self):
-        """
-        Gets the x, y and z axis gyroscope data.
+        """Gets the x, y and z axis gyroscope data.
+
         :return: A :class:`Vector3D` object with attributes x, y and z. The values are Floats representing the
                 rotational intensity of the axis in degrees per second.
         :rtype: Vector3D()
@@ -137,8 +138,8 @@ class IMU:
 
     @property
     def magnetometer(self):
-        """
-        Gets the x, y and z axis magnetometer data.
+        """Gets the x, y and z axis magnetometer data.
+
         :return: A :class:`Vector3D` object with attributes x, y and z. The values are Floats representing the magnetic
             intensity of the axis in microteslas (µT).
         :rtype: Vector3D()

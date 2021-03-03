@@ -5,7 +5,7 @@ from sys import exit, stderr
 
 
 class dotdict(dict):
-    """dot.notation access to dictionary attributes"""
+    """dot.notation access to dictionary attributes."""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
@@ -23,7 +23,8 @@ def __run(cli_cls, args):
 
 
 def run(cli_cls):
-    """Runs the CLI provided as argument, using the class properties and methods.
+    """Runs the CLI provided as argument, using the class properties and
+    methods.
 
     Args:
         cli_cls (CliBaseClass): CLI class constructor. Must inherit from CliBaseClass.
@@ -40,9 +41,9 @@ def run(cli_cls):
 
 
 def run_with_args(cli_cls, old_command, new_command, args_dict):
-    """Runs a CLI command using the provided 'cli_cls' and the arguments in 'args_dict'.
-    This method doesn't use ArgumentParser, since it directly executes
-    the CLI command using static arguments provided in 'args_dict'.
+    """Runs a CLI command using the provided 'cli_cls' and the arguments in
+    'args_dict'. This method doesn't use ArgumentParser, since it directly
+    executes the CLI command using static arguments provided in 'args_dict'.
 
     Args:
         cli_cls (CliBaseClass): CLI class constructor. Must inherit from CliBaseClass.
