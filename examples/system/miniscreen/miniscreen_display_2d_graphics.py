@@ -1,7 +1,8 @@
-from pitop import Miniscreen
+from pitop import Pitop
 from PIL import Image, ImageDraw, ImageFont
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 image = Image.new(
     miniscreen.mode,
     miniscreen.size,

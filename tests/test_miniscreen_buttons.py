@@ -13,7 +13,7 @@ modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 
 from unittest import TestCase, main
-from pitop import Miniscreen
+from pitop import Pitop
 
 
 class PTButtonsCase(TestCase):
@@ -27,7 +27,7 @@ class PTButtonsCase(TestCase):
         def a():
             pass
 
-        test_up_button = Miniscreen().up_button
+        test_up_button = Pitop().miniscreen.up_button
         test_up_button.when_pressed = MagicMock(side_effect=a)
         test_up_button.when_pressed.assert_not_called()
         test_up_button.when_pressed()

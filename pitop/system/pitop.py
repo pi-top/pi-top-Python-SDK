@@ -1,7 +1,8 @@
 from pitop.battery import Battery
+from pitop.display import Display
 from pitop.miniscreen import Miniscreen
 
-from pitop.system import device_type
+from pitop.system import device_info
 from pitop.system.peripherals import connected_plate
 from pitop.system.port_manager import PortManager
 
@@ -11,11 +12,11 @@ from pitopcommon.singleton import Singleton
 
 class Pitop(metaclass=Singleton):
     """
-    Abstraction of a pi-top device.
+    Represents a pi-top Device.
 
-    When creating a Pitop object, a set of attributes will be set,
+    When creating a `Pitop` object, multiple properties will be set,
     depending on the pi-top device that it's running the code. For example, if run on
-    a pi-top [4], an `oled` attribute will be created as an interface to control the
+    a pi-top [4], a `miniscreen` attribute will be created as an interface to control the
     miniscreen OLED display, but that won't be available for other pi-top devices.
 
     The Pitop class is a Singleton. This means that only one instance per process will
@@ -31,29 +32,44 @@ class Pitop(metaclass=Singleton):
         self._port_manager = None
         self._plate = None
 
-        device = device_type()
-        if device != DeviceName.pi_top_ceed.value:
+        device = device_info()
+        self.type = device["name"]
+        self.fw_version = device["fw_version"]
+
+        if self.type != DeviceName.pi_top_ceed.value:
             self._battery = Battery()
 
-        if device == DeviceName.pi_top_4.value:
+        if self.type == DeviceName.pi_top_4.value:
             self._miniscreen = Miniscreen()
             self._port_manager = PortManager(state={})
             self._plate = connected_plate()
+        else:
+            self._display = Display()
 
     @property
     def battery(self):
         """
-        If not using a pi-topCEED, it returns a :class:`pitop.battery.Battery` object to interact with
-        the miniscreen OLED display.
+        If not using a pi-topCEED, returns an instance of :class:`pitop.battery.Battery` to interact with
+        the on-board battery.
 
         This will return None if on a pi-topCEED.
         """
         return self._battery
 
     @property
+    def display(self):
+        """
+        If not using a pi-top [4], returns an instance of :class:`pitop.display.Display` to interact with
+        the on-board display.
+
+        This will return None if on a pi-top [4].
+        """
+        return self._display
+
+    @property
     def miniscreen(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
+        If using a pi-top [4], returns an instance of :class:`pitop.miniscreen.Miniscreen` to interact with
         the miniscreen OLED display.
 
         This will return None if not on a pi-top [4].
@@ -66,7 +82,7 @@ class Pitop(metaclass=Singleton):
         .. warning::
             This property is deprecated and will be deleted on the next major release of the SDK.
 
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
+        If using a pi-top [4], returns an instance of :class:`pitop.miniscreen.Miniscreen` to interact with
         the miniscreen OLED display.
 
         This will return None if not on a pi-top [4].
@@ -76,7 +92,7 @@ class Pitop(metaclass=Singleton):
     @property
     def up_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
+        If using a pi-top [4], returns an instance of :class:`pitop.miniscreen.MiniscreenButton` to interact with
         the miniscreen up button.
 
         This will return None if not on a pi-top [4].
@@ -86,7 +102,7 @@ class Pitop(metaclass=Singleton):
     @property
     def down_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
+        If using a pi-top [4], returns an instance of :class:`pitop.miniscreen.MiniscreenButton` to interact with
         the miniscreen down button.
 
         This will return None if not on a pi-top [4].
@@ -96,7 +112,7 @@ class Pitop(metaclass=Singleton):
     @property
     def select_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
+        If using a pi-top [4], returns an instance of :class:`pitop.miniscreen.MiniscreenButton` to interact with
         the miniscreen select button.
 
         This will return None if not on a pi-top [4].
@@ -107,7 +123,7 @@ class Pitop(metaclass=Singleton):
     @property
     def cancel_button(self):
         """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
+        If using a pi-top [4], returns an instance of :class:`pitop.miniscreen.MiniscreenButton` to interact with
         the miniscreen cancel button.
 
         This will return None if not on a pi-top [4].
@@ -116,8 +132,8 @@ class Pitop(metaclass=Singleton):
 
     def register_pma_component(self, component_instance):
         """
-        If using a pi-top [4], register a PMA component as being connected. This allows
-        the object to keep track of what component is connected and where.
+        If using a pi-top [4], register a PMA component as being connected. Thin instance ofs allows
+        the to keep track of what component is connected and where.
 
         This will return None if not on a pi-top [4].
 

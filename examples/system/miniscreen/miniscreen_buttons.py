@@ -1,8 +1,9 @@
-from pitop import Miniscreen
+from pitop import Pitop
 from time import sleep
 
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 up = miniscreen.up_button
 down = miniscreen.down_button
 

@@ -1,8 +1,9 @@
-from pitop import Miniscreen
+from pitop import Pitop
 from PIL import Image
 from time import sleep
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 
 # Set image to loop
 # Image provided by 'pt-project-files'
