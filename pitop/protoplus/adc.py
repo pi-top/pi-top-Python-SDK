@@ -4,9 +4,9 @@ from time import sleep
 
 class ADCProbe():
 
-    _device_address = 0x2A
-    _channel_count = 6
-    _adc_ratio = 20
+    __device_address = 0x2A
+    __channel_count = 6
+    __adc_ratio = 20
 
     def __init__(self, i2c_device_name="/dev/i2c-1"):
 

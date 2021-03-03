@@ -1,6 +1,8 @@
 from pitop.battery import Battery
+from pitop.display import Display
 from pitop.miniscreen import Miniscreen
-from pitop.system import device_type
+
+from pitop.system import device_info
 from pitop.system.peripherals import connected_plate
 from pitop.system.port_manager import PortManager
 
@@ -8,16 +10,16 @@ from pitopcommon.common_names import DeviceName
 from pitopcommon.singleton import Singleton
 
 
-class PiTop(metaclass=Singleton):
-    """Abstraction of a pi-top device.
+class Pitop(metaclass=Singleton):
+    """Represents a pi-top Device.
 
-    When creating a PiTop object, a set of attributes will be set,
+    When creating a `Pitop` object, multiple properties will be set,
     depending on the pi-top device that it's running the code. For example, if run on
-    a pi-top [4], an `oled` attribute will be created as an interface to control the
+    a pi-top [4], a `miniscreen` attribute will be created as an interface to control the
     miniscreen OLED display, but that won't be available for other pi-top devices.
 
-    The PiTop class is a Singleton. This means that only one instance per process will
-    be created. In practice, this means that if in a particular project you instance a PiTop
+    The Pitop class is a Singleton. This means that only one instance per process will
+    be created. In practice, this means that if in a particular project you instance a Pitop
     class in 2 different files, they will share the internal state: you should be able to
     register components in one file (using :meth:`register_pma_component`) and retrieve
     it to use it in another file (using :meth:`get_component_on_pma_port`).
@@ -29,14 +31,19 @@ class PiTop(metaclass=Singleton):
         self._port_manager = None
         self._plate = None
 
-        device = device_type()
-        if device != DeviceName.pi_top_ceed.value:
+        device = device_info()
+        self.type = device["name"]
+        self.fw_version = device["fw_version"]
+
+        if self.type != DeviceName.pi_top_ceed.value:
             self._battery = Battery()
 
-        if device == DeviceName.pi_top_4.value:
+        if self.type == DeviceName.pi_top_4.value:
             self._miniscreen = Miniscreen()
             self._port_manager = PortManager(state={})
             self._plate = connected_plate()
+        else:
+            self._display = Display()
 
     @property
     def battery(self):
@@ -47,6 +54,15 @@ class PiTop(metaclass=Singleton):
         This will return None if on a pi-topCEED.
         """
         return self._battery
+
+    @property
+    def display(self):
+        """If not using a pi-top [4], returns an instance of
+        :class:`pitop.display.Display` to interact with the on-board display.
+
+        This will return None if on a pi-top [4].
+        """
+        return self._display
 
     @property
     def miniscreen(self):
@@ -114,8 +130,8 @@ class PiTop(metaclass=Singleton):
 
     def register_pma_component(self, component_instance):
         """If using a pi-top [4], register a PMA component as being connected.
-        This allows the object to keep track of what component is connected and
-        where.
+        This allows the pi-top instance to keep track of what component is
+        connected and where.
 
         This will return None if not on a pi-top [4].
 

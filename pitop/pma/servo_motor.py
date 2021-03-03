@@ -120,7 +120,7 @@ class ServoMotor:
             :meth:`ServoMotorState.angle` must be passed. Example usage:
 
             .. code-block:: python
-                from pitop.pma import ServoMotor, ServoMotorState
+                from pitop import ServoMotor, ServoMotorState
                 servo = ServoMotor()
                 target_state = ServoMotorState()
                 target_state.angle = 45

@@ -1,4 +1,4 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Pitop
 
 from PIL import Image, ImageDraw
 from random import randint, random
@@ -6,7 +6,8 @@ from time import sleep
 
 # https://en.wikipedia.org/wiki/Maze_generation_algorithm
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 image = Image.new(
     miniscreen.mode,
     miniscreen.size,
