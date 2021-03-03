@@ -209,8 +209,8 @@ class EncoderMotor:
         """Returns the actual RPM currently being achieved at the output shaft,
         measured by the encoder sensor.
 
-        .. note::     Note that this value might differ from the target
-        RPM set through :class:`set_target_rpm`.
+        This value might differ from the target RPM set through
+        :class:`set_target_rpm`.
         """
 
         dc_motor_rpm_actual = self.__motor_core.tachometer() * self.__forward_direction
@@ -373,8 +373,8 @@ class EncoderMotor:
         """Returns the speed currently being achieved by the motor in meters
         per second.
 
-        .. note::     Note that this value might differ from the target
-        speed set through :class:`set_target_speed`.
+        This value may differ from the target speed set through
+        :class:`set_target_speed`.
         """
 
         return (self.current_rpm / 60.0) * self.wheel_circumference
@@ -383,8 +383,8 @@ class EncoderMotor:
     def distance(self):
         """Returns the distance the wheel has travelled in meters.
 
-        .. note::     Note that this value depends on using the correct
-        :data:`wheel_circumference` value
+        This value depends on the correct :data:`wheel_circumference`
+        value being set.
         """
 
         return self.wheel_circumference * self.rotation_counter
@@ -394,8 +394,8 @@ class EncoderMotor:
         """The approximate maximum speed possible for the wheel attached to the
         motor shaft, given the motor specs, gear ratio and wheel circumference.
 
-        .. note::     Note that this value depends on using the correct
-        :data:`wheel_circumference` value
+        This value depends on the correct :data:`wheel_circumference`
+        value being set.
         """
 
         return self.max_rpm / 60.0 * self.wheel_circumference

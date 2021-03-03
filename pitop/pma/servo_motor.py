@@ -77,11 +77,10 @@ class ServoMotor:
     @property
     def angle_range(self):
         """Returns a tuple with minimum and maximum possible angles where the
-        servo horn can be moved to. If :class:`zero_point` is set to 0
-        (default), the angle range will be (-90, 90).
+        servo horn can be moved to.
 
-        .. note::     The maximum and minimum angles depend on the zero-
-        point setting.
+        If :class:`zero_point` is set to 0 (default), the angle range
+        will be (-90, 90).
         """
 
         return self.__min_angle, self.__max_angle
@@ -108,12 +107,12 @@ class ServoMotor:
         """Sets the target state of the servo horn, relative to the zero
         position.
 
-        .. warning::
-            Using an :data:`target_state.angle` out of the valid angle range will cause the method to raise an
-            exception. To determine the valid angle range, use :meth:`ServoMotor.get_angle_range`.
+           .. warning::
+             Using an :data:`target_state.angle` out of the valid angle range will cause the method to raise an
+             exception. To determine the valid angle range, use :meth:`ServoMotor.get_angle_range`.
 
-        .. warning::
-            Using a :data:`target_state.speed` out of the valid speed range will cause the method to raise an exception.
+           .. warning::
+             Using a :data:`target_state.speed` out of the valid speed range will cause the method to raise an exception.
 
         :type target_state: :class:`ServoMotorState`
         :param target_state:
@@ -146,23 +145,25 @@ class ServoMotor:
 
     @property
     def current_angle(self):
-        """
-        Returns the current angle that the servo motor is at.
+        """Returns the current angle that the servo motor is at.
+
+           .. note::
+             If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
+             current angle and current speed at the same time.
+
         :return: float value of the current angle of the servo motor in degrees.
-        .. note::
-        If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
-        current angle and current speed at the same time.
         """
         return self.state.angle
 
     @property
     def current_speed(self):
-        """
-        Returns the current speed the servo motor is at.
+        """Returns the current speed the servo motor is at.
+
+           .. note::
+             If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
+             current angle and current speed at the same time.
+
         :return: float value of the current speed of the servo motor in deg/s.
-        .. note::
-        If you need synchronized angle and speed values, use :meth:`ServoMotor.state` instead, this will return both
-        current angle and current speed at the same time.
         """
         return self.state.speed
 
@@ -205,8 +206,8 @@ class ServoMotor:
         Setting a :data:`speed` value higher than zero will move the horn to the maximum angle (90 degrees by default),
         while a value less than zero will move it to the minimum angle (-90 degress by default).
 
-        .. warning::
-            Using a :data:`speed` out of the valid speed range will cause the method to raise an exception.
+           .. warning::
+             Using a :data:`speed` out of the valid speed range will cause the method to raise an exception.
 
         :type speed: int or float
         :param speed:
