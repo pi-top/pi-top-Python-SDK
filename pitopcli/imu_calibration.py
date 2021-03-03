@@ -1,5 +1,5 @@
-from pitop.imu_controller import ImuController
-from pitop.common.math_functions.ellipsoid_functions import (
+from pitop.pma.imu_controller import ImuController
+from pitop.pma.common.math_functions.ellipsoid_functions import (
     least_squares_ellipsoid_fit,
     get_ellipsoid_geometric_params,
     plot_ellipsoid,

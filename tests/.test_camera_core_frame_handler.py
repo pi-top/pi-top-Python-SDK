@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from pitop.core import FrameHandler, CaptureActions
+from pitop.camera.core import FrameHandler, CaptureActions
 
 
 class FrameHandlerTestCase(TestCase):
