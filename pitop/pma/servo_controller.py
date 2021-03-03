@@ -20,9 +20,7 @@ class ServoHardwareSpecs:
 
 
 class ServoController:
-    """
-    Class used to read/write servo motor registers from the MCU
-    """
+    """Class used to read/write servo motor registers from the MCU."""
 
     def __init__(self, port: str):
         if port not in ServoControlRegisters.__members__:

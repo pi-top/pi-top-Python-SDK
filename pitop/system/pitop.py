@@ -9,8 +9,7 @@ from pitopcommon.singleton import Singleton
 
 
 class PiTop(metaclass=Singleton):
-    """
-    Abstraction of a pi-top device.
+    """Abstraction of a pi-top device.
 
     When creating a PiTop object, a set of attributes will be set,
     depending on the pi-top device that it's running the code. For example, if run on
@@ -41,9 +40,9 @@ class PiTop(metaclass=Singleton):
 
     @property
     def battery(self):
-        """
-        If not using a pi-topCEED, it returns a :class:`pitop.battery.Battery` object to interact with
-        the miniscreen OLED display.
+        """If not using a pi-topCEED, it returns a
+        :class:`pitop.battery.Battery` object to interact with the miniscreen
+        OLED display.
 
         This will return None if on a pi-topCEED.
         """
@@ -51,9 +50,9 @@ class PiTop(metaclass=Singleton):
 
     @property
     def miniscreen(self):
-        """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
-        the miniscreen OLED display.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.Miniscreen` object to interact with the
+        miniscreen OLED display.
 
         This will return None if not on a pi-top [4].
         """
@@ -61,22 +60,22 @@ class PiTop(metaclass=Singleton):
 
     @property
     def oled(self):
-        """
-        .. warning::
-            This property is deprecated and will be deleted on the next major release of the SDK.
-
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.Miniscreen` object to interact with
-        the miniscreen OLED display.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.Miniscreen` object to interact with the
+        miniscreen OLED display.
 
         This will return None if not on a pi-top [4].
+
+        .. warning::
+           This property is deprecated in favor of :func:`miniscreen`, and will be deleted on the next major release of the SDK.
         """
         return self._miniscreen
 
     @property
     def up_button(self):
-        """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
-        the miniscreen up button.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
+        miniscreen up button.
 
         This will return None if not on a pi-top [4].
         """
@@ -84,9 +83,9 @@ class PiTop(metaclass=Singleton):
 
     @property
     def down_button(self):
-        """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
-        the miniscreen down button.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
+        miniscreen down button.
 
         This will return None if not on a pi-top [4].
         """
@@ -94,9 +93,9 @@ class PiTop(metaclass=Singleton):
 
     @property
     def select_button(self):
-        """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
-        the miniscreen select button.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
+        miniscreen select button.
 
         This will return None if not on a pi-top [4].
         """
@@ -105,18 +104,18 @@ class PiTop(metaclass=Singleton):
 
     @property
     def cancel_button(self):
-        """
-        If using a pi-top [4], it returns a :class:`pitop.miniscreen.MiniscreenButton` object to interact with
-        the miniscreen cancel button.
+        """If using a pi-top [4], it returns a
+        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
+        miniscreen cancel button.
 
         This will return None if not on a pi-top [4].
         """
         return self._miniscreen.cancel_button
 
     def register_pma_component(self, component_instance):
-        """
-        If using a pi-top [4], register a PMA component as being connected. This allows
-        the object to keep track of what component is connected and where.
+        """If using a pi-top [4], register a PMA component as being connected.
+        This allows the object to keep track of what component is connected and
+        where.
 
         This will return None if not on a pi-top [4].
 
@@ -125,9 +124,8 @@ class PiTop(metaclass=Singleton):
         self._port_manager.register_pma_component(component_instance)
 
     def drop_pma_component(self, port):
-        """
-        If using a pi-top [4], unregister a PMA component as being connected. This will free
-        the port to be reused if necessary.
+        """If using a pi-top [4], unregister a PMA component as being
+        connected. This will free the port to be reused if necessary.
 
         This will return None if not on a pi-top [4].
 
@@ -136,8 +134,8 @@ class PiTop(metaclass=Singleton):
         self._port_manager.drop_pma_component(port)
 
     def get_component_on_pma_port(self, port):
-        """
-        If using a pi-top [4], get the instance of the PMA component connected to a given port.
+        """If using a pi-top [4], get the instance of the PMA component
+        connected to a given port.
 
         This will return None if not on a pi-top [4].
 
