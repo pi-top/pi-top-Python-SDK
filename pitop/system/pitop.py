@@ -10,7 +10,7 @@ from pitopcommon.common_names import DeviceName
 from pitopcommon.singleton import Singleton
 
 
-class PiTop(metaclass=Singleton):
+class Pitop(metaclass=Singleton):
     """Represents a pi-top Device.
 
     When creating a `Pitop` object, multiple properties will be set,
@@ -57,9 +57,8 @@ class PiTop(metaclass=Singleton):
 
     @property
     def display(self):
-        """
-        If not using a pi-top [4], returns an instance of :class:`pitop.display.Display` to interact with
-        the on-board display.
+        """If not using a pi-top [4], returns an instance of
+        :class:`pitop.display.Display` to interact with the on-board display.
 
         This will return None if on a pi-top [4].
         """
@@ -131,8 +130,8 @@ class PiTop(metaclass=Singleton):
 
     def register_pma_component(self, component_instance):
         """If using a pi-top [4], register a PMA component as being connected.
-        This allows the pi-top instance to keep track of what component is connected and
-        where.
+        This allows the pi-top instance to keep track of what component is
+        connected and where.
 
         This will return None if not on a pi-top [4].
 

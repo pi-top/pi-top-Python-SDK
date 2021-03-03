@@ -11,7 +11,7 @@ from time import strftime
 
 
 from ..formatter import StdoutFormat, StdoutTable
-from .ptsoftware import PiTopSoftware
+from .ptsoftware import PitopSoftware
 from .hub_communication import HubCommunication
 
 from pitop.system import device_type
@@ -119,7 +119,7 @@ class HealthCheck:
         print("")
 
         StdoutFormat.print_section("pi-top Software Information")
-        pt_sw = PiTopSoftware()
+        pt_sw = PitopSoftware()
         StdoutFormat.print_subsection("pi-top Systemd Services")
         pt_sw.print_pt_systemd_status()
 

@@ -18,7 +18,7 @@ from pathlib import Path
 from time import sleep
 
 
-class AlexRobot(PiTop):
+class AlexRobot(Pitop):
     """Abstraction of a pi-top [4] and Robotics Kit, assembled in an 'Alex'
     configuration.
 
