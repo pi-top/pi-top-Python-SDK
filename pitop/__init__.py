@@ -19,11 +19,14 @@ from .pma import (
 from .pma.parameters import (
     ForwardDirection,
     Direction,
-    BrakingType
+    BrakingType,
 )
 
 # # Robotics
-from .robotics.configurations import AlexRobot
+from .robotics.configurations import (
+    alex_configuration,
+    AlexRobot,
+)
 
 # # System Devices
 from .camera import Camera

@@ -1,11 +1,11 @@
-from pitop import AlexRobot
+from pitop import Pitop, alex_configuration
 
 from random import randint
 from time import sleep
 
 
-# Set up Alex
-alex = AlexRobot()
+# Load Alex configuration into a Pitop object
+alex = Pitop.from_dict(alex_configuration)
 
 # Use miniscreen display
 alex.miniscreen.display_multiline_text("hi!\nI'm Alex!")
@@ -22,14 +22,14 @@ def random_sleep():
 
 
 # Move around randomly
-alex.forward(speed_factor=random_speed_factor())
+alex.drive.forward(speed_factor=random_speed_factor())
 sleep(random_sleep())
 
-alex.left(speed_factor=random_speed_factor())
+alex.drive.left(speed_factor=random_speed_factor())
 sleep(random_sleep())
 
-alex.backward(speed_factor=random_speed_factor())
+alex.drive.backward(speed_factor=random_speed_factor())
 sleep(random_sleep())
 
-alex.right(speed_factor=random_speed_factor())
+alex.drive.right(speed_factor=random_speed_factor())
 sleep(random_sleep())

@@ -1,18 +1,18 @@
-from pitop import AlexRobot
+from pitop import Pitop, alex_configuration
 from pitop.processing.algorithms.line_detect import process_frame_for_line
 
 from signal import pause
 
 
-# Set up robot
-alex = AlexRobot()
+# Load Alex configuration into a Pitop object
+alex = Pitop.from_dict(alex_configuration)
 
 
 # Set up logic based on line detection
 def drive_based_on_frame(frame):
     processed_frame = process_frame_for_line(frame)
     print(f"Target angle: {processed_frame.angle:.2f} deg ", end="\r")
-    alex.target_lock_drive_angle(processed_frame.angle)
+    alex.drive.target_lock_drive_angle(processed_frame.angle)
     alex.miniscreen.display_image(processed_frame.robot_view)
 
 

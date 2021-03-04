@@ -4,8 +4,12 @@ from pathlib import Path
 from pitop import Pitop
 
 
+def alex_configuration():
+    return __load_json('alex.json')
+
+
 def AlexRobot():
-    return Pitop.from_dict(__load_json('alex.json'))
+    return Pitop.from_dict(alex_configuration())
 
 
 def __load_json(filename):
