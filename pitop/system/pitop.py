@@ -16,9 +16,7 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
 
     The Pitop class is a Singleton. This means that only one instance per process will
     be created. In practice, this means that if in a particular project you instance a Pitop
-    class in 2 different files, they will share the internal state: you should be able to
-    register components in one file (using :meth:`register_pma_component`) and retrieve
-    it to use it in another file (using :meth:`get_component_on_pma_port`).
+    class in 2 different files, they will share the internal state.
     """
 
     def __init__(self):

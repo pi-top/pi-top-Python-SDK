@@ -40,6 +40,7 @@ class ServoMotor(Stateful, Recreatable):
 
     def __init__(self, port_name, zero_point=0, name="servo"):
         self._pma_port = port_name
+        self.name = name
 
         self.__controller = ServoController(self._pma_port)
         self.__target_state = ServoMotorState()

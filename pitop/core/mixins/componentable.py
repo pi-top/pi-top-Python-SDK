@@ -3,12 +3,21 @@ from .stateful import Stateful
 
 
 class Componentable(Stateful, Recreatable):
+    """Represents an object that attach components to itself, and that can
+    store its internal configuration to recreate itself in the future."""
+
     def __init__(self, children=[], config_dict={}):
         Stateful.__init__(self, children)
         Recreatable.__init__(self, config_dict)
 
     @classmethod
     def from_dict(cls, config_dict):
+        """Creates an instance of a :class:`Componentable` using the provided
+        dictionary.
+
+        If a component fails to be recreated, the main object will still
+        be created, but without it.
+        """
         components_config = config_dict.pop("components", {})
         # Create main object
         main_obj = super().from_dict(config_dict)
@@ -24,12 +33,33 @@ class Componentable(Stateful, Recreatable):
 
         return main_obj
 
-    def add_component(self, component):
-        self.children.append(component.name)
-        setattr(self, component.name, component)
+    def add_component(self, component, name=""):
+        """Attaches a component to the current instance as an attribute. It can
+        be accessed using the component name or the name provided in the
+        arguments.
+
+        Note that even though non native pi-top components can be
+        added to a instance, only components that inherit from
+        :class:`Recreatable` will be displayed in the :prop:`component_config`.
+        """
+        is_recreatable = isinstance(component, Recreatable)
+
+        if not is_recreatable and not name:
+            raise AttributeError("A name must be provided to add this component.")
+
+        if name and is_recreatable:
+            component.name = name
+
+        component_name = component.name if is_recreatable else name
+        if component_name in self.children:
+            raise AttributeError(f"There's already a component with the name '{component_name}' registered.")
+
+        self.children.append(component_name)
+        setattr(self, component_name, component)
 
     @property
     def component_config(self):
+        """Returns the component configuration as a dictionary."""
         cfg = super().component_config
         cfg["components"] = {}
         for child_name in self.children:
