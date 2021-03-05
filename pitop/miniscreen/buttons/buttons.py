@@ -20,11 +20,9 @@ class MiniscreenButtonLegacy(MiniscreenButton):
 
 
 class Buttons(metaclass=Singleton):
-    """
-    Instantiates a button for each one of the four types (up, down,
-    select and cancel), configuring them to receive event press events
-    from the device manager.
-    """
+    """Instantiates a button for each one of the four types (up, down, select
+    and cancel), configuring them to receive event press events from the device
+    manager."""
     UP = "UP"
     DOWN = "DOWN"
     SELECT = "SELECT"
@@ -48,8 +46,7 @@ class Buttons(metaclass=Singleton):
 
     @property
     def is_active(self):
-        """
-        Determine if the current instance is in control of the buttons.
+        """Determine if the current instance is in control of the buttons.
 
         :rtype: bool
         """
@@ -94,9 +91,7 @@ class Buttons(metaclass=Singleton):
 
 
 class UpButton(MiniscreenButton):
-    """
-    pi-top [4] Miniscreen 'Up' button.
-    """
+    """pi-top [4] Miniscreen 'Up' button."""
 
     def __init__(self):
         pass
@@ -106,9 +101,7 @@ class UpButton(MiniscreenButton):
 
 
 class DownButton(MiniscreenButton):
-    """
-    pi-top [4] Miniscreen 'Down' button.
-    """
+    """pi-top [4] Miniscreen 'Down' button."""
 
     def __init__(self):
         pass
@@ -118,9 +111,7 @@ class DownButton(MiniscreenButton):
 
 
 class SelectButton(MiniscreenButton):
-    """
-    pi-top [4] Miniscreen 'Select' button.
-    """
+    """pi-top [4] Miniscreen 'Select' button."""
 
     def __init__(self):
         pass
@@ -130,9 +121,7 @@ class SelectButton(MiniscreenButton):
 
 
 class CancelButton(MiniscreenButton):
-    """
-    pi-top [4] Miniscreen 'Cancel' button.
-    """
+    """pi-top [4] Miniscreen 'Cancel' button."""
 
     def __init__(self):
         pass

@@ -1,23 +1,24 @@
-from pitop.pma import EncoderMotor
-
 from math import floor, pi
 
-from .pid_controller import PIDController
+from simple_pid import PID
+
+from pitop import EncoderMotor
+from pitop.system.port_manager import PortManager
 
 
 class DriveController:
-    """
-    Robot reference coordinate system:
-        linear
-            x = forward
-            y = left
-            z = up
-        angular:
-            x = roll
-            y = pitch
-            z = yaw
-            Positive and negative directions of angular velocities use the right hand rule
-            e.g. positive angular z velocity is a rotation of the robot anti-clockwise
+    """Robot reference coordinate system:
+
+    linear
+        x = forward
+        y = left
+        z = up
+    angular:
+        x = roll
+        y = pitch
+        z = yaw
+        Positive and negative directions of angular velocities use the right hand rule
+        e.g. positive angular z velocity is a rotation of the robot anti-clockwise
     """
 
     def __init__(self, left_motor: EncoderMotor, right_motor: EncoderMotor):
@@ -35,12 +36,17 @@ class DriveController:
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
 
-        self.__target_lock_pid_controller = PIDController(lower_limit=-self._max_robot_angular_speed,
-                                                          upper_limit=self._max_robot_angular_speed,
-                                                          setpoint=0,
-                                                          Kp=0.045,
-                                                          Ki=0.002,
-                                                          Kd=0.0035)
+        self.__port_manager = PortManager()
+        self.__port_manager.register_pma_component(self._left_motor)
+        self.__port_manager.register_pma_component(self._right_motor)
+
+        self.__target_lock_pid_controller = PID(Kp=0.045,
+                                                Ki=0.002,
+                                                Kd=0.0035,
+                                                setpoint=0,
+                                                output_limits=(-self._max_robot_angular_speed,
+                                                               self._max_robot_angular_speed)
+                                                )
 
     def __calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -81,8 +87,8 @@ class DriveController:
         self.left(-speed_factor, -turn_radius)
 
     def target_lock_drive_angle(self, angle):
-        angular_speed = self.__target_lock_pid_controller.control_state_update(angle)
-        self.robot_move(self._linear_speed_x_hold, angular_speed)
+        angular_speed = self.__target_lock_pid_controller(angle)
+        self.__robot_move(self._linear_speed_x_hold, angular_speed)
 
     def rotate(self, angle, angular_speed):
         angular_speed = angular_speed * angle / abs(angle)

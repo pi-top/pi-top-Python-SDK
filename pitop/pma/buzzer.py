@@ -3,8 +3,8 @@ from .common import get_pin_for_port
 
 
 class Buzzer(gpiozero_Buzzer):
-    """
-    Encapsulates the behaviour of a simple buzzer that can be turned on and off.
+    """Encapsulates the behaviour of a simple buzzer that can be turned on and
+    off.
 
     :param str port_name: The ID for the port to which this component is connected
     """
@@ -15,9 +15,9 @@ class Buzzer(gpiozero_Buzzer):
         super(Buzzer, self).__init__(get_pin_for_port(self._pma_port))
 
     def close(self):
-        """
-        Shut down the device and release all associated resources. This method
-        can be called on an already closed device without raising an exception.
+        """Shut down the device and release all associated resources. This
+        method can be called on an already closed device without raising an
+        exception.
 
         This method is primarily intended for interactive use at the command
         line. It disables the device and releases its pin(s) for use by another
@@ -33,8 +33,7 @@ class Buzzer(gpiozero_Buzzer):
         For example, if you have a buzzer connected to port D4, but then wish
         to attach an LED instead:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> bz = Buzzer("D4")
             >>> bz.on()
             >>> bz.off()
@@ -45,8 +44,7 @@ class Buzzer(gpiozero_Buzzer):
         :class:`Device` descendents can also be used as context managers using
         the :keyword:`with` statement. For example:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> with Buzzer("D4") as bz:
             ...     bz.on()
             ...

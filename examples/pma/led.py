@@ -1,4 +1,4 @@
-from pitop.pma import LED
+from pitop import LED
 from time import sleep
 
 led = LED("D2")
