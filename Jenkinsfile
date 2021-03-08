@@ -1,3 +1,7 @@
 @Library("devops-jenkins-shared-library@master") _
 
-buildOSPackage()
+buildOSPackage(
+  [
+    USE_DOCKER: true
+  ]
+)
