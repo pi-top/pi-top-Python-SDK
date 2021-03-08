@@ -1,6 +1,5 @@
-from time import sleep
-
 from pitop import Pitop
+from time import sleep
 
 
 # Load configuration from a previous session
