@@ -5,7 +5,7 @@ from pitop.pma import UltrasonicSensor
 from pitopcommon.common_ids import FirmwareDeviceID
 
 from .drive_controller import DriveController
-from .pan_tilt_controller import PanTiltController
+from .pincer_controller import PincerController
 
 import configparser
 from math import radians
@@ -32,12 +32,12 @@ class BobbieRobot(PiTop):
     :param str ultrasonic_sensor_port: Port where the ultrasonic sensor is connected.
     :param str motor_left_port: Port where the left wheel motor is connected.
     :param str motor_right_port: Port where the right wheel motor is connected.
-    :param str servo_pan_port: Port where the servo motor used to pan the camera is connected.
-    :param str servo_tilt_port: Port where the servo motor used to tilt the camera is connected.
+    :param str right_pincer_port: Port where the servo motor used for the right pincer is connected.
+    :param str left_pincer_port: Port where the servo motor used for the left pincer is connected.
 
     """
     CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
-    CALIBRATION_FILE_NAME = "alex.conf"
+    CALIBRATION_FILE_NAME = "bobbie.conf"
 
     def __init__(self,
                  camera_device_index=0,
@@ -45,14 +45,14 @@ class BobbieRobot(PiTop):
                  ultrasonic_sensor_port="D3",
                  motor_left_port="M3",
                  motor_right_port="M0",
-                 servo_right_pincer_port="S0",
-                 servo_left_pincer_port="S3",
+                 right_pincer_port="S0",
+                 left_pincer_port="S3",
                  ):
         super().__init__()
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
 
-        self.camera = Camera(camera_device_index, camera_resolution)
+        self.camera = Camera(camera_device_index, camera_resolution, rotate_angle=90)
         self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
         self.register_pma_component(self.ultrasonic_sensor)
 
@@ -60,9 +60,9 @@ class BobbieRobot(PiTop):
         self.left_motor = self.get_component_on_pma_port(motor_left_port)
         self.right_motor = self.get_component_on_pma_port(motor_right_port)
 
-        self._pan_tilt_controller = PanTiltController(servo_pan_port=servo_pan_port, servo_tilt_port=servo_tilt_port)
-        self.pan_servo = self.get_component_on_pma_port(servo_pan_port)
-        self.tilt_servo = self.get_component_on_pma_port(servo_tilt_port)
+        self._pincer_controller = PincerController(right_pincer_port=right_pincer_port, left_pincer_port=left_pincer_port)
+        self.right_pincer = self.get_component_on_pma_port(right_pincer_port)
+        self.left_pincer = self.get_component_on_pma_port(left_pincer_port)
 
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
 
@@ -166,16 +166,16 @@ class BobbieRobot(PiTop):
             return self.__load_calibration()
 
         # PanTilt servo calibration
-        self.pan_servo.zero_point = 0
-        self.tilt_servo.zero_point = 0
+        self.left_pincer.zero_point = 0
+        self.right_pincer.zero_point = 0
         servo_lookup = {
-            'pan_zero_point': self.pan_servo,
-            'tilt_zero_point': self.tilt_servo,
+            'left_pincer_zero_point': self.left_pincer,
+            'right_pincer_zero_point': self.right_pincer,
         }
         for servo_name, servo_obj in servo_lookup.items():
             value = self.__calibrate_servo(servo_name, servo_obj)
             if save and value is not None:
-                self.__save_calibration(section='PAN_TILT', values_dict={servo_name: value})
+                self.__save_calibration(section='PINCER', values_dict={servo_name: value})
 
         print("Calibration finished.")
 
@@ -211,15 +211,15 @@ class BobbieRobot(PiTop):
             config = configparser.ConfigParser()
             config.read(self.__calibration_file_path)
 
-            if 'PAN_TILT' in config.sections():
-                section_config = config['PAN_TILT']
-                if section_config.get('pan_zero_point'):
+            if 'PINCER' in config.sections():
+                section_config = config['PINCER']
+                if section_config.get('left_pincer_zero_point'):
                     # print(f"PanTilt.pan_servo.zero = {int(section_config.get('pan_zero_point'))}")
-                    self.pan_servo.zero_point = int(section_config.get('pan_zero_point'))
+                    self.left_pincer.zero_point = int(section_config.get('left_pincer_zero_point'))
 
-                if section_config.get('tilt_zero_point'):
+                if section_config.get('right_pincer_zero_point'):
                     # print(f"PanTilt.tilt_servo.zero = {int(section_config.get('tilt_zero_point'))}")
-                    self.tilt_servo.zero_point = int(section_config.get('tilt_zero_point'))
+                    self.right_pincer.zero_point = int(section_config.get('right_pincer_zero_point'))
 
     def __save_calibration(self, section, values_dict):
         def create_config_file():
