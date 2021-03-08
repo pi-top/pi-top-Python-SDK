@@ -25,7 +25,7 @@ from .pma.parameters import (
 # # Robotics
 from .robotics.configurations import (
     alex_configuration,
-    AlexRobot,
+    AlexRobot,  # deprecated
 )
 
 # # System Devices
