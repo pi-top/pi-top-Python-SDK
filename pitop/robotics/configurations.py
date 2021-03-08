@@ -9,7 +9,7 @@ def alex_configuration():
 
 
 def AlexRobot():
-    return Pitop.from_dict(alex_configuration())
+    return Pitop.from_config(alex_configuration())
 
 
 def __load_json(filename):

@@ -5,7 +5,7 @@ from time import sleep
 
 
 # Load Alex configuration into a Pitop object
-alex = Pitop.from_dict(alex_configuration)
+alex = Pitop.from_config(alex_configuration)
 
 # Use miniscreen display
 alex.miniscreen.display_multiline_text("hi!\nI'm Alex!")

@@ -17,7 +17,7 @@ class Recreatable:
             self.add_to_config(k, v)
 
     @classmethod
-    def from_dict(cls, config_dict):
+    def from_config(cls, config_dict):
         """Creates an instance of a Recreatable object with parameters in the
         provided dictionary."""
         cls_name = config_dict.pop("classname")
@@ -37,7 +37,7 @@ class Recreatable:
         print(f"Loading configuration from {path}")
         with open(path) as json_file:
             config_dict = json.load(json_file)
-        return cls.from_dict(config_dict)
+        return cls.from_config(config_dict)
 
     def save_config(self, path):
         """Stores the set of parameters to recreate an object in a JSON

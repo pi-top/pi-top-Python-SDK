@@ -11,7 +11,7 @@ class Componentable(Stateful, Recreatable):
         Recreatable.__init__(self, config_dict)
 
     @classmethod
-    def from_dict(cls, config_dict):
+    def from_config(cls, config_dict):
         """Creates an instance of a :class:`Componentable` using the provided
         dictionary.
 
@@ -20,12 +20,12 @@ class Componentable(Stateful, Recreatable):
         """
         components_config = config_dict.pop("components", {})
         # Create main object
-        main_obj = super().from_dict(config_dict)
+        main_obj = super().from_config(config_dict)
 
         # Add components
         for name, config in components_config.items():
             try:
-                component = super().from_dict(config)
+                component = super().from_config(config)
                 component.name = name
                 main_obj.add_component(component)
             except Exception as e:

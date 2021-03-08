@@ -5,7 +5,7 @@ from signal import pause
 
 
 # Load Alex configuration into a Pitop object
-alex = Pitop.from_dict(alex_configuration)
+alex = Pitop.from_config(alex_configuration)
 
 
 # Set up logic based on line detection
