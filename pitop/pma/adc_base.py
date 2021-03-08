@@ -21,7 +21,7 @@ class ADCBase(Stateful, Recreatable):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name, pin_number=1, name=""):
+    def __init__(self, port_name, pin_number=1, name="adcbase"):
         self._pma_port = port_name
         self.name = name
 
@@ -75,4 +75,4 @@ class ADCBase(Stateful, Recreatable):
 
     @property
     def value(self):
-        pass
+        raise NotImplementedError

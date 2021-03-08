@@ -55,7 +55,6 @@ class ServoMotor(Stateful, Recreatable):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, config_dict={'port_name': port_name, 'name': name})
-        # Added as lambdas since they may change on runtime
         self.add_to_config("zero_point", lambda: self.zero_point)
 
     @property

@@ -70,7 +70,6 @@ class EncoderMotor(Stateful, Recreatable):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, config_dict={'port_name': port_name, 'name': name})
-        # Added as lambdas since they may change on runtime
         self.add_to_config("forward_direction", lambda: self.forward_direction)
         self.add_to_config("braking_type", lambda: self.braking_type)
         self.add_to_config("wheel_diameter", lambda: self.wheel_diameter)
@@ -81,6 +80,9 @@ class EncoderMotor(Stateful, Recreatable):
             'current_rpm': lambda: self.current_rpm,
             'current_speed': lambda: self.current_speed,
             'distance': lambda: self.distance,
+            'wheel_diameter': lambda: self.wheel_diameter,
+            'forward_direction': lambda: self.forward_direction,
+            'braking_type': lambda: self.braking_type,
         }
 
     @property

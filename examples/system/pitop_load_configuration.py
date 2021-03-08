@@ -6,7 +6,7 @@ from time import sleep
 pitop = Pitop.from_file("/home/pi/my_custom_config.json")
 
 # Check the loaded configuration
-pitop.component_config
+print(pitop.component_config)
 
 # Do something with your device
 pitop.red_led.on()
@@ -16,4 +16,4 @@ pitop.red_led.off()
 pitop.drive.stop()
 
 # Check the state of all the components attached to the Pitop object
-pitop.component_state
+print(pitop.component_state)

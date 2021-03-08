@@ -19,7 +19,7 @@ from pitop.pma import (
 
 
 class DriveController(Stateful, Recreatable):
-    """Abstraction of a vehicle with two wheels connected by an axis, and an
+    """Represents a vehicle with two wheels connected by an axis, and an
     optional support wheel or caster."""
     _initialized = False
 
@@ -140,6 +140,8 @@ class DriveController(Stateful, Recreatable):
         self.left(-speed_factor, -turn_radius)
 
     def target_lock_drive_angle(self, angle):
+        """Make the robot move in the direction of the specified angle, while
+        maintaining the current linear speed."""
         angular_speed = self.__target_lock_pid_controller(angle)
         self.__robot_move(self._linear_speed_x_hold, angular_speed)
 
@@ -164,12 +166,12 @@ class DriveController(Stateful, Recreatable):
         sleep(time_to_take)
 
     def stop(self):
-        """Completely stops the robot."""
+        """Stop any movement being performed by the motors."""
         self._linear_speed_x_hold = 0
         self.__robot_move(0, 0)
 
     def stop_rotation(self):
-        """Stops any angular movement performed by the robot.
+        """Stop any angular movement performed by the robot.
 
         In the case where linear and rotational movements are being
         performed at the same time (e.g.: during a left turn with a turn

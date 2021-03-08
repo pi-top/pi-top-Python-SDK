@@ -46,10 +46,16 @@ class Recreatable:
         with open(path, "w") as writer:
             json.dump(self.component_config, writer, indent=4)
 
-    def add_to_config(self, parameter, value):
-        """Adds a parameter and value to the list of internal parameters to
-        recreate an object."""
-        self._config[parameter] = value
+    def add_to_config(self, parameter, value_or_function):
+        """Add a parameter and value to the list of internal parameters to
+        recreate an object.
+
+        The `value_or_function` parameter can be a constant value or a
+        reference to a function, which will be evaluated when the object
+        configuration is requested. This is useful for cases where a
+        parameter changes its value on runtime.
+        """
+        self._config[parameter] = value_or_function
 
     @property
     def component_config(self):
