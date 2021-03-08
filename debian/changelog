@@ -1,3 +1,14 @@
+py-pitop-sdk (0.17.1) buster; urgency=medium
+
+  [ Mike Roberts ]
+  * Improve changelog PR body text
+  * Use docformatter (#259)
+  * Update CI PR body text
+  * Allow importing main objects from module root (#255)
+  * Jenkinsfile: use Docker for builds
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 08 Mar 2021 16:18:52 +0000
+
 py-pitop-sdk (0.17.0) buster; urgency=medium
 
   * Architecture: all
