@@ -1,1 +1,1 @@
-# pybuild needs to add this directory even if it doesn't have .py files
+# This file needs to be here - Debian package building (pybuild) will only include directories that have at least one `.py` file.
