@@ -7,9 +7,9 @@ from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
 class UsbCamera:
     def __init__(self, index: int = 0, resolution=None):
         self.index = index
+        self.__camera = None
 
         try:
-            self.__camera = None
             if resolution is not None:
                 self.__camera = V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
             else:
