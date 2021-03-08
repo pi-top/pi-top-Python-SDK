@@ -25,6 +25,7 @@ from .pma.parameters import (
 
 # Robotics
 from .robotics.alex_robot import AlexRobot
+from .robotics.bobbie_robot import BobbieRobot
 
 # System Devices
 from .camera import Camera
