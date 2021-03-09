@@ -117,3 +117,7 @@ class DriveController:
     def _rpm_to_speed(self, rpm):
         speed = round(rpm * self._wheel_circumference / 60.0, 3)
         return speed
+
+    @property
+    def wheel_separation(self):
+        return self._wheel_separation
