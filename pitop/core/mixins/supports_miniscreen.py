@@ -15,10 +15,8 @@ class SupportsMiniscreen():
     def miniscreen(self):
         if self._miniscreen:
             return self._miniscreen
-        raise UnavailableComponent("No miniscreen")
+        raise UnavailableComponent("Miniscreen isn't available on this device")
 
     @property
     def oled(self):
-        if self._miniscreen:
-            return self._miniscreen
-        raise UnavailableComponent("No miniscreen")
+        return self.miniscreen

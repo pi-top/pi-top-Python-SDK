@@ -14,4 +14,4 @@ class SupportsBattery():
     def battery(self):
         if self._battery:
             return self._battery
-        raise UnavailableComponent("No battery")
+        raise UnavailableComponent("Battery isn't available on this device")
