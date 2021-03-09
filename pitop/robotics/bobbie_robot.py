@@ -17,6 +17,16 @@ from os.path import (
 from pathlib import Path
 from time import sleep
 
+from threading import Thread
+import time
+import math
+
+
+class DotDict(dict):
+    """dot.notation access to dictionary attributes"""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
 class BobbieRobot(PiTop):
     """
@@ -65,6 +75,11 @@ class BobbieRobot(PiTop):
         self.left_pincer = self.get_component_on_pma_port(left_pincer_port)
 
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
+
+        self._robot_x_position = 0
+        self._robot_y_position = 0
+        self._robot_angle = 0
+        self._odom_update_frequency = 5  # Hz
 
     def forward(self, speed_factor, hold=False):
         """
@@ -143,6 +158,60 @@ class BobbieRobot(PiTop):
         Completely stops the robot.
         """
         self._drive_controller.stop()
+
+    def track_position(self):
+        odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
+        odometry_tracker.start()
+
+    def __track_odometry(self):
+        prev_time = time.time()
+        theta_r = 0
+        while True:
+            current_time = time.time()
+            dt = current_time - prev_time
+            if dt >= 1.0/self._odom_update_frequency:
+                prev_time = current_time
+                left_wheel_speed = self.left_motor.current_speed
+
+                right_wheel_speed = self.right_motor.current_speed
+
+                v_rx = (right_wheel_speed + left_wheel_speed) / 2
+                # v_ry = 0  # cannot move in y
+                omega_r = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation  # in rad/s
+                theta_r += omega_r * dt
+                v_wx = v_rx * math.cos(theta_r)  # - v_ry * math.sin(theta_r) - these terms are zero
+                v_wy = v_rx * math.sin(theta_r)  # + v_ry * math.cos(theta_r) - these terms are zero
+                theta_dot_w = omega_r
+                self._robot_x_position += v_wx * dt
+                self._robot_y_position += v_wy * dt
+                self._robot_angle += math.degrees(theta_dot_w * dt)
+                self._robot_angle %= 360  # give angle from 0 to 360
+
+
+            else:
+                continue
+
+    def drive_back_to_start(self):
+        position = self.position
+        theta = math.atan(position.x / position.y)
+        turn_angle = theta - math.radians(position.angle) - math.pi
+
+
+    @property
+    def position(self):
+        return DotDict({
+            'x': self._robot_x_position,
+            'y': self._robot_y_position,
+            'angle': self._robot_angle
+        })
+
+    @property
+    def position_update_frequency(self):
+        return self._odom_update_frequency
+
+    @position_update_frequency.setter
+    def position_update_frequency(self, value: int):
+        self._odom_update_frequency = value
 
     def target_lock_drive_angle(self, angle):
         self._drive_controller.target_lock_drive_angle(angle)
