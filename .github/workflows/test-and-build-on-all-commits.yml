@@ -115,7 +115,7 @@ jobs:
         run: |
           docker run --rm \
             --volume ${{ github.workspace }}:/src \
-            --environment RELEASE=0 \
+            -e RELEASE=0 \
             pitop/gbp-dch-gen:latest
 
       - name: Build Debian package

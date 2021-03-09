@@ -17,7 +17,7 @@ jobs:
         run: |
           docker run --rm \
             --volume ${{ github.workspace }}:/src \
-            --environment RELEASE=1 \
+            -e RELEASE=1 \
             pitop/gbp-dch-gen:latest
 
       - name: Create Pull Request
