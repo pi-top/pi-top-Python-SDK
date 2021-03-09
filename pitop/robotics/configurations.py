@@ -4,20 +4,63 @@ from pathlib import Path
 from pitop import Pitop
 
 
-def alex_configuration():
-    return __load_json('alex.json')
-
-
-def AlexRobot():
-    return Pitop.from_config(alex_configuration())
-
-
 def __load_json(filename):
     path = __robotics_directory() / "json" / filename
-    with open(path, 'r') as handle:
+    with open(path, "r") as handle:
         config = load(handle)
     return config
 
 
 def __robotics_directory() -> Path:
     return Path(__file__).parent
+
+
+ALEX_CONFIGURATION = __load_json("alex.json")
+
+
+# Deprecated
+class AlexRobot:
+    def __init__(self, *args, **kwargs):
+        print("AlexRobot class is deprecated. Please use Pitop.from_config(ALEX_CONFIGURATION)")
+        pass
+
+    def __new__(cls, *args, **kwargs):
+        obj = Pitop.from_config(ALEX_CONFIGURATION)
+        obj.__class__ = cls
+        return obj
+
+    def forward(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.forward(*args, **kwargs)
+
+    def backward(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.backward(*args, **kwargs)
+
+    def left(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.left(*args, **kwargs)
+
+    def right(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.right(*args, **kwargs)
+
+    def rotate(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.rotate(*args, **kwargs)
+
+    def stop_rotation(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.stop_rotation(*args, **kwargs)
+
+    def stop(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.stop(*args, **kwargs)
+
+    def target_lock_drive_angle(self, *args, **kwargs):
+        if hasattr(self, "drive"):
+            return self.drive.target_lock_drive_angle(*args, **kwargs)
+
+    def calibrate(self, *args, **kwargs):
+        if hasattr(self, "pan_tilt"):
+            return self.pan_tilt.calibrate(*args, **kwargs)

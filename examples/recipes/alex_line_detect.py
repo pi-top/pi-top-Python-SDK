@@ -1,11 +1,11 @@
-from pitop import Pitop, alex_configuration
+from pitop import Pitop, ALEX_CONFIGURATION
 from pitop.processing.algorithms.line_detect import process_frame_for_line
 
 from signal import pause
 
 
 # Load Alex configuration into a Pitop object
-alex = Pitop.from_config(alex_configuration)
+alex = Pitop.from_config(ALEX_CONFIGURATION)
 
 
 # Set up logic based on line detection

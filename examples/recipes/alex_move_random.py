@@ -1,11 +1,11 @@
-from pitop import Pitop, alex_configuration
+from pitop import Pitop, ALEX_CONFIGURATION
 
 from random import randint
 from time import sleep
 
 
 # Load Alex configuration into a Pitop object
-alex = Pitop.from_config(alex_configuration)
+alex = Pitop.from_config(ALEX_CONFIGURATION)
 
 # Use miniscreen display
 alex.miniscreen.display_multiline_text("hi!\nI'm Alex!")
