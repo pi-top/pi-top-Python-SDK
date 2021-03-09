@@ -114,7 +114,7 @@ jobs:
       - name: Patch changelog (snapshot)
         run: |
           docker run --rm \
-            --volume ${env.WORKSPACE}/${env.TASK_NAME}:/src \
+            --volume ${{ github.workspace }}:/src \
             --environment RELEASE=0 \
             pitop/gbp-dch-gen:latest
 
