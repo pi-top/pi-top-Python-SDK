@@ -1,3 +1,6 @@
+from json import dumps
+
+
 class Stateful:
     """Represents an object with a particular set of important properties that
     represent its state."""
@@ -31,3 +34,6 @@ class Stateful:
                 continue
             state[child] = child_state
         return state
+
+    def print_state(self):
+        print(dumps(self.component_state, indent=4))

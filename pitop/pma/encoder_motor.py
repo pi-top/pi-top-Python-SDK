@@ -69,20 +69,22 @@ class EncoderMotor(Stateful, Recreatable):
         atexit.register(self.stop)
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, config_dict={'port_name': port_name, 'name': name})
-        self.add_to_config("forward_direction", lambda: self.forward_direction)
-        self.add_to_config("braking_type", lambda: self.braking_type)
-        self.add_to_config("wheel_diameter", lambda: self.wheel_diameter)
+        Recreatable.__init__(self,
+                             config_dict={"port_name": port_name,
+                                          "name": name,
+                                          "forward_direction": lambda: self.forward_direction,
+                                          "braking_type": lambda: self.braking_type,
+                                          "wheel_diameter": lambda: self.wheel_diameter})
 
     @property
     def own_state(self):
         return {
-            'current_rpm': lambda: self.current_rpm,
-            'current_speed': lambda: self.current_speed,
-            'distance': lambda: self.distance,
-            'wheel_diameter': lambda: self.wheel_diameter,
-            'forward_direction': lambda: self.forward_direction,
-            'braking_type': lambda: self.braking_type,
+            "current_rpm": lambda: self.current_rpm,
+            "current_speed": lambda: self.current_speed,
+            "distance": lambda: self.distance,
+            "wheel_diameter": lambda: self.wheel_diameter,
+            "forward_direction": lambda: self.forward_direction,
+            "braking_type": lambda: self.braking_type,
         }
 
     @property

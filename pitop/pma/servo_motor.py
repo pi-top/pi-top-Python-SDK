@@ -54,8 +54,7 @@ class ServoMotor(Stateful, Recreatable):
         # atexit.register(self.__cleanup)
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, config_dict={'port_name': port_name, 'name': name})
-        self.add_to_config("zero_point", lambda: self.zero_point)
+        Recreatable.__init__(self, config_dict={"port_name": port_name, "name": name, "zero_point": lambda: self.zero_point})
 
     @property
     def own_state(self):

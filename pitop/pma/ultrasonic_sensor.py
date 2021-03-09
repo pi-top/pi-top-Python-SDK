@@ -60,9 +60,12 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
             raise
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name, "queue_len": queue_len, "partial": partial, "name": self.name})
-        self.add_to_config("max_distance", lambda: self.max_distance)
-        self.add_to_config("threshold_distance", lambda: self.threshold_distance)
+        Recreatable.__init__(self, {"port_name": port_name,
+                                    "queue_len": queue_len,
+                                    "partial": partial,
+                                    "name": self.name,
+                                    "max_distance": lambda: self.max_distance,
+                                    "threshold_distance": lambda: self.threshold_distance})
 
     @property
     def own_state(self):

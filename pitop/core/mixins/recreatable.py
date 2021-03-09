@@ -1,20 +1,32 @@
 import importlib
-import json
+from json import (
+    dump,
+    dumps,
+    load,
+)
 
 
 class Recreatable:
     """Represents an object that keeps track of a set of parameters that will
-    allow to be recreate it in the future."""
+    allow to be recreate it in the future.
+
+    The values for each key provided in the :param:`config_dict`
+    parameter can be a constant value or a reference to a function,
+    which will be evaluated when the object configuration is requested.
+    This is useful for cases where a parameter changes its value on
+    runtime.
+    """
 
     def __init__(self, config_dict={}):
         if not isinstance(config_dict, dict):
             raise TypeError("Argument must be a dictionary")
 
         self._config = config_dict
-        self.add_to_config("classname", self.__class__.__name__)
-        self.add_to_config("module", self.__module__)
+        self._config.update({"classname": self.__class__.__name__,
+                             "module": self.__module__,
+                             "schema": "1"})
         for k, v in config_dict.items():
-            self.add_to_config(k, v)
+            self._config.update({k: v})
 
     @classmethod
     def from_config(cls, config_dict):
@@ -36,7 +48,7 @@ class Recreatable:
         provided path."""
         print(f"Loading configuration from {path}")
         with open(path) as json_file:
-            config_dict = json.load(json_file)
+            config_dict = load(json_file)
         return cls.from_config(config_dict)
 
     def save_config(self, path):
@@ -44,18 +56,7 @@ class Recreatable:
         file."""
         print(f"Storing configuration in {path}")
         with open(path, "w") as writer:
-            json.dump(self.component_config, writer, indent=4)
-
-    def add_to_config(self, parameter, value_or_function):
-        """Add a parameter and value to the list of internal parameters to
-        recreate an object.
-
-        The `value_or_function` parameter can be a constant value or a
-        reference to a function, which will be evaluated when the object
-        configuration is requested. This is useful for cases where a
-        parameter changes its value on runtime.
-        """
-        self._config[parameter] = value_or_function
+            dump(self.component_config, writer, indent=4)
 
     @property
     def component_config(self):
@@ -73,4 +74,4 @@ class Recreatable:
         return getattr(module, class_name)
 
     def print_config(self):
-        print(json.dumps(self.component_config, indent=4))
+        print(dumps(self.component_config, indent=4))
