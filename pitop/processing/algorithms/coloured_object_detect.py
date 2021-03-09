@@ -72,7 +72,7 @@ def process_frame_for_object(frame, image_format="PIL", scale_factor=0.5):
 
 def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     print("This function is deprecated, please use process_frame_for_object() instead")
-    process_frame_for_line(frame, image_format, scale_factor)
+    process_frame_for_object(frame, image_format, scale_factor)
 
 
 def get_control_angle(centroid, frame):
