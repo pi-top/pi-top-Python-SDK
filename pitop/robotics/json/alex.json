@@ -1,4 +1,5 @@
 {
+    "version": "0.17.0",
     "classname": "Pitop",
     "module": "pitop.system.pitop",
     "components": {

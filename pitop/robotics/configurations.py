@@ -18,11 +18,9 @@ def __robotics_directory() -> Path:
 ALEX_CONFIGURATION = __load_json("alex.json")
 
 
-# Deprecated
-class AlexRobot:
+class AlexRobot(Pitop):
     def __init__(self, *args, **kwargs):
         print("AlexRobot class is deprecated. Please use Pitop.from_config(ALEX_CONFIGURATION)")
-        pass
 
     def __new__(cls, *args, **kwargs):
         obj = Pitop.from_config(ALEX_CONFIGURATION)

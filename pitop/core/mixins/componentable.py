@@ -46,6 +46,8 @@ class Componentable(Stateful, Recreatable):
 
         if not is_recreatable and not name:
             raise AttributeError("A name must be provided to add this component.")
+        if name and not isinstance(name, str):
+            raise AttributeError("Name must be a string")
 
         if name and is_recreatable:
             component.name = name

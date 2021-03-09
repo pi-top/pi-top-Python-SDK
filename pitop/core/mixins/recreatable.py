@@ -24,7 +24,7 @@ class Recreatable:
         self._config = config_dict
         self._config.update({"classname": self.__class__.__name__,
                              "module": self.__module__,
-                             "schema": "1"})
+                             "version": "0.17.0"})
         for k, v in config_dict.items():
             self._config.update({k: v})
 
@@ -32,6 +32,7 @@ class Recreatable:
     def from_config(cls, config_dict):
         """Creates an instance of a Recreatable object with parameters in the
         provided dictionary."""
+        _ = config_dict.pop("version", None)
         cls_name = config_dict.pop("classname")
         module_name = config_dict.pop("module")
 
