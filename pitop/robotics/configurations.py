@@ -62,3 +62,13 @@ class AlexRobot(Pitop):
     def calibrate(self, *args, **kwargs):
         if hasattr(self, "pan_tilt"):
             return self.pan_tilt.calibrate(*args, **kwargs)
+
+    @property
+    def pan_servo(self):
+        if hasattr(self, "pan_tilt"):
+            return self.pan_tilt.pan_servo
+
+    @property
+    def tilt_servo(self):
+        if hasattr(self, "pan_tilt"):
+            return self.pan_tilt.tilt_servo
