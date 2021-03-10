@@ -86,13 +86,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Patch changelog (snapshot)
-        run: |
-          docker run --rm \
-            --volume ${{ github.workspace }}:/src \
-            -e RELEASE=0 \
-            pitop/gbp-dch-gen:latest
-
       - name: Build Debian package
         run: |
           mkdir -p /tmp/artifacts/{src,bin}
