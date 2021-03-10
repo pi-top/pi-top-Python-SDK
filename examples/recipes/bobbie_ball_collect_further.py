@@ -1,8 +1,7 @@
 # from further_link import send_image
 from pitop import BobbieRobot
 from signal import pause
-from pitop.camera import Camera
-from pitop.processing.algorithms import process_frame_for_object
+from pitop.processing.algorithms import ball_detect
 from pitop.core import ImageFunctions
 import cv2
 from time import sleep
@@ -18,8 +17,8 @@ def open_pincers():
     bobbie.right_pincer.target_angle = 45
 
 
-def capture_ball(processed_frame):
-    ball_center = processed_frame.object_center
+def capture_ball(ball_data):
+    ball_center = ball_data.center
 
     if ball_center is None:
         # No objects detected for designated colour
@@ -27,11 +26,11 @@ def capture_ball(processed_frame):
     else:
         # coloured object detected
         x, y = ball_center
-        width, height = processed_frame.object_dimensions
+        radius = ball_data.radius
         bobbie.forward(0.15, hold=True)
-        bobbie.target_lock_drive_angle(processed_frame.angle)
+        bobbie.target_lock_drive_angle(ball_data.angle)
         # print(f'y: {y} | width: {width}')
-        if y < -90 and width > 50:
+        if y < -90 and radius > 50:
             close_pincers()
             global ball_captured
             ball_captured = True
@@ -65,7 +64,7 @@ def deposit_ball():
     open_pincers()
     sleep(1)
     bobbie.backward(0.2)
-    sleep(1)
+    sleep(0.5)
     bobbie.rotate(180, 3)
     bobbie.stop()
     # global ball_captured
@@ -79,9 +78,9 @@ def process_frame(frame):
         deposit_ball()
         robot_view = frame
     else:
-        processed_frame = process_frame_for_object(frame)
-        robot_view = processed_frame.robot_view
-        capture_ball(processed_frame)
+        ball_data = ball_detect(frame, colour='red', image_format='opencv')
+        robot_view = ball_data.robot_view
+        capture_ball(ball_data)
 
     position = bobbie.position
 
@@ -91,7 +90,6 @@ def process_frame(frame):
 
     # send_image(annotated_image)
 
-    robot_view = ImageFunctions.convert(robot_view, 'opencv')
     cv2.imshow("robot_view", robot_view)
     cv2.waitKey(1)
 
