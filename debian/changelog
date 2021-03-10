@@ -1,3 +1,10 @@
+py-pitop-sdk (0.17.1) buster; urgency=medium
+
+  * Allow importing main objects from module root
+  * Use docformatter
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 08 Mar 2021 16:18:52 +0000
+
 py-pitop-sdk (0.17.0) buster; urgency=medium
 
   * Architecture: all
