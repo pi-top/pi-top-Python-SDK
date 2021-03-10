@@ -1,4 +1,5 @@
 from gpiozero import Buzzer as gpiozero_Buzzer
+from gpiozero.pins.native import NativeFactory
 
 from pitop.core.mixins import (
     Stateful,
@@ -20,7 +21,7 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
-        gpiozero_Buzzer.__init__(self, get_pin_for_port(self._pma_port))
+        gpiozero_Buzzer.__init__(self, get_pin_for_port(self._pma_port), pin_factory=NativeFactory())
 
     @property
     def own_state(self):
@@ -67,4 +68,4 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
             ...     led.on()
             ...
         """
-        super(Buzzer, self).close()
+        super(gpiozero_Buzzer, self).close()

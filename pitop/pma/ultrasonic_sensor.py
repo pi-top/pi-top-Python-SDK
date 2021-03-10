@@ -112,7 +112,7 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
             ...
         """
         try:
-            super(UltrasonicSensor, self).close()
+            super(SmoothedInputDevice, self).close()
         except RuntimeError:
             # Currently, if used with OLED, this will raise the following exception:
             #

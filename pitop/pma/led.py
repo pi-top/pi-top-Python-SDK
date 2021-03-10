@@ -1,4 +1,5 @@
 from gpiozero import LED as gpiozero_LED
+from gpiozero.pins.native import NativeFactory
 
 from pitop.core.mixins import (
     Stateful,
@@ -21,7 +22,7 @@ class LED(Stateful, Recreatable, gpiozero_LED):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
-        gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))
+        gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port), pin_factory=NativeFactory())
 
     @property
     def own_state(self):
@@ -68,4 +69,4 @@ class LED(Stateful, Recreatable, gpiozero_LED):
             ...     led.on()
             ...
         """
-        super(LED, self).close()
+        super(gpiozero_LED, self).close()
