@@ -186,8 +186,6 @@ class BobbieRobot(PiTop):
                 self._robot_y_position += v_wy * dt
                 self._robot_angle += math.degrees(theta_dot_w * dt)
                 self._robot_angle %= 360  # give angle from 0 to 360
-
-
             else:
                 continue
 
