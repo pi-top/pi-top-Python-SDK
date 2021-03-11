@@ -8,6 +8,17 @@ from pitop.pma import (
 from pitop.system.port_manager import PortManager
 from simple_pid import PID
 
+from pitop.pma.plate_interface import PlateInterface
+
+motor_sync_bits = {
+    "M0": 0b0000001,
+    "M1": 0b0000010,
+    "M2": 0b0000100,
+    "M3": 0b0001000,
+}
+
+motor_sync_config_register = 0x57
+motor_sync_start_register = 0x58
 
 class DriveController:
     """
@@ -26,15 +37,21 @@ class DriveController:
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0"):
         # TODO: increase accuracy of wheel_base and wheel_diameter with empirical testing
-        self._wheel_separation = 0.1725
+        self._wheel_separation = 0.1675
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x_hold = 0
+
+        self.__mcu_device = PlateInterface().get_device_mcu()
+
+        self._left_motor_port = left_motor_port
+        self._right_motor_port = right_motor_port
 
         self._left_motor = EncoderMotor(port_name=left_motor_port,
                                         forward_direction=ForwardDirection.CLOCKWISE)
         self._right_motor = EncoderMotor(port_name=right_motor_port,
                                          forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
+
         self._max_motor_rpm = floor(min(self._left_motor.max_rpm, self._right_motor.max_rpm))
 
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
@@ -70,8 +87,10 @@ class DriveController:
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
+        self.__sync_motors()
         self._left_motor.set_target_rpm(target_rpm=rpm_left)
         self._right_motor.set_target_rpm(target_rpm=rpm_right)
+        self.__sync_start()
 
     def forward(self, speed_factor, hold):
         linear_speed_x = self._max_motor_speed * speed_factor
@@ -117,6 +136,13 @@ class DriveController:
     def _rpm_to_speed(self, rpm):
         speed = round(rpm * self._wheel_circumference / 60.0, 3)
         return speed
+
+    def __sync_motors(self):
+        sync_config = motor_sync_bits[self._left_motor_port] | motor_sync_bits[self._right_motor_port]
+        self.__mcu_device.write_byte(motor_sync_config_register, sync_config)
+
+    def __sync_start(self):
+        self.__mcu_device.write_byte(motor_sync_start_register, 1)
 
     @property
     def wheel_separation(self):
