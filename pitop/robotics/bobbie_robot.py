@@ -70,7 +70,7 @@ class BobbieRobot(PiTop):
         self.left_motor = self.get_component_on_pma_port(motor_left_port)
         self.right_motor = self.get_component_on_pma_port(motor_right_port)
 
-        self._pincer_controller = PincerController(right_pincer_port=right_pincer_port, left_pincer_port=left_pincer_port)
+        self.pincer_controller = PincerController(right_pincer_port=right_pincer_port, left_pincer_port=left_pincer_port)
         self.right_pincer = self.get_component_on_pma_port(right_pincer_port)
         self.left_pincer = self.get_component_on_pma_port(left_pincer_port)
 
