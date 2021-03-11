@@ -7,15 +7,6 @@ import cv2
 from time import sleep
 import math
 
-def close_pincers():
-    bobbie.left_pincer.target_angle = 0
-    bobbie.right_pincer.target_angle = 0
-
-
-def open_pincers():
-    bobbie.left_pincer.target_angle = -45
-    bobbie.right_pincer.target_angle = 45
-
 
 def capture_ball(ball_data):
     ball_center = ball_data.center
@@ -31,7 +22,7 @@ def capture_ball(ball_data):
         bobbie.target_lock_drive_angle(ball_data.angle)
         # print(f'y: {y} | width: {width}')
         if y < -90 and radius > 50:
-            close_pincers()
+            bobbie.pincer_controller.close()
             global ball_captured
             ball_captured = True
 
@@ -61,7 +52,7 @@ def deposit_ball():
             sleep(0.5)
             break
         sleep(0.1)
-    open_pincers()
+    bobbie.pincer_controller.open()
     sleep(1)
     bobbie.backward(0.2)
     sleep(0.5)
@@ -99,7 +90,7 @@ bobbie.calibrate()
 bobbie.track_position()
 ball_captured = False
 depositing_ball = False
-open_pincers()
+bobbie.pincer_controller.open()
 bobbie.camera.on_frame = process_frame
 
 pause()
