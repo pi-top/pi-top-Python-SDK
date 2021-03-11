@@ -10,8 +10,9 @@ def aruco_detect(frame):
         aruco_markers.draw_axis(frame)
         ids = aruco_markers.ids
         centers = aruco_markers.centers
-        for id, center in zip(ids, centers):
-            print(f'ID: {id} | Center: {center}')
+        aruco_markers.get_camera_pose()
+        # for id, center in zip(ids, centers):
+        #     print(f"ID: {id} | Center: {center}")
     cv2.imshow("Image", frame)
     cv2.waitKey(1)
 

@@ -1,5 +1,6 @@
 from pitop.camera import load_camera_cal
 import cv2
+import numpy as np
 
 ARUCO_DICT = {
     "DICT_4X4_50": cv2.aruco.DICT_4X4_50,
@@ -24,7 +25,7 @@ ARUCO_DICT = {
 
 class ArucoMarkers:
 
-    def __init__(self, aruco_type: str = 'DICT_4X4_50', marker_size: int = 0.05):
+    def __init__(self, aruco_type: str = 'DICT_4X4_50', marker_size: int = 0.06):
         if aruco_type not in ARUCO_DICT.keys():
             raise ValueError('Invalid ArUco type.')
         self._aruco_dict = cv2.aruco.Dictionary_get(ARUCO_DICT[aruco_type])
@@ -69,12 +70,17 @@ class ArucoMarkers:
 
         if len(corners) > 0:
             self._ids = ids
+            print(ids)
             self._corners = corners
             self._rotation_vectors, self._translation_vectors = cv2.aruco.estimatePoseSingleMarkers(corners,
                                                                                                     self._marker_size,
                                                                                                     self._mtx,
                                                                                                     self._dist)
+
             self._marker_centers = self.__get_marker_centers(corners)
+
+            # print(f'rvec: {self._rotation_vectors}')
+            # print(f'tvec: {self._translation_vectors}')
             return True
         else:
             # set all data to None so it doesn't persist into other frames
@@ -87,6 +93,29 @@ class ArucoMarkers:
         self._ids = None
         self._corners = None
         self._marker_centers = None
+
+    def get_camera_pose(self):
+        marker_poses = {}
+        camera_poses = {}
+        for marker_id, marker_rvec, marker_tvec in zip(self._ids, self._rotation_vectors, self._translation_vectors):
+            rotation_matrix, _ = cv2.Rodrigues(marker_rvec)
+            marker_pose = np.vstack((np.hstack((rotation_matrix, marker_tvec.T)), np.array([0, 0, 0, 1])))
+            camera_pose = np.linalg.inv(marker_pose)
+            marker_poses[str(marker_id[0])] = marker_pose
+            camera_poses[str(marker_id[0])] = camera_pose
+
+        print(camera_poses)
+            # print(f'marker_pose: {marker_pose}')
+            # print(f'camera_pose: {camera_pose}')
+
+        # {'[6]': array([[0.95522434, -0.12239293, 0.26938157, 0.14248621],
+        #                [0.10365307, -0.71431859, -0.69210186, 0.20495458],
+        #                [0.27713264, 0.68903477, -0.6696481, 0.38979999],
+        #                [0., 0., 0., 1.]]),
+        #  '[7]': array([[0.98732396, 0.11993919, -0.10395189, 0.16672809],
+        #                [0.05623041, -0.87679297, -0.47756908, 0.10877701],
+        #                [-0.14842353, 0.46567014, -0.87242293, 0.4600414],
+        #                [0., 0., 0., 1.]])}
 
     @property
     def ids(self):
