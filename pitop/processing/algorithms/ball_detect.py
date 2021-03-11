@@ -75,7 +75,7 @@ def ball_detect(frame, colour: str = "red", image_format="PIL", scale_factor=0.5
             cv2.circle(resized_frame, center, 5, (0, 0, 255), -1)
             detection_points.appendleft(center)
         # reposition centre to (0, 0) is in the middle. Keep scale as 1 as user sees scaled down 320x240 image
-        center = centroid_reposition(center, 1, resized_frame, rotation=90)
+        center = centroid_reposition(center, 1, resized_frame)
 
     for i in range(1, len(detection_points)):
         # if either of the tracked points are None, ignore
