@@ -1,6 +1,7 @@
 from pitop.camera import load_camera_cal
 import cv2
 import numpy as np
+import math
 
 ARUCO_DICT = {
     "DICT_4X4_50": cv2.aruco.DICT_4X4_50,
@@ -22,6 +23,8 @@ ARUCO_DICT = {
     "DICT_ARUCO_ORIGINAL": cv2.aruco.DICT_ARUCO_ORIGINAL
 }
 
+CALIBRATION_RESOLUTION = (720, 1280)
+
 
 class ArucoMarkers:
 
@@ -32,6 +35,7 @@ class ArucoMarkers:
         self._marker_size = marker_size
         self._aurco_params = cv2.aruco.DetectorParameters_create()
         self._mtx, self._dist = load_camera_cal()
+        self._mtx_resolution_updated = False
         self._ids = None
         self._rotation_vectors = None
         self._translation_vectors = None
@@ -66,11 +70,28 @@ class ArucoMarkers:
 
     def detect(self, frame):
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if not self._mtx_resolution_updated:
+            frame_size = gray_frame.shape
+            # print(frame_size)
+            scale_factor_x = CALIBRATION_RESOLUTION[1] / frame_size[1]
+            scale_factor_y = CALIBRATION_RESOLUTION[0] / frame_size[0]
+            # print(scale_factor_x)
+            # print(scale_factor_y)
+            f_x = self._mtx[0][0] / scale_factor_x
+            f_y = self._mtx[1][1] / scale_factor_y
+            c_x = self._mtx[0][2] / scale_factor_x
+            c_y = self._mtx[1][2] / scale_factor_y
+            self._mtx[0][0] = f_x
+            self._mtx[1][1] = f_y
+            self._mtx[0][2] = c_x
+            self._mtx[1][2] = c_y
+            self._mtx_resolution_updated = True
+
         corners, ids, rejected = cv2.aruco.detectMarkers(gray_frame, self._aruco_dict, parameters=self._aurco_params)
 
         if len(corners) > 0:
             self._ids = ids
-            print(ids)
+            # print(ids)
             self._corners = corners
             self._rotation_vectors, self._translation_vectors = cv2.aruco.estimatePoseSingleMarkers(corners,
                                                                                                     self._marker_size,
@@ -81,6 +102,8 @@ class ArucoMarkers:
 
             # print(f'rvec: {self._rotation_vectors}')
             # print(f'tvec: {self._translation_vectors}')
+
+            # print(f'distance: {distance}')
             return True
         else:
             # set all data to None so it doesn't persist into other frames
@@ -97,16 +120,26 @@ class ArucoMarkers:
     def get_camera_pose(self):
         marker_poses = {}
         camera_poses = {}
+        robot_pose_observation = np.array([[0, 0]])
         for marker_id, marker_rvec, marker_tvec in zip(self._ids, self._rotation_vectors, self._translation_vectors):
             rotation_matrix, _ = cv2.Rodrigues(marker_rvec)
             marker_pose = np.vstack((np.hstack((rotation_matrix, marker_tvec.T)), np.array([0, 0, 0, 1])))
             camera_pose = np.linalg.inv(marker_pose)
+            # distance = np.sqrt(np.sum(marker_tvec ** 2))
+            # print(distance)
             marker_poses[str(marker_id[0])] = marker_pose
             camera_poses[str(marker_id[0])] = camera_pose
 
-        print(camera_poses)
-            # print(f'marker_pose: {marker_pose}')
-            # print(f'camera_pose: {camera_pose}')
+            x = camera_pose[0][3]
+            y = camera_pose[1][3]
+            robot_pose_observation = np.array([[x, y]])
+            print(robot_pose_observation)
+
+        return robot_pose_observation
+
+        # print(camera_poses)
+        # print(f'marker_pose: {marker_pose}')
+        # print(f'camera_pose: {camera_pose}')
 
         # {'[6]': array([[0.95522434, -0.12239293, 0.26938157, 0.14248621],
         #                [0.10365307, -0.71431859, -0.69210186, 0.20495458],
