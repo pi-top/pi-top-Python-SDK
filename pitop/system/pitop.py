@@ -17,6 +17,17 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
     The Pitop class is a Singleton. This means that only one instance per process will
     be created. In practice, this means that if in a particular project you instance a Pitop
     class in 2 different files, they will share the internal state.
+
+    *property* miniscreen
+        If using a pi-top [4], this property returns a :class:`pitop.miniscreen.Miniscreen` object, to interact with the device's Miniscreen.
+
+
+    *property* oled
+        Refer to `miniscreen`.
+
+
+    *property* battery
+        If using a pi-top with a battery, this property returns a :class:`pitop.battery.Battery` object, to interact with the device's battery.
     """
 
     def __init__(self):
