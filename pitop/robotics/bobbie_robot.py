@@ -21,12 +21,17 @@ from threading import Thread
 import time
 import math
 
+from pitop.processing.algorithms import EKF, ArucoMarkers
+
+import numpy as np
+
 
 class DotDict(dict):
     """dot.notation access to dictionary attributes"""
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
+
 
 class BobbieRobot(PiTop):
     """
@@ -51,7 +56,7 @@ class BobbieRobot(PiTop):
 
     def __init__(self,
                  camera_device_index=0,
-                 camera_resolution=(640, 480),
+                 camera_resolution=(1280, 720),
                  ultrasonic_sensor_port="D3",
                  motor_left_port="M3",
                  motor_right_port="M0",
@@ -62,7 +67,7 @@ class BobbieRobot(PiTop):
         if self._plate is None or self._plate != FirmwareDeviceID.pt4_expansion_plate:
             raise Exception("Expansion Plate not connected")
 
-        self.camera = Camera(camera_device_index, camera_resolution, rotate_angle=90)
+        self.camera = Camera(camera_device_index, camera_resolution, rotate_angle=0)
         self.ultrasonic_sensor = UltrasonicSensor(ultrasonic_sensor_port)
         self.register_pma_component(self.ultrasonic_sensor)
 
@@ -80,6 +85,9 @@ class BobbieRobot(PiTop):
         self._robot_y_position = 0
         self._robot_angle = 0
         self._odom_update_frequency = 5  # Hz
+
+        self._ekf = None
+        self._aruco = None
 
     def forward(self, speed_factor, hold=False):
         """
@@ -160,6 +168,8 @@ class BobbieRobot(PiTop):
         self._drive_controller.stop()
 
     def track_position(self):
+        self._ekf = EKF()
+        self._aruco = ArucoMarkers()
         odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
         odometry_tracker.start()
 
@@ -175,6 +185,10 @@ class BobbieRobot(PiTop):
 
                 right_wheel_speed = self.right_motor.current_speed
 
+                robot_pose_observation = None
+                if self._aruco.detect(self.camera.get_frame()):
+                    robot_pose_observation = self._aruco.get_camera_pose()
+
                 v_rx = (right_wheel_speed + left_wheel_speed) / 2
                 # v_ry = 0  # cannot move in y
                 omega_r = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation  # in rad/s
@@ -186,6 +200,8 @@ class BobbieRobot(PiTop):
                 self._robot_y_position += v_wy * dt
                 self._robot_angle += math.degrees(theta_dot_w * dt)
                 self._robot_angle %= 360  # give angle from 0 to 360
+                u = np.array([[v_rx, omega_r]]).T
+                self._ekf.update(u, robot_pose_observation)
             else:
                 continue
 
