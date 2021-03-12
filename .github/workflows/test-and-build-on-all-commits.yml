@@ -111,53 +111,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Debian Docker container for changelog patching
-        run: |
-          docker create --name chglog --volume ${{ github.workspace }}:${{ github.workspace }} --workdir ${{ github.workspace }}/ --tty pitop/gbp-dch-gen:latest sleep inf
-          docker start chglog
-          docker exec chglog git config --global user.name "pi-top"
-          docker exec chglog git config --global user.email "deb-maintainers@pi-top.com"
-
       - name: Patch changelog (snapshot)
         run: |
-          tag=$(git tag -l v* | sort -V | tail -n1)
-          commit=$(git show-ref -s ${tag})
-          commit_diff=$(git rev-list --count ${commit}..HEAD)
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            -e RELEASE=0 \
+            pitop/gbp-dch-gen:latest
 
-          docker exec chglog gbp dch --verbose --git-author --ignore-branch --snapshot \
-            --since=${commit} --snapshot-number=${commit_diff}
-
-      - name: Show updated changelog
+      - name: Add 'debian-changelog-line-too-long' Lintian override for patched changelog
         run: |
-          cat debian/changelog
+          grep "^Package: " debian/control | awk '{print $2}' | xargs -n1 -I % sh -c "echo '%: debian-changelog-line-too-long' >> debian/%.lintian-overrides"
 
       - name: Build Debian package
-        uses: pi-top/action-debian-package@v0.2.2
-        with:
-          source_directory: "${{ github.workspace }}"
-          artifacts_directory: "${{ github.workspace }}/artifacts/bin"
-
-          docker_image: "pitop/deb-build:latest"
-          distribution: "buster-backports"
-
-          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
-          # Package uses latest packaging syntax and Lintian opts/tags
-          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
+        run: |
+          mkdir -p /tmp/artifacts/{src,bin}
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            --volume /tmp/artifacts/bin:/build \
+            pitop/deb-build:latest
 
       - name: Separate Debian source package files from binary
         run: |
-          mkdir -p ${{ github.workspace }}/artifacts/src/
-          mv ${{ github.workspace }}/artifacts/bin/* ${{ github.workspace }}/artifacts/src/
-          mv ${{ github.workspace }}/artifacts/src/*.deb ${{ github.workspace }}/artifacts/bin/
+          mv /tmp/artifacts/bin/* /tmp/artifacts/src/
+          mv /tmp/artifacts/src/*.deb /tmp/artifacts/bin/
 
       - name: Upload Debian source package files
         uses: actions/upload-artifact@v2
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
-          path: "${{ github.workspace }}/artifacts/src/"
+          path: "/tmp/artifacts/src/"
 
       - name: Upload Debian binary packages
         uses: actions/upload-artifact@v2
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-          path: "${{ github.workspace }}/artifacts/bin/"
+          path: "/tmp/artifacts/bin/"
