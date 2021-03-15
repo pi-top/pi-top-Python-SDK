@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ServoMotorState:
+class ServoMotorSetting:
     angle: float = 0.0
     speed: float = 0.0
 
@@ -43,7 +43,7 @@ class ServoMotor(Stateful, Recreatable):
         self.name = name
 
         self.__controller = ServoController(self._pma_port)
-        self.__target_state = ServoMotorState()
+        self.__target_state = ServoMotorSetting()
         self.__min_angle = self.__HARDWARE_MIN_ANGLE
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
@@ -58,13 +58,15 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def own_state(self):
+        current_setting = self.setting
         return {
-            'state': self.state
+            'angle': current_setting.angle,
+            'speed': current_setting.speed,
         }
 
     def __cleanup(self):
         if self.__has_set_angle and self.current_speed != 0.0:
-            self.__controller.cleanup(self.state)
+            self.__controller.cleanup(self.setting)
 
     @property
     def zero_point(self):
@@ -103,24 +105,24 @@ class ServoMotor(Stateful, Recreatable):
         return self.__min_angle, self.__max_angle
 
     @property
-    def state(self):
+    def setting(self):
         """Returns the current state of the servo motor, giving curent angle
         and current speed.
 
-        :return: :class:'ServoMotorState` object that has angle and speed attributes.
+        :return: :class:'ServoMotorSetting` object that has angle and speed attributes.
         """
         if not self.__has_set_angle:
             PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve angle or speed.")
             return None, None
 
         angle, speed = self.__controller.get_current_angle_and_speed()
-        current_state = ServoMotorState()
+        current_state = ServoMotorSetting()
         current_state.angle = angle - self.zero_point
         current_state.speed = speed
         return current_state
 
-    @state.setter
-    def state(self, target_state: ServoMotorState):
+    @setting.setter
+    def setting(self, target_state: ServoMotorSetting):
         """Sets the target state of the servo horn, relative to the zero
         position.
 
@@ -131,15 +133,15 @@ class ServoMotor(Stateful, Recreatable):
            .. warning::
              Using a :data:`target_state.speed` out of the valid speed range will cause the method to raise an exception.
 
-        :type target_state: :class:`ServoMotorState`
+        :type target_state: :class:`ServoMotorSetting`
         :param target_state:
-            Set the target servo state using the :class:`ServoMotorState` class, both :meth:`ServoMotorState.speed` and
-            :meth:`ServoMotorState.angle` must be passed. Example usage:
+            Set the target servo state using the :class:`ServoMotorSetting` class, both :meth:`ServoMotorSetting.speed` and
+            :meth:`ServoMotorSetting.angle` must be passed. Example usage:
 
             .. code-block:: python
-                from pitop import ServoMotor, ServoMotorState
+                from pitop import ServoMotor, ServoMotorSetting
                 servo = ServoMotor()
-                target_state = ServoMotorState()
+                target_state = ServoMotorSetting()
                 target_state.angle = 45
                 target_state.speed = 20
                 servo.state = target_state
@@ -170,7 +172,7 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the current angle of the servo motor in degrees.
         """
-        return self.state.angle
+        return self.setting.angle
 
     @property
     def current_speed(self):
@@ -182,7 +184,7 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the current speed of the servo motor in deg/s.
         """
-        return self.state.speed
+        return self.setting.speed
 
     @property
     def target_angle(self):
@@ -201,10 +203,10 @@ class ServoMotor(Stateful, Recreatable):
         :type angle: float
         :param angle: target servo motor angle.
         """
-        target_state = ServoMotorState()
+        target_state = ServoMotorSetting()
         target_state.angle = angle
         target_state.speed = self.__DEFAULT_SPEED
-        self.state = target_state
+        self.setting = target_state
 
     @property
     def target_speed(self):
@@ -235,8 +237,8 @@ class ServoMotor(Stateful, Recreatable):
 
         angle_setting = self.__min_angle if speed < 0 else self.__max_angle
 
-        target_state = ServoMotorState()
+        target_state = ServoMotorSetting()
         target_state.angle = angle_setting
         target_state.speed = speed
 
-        self.state = target_state
+        self.setting = target_state

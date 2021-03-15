@@ -13,7 +13,8 @@ from .pma import (
     IMU,
     EncoderMotor,
     ServoMotor,
-    ServoMotorState,
+    ServoMotorSetting,
+    ServoMotorSetting as ServoMotorState,
 )
 
 from .pma.parameters import (
