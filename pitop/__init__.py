@@ -27,7 +27,7 @@ from .pma.parameters import (
 from .robotics.drive_controller import DriveController
 from .robotics.pan_tilt_controller import PanTiltController
 from .robotics.configurations import (
-    ALEX_CONFIGURATION,
+    alex_config,
     AlexRobot,  # deprecated
 )
 

@@ -15,15 +15,15 @@ def __robotics_directory() -> Path:
     return Path(__file__).parent
 
 
-ALEX_CONFIGURATION = __load_json("alex.json")
+alex_config = __load_json("alex.json")
 
 
 class AlexRobot(Pitop):
     def __init__(self, *args, **kwargs):
-        print("AlexRobot class is deprecated. Please use Pitop.from_config(ALEX_CONFIGURATION)")
+        print("AlexRobot class is deprecated. Please use Pitop.from_config(alex_config)")
 
     def __new__(cls, *args, **kwargs):
-        obj = Pitop.from_config(ALEX_CONFIGURATION)
+        obj = Pitop.from_config(alex_config)
         obj.__class__ = cls
         return obj
 
