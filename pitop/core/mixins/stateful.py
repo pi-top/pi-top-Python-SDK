@@ -16,12 +16,12 @@ class Stateful:
 
     def __child_state(self, child_name):
         child = getattr(self, child_name)
-        if hasattr(child, "component_state"):
-            return child.component_state
+        if hasattr(child, "state"):
+            return child.state
         return None
 
     @property
-    def component_state(self):
+    def state(self):
         """Returns a dictionary with the state of the current object and all of
         its children."""
         state = self.own_state
@@ -36,4 +36,4 @@ class Stateful:
         return state
 
     def print_state(self):
-        print(dumps(self.component_state, indent=4))
+        print(dumps(self.state, indent=4))

@@ -40,7 +40,7 @@ class Componentable(Stateful, Recreatable):
 
         Note that even though non native pi-top components can be
         added to a instance, only components that inherit from
-        :class:`Recreatable` will be displayed in the :prop:`component_config`.
+        :class:`Recreatable` will be displayed in the :prop:`config`.
         """
         is_recreatable = isinstance(component, Recreatable)
 
@@ -60,13 +60,13 @@ class Componentable(Stateful, Recreatable):
         setattr(self, component_name, component)
 
     @property
-    def component_config(self):
+    def config(self):
         """Returns the component configuration as a dictionary."""
-        cfg = super().component_config
+        cfg = super().config
         cfg["components"] = {}
         for child_name in self.children:
             if hasattr(self, child_name):
                 child_obj = getattr(self, child_name)
                 if isinstance(child_obj, Recreatable):
-                    cfg["components"][child_name] = child_obj.component_config
+                    cfg["components"][child_name] = child_obj.config
         return cfg

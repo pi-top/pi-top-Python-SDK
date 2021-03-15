@@ -57,10 +57,10 @@ class Recreatable:
         file."""
         print(f"Storing configuration in {path}")
         with open(path, "w") as writer:
-            dump(self.component_config, writer, indent=4)
+            dump(self.config, writer, indent=4)
 
     @property
-    def component_config(self):
+    def config(self):
         """Returns a dictionary with the set of parameters that can be used to
         recreate an object."""
         cfg = {}
@@ -75,4 +75,4 @@ class Recreatable:
         return getattr(module, class_name)
 
     def print_config(self):
-        print(dumps(self.component_config, indent=4))
+        print(dumps(self.config, indent=4))
