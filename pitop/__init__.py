@@ -23,7 +23,9 @@ from .pma.parameters import (
     BrakingType,
 )
 
-# # Robotics
+# Robotics
+from .robotics.drive_controller import DriveController
+from .robotics.pan_tilt_controller import PanTiltController
 from .robotics.configurations import (
     ALEX_CONFIGURATION,
     AlexRobot,  # deprecated
