@@ -7,12 +7,12 @@ from pitop.camera.core import FrameHandler, CaptureActions
 class FrameHandlerTestCase(TestCase):
 
     def test_capture_actions_empty_when_instantiating(self):
-        """No capture actions are available when instantiating"""
+        """No capture actions are available when instantiating."""
         f = FrameHandler()
         self.assertEqual(len(f._capture_actions), 0)
 
     def test_register_action_success(self):
-        """Register an action """
+        """Register an action."""
         f = FrameHandler()
 
         action = CaptureActions.CAPTURE_SINGLE_FRAME
@@ -22,7 +22,7 @@ class FrameHandlerTestCase(TestCase):
         self.assertEqual(action in f._capture_actions, True)
 
     def test_capture_frame_action_only_runs_once(self):
-        """Capture single frame only runs once"""
+        """Capture single frame only runs once."""
         f = FrameHandler()
 
         action = CaptureActions.CAPTURE_SINGLE_FRAME
@@ -33,7 +33,7 @@ class FrameHandlerTestCase(TestCase):
         self.assertEqual(len(f._capture_actions), 0)
 
     def test_cant_register_same_action_twice(self):
-        """Can't register same action more than once"""
+        """Can't register same action more than once."""
         f = FrameHandler()
 
         action = CaptureActions.CAPTURE_VIDEO_TO_FILE
@@ -43,7 +43,7 @@ class FrameHandlerTestCase(TestCase):
         self.assertEqual(len(f._capture_actions), 1)
 
     def test_remove_action_success(self):
-        """remove_action successfully removes existing actions"""
+        """remove_action successfully removes existing actions."""
         f = FrameHandler()
 
         action = CaptureActions.CAPTURE_SINGLE_FRAME
@@ -54,14 +54,14 @@ class FrameHandlerTestCase(TestCase):
         self.assertEqual(f.is_running_action(action), False)
 
     def test_remove_action_failure(self):
-        """remove_action doesn't fail when removing non-registered action"""
+        """remove_action doesn't fail when removing non-registered action."""
         f = FrameHandler()
         capture_actions = f._capture_actions
         f.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
         self.assertEqual(capture_actions, f._capture_actions)
 
     def test_remove_action_calls_stop_method_from_action_object(self):
-        """remove_action calls stop() methods from action object"""
+        """remove_action calls stop() methods from action object."""
         f = FrameHandler()
 
         action = CaptureActions.CAPTURE_SINGLE_FRAME

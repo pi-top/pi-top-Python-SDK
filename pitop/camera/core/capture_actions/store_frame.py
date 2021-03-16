@@ -2,9 +2,8 @@ from .capture_action_base import CaptureActionBase
 
 
 class StoreFrame(CaptureActionBase):
-    """
-    Class used to store a frame into :data:`output_file_name` when :data:`process` is called
-    """
+    """Class used to store a frame into :data:`output_file_name` when
+    :data:`process` is called."""
 
     def __init__(self, output_file_name=""):
         if output_file_name == "":

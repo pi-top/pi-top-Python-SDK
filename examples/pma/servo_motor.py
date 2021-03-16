@@ -1,4 +1,4 @@
-from pitop.pma import ServoMotor, ServoMotorState
+from pitop import ServoMotor, ServoMotorState
 from time import sleep
 
 servo = ServoMotor("S0")
@@ -10,13 +10,13 @@ for angle in range(90, -100, -10):
     sleep(0.5)
 
 # you can also set angle with a different speed than the default
-servo_state = ServoMotorState()
-servo_state.speed = 25
+servo_settings = ServoMotorState()
+servo_settings.speed = 25
 
 for angle in range(-90, 100, 10):
     print("Setting angle to", angle)
-    servo_state.angle = angle
-    servo.state = servo_state
+    servo_settings.angle = angle
+    servo.setting = servo_settings
     sleep(0.5)
 
 sleep(1)
@@ -28,11 +28,11 @@ TARGET_SPEED = 25
 print("Setting target speed to ", -TARGET_SPEED)
 servo.target_speed = -TARGET_SPEED
 
-current_state = servo.state
+current_state = servo.setting
 current_angle = current_state.angle
 
 while current_angle > -STOP_ANGLE:
-    current_state = servo.state
+    current_state = servo.setting
     current_angle = current_state.angle
     current_speed = current_state.speed
     print(f"current_angle: {current_angle} | current_speed: {current_speed}")
@@ -42,7 +42,7 @@ print("Setting target speed to ", TARGET_SPEED)
 servo.target_speed = TARGET_SPEED
 
 while current_angle < STOP_ANGLE:
-    current_state = servo.state
+    current_state = servo.setting
     current_angle = current_state.angle
     current_speed = current_state.speed
     print(f"current_angle: {current_angle} | current_speed: {current_speed}")

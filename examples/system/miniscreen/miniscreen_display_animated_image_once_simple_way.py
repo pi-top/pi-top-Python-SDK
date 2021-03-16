@@ -1,7 +1,8 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Pitop
 from PIL import Image
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 
 # Image provided by 'pt-project-files'
 rocket = Image.open("/usr/share/pt-project-files/images/rocket.gif")

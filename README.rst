@@ -75,14 +75,14 @@ modules available in the library:
 .. code-block:: python
 
     from time import sleep
-    from pitop.pma import UltrasonicSensor
-    from pitop.miniscreen import Miniscreen
+    from pitop import UltrasonicSensor
+    from pitop import Pitop
 
-    miniscreen = Miniscreen()
+    pitop = Pitop()
     utrasonic = UltrasonicSensor("D1")
 
     while True:
-        miniscreen.display_text(utrasonic.distance)
+        pitop.miniscreen.display_text(utrasonic.distance)
         sleep(0.1)
 
 Check out the `API Recipes`_ chapter of the documentation for ideas on how to get started.
