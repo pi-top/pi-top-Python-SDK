@@ -7,8 +7,6 @@ from pitop.pma.servo_controller import (
     ServoHardwareSpecs,
 )
 
-from pitopcommon.logger import PTLogger
-
 # import atexit
 from dataclasses import dataclass
 
@@ -43,7 +41,11 @@ class ServoMotor(Stateful, Recreatable):
         self.name = name
 
         self.__controller = ServoController(self._pma_port)
+
         self.__target_state = ServoMotorSetting()
+        self.__target_angle = 0.0
+        self.__target_speed = self.__DEFAULT_SPEED
+
         self.__min_angle = self.__HARDWARE_MIN_ANGLE
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
@@ -58,15 +60,14 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def own_state(self):
-        current_setting = self.setting
         return {
-            'angle': current_setting.angle,
-            'speed': current_setting.speed,
+            'angle': self.current_angle,
+            'speed': self.current_speed,
         }
 
     def __cleanup(self):
         if self.__has_set_angle and self.current_speed != 0.0:
-            self.__controller.cleanup(self.setting)
+            self.__controller.cleanup()
 
     @property
     def zero_point(self):
@@ -112,7 +113,6 @@ class ServoMotor(Stateful, Recreatable):
         :return: :class:'ServoMotorSetting` object that has angle and speed attributes.
         """
         if not self.__has_set_angle:
-            PTLogger.warning("The servo motor needs to perform a movement first in order to retrieve angle or speed.")
             return None, None
 
         angle, speed = self.__controller.get_current_angle_and_speed()
@@ -146,20 +146,10 @@ class ServoMotor(Stateful, Recreatable):
                 target_state.speed = 20
                 servo.state = target_state
         """
-        angle = target_state.angle
-        speed = target_state.speed
+        self.target_angle = target_state.angle
+        self.target_speed = target_state.speed
 
-        if not (self.__min_angle <= angle <= self.__max_angle):
-            raise ValueError(f"Angle value must be from {self.__min_angle} to {self.__max_angle} degrees (inclusive)")
-        else:
-            self.__target_state.angle = angle
-
-        if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
-            raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
-        else:
-            self.__target_state.speed = speed
-
-        self.__controller.set_target_angle(angle + self.__zero_point, speed)
+        self.__controller.set_target_angle(target_state.angle + self.__zero_point, target_state.speed)
         self.__has_set_angle = True
 
     @property
@@ -172,7 +162,8 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the current angle of the servo motor in degrees.
         """
-        return self.setting.angle
+        angle, _ = self.__controller.get_current_angle_and_speed()
+        return angle - self.zero_point
 
     @property
     def current_speed(self):
@@ -184,7 +175,8 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the current speed of the servo motor in deg/s.
         """
-        return self.setting.speed
+        _, speed = self.__controller.get_current_angle_and_speed()
+        return speed
 
     @property
     def target_angle(self):
@@ -192,8 +184,6 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the target angle of the servo motor in deg.
         """
-        if not self.__has_set_angle:
-            PTLogger.warning("You should initialise the servo motor with an angle first, e.g. using .target_angle = 0")
         return self.__target_state.angle
 
     @target_angle.setter
@@ -203,10 +193,11 @@ class ServoMotor(Stateful, Recreatable):
         :type angle: float
         :param angle: target servo motor angle.
         """
-        target_state = ServoMotorSetting()
-        target_state.angle = angle
-        target_state.speed = self.__DEFAULT_SPEED
-        self.setting = target_state
+        if not (self.__min_angle <= angle <= self.__max_angle):
+            raise ValueError(f"Angle value must be from {self.__min_angle} to {self.__max_angle} degrees (inclusive)")
+        self.__target_angle = angle
+        self.__controller.set_target_angle(self.__target_angle + self.__zero_point, self.__target_speed)
+        self.__has_set_angle = True
 
     @property
     def target_speed(self):
@@ -214,13 +205,31 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the target speed of the servo motor in deg/s.
         """
-        return self.__target_state.speed
+        return self.__target_speed
 
     @target_speed.setter
     def target_speed(self, speed):
-        """Move the servo horn from the current position to one of the servo
+        """Sets the servo motor speed. The speed value must be a number from.
+
+        -100.0 to 100.0 deg/s.
+
+           .. warning::
+             Using a :data:`speed` out of the valid speed range will cause the method to raise an exception.
+
+        :type speed: int or float
+        :param speed:
+            The target speed at which to move the servo horn, from -100 to 100 deg/s.
+        """
+        if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
+            raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
+        self.__target_speed = speed
+
+    def sweep(self, speed):
+        """Moves the servo horn from the current position to one of the servo
         motor limits (maximum/minimum possible angle), moving at the specified
         speed. The speed value must be a number from -100.0 to 100.0 deg/s.
+
+        The sweep direction is given by the speed.
 
         Setting a :data:`speed` value higher than zero will move the horn to the maximum angle (90 degrees by default),
         while a value less than zero will move it to the minimum angle (-90 degress by default).
@@ -232,13 +241,8 @@ class ServoMotor(Stateful, Recreatable):
         :param speed:
             The target speed at which to move the servo horn, from -100 to 100 deg/s.
         """
-        if not self.__has_set_angle:
-            PTLogger.warning("You should initialise the servo motor with an angle first, e.g. using .target_angle = 0")
+        if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
+            raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
 
-        angle_setting = self.__min_angle if speed < 0 else self.__max_angle
-
-        target_state = ServoMotorSetting()
-        target_state.angle = angle_setting
-        target_state.speed = speed
-
-        self.setting = target_state
+        angle = self.__min_angle if speed < 0 else self.__max_angle
+        self.__controller.set_target_angle(angle + self.__zero_point, speed)
