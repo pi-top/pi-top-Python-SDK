@@ -1,9 +1,6 @@
-from enum import Enum
-
-from .usb_camera import UsbCamera
-from .file_system_camera import FileSystemCamera
+from enum import IntEnum
 
 
-class CameraTypes(Enum):
-    USB_CAMERA = UsbCamera
-    FILE_SYSTEM_CAMERA = FileSystemCamera
+class CameraTypes(IntEnum):
+    USB_CAMERA = 0
+    FILE_SYSTEM_CAMERA = 1

@@ -2,29 +2,34 @@
 from .system.pitop import Pitop
 
 # PMA
-from .pma.button import Button
-from .pma.buzzer import Buzzer
-from .pma.led import LED
-from .pma.light_sensor import LightSensor
-from .pma.potentiometer import Potentiometer
-from .pma.sound_sensor import SoundSensor
-from .pma.ultrasonic_sensor import UltrasonicSensor
-
-from .pma.imu import IMU
-from .pma.encoder_motor import EncoderMotor
-from .pma.servo_motor import (
+from .pma import (
+    Button,
+    Buzzer,
+    LED,
+    LightSensor,
+    Potentiometer,
+    SoundSensor,
+    UltrasonicSensor,
+    IMU,
+    EncoderMotor,
     ServoMotor,
-    ServoMotorState
+    ServoMotorSetting,
+    ServoMotorSetting as ServoMotorState,
 )
 
 from .pma.parameters import (
     ForwardDirection,
     Direction,
-    BrakingType
+    BrakingType,
 )
 
-# # Robotics
-from .robotics.alex_robot import AlexRobot
+# Robotics
+from .robotics.drive_controller import DriveController
+from .robotics.pan_tilt_controller import PanTiltController
+from .robotics.configurations import (
+    alex_config,
+    AlexRobot,  # deprecated
+)
 
 # # System Devices
 from .camera import Camera

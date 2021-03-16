@@ -1,8 +1,14 @@
 from gpiozero import LED as gpiozero_LED
-from .common import get_pin_for_port
+from gpiozero.pins.native import NativeFactory
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
-class LED(gpiozero_LED):
+class LED(Stateful, Recreatable, gpiozero_LED):
     """Encapsulates the behaviour of an LED.
 
     An LED (Light Emitting Diode) is a simple light source that can be controlled directly.
@@ -10,10 +16,20 @@ class LED(gpiozero_LED):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name):
+    def __init__(self, port_name, name="led"):
         self._pma_port = port_name
+        self.name = name
 
-        super(LED, self).__init__(get_pin_for_port(self._pma_port))
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port), pin_factory=NativeFactory())
+
+    @property
+    def own_state(self):
+        return {
+            "is_lit": self.is_lit,
+            "value": self.value,
+        }
 
     def close(self):
         """Shut down the device and release all associated resources. This
@@ -53,4 +69,4 @@ class LED(gpiozero_LED):
             ...     led.on()
             ...
         """
-        super(LED, self).close()
+        super(gpiozero_LED, self).close()

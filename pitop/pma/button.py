@@ -1,8 +1,14 @@
 from gpiozero import Button as gpiozero_Button
-from .common import get_pin_for_port
+from gpiozero.pins.native import NativeFactory
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
-class Button(gpiozero_Button):
+class Button(Stateful, Recreatable, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.
 
     A push-button is a simple switch mechanism for controlling some aspect of a circuit.
@@ -10,10 +16,21 @@ class Button(gpiozero_Button):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name):
+    def __init__(self, port_name, name="button"):
         self._pma_port = port_name
+        self.name = name
 
-        super(Button, self).__init__(get_pin_for_port(self._pma_port))
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port), pin_factory=NativeFactory())
+
+    @property
+    def own_state(self):
+        return {
+            "is_held": self.is_held,
+            "is_pressed": self.is_pressed,
+            "value": self.value,
+        }
 
     def close(self):
         """Shut down the device and release all associated resources. This
@@ -53,4 +70,4 @@ class Button(gpiozero_Button):
             ...     led.on()
             ...
         """
-        super(Button, self).close()
+        super(gpiozero_Button, self).close()
