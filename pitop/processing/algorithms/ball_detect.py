@@ -32,11 +32,6 @@ colours = {
     }
 }
 
-green_lower = (40, 90, 90)
-green_upper = (80, 255, 255)
-blue_lower = (100, 100, 50)
-blue_upper = (255, 255, 255)
-
 BUFFER_LENGTH = 64
 detection_points = deque(maxlen=BUFFER_LENGTH)
 
