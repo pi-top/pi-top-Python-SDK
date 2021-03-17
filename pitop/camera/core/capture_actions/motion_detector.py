@@ -7,9 +7,8 @@ from .capture_action_base import CaptureActionBase
 
 
 class MotionDetector(CaptureActionBase):
-    """
-    Class that implements a motion detection algorithm.
-    When motion is detected, a callback function is executed.
+    """Class that implements a motion detection algorithm. When motion is
+    detected, a callback function is executed.
 
     :param function callback_on_motion: A callback function that will be called when motion is detected.
     :param int moving_object_minimum_area: The sensitivity of the motion detection, measured as the area of

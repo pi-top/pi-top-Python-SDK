@@ -1,9 +1,10 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Pitop
 
 from datetime import datetime
 from PIL import Image, ImageDraw
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 miniscreen.set_max_fps(1)
 
 image = Image.new(

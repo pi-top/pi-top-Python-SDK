@@ -12,7 +12,8 @@ from .imu import IMU
 from .encoder_motor import EncoderMotor
 from .servo_motor import (
     ServoMotor,
-    ServoMotorState
+    ServoMotorSetting,
+    ServoMotorSetting as ServoMotorState,
 )
 
 from .parameters import (

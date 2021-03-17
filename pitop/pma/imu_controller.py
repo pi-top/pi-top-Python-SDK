@@ -8,9 +8,7 @@ import numpy as np
 
 
 class ImuController:
-    """
-    Class used to read/write IMU registers from the Expansion Plate MCU
-    """
+    """Class used to read/write IMU registers from the Expansion Plate MCU."""
     __ORIENTATION_DATA_SCALE = 100.0
     __MAG_SIGNED_RANGE = 4900.0
     __16BIT_SIGNED_RANGE = 2 ** 15

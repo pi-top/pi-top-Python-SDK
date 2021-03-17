@@ -1,4 +1,4 @@
-"pi-top Python SDK"
+"""pi-top Python SDK."""
 
 import os
 import sys

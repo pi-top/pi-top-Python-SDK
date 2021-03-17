@@ -110,7 +110,10 @@ _pixel_map = deepcopy(_empty_map)
 
 
 def __initialise():
-    """INTERNAL. Initialise the matrix."""
+    """INTERNAL.
+
+    Initialise the matrix.
+    """
 
     global _initialised
     global _serial_device
@@ -138,7 +141,10 @@ def __initialise():
 
 
 def __signal_handler(signal, frame):
-    """INTERNAL. Handles signals from the OS to exit."""
+    """INTERNAL.
+
+    Handles signals from the OS to exit.
+    """
 
     PTLogger.info("\nQuitting...")
 
@@ -148,7 +154,10 @@ def __signal_handler(signal, frame):
 
 
 def __get_avg_colour():
-    """INTERNAL. Get the average color of the matrix."""
+    """INTERNAL.
+
+    Get the average color of the matrix.
+    """
 
     total_rgb = [0, 0, 0]
     avg_rgb = [0, 0, 0]
@@ -165,7 +174,10 @@ def __get_avg_colour():
 
 
 def __write(data):
-    """INTERNAL. Write data to the matrix."""
+    """INTERNAL.
+
+    Write data to the matrix.
+    """
 
     PTLogger.debug('{s0:<4}{s1:<4}{s2:<4}{s3:<4}{s4:<4}{s5:<4}{s6:<4}{s7:<4}{s8:<4}{s9:<4}{s10:<4}'.format(
         s0=data[0], s1=data[1], s2=data[2], s3=data[3], s4=data[4], s5=data[5], s6=data[6], s7=data[7], s8=data[8], s9=data[9], s10=data[10]))
@@ -174,17 +186,21 @@ def __write(data):
 
 
 def __get_gamma_corrected_value(original_value):
-    """INTERNAL. Converts a brightness value from 0-255
-    to the value that produces an approximately linear
-    scaling to the human eye."""
+    """INTERNAL.
+
+    Converts a brightness value from 0-255 to the value that produces an
+    approximately linear scaling to the human eye.
+    """
 
     return _gamma_correction_arr[original_value]
 
 
 def __scale_pixel_to_brightness(original_value):
-    """INTERNAL. Multiplies intended brightness of
-    a pixel by brightness scaling factor to generate
-    an adjusted value."""
+    """INTERNAL.
+
+    Multiplies intended brightness of a pixel by brightness scaling
+    factor to generate an adjusted value.
+    """
 
     unrounded_new_brightness = original_value * _brightness
     rounded_new_brightness = round(unrounded_new_brightness)
@@ -194,7 +210,10 @@ def __scale_pixel_to_brightness(original_value):
 
 
 def __get_rotated_pixel_map():
-    """INTERNAL. Get a rotated copy of the current in-memory pixel map."""
+    """INTERNAL.
+
+    Get a rotated copy of the current in-memory pixel map.
+    """
 
     rotated_pixel_map = deepcopy(_pixel_map)
 
@@ -212,7 +231,10 @@ def __get_rotated_pixel_map():
 
 
 def __brightness_correct(original_value):
-    """INTERNAL. Correct a single color for brightness."""
+    """INTERNAL.
+
+    Correct a single color for brightness.
+    """
 
     brightness_scaled = __scale_pixel_to_brightness(original_value)
     new_value = __get_gamma_corrected_value(brightness_scaled)
@@ -221,7 +243,10 @@ def __brightness_correct(original_value):
 
 
 def __adjust_r_g_b_for_brightness_correction(r, g, b):
-    """INTERNAL. Correct LED for brightness."""
+    """INTERNAL.
+
+    Correct LED for brightness.
+    """
 
     r = __brightness_correct(r)
     g = __brightness_correct(g)
@@ -231,8 +256,10 @@ def __adjust_r_g_b_for_brightness_correction(r, g, b):
 
 
 def __sync_with_device():
-    """INTERNAL. Send the sync frame to tell the device that LED
-    data is expected."""
+    """INTERNAL.
+
+    Send the sync frame to tell the device that LED data is expected.
+    """
 
     __initialise()
     PTLogger.debug("Sync data:")
@@ -240,7 +267,10 @@ def __sync_with_device():
 
 
 def __rgb_to_bytes_to_send(rgb):
-    """INTERNAL. Format the LED data in the device-specific layout."""
+    """INTERNAL.
+
+    Format the LED data in the device-specific layout.
+    """
 
     # Create three 5-bit colour vals, splitting the green bits
     # into two parts (hardware spec):
@@ -263,7 +293,10 @@ def __rgb_to_bytes_to_send(rgb):
 
 
 def __timer_method():
-    """INTERNAL. Run by the timer on each tick."""
+    """INTERNAL.
+
+    Run by the timer on each tick.
+    """
 
     global _running
     global _update_rate
@@ -274,7 +307,10 @@ def __timer_method():
 
 
 def __flip(direction):
-    """INTERNAL. Flip the pixel map."""
+    """INTERNAL.
+
+    Flip the pixel map.
+    """
 
     global _pixel_map
 
@@ -320,7 +356,7 @@ def __disable_show_state():
 #######################
 
 def set_debug_print_state(debug_enable):
-    """Enable/disable debug prints"""
+    """Enable/disable debug prints."""
 
     global _debug
     _debug = debug_enable
@@ -328,7 +364,9 @@ def set_debug_print_state(debug_enable):
 
 def brightness(new_brightness):
     """Set the display brightness between 0.0 and 1.0.
-        :param new_brightness: Brightness from 0.0 to 1.0 (default 1.0)"""
+
+    :param new_brightness: Brightness from 0.0 to 1.0 (default 1.0)
+    """
 
     global _brightness
 
@@ -338,14 +376,19 @@ def brightness(new_brightness):
 
 
 def get_brightness():
-    """Get the display brightness value. Returns a float between 0.0 and 1.0."""
+    """Get the display brightness value.
+
+    Returns a float between 0.0 and 1.0.
+    """
 
     return _brightness
 
 
 def rotation(new_rotation=0):
     """Set the display rotation.
-    :param new_rotation: Specify the rotation in degrees: 0, 90, 180 or 270"""
+
+    :param new_rotation: Specify the rotation in degrees: 0, 90, 180 or 270
+    """
 
     global _rotation
 
@@ -376,8 +419,10 @@ def get_shape():
 
 def get_pixel(x, y):
     """Get the RGB value of a single pixel.
+
     :param x: Horizontal position from 0 to 7
-    :param y: Veritcal position from 0 to 7"""
+    :param y: Veritcal position from 0 to 7
+    """
 
     global _pixel_map
 
@@ -386,11 +431,13 @@ def get_pixel(x, y):
 
 def set_pixel(x, y, r, g, b):
     """Set a single pixel to RGB colour.
+
     :param x: Horizontal position from 0 to 7
     :param y: Veritcal position from 0 to 7
     :param r: Amount of red from 0 to 255
     :param g: Amount of green from 0 to 255
-    :param b: Amount of blue from 0 to 255"""
+    :param b: Amount of blue from 0 to 255
+    """
 
     global _pixel_map
 

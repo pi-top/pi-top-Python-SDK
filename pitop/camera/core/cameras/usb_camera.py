@@ -7,6 +7,7 @@ from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
 class UsbCamera:
     def __init__(self, index: int = 0, resolution=None, rotate_angle: int = 0):
         self.index = index
+        self.__camera = None
 
         if rotate_angle not in (-90, 0, 90, 180):
             raise ValueError("Rotate angle must be -90, 0, 90 or 180 degrees")

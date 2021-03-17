@@ -1,9 +1,10 @@
-from pitop.miniscreen import Miniscreen
+from pitop import Pitop
 
 from PIL import Image, ImageDraw
 from random import randint
 
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 image = Image.new(
     miniscreen.mode,
     miniscreen.size,

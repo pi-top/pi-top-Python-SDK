@@ -1,12 +1,11 @@
-from pitop.miniscreen import Miniscreen, CancelButton
+from pitop import Pitop
 from time import sleep
 
-miniscreen = Miniscreen()
-cancel_button = CancelButton()
-
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 miniscreen.display_multiline_text("Press cancel to exit!", font_size=22)
 
-while not cancel_button.is_pressed:
+while not miniscreen.cancel_button.is_pressed:
     sleep(0.1)
 
 miniscreen.display_multiline_text("Bye!")

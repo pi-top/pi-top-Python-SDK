@@ -1,14 +1,17 @@
 from .parameters import BrakingType, ForwardDirection, Direction
 from .encoder_motor_controller import EncoderMotorController
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
 
 import time
 from math import floor, pi
 import atexit
 
 
-class EncoderMotor:
-    """
-    Represents a pi-top motor encoder component.
+class EncoderMotor(Stateful, Recreatable):
+    """Represents a pi-top motor encoder component.
 
     Note that pi-top motor encoders use a built-in closed-loop control system, that feeds the readings
     from an encoder sensor to an PID controller. This controller will actively modify the motor's current to move at the desired
@@ -50,8 +53,10 @@ class EncoderMotor:
                  port_name,
                  forward_direction,
                  braking_type=BrakingType.COAST,
-                 wheel_diameter=0.075
+                 wheel_diameter=0.075,
+                 name=None
                  ):
+        self.name = name
         self._pma_port = port_name
 
         self.__motor_core = EncoderMotorController(self._pma_port, braking_type.value)
@@ -63,10 +68,28 @@ class EncoderMotor:
 
         atexit.register(self.stop)
 
+        Stateful.__init__(self)
+        Recreatable.__init__(self,
+                             config_dict={"port_name": port_name,
+                                          "name": name,
+                                          "forward_direction": lambda: self.forward_direction,
+                                          "braking_type": lambda: self.braking_type,
+                                          "wheel_diameter": lambda: self.wheel_diameter})
+
+    @property
+    def own_state(self):
+        return {
+            "current_rpm": lambda: self.current_rpm,
+            "current_speed": lambda: self.current_speed,
+            "distance": lambda: self.distance,
+            "wheel_diameter": lambda: self.wheel_diameter,
+            "forward_direction": lambda: self.forward_direction,
+            "braking_type": lambda: self.braking_type,
+        }
+
     @property
     def forward_direction(self):
-        """
-        Represents the forward direction setting used by the motor.
+        """Represents the forward direction setting used by the motor.
 
         Setting this property will determine on which direction the motor will turn
         whenever a movement in a particular direction is requested.
@@ -83,8 +106,8 @@ class EncoderMotor:
 
     @property
     def braking_type(self):
-        """
-        Returns the type of braking used by the motor when it's stopping after a movement.
+        """Returns the type of braking used by the motor when it's stopping
+        after a movement.
 
         Setting this property will change the way the motor stops a movement:
 
@@ -103,8 +126,9 @@ class EncoderMotor:
         self.__motor_core.set_braking_type(braking_type.value)
 
     def set_power(self, power, direction=Direction.FORWARD):
-        """
-        Turn the motor on at the power level provided, in the range -1.0 to +1.0, where:
+        """Turn the motor on at the power level provided, in the range -1.0 to.
+
+        +1.0, where:
 
         - 1.0: motor will turn with full power in the :data:`direction` provided as argument.
         - 0.0: motor will not move.
@@ -131,12 +155,11 @@ class EncoderMotor:
         self.__motor_core.set_power(power_mapping)
 
     def power(self):
-        """
-        Get the current power of the motor.
+        """Get the current power of the motor.
 
-        Returns a value from -1.0 to +1.0, assuming the user is controlling the motor
-        using the :class:`set_power` method (motor is in control mode 0).
-        If this is not the case, returns None.
+        Returns a value from -1.0 to +1.0, assuming the user is
+        controlling the motor using the :class:`set_power` method (motor
+        is in control mode 0). If this is not the case, returns None.
         """
 
         power = self.__motor_core.power()
@@ -145,8 +168,7 @@ class EncoderMotor:
         return None
 
     def set_target_rpm(self, target_rpm, direction=Direction.FORWARD, total_rotations=0.0):
-        """
-        Run the motor at the specified :data:`.target_rpm` RPM.
+        """Run the motor at the specified :data:`.target_rpm` RPM.
 
         If desired, a number of full or partial rotations can also be set through the :data:`total_rotations`
         parameter. Once reached, the motor will stop. Setting :data:`total_rotations` to 0 will set the
@@ -191,9 +213,11 @@ class EncoderMotor:
             self.__motor_core.set_rpm_with_rotations(dc_motor_rpm, rotations_offset_to_send)
 
     def target_rpm(self):
-        """
-        Get the desired RPM of the motor output shaft, assuming the user is controlling the motor
-        using :class:`set_target_rpm` (motor is in control mode 1). If this is not the case, returns None.
+        """Get the desired RPM of the motor output shaft, assuming the user is
+        controlling the motor using :class:`set_target_rpm` (motor is in
+        control mode 1).
+
+        If this is not the case, returns None.
         """
 
         rpm = self.__motor_core.rpm_control()
@@ -202,19 +226,16 @@ class EncoderMotor:
         return None
 
     def stop(self):
-        """
-        Stop the motor in all circumstances.
-        """
+        """Stop the motor in all circumstances."""
         self.__motor_core.stop()
 
     @property
     def current_rpm(self):
-        """
-        Returns the actual RPM currently being achieved at the output shaft, measured by the encoder sensor.
+        """Returns the actual RPM currently being achieved at the output shaft,
+        measured by the encoder sensor.
 
-        .. note::
-            Note that this value might differ from the target RPM set through :class:`set_target_rpm`.
-
+        This value might differ from the target RPM set through
+        :class:`set_target_rpm`.
         """
 
         dc_motor_rpm_actual = self.__motor_core.tachometer() * self.__forward_direction
@@ -224,11 +245,13 @@ class EncoderMotor:
 
     @property
     def rotation_counter(self):
-        """
-        Returns the total or partial number of rotations performed by the motor shaft.
+        """Returns the total or partial number of rotations performed by the
+        motor shaft.
 
-        Rotations will increment when moving forward, and decrement when moving backward.
-        This value is a float with many decimal points of accuracy, so can be used to monitor even very small turns of the output shaft.
+        Rotations will increment when moving forward, and decrement when
+        moving backward. This value is a float with many decimal points
+        of accuracy, so can be used to monitor even very small turns of
+        the output shaft.
         """
 
         dc_motor_rotation_counter = self.__motor_core.odometer() * self.__forward_direction
@@ -238,25 +261,26 @@ class EncoderMotor:
 
     @property
     def torque_limited(self):
-        """
-        Check if the actual motor speed or RPM does not match the target speed or RPM.
-        Returns a boolean value, :data:`True` if the motor is torque-limited and :data:`False` if it is not.
+        """Check if the actual motor speed or RPM does not match the target
+        speed or RPM.
+
+        Returns a boolean value, :data:`True` if the motor is torque-
+        limited and :data:`False` if it is not.
         """
 
         return False
 
     @property
     def max_rpm(self):
-        """
-        Returns the approximate maximum RPM capable given the motor and gear ratio.
-        """
+        """Returns the approximate maximum RPM capable given the motor and gear
+        ratio."""
 
         return floor(self.MAX_DC_MOTOR_RPM / self.MMK_STANDARD_GEAR_RATIO)
 
     @property
     def wheel_diameter(self):
-        """
-        Represents the diameter of the wheel attached to the motor in meters.
+        """Represents the diameter of the wheel attached to the motor in
+        meters.
 
         This parameter is important if using library functions to measure speed or distance, as these rely on
         knowing the diameter of the wheel in order to function correctly.
@@ -287,8 +311,7 @@ class EncoderMotor:
         return self.wheel_diameter * pi
 
     def set_target_speed(self, target_speed, direction=Direction.FORWARD, distance=0.0):
-        """
-        Run the wheel at the specified target speed in meters per second.
+        """Run the wheel at the specified target speed in meters per second.
 
         If desired, a :data:`distance` to travel can also be specified in meters, after which the motor
         will stop. Setting :data:`distance` to 0 will set the motor to run indefinitely until stopped.
@@ -323,8 +346,7 @@ class EncoderMotor:
         self.set_target_rpm(rpm, direction, total_rotations)
 
     def forward(self, target_speed, distance=0.0):
-        """
-        Run the wheel forward at the desired speed in meters per second.
+        """Run the wheel forward at the desired speed in meters per second.
 
         This method is a simple interface to move the motor that wraps a call to :data:`set_target_speed`,
         specifying the forward direction.
@@ -348,8 +370,7 @@ class EncoderMotor:
         self.set_target_speed(target_speed, Direction.FORWARD, distance)
 
     def backward(self, target_speed, distance=0.0):
-        """
-        Run the wheel backwards at the desired speed in meters per second.
+        """Run the wheel backwards at the desired speed in meters per second.
 
         This method is a simple interface to move the wheel that wraps a call to :data:`set_target_speed`,
         specifying the back direction.
@@ -374,34 +395,32 @@ class EncoderMotor:
 
     @property
     def current_speed(self):
-        """
-        Returns the speed currently being achieved by the motor in meters per second.
+        """Returns the speed currently being achieved by the motor in meters
+        per second.
 
-        .. note::
-            Note that this value might differ from the target speed set through :class:`set_target_speed`.
+        This value may differ from the target speed set through
+        :class:`set_target_speed`.
         """
 
         return (self.current_rpm / 60.0) * self.wheel_circumference
 
     @property
     def distance(self):
-        """
-        Returns the distance the wheel has travelled in meters.
+        """Returns the distance the wheel has travelled in meters.
 
-        .. note::
-            Note that this value depends on using the correct :data:`wheel_circumference` value
+        This value depends on the correct :data:`wheel_circumference`
+        value being set.
         """
 
         return self.wheel_circumference * self.rotation_counter
 
     @property
     def max_speed(self):
-        """
-        The approximate maximum speed possible for the wheel attached to the motor shaft, given the motor
-        specs, gear ratio and wheel circumference.
+        """The approximate maximum speed possible for the wheel attached to the
+        motor shaft, given the motor specs, gear ratio and wheel circumference.
 
-        .. note::
-            Note that this value depends on using the correct :data:`wheel_circumference` value
+        This value depends on the correct :data:`wheel_circumference`
+        value being set.
         """
 
         return self.max_rpm / 60.0 * self.wheel_circumference

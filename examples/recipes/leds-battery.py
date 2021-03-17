@@ -1,5 +1,5 @@
 from pitop.pulse import ledmatrix
-from pitop.battery import Battery
+from pitop import Pitop
 
 from time import sleep
 
@@ -72,9 +72,11 @@ def main():
     ledmatrix.clear()          # Clear the display
     draw_battery_outline()     # Draw the battery outline
 
+    battery = Pitop().battery
+
     while True:
         try:
-            charging_state, capacity, _, _ = Battery.get_full_state()
+            charging_state, capacity, _, _ = battery.get_full_state()
             update_battery_state(charging_state, capacity)  # Fill battery with capacity
 
         except Exception as e:

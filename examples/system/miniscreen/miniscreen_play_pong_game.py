@@ -1,4 +1,4 @@
-from pitop import Miniscreen
+from pitop import Pitop
 from PIL import Image, ImageDraw, ImageFont
 from random import randrange
 from time import sleep
@@ -217,7 +217,8 @@ def draw(wait=False):
 
 
 # Internal variables
-miniscreen = Miniscreen()
+pitop = Pitop()
+miniscreen = pitop.miniscreen
 miniscreen.set_max_fps(30)
 
 ball = Ball()

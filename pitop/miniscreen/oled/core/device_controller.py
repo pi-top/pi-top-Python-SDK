@@ -123,9 +123,7 @@ class OledDeviceController:
 
     @spi_bus.setter
     def spi_bus(self, bus):
-        '''
-        Request SPI bus change from pi-top device manager
-        '''
+        """Request SPI bus change from pi-top device manager."""
         assert bus in range(0, 2)
 
         if self.__spi_bus == bus:
