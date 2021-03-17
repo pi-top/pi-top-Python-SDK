@@ -71,7 +71,9 @@ class DriveController(Stateful, Recreatable):
         self._initialized = True
 
         Stateful.__init__(self, children=['left_motor', 'right_motor'])
-        Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port, "right_motor_port": right_motor_port, "name": self.name})
+        Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port,
+                                                "right_motor_port": right_motor_port,
+                                                "name": self.name})
 
     def is_initialized(fcn):
         def check_initialization(self, *args, **kwargs):
