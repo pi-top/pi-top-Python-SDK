@@ -130,12 +130,13 @@ class ArucoMarkers:
             marker_poses[str(marker_id[0])] = marker_pose
             camera_poses[str(marker_id[0])] = camera_pose
 
-            x = camera_pose[0][3]
-            y = camera_pose[1][3]
-            robot_pose_observation = np.array([[x, y]])
-            print(robot_pose_observation)
+            # x = camera_pose[0][3]
+            # y = camera_pose[1][3]
+            # theta = camera_pose
+            # robot_pose_observation = np.array([[x, y, theta]])
+            # print(robot_pose_observation)
 
-        return robot_pose_observation
+        return camera_poses
 
         # print(camera_poses)
         # print(f'marker_pose: {marker_pose}')
