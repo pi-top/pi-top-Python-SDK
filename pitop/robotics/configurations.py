@@ -17,6 +17,8 @@ def __robotics_directory() -> Path:
 
 alex_config = __load_json("alex.json")
 
+bobbie_config = __load_json("bobbie.json")
+
 
 class AlexRobot(Pitop):
     def __init__(self, *args, **kwargs):
