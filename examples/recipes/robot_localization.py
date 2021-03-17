@@ -73,15 +73,16 @@ bobbie.localization.start(x_start=0, y_start=0, angle_start=0, map=square_2x2)  
 bobbie.drive.left(0.3, turn_radius=0.3)
 
 angle = 0
-while angle < 360:
+while angle < 180:
     position = bobbie.localization.position
     x = position.x
     y = position.y
     angle = position.angle
     print(f'x: {x:.2f} | y: {y:.2f} | angle: {angle:.2f}')
-    sleep(0.5)
+    sleep(0.25)
 
 
+# below method should fail if localization.start has not been called
 bobbie.drive.to_position(x=0.25, y=0.1, angle=180)  # blocks until complete
 
 position = bobbie.localization.position
