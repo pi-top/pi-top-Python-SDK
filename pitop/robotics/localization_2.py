@@ -22,9 +22,9 @@ class Localization:
 
     """
 
-    def __init__(self, camera, drive_controller):
-        self._camera = camera
-        self._drive_controller = drive_controller
+    def __init__(self, robot):
+        self._camera = robot.camera
+        self._drive_controller = robot.drive_controller
         # self._left_motor = left_motor
         # self._right_motor = right_motor
         self._robot_x_position = 0
@@ -43,7 +43,6 @@ class Localization:
 
     def __track_odometry(self):
         prev_time = time.time()
-        theta_r = 0
         u_k = np.zeros((2, 1))
         while True:
             current_time = time.time()

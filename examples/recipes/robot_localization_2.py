@@ -12,13 +12,8 @@ robot = Pitop()
 robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
 robot.add_component(Camera())
 
-robot.add_component(Localization())
-robot.localization.init(camera=robot.camera, drive_controller=robot.drive)
-
-localization = Localization(camera=robot.camera, drive_controller=robot.drive)
-
+localization = Localization(robot)
 localization.start()
-
 
 robot.drive.left(0.1, turn_radius=0.1)
 
