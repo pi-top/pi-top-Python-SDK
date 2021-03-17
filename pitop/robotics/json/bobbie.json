@@ -33,6 +33,13 @@
             "classname": "DriveController",
             "module": "pitop.robotics.drive_controller"
         },
+        "localization": {
+            "left_motor_port": "M3",
+            "right_motor_port": "M0",
+            "name": "localization",
+            "classname": "Localization",
+            "module": "pitop.robotics.localization"
+        },
         "pincers": {
             "left_pincer_port": "S0",
             "right_pincer_port": "S3",
