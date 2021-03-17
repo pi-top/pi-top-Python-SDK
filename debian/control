@@ -16,7 +16,7 @@ Build-Depends:
  python3-gpiozero,
 # Required for building the docs (see rules file)
  python3-pip,
-Standards-Version: 4.5.0
+Standards-Version: 4.5.1
 Homepage: https://pi-top.com
 
 Package: python3-pitop-full
