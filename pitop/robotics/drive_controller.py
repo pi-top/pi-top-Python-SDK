@@ -68,6 +68,8 @@ class DriveController(Stateful, Recreatable):
                                                 output_limits=(-self._max_robot_angular_speed,
                                                                self._max_robot_angular_speed)
                                                 )
+        # self.__sync_motors()
+
         self._initialized = True
 
         Stateful.__init__(self, children=['left_motor', 'right_motor'])
@@ -101,10 +103,9 @@ class DriveController(Stateful, Recreatable):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
-        self.__sync_motors()
         self._left_motor.set_target_rpm(target_rpm=rpm_left)
         self._right_motor.set_target_rpm(target_rpm=rpm_right)
-        self.__sync_start()
+        # self.__sync_start()
 
     @is_initialized
     def forward(self, speed_factor, hold=False):
