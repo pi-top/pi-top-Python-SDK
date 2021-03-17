@@ -224,7 +224,7 @@ class ServoMotor(Stateful, Recreatable):
             raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
         self.__target_speed = speed
 
-    def sweep(self, speed):
+    def sweep(self, speed=None):
         """Moves the servo horn from the current position to one of the servo
         motor limits (maximum/minimum possible angle), moving at the specified
         speed. The speed value must be a number from -100.0 to 100.0 deg/s.
@@ -241,6 +241,7 @@ class ServoMotor(Stateful, Recreatable):
         :param speed:
             The target speed at which to move the servo horn, from -100 to 100 deg/s.
         """
+        speed = self.target_speed if speed is None else speed
         if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
             raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
 
