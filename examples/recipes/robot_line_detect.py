@@ -12,9 +12,9 @@ robot.add_component(Camera())
 # Set up logic based on line detection
 def drive_based_on_frame(frame):
     processed_frame = process_frame_for_line(frame)
-    
+
     if processed_frame.line_center is None:
-        print(f"Line is lost!", end="\r")
+        print("Line is lost!", end="\r")
         robot.drive.stop()
     else:
         print(f"Target angle: {processed_frame.angle:.2f} deg ", end="\r")
