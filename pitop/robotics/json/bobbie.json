@@ -29,6 +29,7 @@
         "drive": {
             "left_motor_port": "M3",
             "right_motor_port": "M0",
+            "wheel_base": 0.1675,
             "name": "drive",
             "classname": "DriveController",
             "module": "pitop.robotics.drive_controller"
@@ -36,6 +37,7 @@
         "localization": {
             "left_motor_port": "M3",
             "right_motor_port": "M0",
+            "wheel_base": 0.1675,
             "name": "localization",
             "classname": "Localization",
             "module": "pitop.robotics.localization"
