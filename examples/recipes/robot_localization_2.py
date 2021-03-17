@@ -12,18 +12,23 @@ robot = Pitop()
 robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
 robot.add_component(Camera())
 
+robot.add_component(Localization())
+robot.localization.init(camera=robot.camera, drive_controller=robot.drive)
+
 localization = Localization(camera=robot.camera, drive_controller=robot.drive)
 
-localization.track_position()
+localization.start()
 
 
 robot.drive.left(0.1, turn_radius=0.1)
 
-angle = 0
+# angle = 0
+#
+# while angle < 180:
+#     angle = localization.position.angle
+#     print(f'angle: {angle:.2f}')
+#     sleep(0.25)
+#
+# print('finished')
 
-while angle < 180:
-    angle = localization.position.angle
-    print(f'angle: {angle:.2f}')
-    sleep(0.25)
-
-print('finished')
+pause()

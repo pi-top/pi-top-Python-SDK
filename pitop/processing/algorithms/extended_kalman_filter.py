@@ -9,105 +9,139 @@ import matplotlib.pyplot as plt
 import time
 
 # Estimation parameter of EKF
-Q = np.diag([1.0, 1.0])**2  # Observation x,y position covariance
-R = np.diag([0.1, 0.1, np.deg2rad(1.0), 1.0])**2  # predict state covariance
+Q = np.diag([0.1, 0.1])**2  # predict state covariance
+R = np.diag([0.1, 0.1, np.deg2rad(1.0), 1.0])**2 # Observation x,y position covariance
 
 
 class EKF:
     def __init__(self):
-        # State Vector [x y yaw v]
+        # State Vector [x y yaw]
         self._previous_time = time.time()
-        self._x_est = np.zeros((4, 1))
-        self._P_est = np.eye(4)
-        self._xDR = np.zeros((4, 1))
+        self._x_est = np.zeros((3, 1))
+        self._P_est = np.eye(3)
+        self._x_dead_reckoning = np.zeros((3, 1))
 
         self._jH = np.array([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0]
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1]
         ])
-
+        #
         # store data history
         self._hxEst = self._x_est
         self._hz = np.zeros((1, 2))
 
-    def update(self, u, z):
+    def update(self, u, z, dt):
         """
-        :param u: Control vector [v, yaw_rate]
+        :param u: Control vector [v, yaw_rate] from odometry
         :param z: Pose observation [x, y] TODO: will add theta later
         :return:
         """
-        # predict
-        current_time = time.time()
-        dt = current_time - self._previous_time
-        self.__ekf_estimation(u, z, dt)
+        x_pred = self.__motion_model(u, dt)
+
+        self._x_dead_reckoning = np.hstack(self._x_dead_reckoning, x_pred)
+
+        jF = self.__jacobF(u, dt)
+
+        jG = self.__jacobG(dt)
+
+        P_pred = jF.dot(self._P_est).dot(jF.T) + jG.dot(Q).dot(jG.T)
+
+        #  Update based on observation if available
+        if z is not None:
+            z_pred = self.__observation_model()
+            y = z.T - z_pred
+            S = self._jH.dot(P_pred).dot(self._jH.T) + R
+            K = P_pred.dot(self._jH.T).dot(np.linalg.inv(S))
+            self._x_est = x_pred + K.dot(y)
+            self._P_est = (np.eye(len(self._x_est)) - K.dot(self._jH)).dot(P_pred)
+        else:
+            self._x_est = x_pred
+            self._P_est = P_pred
+
+
 
         # store historical data
-        self._hxEst = np.hstack((self._hxEst, self._x_est))
+        # self._hxEst = np.hstack((self._hxEst, self._x_est))
+        #
+        # plot(self._hxEst, self._x_est, self._P_est)
 
-        plot(self._hxEst, self._x_est, self._P_est)
+    # def __ekf_estimation(self, u, z, dt):
+    #     #  Predict
+    #     x_pred = self.__motion_model(u, dt)
+    #     jF = self.jacobF(x_pred, u, dt)
+    #     PPred = jF.dot(self._P_est).dot(jF.T) + R
+    #
+    #     #  Update
+    #     if z is not None:
+    #         zPred = self.observation_model(x_pred)
+    #         y = z.T - zPred
+    #         S = self._jH.dot(PPred).dot(self._jH.T) + Q
+    #         K = PPred.dot(self._jH.T).dot(np.linalg.inv(S))
+    #         self._x_est = x_pred + K.dot(y)
+    #         self._P_est = (np.eye(len(self._x_est)) - K.dot(self._jH)).dot(PPred)
+    #     else:
+    #         self._x_est = x_pred
+    #         # self._P_est =
 
-    def __ekf_estimation(self, u, z, dt):
-        #  Predict
-        x_pred = self.__motion_model(u, dt)
-        jF = self.jacobF(x_pred, u, dt)
-        PPred = jF.dot(self._P_est).dot(jF.T) + R
+    @property
+    def pose_mean(self):
+        return self._x_est
 
-        #  Update
-        zPred = self.observation_model(x_pred)
-        y = z.T - zPred
-        S = self._jH.dot(PPred).dot(self._jH.T) + Q
-        K = PPred.dot(self._jH.T).dot(np.linalg.inv(S))
-        self._x_est = x_pred + K.dot(y)
-        self._P_est = (np.eye(len(self._x_est)) - K.dot(self._jH)).dot(PPred)
+    @property
+    def pose_covariance(self):
+        return self._P_est
 
     def __motion_model(self, u, dt):
-        F = np.array([[1.0, 0, 0, 0],
-                      [0, 1.0, 0, 0],
-                      [0, 0, 1.0, 0],
-                      [0, 0, 0, 0]])
+        F = np.array([[1.0, 0, 0],
+                      [0, 1.0, 0],
+                      [0, 0, 1.0]])
 
-        B = np.array([[dt * math.cos(self._x_est[2, 0]), 0],
-                      [dt * math.sin(self._x_est[2, 0]), 0],
-                      [0.0, dt],
-                      [1.0, 0.0]])
+        theta_k = self._x_est[2, 0]
 
-        x = F.dot(self._x_est) + B.dot(u)
+        B = np.array([[dt * math.cos(theta_k), 0],
+                      [dt * math.sin(theta_k), 0],
+                      [0, dt]])
 
-        return x
+        x_pred = F.dot(self._x_est) + B.dot(u)
 
-    def jacobF(self, x, u, dt):
+        return x_pred
+
+    def __jacobF(self, u, dt):
         """
         Jacobian of Motion Model
         motion model
         x_{t+1} = x_t+v*dt*cos(yaw)
         y_{t+1} = y_t+v*dt*sin(yaw)
         yaw_{t+1} = yaw_t+omega*dt
-        v_{t+1} = v{t}
         so
         dx/dyaw = -v*dt*sin(yaw)
-        dx/dv = dt*cos(yaw)
         dy/dyaw = v*dt*cos(yaw)
-        dy/dv = dt*sin(yaw)
         """
-        yaw = x[2, 0]
+        theta_k = self._x_est[2, 0]
         v = u[0, 0]
-        jF = np.array([
-            [1.0, 0.0, -dt * v * math.sin(yaw), dt * math.cos(yaw)],
-            [0.0, 1.0, dt * v * math.cos(yaw), dt * math.sin(yaw)],
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0]])
+        jF = np.array([[1.0, 0.0, -v * dt * math.sin(theta_k)],
+                       [0.0, 1.0, v * dt * math.cos(theta_k)],
+                       [0.0, 0.0, 1.0]])
 
         return jF
 
-    @staticmethod
-    def observation_model(x):
-        #  Observation Model
-        H = np.array([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0]
-        ])
+    def __jacobG(self, dt):
+        theta_k = self._x_est[2, 0]
+        jG = np.array([[dt * math.cos(theta_k), 0],
+                       [dt * math.sin(theta_k), 0],
+                       [0, dt]])
 
-        z = H.dot(x)
+        return jG
+
+    def __observation_model(self):
+        #  Observation Model
+        # This would need to account for camera position if not in a 2D map or if using pan mechanism
+        H = np.array([[1.0, 0.0, 0.0],
+                      [0.0, 1.0, 0.0],
+                      [0.0, 0.0, 1.0]])
+
+        z = H.dot(self._x_est)
 
         return z
 
