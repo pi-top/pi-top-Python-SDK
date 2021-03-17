@@ -29,6 +29,8 @@ motor_sync_bits = {
 
 motor_sync_config_register = 0x57
 motor_sync_start_register = 0x58
+
+
 class DriveController(Stateful, Recreatable):
     """Represents a vehicle with two wheels connected by an axis, and an
     optional support wheel or caster."""
@@ -39,7 +41,6 @@ class DriveController(Stateful, Recreatable):
         self.right_motor_port = right_motor_port
         self.left_motor_port = left_motor_port
 
-        # TODO: increase accuracy of wheel_base and wheel_diameter with empirical testing
         self._wheel_separation = 0.1675
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
