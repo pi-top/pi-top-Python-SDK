@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import time
 
 # Estimation parameter of EKF
-Q = np.diag([0.1, 0.1])**2  # predict state covariance
-R = np.diag([0.1, 0.1, np.deg2rad(1.0), 1.0])**2 # Observation x,y position covariance
+Q = np.diag([0.01, 0.01])**2  # predict state covariance
+R = np.diag([0.1, 0.1, np.deg2rad(2.0)])**2  # Observation x, y position covariance
 
 
 class EKF:
@@ -34,12 +34,12 @@ class EKF:
     def update(self, u, z, dt):
         """
         :param u: Control vector [v, yaw_rate] from odometry
-        :param z: Pose observation [x, y] TODO: will add theta later
+        :param z: Pose observation [x, y, yaw] 
         :return:
         """
         x_pred = self.__motion_model(u, dt)
 
-        self._x_dead_reckoning = np.hstack(self._x_dead_reckoning, x_pred)
+        self._x_dead_reckoning = np.hstack((self._x_dead_reckoning, x_pred))
 
         jF = self.__jacobF(u, dt)
 
@@ -50,7 +50,9 @@ class EKF:
         #  Update based on observation if available
         if z is not None:
             z_pred = self.__observation_model()
-            y = z.T - z_pred
+            # print(f'z_pred: {z_pred}')
+            y = z - z_pred
+            # print(f'y: {y}')
             S = self._jH.dot(P_pred).dot(self._jH.T) + R
             K = P_pred.dot(self._jH.T).dot(np.linalg.inv(S))
             self._x_est = x_pred + K.dot(y)

@@ -28,7 +28,7 @@ CALIBRATION_RESOLUTION = (720, 1280)
 
 class ArucoMarkers:
 
-    def __init__(self, aruco_type: str = 'DICT_4X4_50', marker_size: int = 0.06):
+    def __init__(self, aruco_type: str = 'DICT_4X4_50', marker_size: int = 0.1):
         if aruco_type not in ARUCO_DICT.keys():
             raise ValueError('Invalid ArUco type.')
         self._aruco_dict = cv2.aruco.Dictionary_get(ARUCO_DICT[aruco_type])
@@ -117,7 +117,7 @@ class ArucoMarkers:
         self._corners = None
         self._marker_centers = None
 
-    def get_camera_pose(self):
+    def get_marker_poses(self):
         marker_poses = {}
         camera_poses = {}
         robot_pose_observation = np.array([[0, 0]])
@@ -136,7 +136,7 @@ class ArucoMarkers:
             # robot_pose_observation = np.array([[x, y, theta]])
             # print(robot_pose_observation)
 
-        return camera_poses
+        return marker_poses
 
         # print(camera_poses)
         # print(f'marker_pose: {marker_pose}')

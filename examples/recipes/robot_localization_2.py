@@ -10,12 +10,12 @@ from time import sleep
 # Assemble a robot
 robot = Pitop()
 robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
-robot.add_component(Camera())
+robot.add_component(Camera(0, (640, 480), rotate_angle=90, format='opencv'))
 
 localization = Localization(robot)
 localization.start()
 
-robot.drive.left(0.1, turn_radius=0.1)
+# robot.drive.forward(0.05)
 
 # angle = 0
 #
