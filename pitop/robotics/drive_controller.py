@@ -51,12 +51,12 @@ class DriveController(Stateful, Recreatable):
         self._left_motor_port = left_motor_port
         self._right_motor_port = right_motor_port
 
-        self._left_motor = EncoderMotor(port_name=left_motor_port,
-                                        forward_direction=ForwardDirection.CLOCKWISE)
-        self._right_motor = EncoderMotor(port_name=right_motor_port,
-                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
+        self.left_motor = EncoderMotor(port_name=left_motor_port,
+                                       forward_direction=ForwardDirection.CLOCKWISE)
+        self.right_motor = EncoderMotor(port_name=right_motor_port,
+                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
 
-        self._max_motor_rpm = floor(min(self._left_motor.max_rpm, self._right_motor.max_rpm))
+        self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
 
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
@@ -103,8 +103,8 @@ class DriveController(Stateful, Recreatable):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
-        self._left_motor.set_target_rpm(target_rpm=rpm_left)
-        self._right_motor.set_target_rpm(target_rpm=rpm_right)
+        self.left_motor.set_target_rpm(target_rpm=rpm_left)
+        self.right_motor.set_target_rpm(target_rpm=rpm_right)
         # self.__sync_start()
 
     @is_initialized
