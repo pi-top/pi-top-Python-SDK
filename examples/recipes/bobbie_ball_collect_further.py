@@ -69,7 +69,7 @@ def process_frame(frame):
         deposit_ball()
         robot_view = frame
     else:
-        ball_data = process_frame_for_ball(frame, colour='red', image_return_format='opencv')
+        ball_data = process_frame_for_ball(frame, colours='red', image_return_format='opencv')
         robot_view = ball_data.robot_view
         capture_ball(ball_data)
 

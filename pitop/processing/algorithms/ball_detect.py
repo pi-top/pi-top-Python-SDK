@@ -45,8 +45,13 @@ ball_match_limits = {
 }
 
 MIN_BALL_RADIUS = 5
-BUFFER_LENGTH = 32
-detection_points = deque(maxlen=BUFFER_LENGTH)
+BALL_CLOSE_RADIUS = 50
+BUFFER_LENGTH = 64
+detection_points = {
+    "red": deque(maxlen=BUFFER_LENGTH),
+    "green": deque(maxlen=BUFFER_LENGTH),
+    "blue": deque(maxlen=BUFFER_LENGTH)
+}
 
 
 def colour_filter(frame, colour: str = "red", return_binary_mask=False, image_format: str = "PIL", image_return_format: str = "PIL"):
@@ -92,60 +97,90 @@ def find_most_likely_ball(contours, colour, resized_frame):
             c2 = max(contours_compare, key=cv2.contourArea)
             match_value = cv2.matchShapes(contour, c2, 1, 0.0)  # closer to zero is a better match
 
-            # most likely ball is a mixture of largest area and one that is most round
-            likelihood_index = area + 100 / match_value
+            # most likely ball is a mixture of largest area and one that is most "ball-shaped"
+            likelihood_index = area / match_value
 
             # check if this contour is more likely than the last
             if likelihood_index > max_likelihood_index:
-                # check if it meets the requirements for a ball
-                if match_value < ball_match_limits[colour] and radius > MIN_BALL_RADIUS:
-                    # store the values to be used as the most likely ball in frame
-                    ball_center = (int(x), int(y))
-                    ball_radius = int(radius)
+                # save to new max
+                max_likelihood_index = likelihood_index
+                # check if the ball is circular. Or if it's so big it's just close to the camera and occluded
+                if match_value < ball_match_limits[colour] or radius > BALL_CLOSE_RADIUS:
+                    # check if it meets the minimum ball radius
+                    if radius > MIN_BALL_RADIUS:
+                        # ok, we're finally happy that this is an actual ball
+                        # store the values to be used as the most likely ball in frame
+                        ball_center = (int(x), int(y))
+                        ball_radius = int(radius)
 
     return ball_center, ball_radius
 
 
-def process_frame_for_ball(frame, colour: str = "red", image_return_format: str = "PIL", scale_factor=0.5):
+def process_frame_for_ball(frame, colours=("red",), image_return_format: str = "PIL", scale_factor=0.5):
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
 
-    mask = colour_filter(resized_frame, colour=colour, return_binary_mask=True, image_format="OpenCV",
-                         image_return_format="OpenCV")
+    if len(colours) > 3:
+        raise ValueError('Cannot pass more than three colours.')
 
-    contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = imutils.grab_contours(contours)  # fixes problems with OpenCV changing their protocol
+    ball_centers = {}
+    ball_radii = {}
+    ball_angles = {}
+    for colour in colours:
+        mask = colour_filter(resized_frame, colour=colour, return_binary_mask=True, image_format="OpenCV",
+                             image_return_format="OpenCV")
 
-    ball_center, ball_radius = find_most_likely_ball(contours, colour, resized_frame)
+        contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = imutils.grab_contours(contours)  # fixes problems with OpenCV changing their protocol
 
-    if ball_center is not None:
-        # draw the circle and centroid on the frame, then update the list of tracked points
-        cv2.circle(resized_frame, ball_center, ball_radius, (0, 255, 255), 2)
-        cv2.circle(resized_frame, ball_center, 5, draw_colour[colour], -1)
-        detection_points.appendleft(ball_center)
-        # reposition centre to (0, 0) is in the middle. Keep scale as 1 as user sees scaled down 320x240 image
-        ball_center = centroid_reposition(ball_center, 1, resized_frame)
+        ball_center, ball_radius = find_most_likely_ball(contours, colours, resized_frame)
 
-    for i in range(1, len(detection_points)):
-        # if either of the tracked points are None, ignore
-        # them
-        if detection_points[i - 1] is None or detection_points[i] is None:
-            continue
-        # otherwise, compute the thickness of the line and
-        # draw the connecting lines
-        thickness = int(np.sqrt(BUFFER_LENGTH / float(i + 1)))
+        detection_points[colour].appendleft(ball_center)
 
-        cv2.line(resized_frame, detection_points[i - 1], detection_points[i], draw_colour[colour], thickness)
+        if ball_center is not None:
+            # draw the circle and centroid on the frame, then update the list of tracked points
+            cv2.circle(resized_frame, ball_center, ball_radius, (0, 255, 255), 2)
+            cv2.circle(resized_frame, ball_center, 5, draw_colour[colours], -1)
+
+            # Reposition centre so (0, 0) is in the middle for the user.
+            # Keep scale as 1 as user sees scaled down 320x240 image in Further
+            ball_center = centroid_reposition(ball_center, 1, resized_frame)
+            ball_angle = get_control_angle(ball_center, resized_frame)
+
+        for i in range(1, len(detection_points[colour])):
+            # if either of the tracked points are None, ignore them
+            if detection_points[colour][i - 1] is None or detection_points[colour][i] is None:
+                continue
+            # otherwise, compute the thickness of the line and draw the connecting lines
+            thickness = int(np.sqrt(BUFFER_LENGTH / float(i + 1)))
+
+            cv2.line(resized_frame, detection_points[colour][i - 1], detection_points[colour][i],
+                     draw_colour[colours], thickness)
+
+        ball_centers[colour] = ball_center
+        ball_radii[colour] = ball_radius
+        ball_angles[colour] = ball_angle
 
     if image_return_format.lower() != 'opencv':
         robot_view = ImageFunctions.convert(resized_frame, format="PIL")
     else:
         robot_view = resized_frame
 
-    angle = get_control_angle(ball_center, frame)
-    return DotDict({
-        "center": ball_center,
-        "robot_view": robot_view,
-        "radius": ball_radius,
-        "angle": angle
-    })
+    if len(colours) == 1:
+        colour = colours[0]
+        return DotDict({
+            "center": ball_centers[colour],
+            "robot_view": robot_view,
+            "radius": ball_radii[colour],
+            "angle": ball_angles[colour]
+        })
+    elif len(colours) == 2:
+        return DotDict({
+            colours[0]: DotDict({
+                        "center": ball_centers[colours[0]],
+                        "robot_view": robot_view,
+                        "radius": ball_radii[colours[0]],
+                        "angle": ball_angles[colours[0]]
+            })
+
+        })

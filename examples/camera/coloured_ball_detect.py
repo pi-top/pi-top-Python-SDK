@@ -5,7 +5,7 @@ import cv2
 
 
 def process_frame_for_ball(frame):
-    ball_data = process_frame_for_ball(frame, colour='red', image_return_format="OpenCV")
+    ball_data = process_frame_for_ball(frame, colours='red', image_return_format="OpenCV")
     if ball_data.center is not None:
         center = ball_data.center
         print(f'Center: {center} | Radius: {ball_data.radius}')
