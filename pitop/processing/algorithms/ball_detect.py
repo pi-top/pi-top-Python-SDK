@@ -19,15 +19,15 @@ class DotDict(dict):
 
 colours = {
     'red': {
-        'lower': (150, 100, 50),
+        'lower': (150, 75, 75),
         'upper': (200, 255, 255)
     },
     'green': {
-        'lower': (40, 100, 50),
-        'upper': (80, 255, 255)
+        'lower': (40, 100, 75),
+        'upper': (90, 255, 255)
     },
     'blue': {
-        'lower': (100, 100, 50),
+        'lower': (100, 100, 75),
         'upper': (140, 255, 255)
     }
 }
@@ -36,19 +36,37 @@ BUFFER_LENGTH = 64
 detection_points = deque(maxlen=BUFFER_LENGTH)
 
 
-def ball_detect(frame, colour: str = "red", image_format="PIL", scale_factor=0.5):
-    cv_frame = ImageFunctions.convert(frame, format="OpenCV")
-    resized_frame = scale_frame(cv_frame, scale=scale_factor)
-    if colour not in ('red', 'green', 'blue'):
+def colour_filter(frame, colour: str = "red", return_binary_mask=False, image_format: str = "PIL", image_return_format: str = "PIL"):
+    if image_format.lower() == 'pil':
+        frame = ImageFunctions.convert(frame, format="OpenCV")
+
+    if colour.lower() not in ('red', 'green', 'blue'):
         raise ValueError('colour must be "red", "green" or "blue"')
 
     hsv_lower = colours[colour]['lower']
     hsv_upper = colours[colour]['upper']
-    blurred = cv2.GaussianBlur(resized_frame, (11, 11), 0)
+    blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
     mask = cv2.erode(mask, None, iterations=2)
     mask = cv2.dilate(mask, None, iterations=2)
+
+    if not return_binary_mask:
+        mask = cv2.bitwise_and(frame, frame, mask=mask)
+
+    if image_return_format.lower() == 'pil':
+        mask = ImageFunctions.convert(mask, format="PIL")
+
+    return mask
+
+
+def ball_detect(frame, colour: str = "red", image_return_format: str ="PIL", scale_factor=0.5):
+    cv_frame = ImageFunctions.convert(frame, format="OpenCV")
+    resized_frame = scale_frame(cv_frame, scale=scale_factor)
+
+    mask = colour_filter(cv_frame, colour=colour, return_binary_mask=True, image_format="OpenCV",
+                         image_return_format="OpenCV")
+
     contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = imutils.grab_contours(contours)
 
@@ -82,7 +100,7 @@ def ball_detect(frame, colour: str = "red", image_format="PIL", scale_factor=0.5
         thickness = int(np.sqrt(BUFFER_LENGTH / float(i + 1)) * 2.5)
         cv2.line(resized_frame, detection_points[i - 1], detection_points[i], (0, 0, 255), thickness)
 
-    if image_format.lower() != 'opencv':
+    if image_return_format.lower() != 'opencv':
         robot_view = ImageFunctions.convert(cv_frame, format="PIL")
     else:
         robot_view = resized_frame
