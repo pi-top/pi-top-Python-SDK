@@ -4,7 +4,7 @@
     "module": "pitop.system.pitop",
     "components": {
         "camera": {
-            "index": 0,
+            "index": null,
             "resolution": [
                 640,
                 480
