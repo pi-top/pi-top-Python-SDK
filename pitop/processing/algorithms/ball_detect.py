@@ -2,6 +2,7 @@ from collections import deque
 import numpy as np
 import cv2
 import imutils
+import math
 from .line_detect import get_control_angle, centroid_reposition
 from pitop.core import ImageFunctions
 from pitop.processing.utils.vision_functions import (
@@ -37,6 +38,12 @@ draw_colour = {
     'blue': (255, 0, 0)
 }
 
+ball_match_limits = {
+    'red': 0.15,  # red needs to be a higher limit since some skin types are redish in colour
+    'green': 0.1,
+    'blue': 0.1
+}
+
 BUFFER_LENGTH = 32
 detection_points = deque(maxlen=BUFFER_LENGTH)
 
@@ -53,8 +60,8 @@ def colour_filter(frame, colour: str = "red", return_binary_mask=False, image_fo
     blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
-    mask = cv2.erode(mask, None, iterations=2)
-    mask = cv2.dilate(mask, None, iterations=2)
+    mask = cv2.erode(mask, None, iterations=4)
+    mask = cv2.dilate(mask, None, iterations=4)
 
     if not return_binary_mask:
         mask = cv2.bitwise_and(frame, frame, mask=mask)
@@ -81,12 +88,23 @@ def process_frame_for_ball(frame, colour: str = "red", image_return_format: str 
         # find the largest contour in the mask, then use
         # it to compute the minimum enclosing circle and
         # centroid
-        c = max(contours, key=cv2.contourArea)
-        (x, y), radius = cv2.minEnclosingCircle(c)
-        moment_matrix = cv2.moments(c)
+        c1 = max(contours, key=cv2.contourArea)
+        (x, y), radius = cv2.minEnclosingCircle(c1)
+        moment_matrix = cv2.moments(c1)
         center = (int(moment_matrix["m10"] / moment_matrix["m00"]), int(moment_matrix["m01"] / moment_matrix["m00"]))
-        # only proceed if the radius meets a minimum size
-        if radius > 5:
+
+        # compare found contour with a perfect circle to dismiss coloured objects that aren't round
+        mask_to_compare = np.zeros(resized_frame.shape[:2], dtype="uint8")
+        cv2.circle(mask_to_compare, (int(x), int(y)), int(radius), 255, -1)
+        contours_compare = cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours_compare = imutils.grab_contours(contours_compare)
+        c2 = max(contours_compare, key=cv2.contourArea)
+        match_value = cv2.matchShapes(c1, c2, 1, 0.0)  # closer to zero is a better match
+
+        print(match_value)
+
+        # only proceed if the radius meets a minimum size and contour matches a circle within limit
+        if radius > 5 and match_value < ball_match_limits[colour]:
             # draw the circle and centroid on the frame,
             # then update the list of tracked points
             cv2.circle(resized_frame, (int(x), int(y)), int(radius), (0, 255, 255), 2)
