@@ -3,6 +3,7 @@ from os import listdir, system
 
 from PyV4L2Camera.camera import Camera as V4L2Camera
 from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
+from pitopcommon.command_runner import run_command
 
 
 class UsbCamera:
@@ -46,6 +47,13 @@ class UsbCamera:
 
     @staticmethod
     def list_device_indexes():
+        try:
+            run_command("dpkg -l v4l-utils", timeout=1, log_errors=False)
+        except Exception:
+            print("Warning: can't autodetect camera device indexes, using default value 0.")
+            print("Warning: Package v4l-utils is not installed. You can install it by running 'sudo apt install v4l-utils'.")
+            return [0]
+
         indexes = []
         device_names = [name for name in listdir("/dev") if "video" in name]
 
