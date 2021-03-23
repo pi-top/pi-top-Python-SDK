@@ -39,11 +39,12 @@ draw_colour = {
 }
 
 ball_match_limits = {
-    'red': 0.15,  # red needs to be a higher limit since some skin types are redish in colour
-    'green': 0.1,
-    'blue': 0.1
+    'red': 0.1,  # red needs to be a higher limit since some skin types are redish in colour
+    'green': 0.05,
+    'blue': 0.05
 }
 
+MIN_BALL_RADIUS = 5
 BUFFER_LENGTH = 32
 detection_points = deque(maxlen=BUFFER_LENGTH)
 
@@ -72,6 +73,39 @@ def colour_filter(frame, colour: str = "red", return_binary_mask=False, image_fo
     return mask
 
 
+def find_most_likely_ball(contours, colour, resized_frame):
+    ball_center = None
+    ball_radius = None
+    if len(contours) > 0:
+
+        max_likelihood_index = 0
+        for contour in contours:
+            # loop through all contours and store the most likely one's parameters
+            (x, y), radius = cv2.minEnclosingCircle(contour)
+            area = cv2.contourArea(contour)
+
+            # compare found contour with a perfect circle contour to dismiss coloured objects that aren't round
+            mask_to_compare = np.zeros(resized_frame.shape[:2], dtype="uint8")
+            cv2.circle(mask_to_compare, (int(x), int(y)), int(radius), 255, -1)
+            contours_compare = cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours_compare = imutils.grab_contours(contours_compare)
+            c2 = max(contours_compare, key=cv2.contourArea)
+            match_value = cv2.matchShapes(contour, c2, 1, 0.0)  # closer to zero is a better match
+
+            # most likely ball is a mixture of largest area and one that is most round
+            likelihood_index = area + 100 / match_value
+
+            # check if this contour is more likely than the last
+            if likelihood_index > max_likelihood_index:
+                # check if it meets the requirements for a ball
+                if match_value < ball_match_limits[colour] and radius > MIN_BALL_RADIUS:
+                    # store the values to be used as the most likely ball in frame
+                    ball_center = (int(x), int(y))
+                    ball_radius = int(radius)
+
+    return ball_center, ball_radius
+
+
 def process_frame_for_ball(frame, colour: str = "red", image_return_format: str = "PIL", scale_factor=0.5):
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
@@ -80,40 +114,17 @@ def process_frame_for_ball(frame, colour: str = "red", image_return_format: str 
                          image_return_format="OpenCV")
 
     contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    contours = imutils.grab_contours(contours)
+    contours = imutils.grab_contours(contours)  # fixes problems with OpenCV changing their protocol
 
-    center = None
-    radius = None
-    if len(contours) > 0:
-        # find the largest contour in the mask, then use
-        # it to compute the minimum enclosing circle and
-        # centroid
-        c1 = max(contours, key=cv2.contourArea)
-        (x, y), radius = cv2.minEnclosingCircle(c1)
-        moment_matrix = cv2.moments(c1)
-        center = (int(moment_matrix["m10"] / moment_matrix["m00"]), int(moment_matrix["m01"] / moment_matrix["m00"]))
+    ball_center, ball_radius = find_most_likely_ball(contours, colour, resized_frame)
 
-        # compare found contour with a perfect circle to dismiss coloured objects that aren't round
-        mask_to_compare = np.zeros(resized_frame.shape[:2], dtype="uint8")
-        cv2.circle(mask_to_compare, (int(x), int(y)), int(radius), 255, -1)
-        contours_compare = cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        contours_compare = imutils.grab_contours(contours_compare)
-        c2 = max(contours_compare, key=cv2.contourArea)
-        match_value = cv2.matchShapes(c1, c2, 1, 0.0)  # closer to zero is a better match
-
-        print(match_value)
-
-        # only proceed if the radius meets a minimum size and contour matches a circle within limit
-        if radius > 5 and match_value < ball_match_limits[colour]:
-            # draw the circle and centroid on the frame,
-            # then update the list of tracked points
-            cv2.circle(resized_frame, (int(x), int(y)), int(radius), (0, 255, 255), 2)
-            cv2.circle(resized_frame, center, 5, draw_colour[colour], -1)
-            detection_points.appendleft(center)
-            # reposition centre to (0, 0) is in the middle. Keep scale as 1 as user sees scaled down 320x240 image
-            center = centroid_reposition(center, 1, resized_frame)
-        else:
-            center = None
+    if ball_center is not None:
+        # draw the circle and centroid on the frame, then update the list of tracked points
+        cv2.circle(resized_frame, ball_center, ball_radius, (0, 255, 255), 2)
+        cv2.circle(resized_frame, ball_center, 5, draw_colour[colour], -1)
+        detection_points.appendleft(ball_center)
+        # reposition centre to (0, 0) is in the middle. Keep scale as 1 as user sees scaled down 320x240 image
+        ball_center = centroid_reposition(ball_center, 1, resized_frame)
 
     for i in range(1, len(detection_points)):
         # if either of the tracked points are None, ignore
@@ -131,10 +142,10 @@ def process_frame_for_ball(frame, colour: str = "red", image_return_format: str 
     else:
         robot_view = resized_frame
 
-    angle = get_control_angle(center, frame)
+    angle = get_control_angle(ball_center, frame)
     return DotDict({
-        "center": center,
+        "center": ball_center,
         "robot_view": robot_view,
-        "radius": radius,
+        "radius": ball_radius,
         "angle": angle
     })
