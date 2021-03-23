@@ -1,7 +1,7 @@
 # from further_link import send_image
 from pitop import BobbieRobot
 from signal import pause
-from pitop.processing.algorithms import ball_detect
+from pitop.processing.algorithms import process_frame_for_ball
 from pitop.core import ImageFunctions
 import cv2
 from time import sleep
@@ -69,7 +69,7 @@ def process_frame(frame):
         deposit_ball()
         robot_view = frame
     else:
-        ball_data = ball_detect(frame, colour='red', image_return_format='opencv')
+        ball_data = process_frame_for_ball(frame, colour='red', image_return_format='opencv')
         robot_view = ball_data.robot_view
         capture_ball(ball_data)
 
