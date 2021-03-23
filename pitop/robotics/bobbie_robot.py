@@ -187,7 +187,7 @@ class BobbieRobot(PiTop):
 
                 robot_pose_observation = None
                 if self._aruco.detect(self.camera.get_frame()):
-                    robot_pose_observation = self._aruco.get_camera_pose()
+                    robot_pose_observation = self._aruco.get_marker_poses()
 
                 v_rx = (right_wheel_speed + left_wheel_speed) / 2
                 # v_ry = 0  # cannot move in y

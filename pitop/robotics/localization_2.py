@@ -84,9 +84,9 @@ class Localization:
             if dt >= 1.0 / self._odom_update_frequency:
                 prev_time = current_time
 
-                left_wheel_speed = self._drive_controller._left_motor.current_speed
+                left_wheel_speed = self._drive_controller.left_motor.current_speed
 
-                right_wheel_speed = self._drive_controller._right_motor.current_speed
+                right_wheel_speed = self._drive_controller.right_motor.current_speed
 
                 # print(f'left_wheel_speed: {left_wheel_speed:2f}')
 
@@ -135,15 +135,16 @@ class Localization:
                     #                               [1, 0, 0],
                     #                               [0, 0, 1])
 
-
                     if isRotationMatrix(rotation_matrix):
                         euler_angles = rotationMatrixToEulerAngles(rotation_matrix)
                         # only need yaw (z)
                         yaw = euler_angles[2]
                         # print(f'yaw: {math.degrees(yaw):.2f}')
                         # print(f'x: {camera_pose[0, 3]} | y: {camera_pose[1, 3]}')
-                        z_k = np.array([[camera_pose[1, 3]], [-camera_pose[0, 3]], [yaw + math.pi/2.0]])
+                        # z_k = np.array([[camera_pose[2, 3]], [-camera_pose[0, 3]], [yaw + math.pi/2.0]])
+                        z_k = np.array([[camera_pose[0, 3]], [camera_pose[1, 3]], [yaw]])
 
+                # z_k = None
                 self._ekf.update(u_k, z_k, dt)
 
                 pose_mean = self._ekf.pose_mean
@@ -151,10 +152,12 @@ class Localization:
 
                 det = np.linalg.det(pose_covariance)
 
-                print(f'pose: {pose_mean}')
-                print(f'det: {det:2f}')
+                # print(f'x: {pose_mean[0, 0]:.2f} | y: {pose_mean[1, 0]:.2f} | angle: {math.degrees(pose_mean[2, 0]):.2f}', end="\r")
+                # print(f'det: {det:2f}')
                 cv2.imshow("Image", self._frame)
                 cv2.waitKey(1)
+
+
 
                 # theta_r += omega_r * dt
                 # v_wx = v_rx * math.cos(theta_r)  # - v_ry * math.sin(theta_r) - these terms are zero
