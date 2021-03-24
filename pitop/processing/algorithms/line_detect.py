@@ -74,7 +74,7 @@ def get_control_angle(centroid, frame):
     # physically, this represents an approximation between chassis rotation center and camera
     # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
     # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
-    chassis_center_y = -int(frame.size[1])
+    chassis_center_y = -int(frame.shape[1])
 
     # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
     # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
