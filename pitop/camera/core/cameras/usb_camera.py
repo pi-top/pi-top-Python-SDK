@@ -38,6 +38,6 @@ class UsbCamera:
         )
 
         if self._rotate_angle != 0:
-            pil_image = pil_image.rotate(angle=self._rotate_angle)
+            pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
 
         return pil_image
