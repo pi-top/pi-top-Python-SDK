@@ -1,2 +1,8 @@
 [run]
-omit = *tests*,*__init__.py
+source=pitop
+omit = tests/* \
+    setup.py \
+    *\__init__.py
+
+[coverage:report]
+skip_empty = true
