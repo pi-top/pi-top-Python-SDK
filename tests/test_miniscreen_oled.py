@@ -11,8 +11,6 @@ modules["pitopcommon.lock"] = MagicMock()
 modules["pitopcommon.ptdm"] = MagicMock()
 modules["pitopcommon.logger"] = MagicMock()
 modules["numpy"] = MagicMock()
-modules["RPi"] = MagicMock()
-modules["RPi.GPIO"] = MagicMock()
 modules["luma.core.interface.serial"] = MagicMock()
 modules["luma.oled.device"] = MagicMock()
 

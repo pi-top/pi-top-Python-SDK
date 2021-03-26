@@ -44,3 +44,16 @@ Using the pi-topPULSE's LED matrix to show the battery level
 ------------------------------------------------------------
 
 .. literalinclude:: ../examples/recipes/leds-battery.py
+
+Choose a pi-top [4] miniscreen startup animation
+------------------------------------------------
+
+.. note::
+
+   This code makes use of the `GIPHY SDK <https://developers.giphy.com/>`_. Follow the instructions `here <https://developers.giphy.com/docs/api>`_ to find out how to apply for an API Key to use with this project.
+
+   Replace `<MY GIPHY KEY>` with the key provided (keep the quotes).
+
+   You can change the type of images that you get by changing `SEARCH_TERM = "Monochrome"` to whatever you want.
+
+.. literalinclude:: ../examples/recipes/giphy_miniscreen_startup.py
