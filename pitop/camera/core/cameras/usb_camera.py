@@ -34,8 +34,9 @@ class UsbCamera:
 
         if self.__camera is None:
             raise IOError("Error opening camera. Make sure it's correctly connected via USB.") from None
-
-    def create_camera_object(self, index, resolution=None):
+    
+    @staticmethod
+    def create_camera_object(index, resolution=None):
         if resolution is not None:
             return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
         else:
