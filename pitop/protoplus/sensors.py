@@ -59,10 +59,6 @@ class DistanceSensor(gpiozero_DistanceSensor):
     def raw_distance(self):
         return self.distance
 
-    @property
-    def distance(self):
-        return self.distance
-
     def get_raw_distance(self):
         return self.distance
 
