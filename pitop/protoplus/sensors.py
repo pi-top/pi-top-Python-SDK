@@ -1,100 +1,72 @@
-import RPi.GPIO as GPIO
-from time import sleep
-from time import time
-
-min_distance_cm = 2
-max_distance_cm = 400
-speed_of_sound = 34300
-default_trig_gpio = 23
-default_echo_gpio = 27
+from gpiozero import DistanceSensor as gpiozero_DistanceSensor
 
 
-class DistanceSensor():
+class DistanceSensor(gpiozero_DistanceSensor):
+    """Encapsulates the behaviour of a simple DistanceSensor that can be turned
+    on and off.
 
-    def __init__(self, trigger_gpio_pin=default_trig_gpio, echo_gpio_pin=default_echo_gpio):
+    :param str trigger_gpio_pin: GPIO pin for trigger input
+    :param str echo_gpio_pin: GPIO pin for echo response
+    """
 
-        self.trigger_gpio_pin = trigger_gpio_pin
-        self.echo_gpio_pin = echo_gpio_pin
-        self.__setup()
+    def __init__(self, trigger_gpio_pin=23, echo_gpio_pin=27):
+        gpiozero_DistanceSensor.__init__(self, self.trigger_gpio_pin, self.echo_gpio_pin)
 
-    def __setup(self):
-        GPIO.setwarnings(False)
+    def close(self):
+        """Shut down the device and release all associated resources. This
+        method can be called on an already closed device without raising an
+        exception.
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.trigger_gpio_pin, GPIO.OUT)
-        GPIO.setup(self.echo_gpio_pin, GPIO.IN)
+        This method is primarily intended for interactive use at the command
+        line. It disables the device and releases its pin(s) for use by another
+        device.
 
-    def __send_pulse(self):
+        You can attempt to do this simply by deleting an object, but unless
+        you've cleaned up all references to the object this may not work (even
+        if you've cleaned up all references, there's still no guarantee the
+        garbage collector will actually delete the object at that point).  By
+        contrast, the close method provides a means of ensuring that the object
+        is shut down.
 
-        GPIO.output(self.trigger_gpio_pin, False)
-        sleep(0.03)
-        GPIO.output(self.trigger_gpio_pin, True)
-        sleep(0.00001)
-        GPIO.output(self.trigger_gpio_pin, False)
+        For example, if you have a DistanceSensor connected to port D4, but then wish
+        to attach an LED instead:
 
-    def __get_pulse_time(self):
+            >>> from pitop.protoplus import DistanceSensor
+            >>> from pitop import LED
+            >>> distance = DistanceSensor("D4")
+            >>> distance.on()
+            >>> distance.off()
+            >>> distance.close()
+            >>> led = LED("D4")
+            >>> led.blink()
 
-        timeout = time() + 0.02  # 0.02s timeout
-        pulse_start = time()
+        :class:`Device` descendents can also be used as context managers using
+        the :keyword:`with` statement. For example:
 
-        while GPIO.input(self.echo_gpio_pin) == 0:
-            pulse_start = time()
+            >>> from pitop.protoplus import DistanceSensor
+            >>> from pitop import LED
+            >>> with DistanceSensor("D4") as distance:
+            ...     distance.on()
+            ...
+            >>> with LED("D4") as led:
+            ...     led.on()
+            ...
+        """
+        super(gpiozero_DistanceSensor, self).close()
 
-            if time() > timeout:
-                pulse_end = time()
-                break
-
-        while GPIO.input(self.echo_gpio_pin) == 1:
-            pulse_end = time()
-
-            if time() > timeout:
-                break
-
-        pulse_duration = pulse_end - pulse_start
-        return pulse_duration
-
-    def __get_distance_from_pulse_time(self, pulse_duration):
-
-        pulse_duration_one_way = pulse_duration / 2
-        distance = round(pulse_duration_one_way * speed_of_sound, 2)
-        return distance
-
-    def __measure_distance(self):
-
-        self.__send_pulse()
-        pulse_duration = self.__get_pulse_time()
-
-        distance = self.__get_distance_from_pulse_time(pulse_duration)
-        return distance
-
+    ##################
+    # Legacy methods #
+    ##################
     @property
     def raw_distance(self):
-        return self.get_raw_distance()
+        return self.distance
 
     @property
     def distance(self):
-        return self.get_distance()
+        return self.distance
 
     def get_raw_distance(self):
-        return self.__measure_distance()
+        return self.distance
 
     def get_distance(self):
-        distance_set = []
-        range = 100
-
-        while range > 10:
-            distance_set = []
-
-            distance_set.append(self.__measure_distance())
-            sleep(0.1)
-
-            distance_set.append(self.__measure_distance())
-            sleep(0.1)
-
-            distance_set.append(self.__measure_distance())
-            sleep(0.1)
-
-            range = max(distance_set) - min(distance_set)
-
-        average = sum(distance_set) / len(distance_set)
-        return round(average, 2)
+        return self.distance
