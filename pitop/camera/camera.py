@@ -25,12 +25,13 @@ class Camera(Stateful, Recreatable):
     :type index: int
     :param index:
         ID of the video capturing device to open.
-        To open default camera using default backend just pass 0.
+        Passing `None` will cause the backend to autodetect the
+        available video capture devices and attempt to use them.
     """
     __VALID_FORMATS = ('opencv', 'pil')
 
     def __init__(self,
-                 index=0,
+                 index=None,
                  resolution=None,
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
@@ -99,8 +100,7 @@ class Camera(Stateful, Recreatable):
         self._format = format_value.lower()
 
     @classmethod
-    @type_check
-    def from_usb(cls, index: int = 0):
+    def from_usb(cls, index=None):
         """Alternative classmethod to create an instance of a :class:`Camera`
         object using a :data:`UsbCamera`"""
         return cls(camera_type=CameraTypes.USB_CAMERA, index=index)

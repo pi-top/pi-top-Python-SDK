@@ -17,7 +17,7 @@ try:
     import RPi.GPIO as GPIO
     # Suppress warning in Luma serial class
     GPIO.setwarnings(False)
-except RuntimeError:
+except (ImportError, RuntimeError):
     # This can only be run on Raspberry Pi
     # and is only required for reducing logging
     pass

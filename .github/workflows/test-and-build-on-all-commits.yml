@@ -8,37 +8,19 @@ on:
       - "ci-test-*"
 
 jobs:
-  test-python-linting:
+  pre-commit-checks:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
-      - name: Lint code
-        uses: ricardochaves/python-lint@v1.3.0
-        with:
-          python-root-list: "pitop pitopcli"
-          use-flake8: true
-          extra-flake8-options: "--max-line-length=150"
+      - name: Set up Python
+        uses: actions/setup-python@v2
 
-          use-pylint: false
-          # extra-pylint-options: ""
+      - name: Run all pre-commit checks against all files
+        uses: pre-commit/action@v2.0.0
 
-          use-pycodestyle: false
-          # extra-pycodestyle-options: ""
-
-          use-black: false
-          # extra-black-options: ""
-
-          use-mypy: false
-          # extra-mypy-options: ""
-
-          use-isort: false
-          # extra-isort-options: ""
-
-  test-python-suite:
+  python-test-coverage:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -55,13 +37,20 @@ jobs:
             --env PYTHON_COVERAGE_DIR=pitop \
             pitop/test-run
 
+      - name: Upload test coverage report to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          verbose: true
+
   test-readme-render:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -73,12 +62,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install readme-renderer
 
-      - name: Test README
+      - name: Test README can be rendered
         run: |
-          python -m readme_renderer README.rst -o /tmp/README.html
+          python -m readme_renderer README.rst -o /dev/null
 
   build-debian-packages:
-    needs: [ test-python-linting, test-python-suite, test-readme-render ]
+    needs: [ pre-commit-checks, python-test-coverage, test-readme-render ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -86,8 +75,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Patch changelog (snapshot)
         run: |

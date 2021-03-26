@@ -13,6 +13,7 @@ from PIL import (
     ImageChops,
     ImageDraw,
     ImageFont,
+    ImageOps,
     ImageSequence,
 )
 from pyinotify import (
@@ -244,7 +245,7 @@ class OLED:
         if not self.visible:
             self.show()
 
-    def display_image_file(self, file_path_or_url, xy=None):
+    def display_image_file(self, file_path_or_url, xy=None, invert=False):
         """Render a static image to the screen from a file or URL at a given
         position.
 
@@ -255,22 +256,35 @@ class OLED:
         :param tuple xy: The position on the screen to render the image. If not
             provided or passed as `None` the image will be drawn in the top-left of
             the screen.
+        :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
-        self.display_image(ImageFunctions.get_pil_image_from_path(file_path_or_url), xy)
+        self.display_image(
+            ImageFunctions.get_pil_image_from_path(file_path_or_url),
+            xy=xy,
+            invert=invert,
+        )
 
     # TODO: add 'size' parameter
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
-    def display_image(self, image, xy=None):
+    # TODO: handle 'xy'
+    def display_image(self, image, xy=None, invert=False):
         """Render a static image to the screen from a file or URL at a given
         position.
 
         The image should be provided as a PIL Image object.
 
         :param Image image: A PIL Image object to be rendered
+        :param tuple xy: The position on the screen to render the image. If not
+            provided or passed as `None` the image will be drawn in the top-left of
+            the screen.
+        :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
-        self.__display(self.prepare_image(image))
+        self.__display(
+            self.prepare_image(image),
+            invert=invert,
+        )
 
-    def display_text(self, text, xy=None, font_size=None):
+    def display_text(self, text, xy=None, font_size=None, invert=False):
         """Renders a single line of text to the screen at a given position and
         size.
 
@@ -283,6 +297,7 @@ class OLED:
             the screen.
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
+        :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         if xy is None:
             xy = self.top_left
@@ -307,7 +322,7 @@ class OLED:
         )
 
         # Display image
-        self.display_image(image)
+        self.display_image(image, invert=invert)
 
     def display_multiline_text(self, text, xy=None, font_size=None):
         """Renders multi-lined text to the screen at a given position and size.
@@ -383,8 +398,13 @@ class OLED:
         # Display image
         self.display_image(image)
 
-    def __display(self, image_to_display, force=False):
+    def __display(self, image_to_display, force=False, invert=False):
         self.__fps_regulator.stop_timer()
+
+        if invert:
+            image_to_display = ImageOps.invert(
+                image_to_display.convert('L')
+            ).convert('1')
 
         if force or self.should_redisplay(image_to_display):
             self.device.display(image_to_display)
@@ -518,7 +538,7 @@ class OLED:
         to screen in a single frame.
         """
         print("'display()' is now deprecated. You will need to handle your own images in future.")
-        self.__display(self._image)
+        self.__display(self._image, force=force)
 
     def draw(self):
         """

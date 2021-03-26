@@ -113,7 +113,6 @@ __requires__ = [
     # Proto+ #
     ##########
     "python-sonic",
-    "RPi.GPIO",
 
     #########
     # Pulse #
@@ -129,7 +128,7 @@ __requires__ = [
 __extra_requires__ = {
     "computer_vision": ["opencv"],
     "doc": ["sphinx"],
-    "test": ["coverage", "mock"],
+    "test": ["pytest", "coverage", "mock", "pytest-cov", "pytest-mock"],
 }
 
 __entry_points__ = {
