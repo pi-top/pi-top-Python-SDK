@@ -113,12 +113,12 @@ __requires__ = [
     # Proto+ #
     ##########
     "python-sonic",
-    "RPi.GPIO",
 
     #########
     # Pulse #
     #########
     "pyserial",
+    "smbus",
 
     ##############
     # Algorithms #

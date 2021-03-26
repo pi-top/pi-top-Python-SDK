@@ -8,6 +8,18 @@ on:
       - "ci-test-*"
 
 jobs:
+  test-pre-commit:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      - name: Run all pre-commit checks against all files
+        uses: pre-commit/action@v2.0.0
+
   test-python-linting:
     runs-on: ubuntu-20.04
     steps:
@@ -100,7 +112,7 @@ jobs:
           python -m readme_renderer README.rst -o /tmp/README.html
 
   build-debian-packages:
-    needs: [ test-python-linting, test-python-pytest, test-readme-render ]
+    needs: [ test-pre-commit, test-python-linting, test-python-pytest, test-readme-render ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
