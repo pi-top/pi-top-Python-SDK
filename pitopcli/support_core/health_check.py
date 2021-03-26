@@ -13,6 +13,7 @@ from time import strftime
 from ..formatter import StdoutFormat, StdoutTable
 from .ptsoftware import PitopSoftware
 from .hub_communication import HubCommunication
+from pitop.system import pitop_peripherals
 
 from pitop.system import device_type
 from pitopcommon.command_runner import run_command
@@ -137,6 +138,10 @@ class HealthCheck:
         print("")
 
         t = StdoutTable()
+        t.add_section("pi-top Devices", self.get_pt_devices_status())
+        t.print()
+
+        t = StdoutTable()
         t.add_section("System Information", self.get_system_information())
         t.add_section("Interfaces (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_INTERFACES))
         t.add_section("Boot Settings (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_BOOT_SETTINGS))
@@ -169,6 +174,16 @@ class HealthCheck:
 
         StdoutFormat.print_subsection("Kernel Diagnostic Messages (dmesg)")
         self.print_dmesg()
+
+    def get_pt_devices_status(self):
+        data_arr = []
+        for periph in pitop_peripherals():
+            connection_status = f"[ {StdoutFormat.GREEN}{'✓' if periph.get('connected') else ' '}{StdoutFormat.ENDC} ]"
+            device_name = f"{periph.get('name')}"
+            if periph.get("fw_version"):
+                device_name += f"(v{periph.get('fw_version')})"
+            data_arr.append([connection_status, device_name])
+        return data_arr
 
     def print_dmesg(self):
         try:
