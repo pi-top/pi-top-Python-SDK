@@ -2,12 +2,12 @@ from collections import deque
 import numpy as np
 import cv2
 import imutils
-import math
-from .line_detect import get_control_angle, centroid_reposition
-from pitop.core import ImageFunctions
-from pitop.processing.utils.vision_functions import (
-    scale_frame
+from .line_detect import (
+    get_control_angle,
+    centroid_reposition
 )
+from pitop.core import ImageFunctions
+from pitop.processing.utils.vision_functions import scale_frame
 
 
 class DotDict(dict):
@@ -135,6 +135,8 @@ def process_frame_for_ball(frame, colours=("red",), image_return_format: str = "
         contours = imutils.grab_contours(contours)  # fixes problems with OpenCV changing their protocol
 
         ball_center, ball_radius = find_most_likely_ball(contours, colour, resized_frame)
+
+        # kalman update
 
         detection_points[colour].appendleft(ball_center)
 
