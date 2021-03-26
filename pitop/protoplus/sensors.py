@@ -10,7 +10,7 @@ class DistanceSensor(gpiozero_DistanceSensor):
     """
 
     def __init__(self, trigger_gpio_pin=23, echo_gpio_pin=27):
-        gpiozero_DistanceSensor.__init__(self, trigger_gpio_pin, echo_gpio_pin)
+        gpiozero_DistanceSensor.__init__(self, echo_gpio_pin, trigger_gpio_pin)
 
     def close(self):
         """Shut down the device and release all associated resources. This
