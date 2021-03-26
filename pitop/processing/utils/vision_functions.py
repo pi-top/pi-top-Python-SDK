@@ -108,3 +108,19 @@ def resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 
     # return the resized image
     return resized
+
+
+def center_reposition(center, frame):
+    """
+    Reposition center so that (0, 0) is in the middle of the frame instead of OpenCV standard which is at top left
+    :param center: OpenCV center (x, y)
+    :param frame: Frame to reposition center within
+    :return:
+    """
+    if center is None:
+        return None
+    # convert so (0, 0) is at the middle bottom of the frame
+    center_x = center[0] - int(frame.shape[1] / 2)
+    center_y = int(frame.shape[0] / 2) - center[1]
+
+    return center_x, center_y
