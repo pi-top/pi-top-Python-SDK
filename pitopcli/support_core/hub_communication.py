@@ -102,6 +102,7 @@ class HubCommunication:
                 ("SHUTDOWN_CTRL", f"{self.int_to_binary(self.device.read_unsigned_byte(0xA0))}"),
                 ("BUTT_SHORT_HOLD_TURNON", f"{float(self.device.read_unsigned_byte(0xA1)) / 10} sec"),
                 ("BUTT_SHORT_HOLD_TURNOFF", f"{float(self.device.read_unsigned_byte(0xA2)) / 10} sec sec"),
+                ("LAST_SHUTDOWN_REASONS", f"{self.device.read_unsigned_byte(0xA4)}"),
                 ("BUTT_LONG_HOLD", f"{float(self.device.read_unsigned_byte(0xA3)) / 10} sec sec"),
                 ("M1_TIMEOUT_MIN", f"{self.device.read_unsigned_word(0xAA)} sec"),
                 ("M1_TIMEOUT_MAX", f"{self.device.read_unsigned_word(0xAB)} sec"),
