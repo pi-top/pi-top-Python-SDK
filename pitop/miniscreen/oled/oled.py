@@ -399,12 +399,14 @@ class OLED:
         self.display_image(image)
 
     def __display(self, image_to_display, force=False, invert=False):
-        self.__fps_regulator.stop_timer()
+        self.stop_animated_image()
 
         if invert:
             image_to_display = ImageOps.invert(
                 image_to_display.convert('L')
             ).convert('1')
+
+        self.__fps_regulator.stop_timer()
 
         if force or self.should_redisplay(image_to_display):
             self.device.display(image_to_display)
