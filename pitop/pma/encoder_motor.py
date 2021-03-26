@@ -1,12 +1,16 @@
 from .parameters import BrakingType, ForwardDirection, Direction
 from .encoder_motor_controller import EncoderMotorController
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
 
 import time
 from math import floor, pi
 import atexit
 
 
-class EncoderMotor:
+class EncoderMotor(Stateful, Recreatable):
     """Represents a pi-top motor encoder component.
 
     Note that pi-top motor encoders use a built-in closed-loop control system, that feeds the readings
@@ -49,8 +53,10 @@ class EncoderMotor:
                  port_name,
                  forward_direction,
                  braking_type=BrakingType.COAST,
-                 wheel_diameter=0.075
+                 wheel_diameter=0.075,
+                 name=None
                  ):
+        self.name = name
         self._pma_port = port_name
 
         self.__motor_core = EncoderMotorController(self._pma_port, braking_type.value)
@@ -61,6 +67,25 @@ class EncoderMotor:
         self.__previous_reading_odometer = 0
 
         atexit.register(self.stop)
+
+        Stateful.__init__(self)
+        Recreatable.__init__(self,
+                             config_dict={"port_name": port_name,
+                                          "name": name,
+                                          "forward_direction": lambda: self.forward_direction,
+                                          "braking_type": lambda: self.braking_type,
+                                          "wheel_diameter": lambda: self.wheel_diameter})
+
+    @property
+    def own_state(self):
+        return {
+            "current_rpm": lambda: self.current_rpm,
+            "current_speed": lambda: self.current_speed,
+            "distance": lambda: self.distance,
+            "wheel_diameter": lambda: self.wheel_diameter,
+            "forward_direction": lambda: self.forward_direction,
+            "braking_type": lambda: self.braking_type,
+        }
 
     @property
     def forward_direction(self):

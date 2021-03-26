@@ -17,7 +17,7 @@ class DistanceSensor():
         self.echo_gpio_pin = echo_gpio_pin
         self.__setup()
 
-    def ___setup(self):
+    def __setup(self):
         GPIO.setwarnings(False)
 
         GPIO.setmode(GPIO.BCM)

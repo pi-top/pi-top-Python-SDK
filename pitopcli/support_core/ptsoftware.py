@@ -6,7 +6,7 @@ from ..formatter import StdoutFormat
 from .systemd_service import SystemdService
 
 
-class PiTopSoftware:
+class PitopSoftware:
     def print_pt_systemd_status(self):
         services = self.get_pt_systemd_services()
 

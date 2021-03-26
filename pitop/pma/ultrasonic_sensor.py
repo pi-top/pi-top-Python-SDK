@@ -1,17 +1,21 @@
-from .common import get_pin_for_port
-
-from pitopcommon.logger import PTLogger
-
 from gpiozero.pins.native import NativeFactory
 from gpiozero import SmoothedInputDevice
 from threading import Event, Lock
+
+from pitopcommon.logger import PTLogger
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.common import get_pin_for_port
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
 #
 # Note: all private member variables are semi-private to follow upstream gpiozero convention
 # and to override inherited functions
-class UltrasonicSensor(SmoothedInputDevice):
+class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
     ECHO_LOCK = Lock()
 
     def __init__(
@@ -20,20 +24,22 @@ class UltrasonicSensor(SmoothedInputDevice):
         queue_len=9,
         max_distance=3,
         threshold_distance=0.3,
-        partial=False
+        partial=False,
+        name="ultrasonic"
     ):
 
         self._pma_port = port_name
+        self.name = name
 
-        super(UltrasonicSensor, self).__init__(
-            get_pin_for_port(self._pma_port),
-            pull_up=False,
-            queue_len=queue_len,
-            sample_wait=0.06,
-            partial=partial,
-            ignore=frozenset({None}),
-            pin_factory=NativeFactory(),
-        )
+        SmoothedInputDevice.__init__(self,
+                                     get_pin_for_port(self._pma_port),
+                                     pull_up=False,
+                                     queue_len=queue_len,
+                                     sample_wait=0.06,
+                                     partial=partial,
+                                     ignore=frozenset({None}),
+                                     pin_factory=NativeFactory(),
+                                     )
 
         try:
             if max_distance <= 0:
@@ -52,6 +58,20 @@ class UltrasonicSensor(SmoothedInputDevice):
         except Exception:
             self.close()
             raise
+
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name,
+                                    "queue_len": queue_len,
+                                    "partial": partial,
+                                    "name": self.name,
+                                    "max_distance": lambda: self.max_distance,
+                                    "threshold_distance": lambda: self.threshold_distance})
+
+    @property
+    def own_state(self):
+        return {
+            'distance': self.distance,
+        }
 
     def close(self):
         """Shut down the device and release all associated resources. This
@@ -72,8 +92,7 @@ class UltrasonicSensor(SmoothedInputDevice):
         For example, if you have a buzzer connected to port D4, but then wish
         to attach an LED instead:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> bz = Buzzer("D4")
             >>> bz.on()
             >>> bz.off()
@@ -84,8 +103,7 @@ class UltrasonicSensor(SmoothedInputDevice):
         :class:`Device` descendents can also be used as context managers using
         the :keyword:`with` statement. For example:
 
-            >>> from pitop.pma import Buzzer
-            >>> from pitop.pma import LED
+            >>> from pitop import Buzzer, LED
             >>> with Buzzer("D4") as bz:
             ...     bz.on()
             ...
@@ -94,7 +112,7 @@ class UltrasonicSensor(SmoothedInputDevice):
             ...
         """
         try:
-            super(UltrasonicSensor, self).close()
+            super(SmoothedInputDevice, self).close()
         except RuntimeError:
             # Currently, if used with OLED, this will raise the following exception:
             #

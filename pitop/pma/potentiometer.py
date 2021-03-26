@@ -16,6 +16,15 @@ class Potentiometer(ADCBase):
     :param str port_name: The ID for the port to which this component is connected
     """
 
+    def __init__(self, port_name, pin_number=1, name="potentiometer"):
+        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+
+    @property
+    def own_state(self):
+        return {
+            "position": lambda: self.position,
+        }
+
     @property
     def position(self):
         """Get the current reading from the sensor.

@@ -1,4 +1,4 @@
-from pitop.pma import UltrasonicSensor
+from pitop import UltrasonicSensor
 from time import sleep
 
 distance_sensor = UltrasonicSensor("D3", threshold_distance=0.2)

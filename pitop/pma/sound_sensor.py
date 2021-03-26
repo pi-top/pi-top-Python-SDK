@@ -1,4 +1,4 @@
-from .adc_base import ADCBase
+from pitop.pma.adc_base import ADCBase
 
 
 class SoundSensor(ADCBase):
@@ -13,6 +13,9 @@ class SoundSensor(ADCBase):
 
     :param str port_name: The ID for the port to which this component is connected
     """
+
+    def __init__(self, port_name, pin_number=1, name="sound_sensor"):
+        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
 
     @property
     def reading(self):
