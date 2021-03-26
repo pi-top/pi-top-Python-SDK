@@ -98,6 +98,36 @@ class HealthCheck:
                            AF_INET: 'IPv4',
                            AF_INET6: 'IPv6'}
 
+    VCGENMOD_SETTINGS = {
+        "Throttled state of the system": "vcgencmd get_throttled",
+        "SoC temperature": "vcgencmd measure_temp",
+        "Clock frequency of ARM cores": "vcgencmd measure_clock arm",
+        "Clock frequency of VC4 scaler cores": "vcgencmd measure_clock core",
+        "Clock frequency of H264 block": "vcgencmd measure_clock H264",
+        "Clock frequency of Image Signal Processor": "vcgencmd measure_clock isp",
+        "Clock frequency of 3D block": "vcgencmd measure_clock v3d",
+        "Clock frequency of UART": "vcgencmd measure_clock uart",
+        "Clock frequency of PWM block (analog audio output)": "vcgencmd measure_clock pwm",
+        "Clock frequency of SD card interface": "vcgencmd measure_clock emmc",
+        "Clock frequency of Pixel valve": "vcgencmd measure_clock pixel",
+        "Clock frequency of Analog Video Encoder": "vcgencmd measure_clock vec",
+        "Clock frequency of HDMI": "vcgencmd measure_clock hdmi",
+        "Clock frequency of Display Peripheral Interface": "vcgencmd measure_clock dpi",
+        "Current voltage used by VC4 core": "vcgencmd measure_volts core",
+        "Current voltage used by SDRAM core": "vcgencmd measure_volts sdram_c",
+        "Current voltage used by SDRAM I/O": "vcgencmd measure_volts sdram_i",
+        "Current voltage used by SDRAM Phy": "vcgencmd measure_volts sdram_p",
+        "Amount of memory allocated to the ARM cores": "vcgencmd get_mem arm",
+        "Amount of memory allocated to VC4": "vcgencmd get_mem gpu",
+        "Out Of Memory events occuring in the VC4 memory": "vcgencmd mem_oom",
+        "Power status of Main LCD": "vcgencmd display_power -1 0",
+        "Power status of Secondary LCD": "vcgencmd display_power -1 1",
+        "Power status of HDMI 0": "vcgencmd display_power -1 2",
+        "Power status of Composite": "vcgencmd display_power -1 3",
+        "Power status of HDMI 1": "vcgencmd display_power -1 7",
+        "Resolution & color depth of displays": "vcgencmd get_lcd_info",
+    }
+
     def run(self):
         StdoutFormat.print_header("SYSTEM HEALTH CHECK")
         print(f"Current time: {strftime('%a, %d %b %Y %I:%M:%S %p %Z')}")
@@ -154,6 +184,20 @@ class HealthCheck:
             StdoutFormat.print_subsection('Raspberry Pi 4 EEPROM Information')
             eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5)
             print(f"{eeprom_info.strip()}")
+            StdoutFormat.print_subsection('VideoCore GPU Detailed Configuration')
+            self.print_vcgenmod_settings()
+
+    def print_vcgenmod_settings(self):
+        t = StdoutTable()
+        data_arr = []
+        for description, command in self.VCGENMOD_SETTINGS.items():
+            try:
+                result = run_command(command, timeout=1)
+                result = result.strip().replace("\n", "; ")
+            except Exception:
+                result = "Error retrieving information"
+            data_arr.append([description, result])
+        t.print_data(data_arr)
 
     def get_uname_output(self):
         data_arr = []
