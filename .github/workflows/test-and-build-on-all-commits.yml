@@ -57,6 +57,11 @@ jobs:
           python -m pytest --cov=pitop .
           coverage html
 
+      - uses: codecov/codecov-action@v1
+        with:
+          fail_ci_if_error: true
+          verbose: true
+
   test-readme-render:
     runs-on: ubuntu-20.04
     steps:
