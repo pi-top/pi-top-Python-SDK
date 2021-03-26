@@ -36,6 +36,7 @@ class Camera(Stateful, Recreatable):
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
                  format='PIL',
+                 rotate_angle=0,
                  name="camera"
                  ):
         # Initialise private variables
@@ -52,9 +53,10 @@ class Camera(Stateful, Recreatable):
         self._index = index
         self._camera_type = CameraTypes(camera_type)
         self._path_to_images = path_to_images
+        self._rotate_angle = rotate_angle
 
         if self._camera_type == CameraTypes.USB_CAMERA:
-            self.__camera = UsbCamera(self._index, self._resolution)
+            self.__camera = UsbCamera(self._index, self._resolution, self._rotate_angle)
 
         elif self._camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
             self.__camera = FileSystemCamera(self._path_to_images)
