@@ -5,6 +5,7 @@ from time import sleep
 class ADCProbe():
 
     __device_address = 0x2A
+    __register_address = 0
     __channel_count = 6
     __adc_ratio = 20
 
@@ -30,8 +31,7 @@ class ADCProbe():
             print("Could not connect to device")
             return self.__error_array
 
-        # TODO: use a proper public method here
-        results = self.__device._read_data(self.__channel_count)
+        results = self.__device.read_n_unsigned_bytes(self.__register_address, self.__channel_count)
         data_read_len = len(results)
         self.__disconnect()
 
