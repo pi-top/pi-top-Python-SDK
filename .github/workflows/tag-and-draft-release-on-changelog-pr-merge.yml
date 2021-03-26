@@ -4,12 +4,29 @@ on:
   pull_request:
     types: [closed]
 
-env:
-  changelog_branch: ci-update-changelog-next-release
-
 jobs:
+  check-should-run:
+    runs-on: ubuntu-20.04
+    outputs:
+      should_run: ${{ steps.check_should_run.outputs.should_run }}
+    steps:
+
+      - name: Set 'should run' variable
+        id: check_should_run
+        env:
+          CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+        run: |
+          if [[ "${GITHUB_HEAD_REF}" == "${CI_CHANGELOG_BUMP_BRANCH}" ]] && [[ "${PR_MERGED}" == "true" ]]; then
+            conditions_met="true"
+          else
+            conditions_met="false"
+          fi
+          echo "::set-output name=should_run::${conditions_met}"
+
   add-version-tag:
-    if: ${{ github.head_ref }} == ${{ env.changelog_branch }} && ${{ github.event.pull_request.merged }} == true
+    needs: [ check-should-run ]
+    if: needs.check-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -20,8 +37,8 @@ jobs:
       - name: Create and push Debian version tag
         run: |
           new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
-          git tag "v${new_version}"
-          git push --tags
+          git tag --force "v${new_version}"
+          git push --force --tags
 
   build-python:
     needs: [ add-version-tag ]
@@ -60,9 +77,6 @@ jobs:
   build-debian:
     needs: [ add-version-tag ]
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        target_arch: ["armhf", "arm64"]
     steps:
       - name: GitHub Environment Variables Action
         uses: FranzDiebold/github-env-vars-action@v1.2.1
@@ -73,36 +87,29 @@ jobs:
           fetch-depth: 0
 
       - name: Build Debian package
-        uses: pi-top/action-debian-package@v0.2.2
-        with:
-          source_directory: "${{ github.workspace }}"
-          artifacts_directory: "${{ github.workspace }}/artifacts/bin"
-
-          docker_image: "pitop/deb-build:latest"
-          distribution: "buster-backports"
-          target_architecture: ${{ matrix.target_arch }}
-
-          lintian_opts: "--dont-check-part nmu --no-tag-display-limit --display-info --show-overrides --fail-on error --fail-on warning --fail-on info"
-          # Package uses latest packaging syntax and Lintian opts/tags
-          dpkg_buildpackage_opts: "--no-sign --no-check-builddeps --post-clean"
+        run: |
+          mkdir -p /tmp/artifacts/{src,bin}
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            --volume /tmp/artifacts/bin:/build \
+            pitop/deb-build:latest
 
       - name: Separate Debian source package files from binary
         run: |
-          mkdir -p ${{ github.workspace }}/artifacts/src/
-          mv ${{ github.workspace }}/artifacts/bin/* ${{ github.workspace }}/artifacts/src/
-          mv ${{ github.workspace }}/artifacts/src/*.deb ${{ github.workspace }}/artifacts/bin/
+          mv /tmp/artifacts/bin/* /tmp/artifacts/src/
+          mv /tmp/artifacts/src/*.deb /tmp/artifacts/bin/
 
       - name: Upload Debian source package files
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb-src"
-          path: "${{ github.workspace }}/artifacts/src/"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
+          path: "/tmp/artifacts/src/"
 
       - name: Upload Debian binary packages
         uses: actions/upload-artifact@v2
         with:
-          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-${{ matrix.target_arch }}-deb"
-          path: "${{ github.workspace }}/artifacts/bin/"
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          path: "/tmp/artifacts/bin/"
 
   create-draft-release:
     runs-on: ubuntu-20.04
@@ -161,65 +168,116 @@ jobs:
           asset_name: ${{ steps.get_py_whl_filename.outputs.filename }}
           asset_content_type: text/plain
 
-      - name: Download Debian artifact (armhf)
+      - name: Download Debian binary artifacts
         uses: actions/download-artifact@v2
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-armhf-deb"
-            path: "./armhf/"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+            path: "./deb/"
 
-      - name: Get main package filename (armhf)
-        id: get_armhf_main_pkg_filename
-        run: |
-          cd ./armhf
-          PKG_NAME=$(ls | grep "^python3-pitop_.*armhf.deb$")
-          echo "::set-output name=filename::$PKG_NAME"
-
-      - name: Upload main Debian package (armhf)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./armhf/${{ steps.get_armhf_main_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_armhf_main_pkg_filename.outputs.filename }}
-          asset_content_type: application/vnd.debian.binary-package
-
-      - name: Get docs package filename (armhf)
-        id: get_armhf_docs_pkg_filename
-        run: |
-          cd ./armhf
-          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*all.deb$")
-          echo "::set-output name=filename::$PKG_NAME"
-
-      - name: Upload docs Debian package (armhf)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./armhf/${{ steps.get_armhf_docs_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_armhf_docs_pkg_filename.outputs.filename }}
-          asset_content_type: application/vnd.debian.binary-package
-
-      - name: Download Debian artifact (arm64)
+      - name: Download Debian source artifacts
         uses: actions/download-artifact@v2
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-arm64-deb"
-            path: "./arm64/"
+            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
+            path: "./deb-src/"
 
-      - name: Get main package filename (arm64)
-        id: get_arm64_main_pkg_filename
+      - name: Get main package filename
+        id: get_deb_main_pkg_filename
         run: |
-          cd ./arm64
-          PKG_NAME=$(ls | grep "^python3-pitop_.*arm64.deb$")
+          cd ./deb
+          PKG_NAME=$(ls | grep "^python3-pitop_.*.deb$")
           echo "::set-output name=filename::$PKG_NAME"
 
-      - name: Upload main Debian package (arm64)
+      - name: Upload main Debian package
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./arm64/${{ steps.get_arm64_main_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_arm64_main_pkg_filename.outputs.filename }}
+          asset_path: ./deb/${{ steps.get_deb_main_pkg_filename.outputs.filename }}
+          asset_name: ${{ steps.get_deb_main_pkg_filename.outputs.filename }}
           asset_content_type: application/vnd.debian.binary-package
+
+      - name: Get docs package filename
+        id: get_deb_docs_pkg_filename
+        run: |
+          cd ./deb
+          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*.deb$")
+          echo "::set-output name=filename::$PKG_NAME"
+
+      - name: Upload docs Debian package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb/${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
+          asset_name: ${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
+          asset_content_type: application/vnd.debian.binary-package
+
+      - name: Get dsc filename
+        id: get_dsc_filename
+        run: |
+          cd ./deb-src
+          DSC_FILENAME=$(ls | grep "^py-pitop-sdk_.*.dsc$")
+          echo "::set-output name=filename::$DSC_FILENAME"
+
+      - name: Upload dsc filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb-src/${{ steps.get_dsc_filename.outputs.filename }}
+          asset_name: ${{ steps.get_dsc_filename.outputs.filename }}
+          asset_content_type: text/plain
+
+      - name: Get buildinfo filename
+        id: get_buildinfo_filename
+        run: |
+          cd ./deb-src
+          BUILDINFO_FILENAME=$(ls | grep "^py-pitop-sdk_.*.buildinfo$")
+          echo "::set-output name=filename::$BUILDINFO_FILENAME"
+
+      - name: Upload buildinfo filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb-src/${{ steps.get_buildinfo_filename.outputs.filename }}
+          asset_name: ${{ steps.get_buildinfo_filename.outputs.filename }}
+          asset_content_type: text/plain
+
+      - name: Get changes filename
+        id: get_changes_filename
+        run: |
+          cd ./deb-src
+          CHANGES_FILENAME=$(ls | grep "^py-pitop-sdk_.*.changes$")
+          echo "::set-output name=filename::$CHANGES_FILENAME"
+
+      - name: Upload changes filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb-src/${{ steps.get_changes_filename.outputs.filename }}
+          asset_name: ${{ steps.get_changes_filename.outputs.filename }}
+          asset_content_type: text/plain
+
+      - name: Get source filename
+        id: get_source_filename
+        run: |
+          cd ./deb-src
+          SOURCE_FILENAME=$(ls | grep "^py-pitop-sdk_.*.tar.xz$")
+          echo "::set-output name=filename::$SOURCE_FILENAME"
+
+      - name: Upload source filename
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./deb-src/${{ steps.get_source_filename.outputs.filename }}
+          asset_name: ${{ steps.get_source_filename.outputs.filename }}
+          asset_content_type: text/plain

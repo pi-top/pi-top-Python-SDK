@@ -8,6 +8,7 @@ on:
 
 jobs:
   add-stable-tag:
+    if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-20.04
     steps:
       - name: Get latest release's version

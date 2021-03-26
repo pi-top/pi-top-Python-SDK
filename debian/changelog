@@ -1,28 +1,19 @@
-py-pitop-sdk (0.16.5) buster; urgency=medium
+py-pitop-sdk (0.17.1) buster; urgency=medium
 
-  * Finalise MVP CI 3
+  * Allow importing main objects from module root
+  * Use docformatter
 
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 19:55:18 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 08 Mar 2021 16:18:52 +0000
 
-py-pitop-sdk (0.16.4) buster; urgency=medium
+py-pitop-sdk (0.17.0) buster; urgency=medium
 
-  * Finalise MVP CI 2
+  * Architecture: all
+  * Added 'pi-top support health_check' to replace 'pt-diagnostics'
+  * ReadTheDocs URL in CLI now links to current API version
+  * Added 2-player pong miniscreen example
+  * Various minor cosmetic/internal improvements
 
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 16:21:26 +0000
-
-py-pitop-sdk (0.16.3) buster; urgency=medium
-
-  * CI: Test package build workflow with new version
-  * Link to current docs' current API version on ReadTheDocs (#214)
-
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 15:56:18 +0000
-
-py-pitop-sdk (0.16.2) buster; urgency=medium
-
-  [ Mike Roberts ]
-  * Add 2-player pong miniscreen example
-
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 11 Feb 2021 14:00:34 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:39:30 +0000
 
 py-pitop-sdk (0.16.1) buster; urgency=medium
 
@@ -84,7 +75,7 @@ py-pitop-sdk (0.13.1) buster; urgency=medium
 
 py-pitop-sdk (0.13.0) buster; urgency=medium
 
-  * Add initial 'PiTop' and 'RobotAlex' top-level objects
+  * Add initial 'Pitop' and 'RobotAlex' top-level objects
   * Support line-following with 'RobotAlex'
   * Add ImageFunctions module in pitop.core for globally useful functions
   * Camera now manages its format as a property. Deprecated format parameter
