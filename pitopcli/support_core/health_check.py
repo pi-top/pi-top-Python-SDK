@@ -167,6 +167,18 @@ class HealthCheck:
         except Exception as e:
             print(f"{e}")
 
+        StdoutFormat.print_subsection("Kernel Diagnostic Messages (dmesg)")
+        self.print_dmesg()
+
+    def print_dmesg(self):
+        try:
+            dmesg = run_command("dmesg", timeout=10)
+        except Exception:
+            dmesg = "Error reading dmesg"
+
+        for line in dmesg.split("\n"):
+            StdoutFormat.print_line(line)
+
     def print_raspberry_pi_device_info(self):
         data_arr = [
             ("Device", f"{run_command('cat /proc/device-tree/model', timeout=2)}"),
