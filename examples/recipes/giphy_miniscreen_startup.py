@@ -11,8 +11,7 @@ from urllib.request import urlopen
 # Define Giphy parameters
 SEARCH_LIMIT = 10
 SEARCH_TERM = "Monochrome"
-# https://developers.giphy.com/ - create an account, create an "API" app and get API Key
-## REPLACE THE TEXT BETWEEN THE QUOTES WITH YOUR GIPHY API KEY:
+
 API_KEY = "<MY GIPHY KEY>"
 
 # Define global variables
