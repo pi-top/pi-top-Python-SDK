@@ -94,6 +94,7 @@ __requires__ = [
     "PyV4L2Camera",
     # IMU Calibration
     "matplotlib",
+    "mpl_toolkits",
     "scipy",
 
     ############
@@ -119,6 +120,7 @@ __requires__ = [
     # Pulse #
     #########
     "pyserial",
+    "smbus",
 
     ##############
     # Algorithms #
