@@ -1,3 +1,12 @@
+
+try:
+    import cv2
+except (ImportError, ModuleNotFoundError):
+    raise ModuleNotFoundError(
+        "OpenCV Python library is not installed. You can install it by running "
+        "'sudo apt install python3-opencv libatlas-base-dev'.") from None
+
+
 def import_opencv():
     try:
         import cv2
@@ -8,7 +17,6 @@ def import_opencv():
 
 
 def colour_mask(frame, hsv_lower, hsv_upper):
-    cv2 = import_opencv()
     # apply gaussian blur to smooth out the frame
     blur = cv2.blur(frame, (9, 9))
 
@@ -22,7 +30,6 @@ def colour_mask(frame, hsv_lower, hsv_upper):
 
 
 def find_largest_contour(frame):
-    cv2 = import_opencv()
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
     image, contours, hierarchy = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -37,8 +44,6 @@ def find_largest_contour(frame):
 
 
 def find_centroid(contour):
-    cv2 = import_opencv()
-
     if contour is not None:
         moments = cv2.moments(contour)
         # add 1e-5 to avoid division by zero (standard docs.opencv.org practice apparently)
@@ -67,8 +72,39 @@ def find_largest_rectangle(rectangles):
 
 
 def scale_frame(frame, scale):
-    cv2 = import_opencv()
     scaled_width = int(frame.shape[1] * scale)
     scaled_height = int(frame.shape[0] * scale)
     dim = (scaled_width, scaled_height)
     return cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+
+
+def resize(image, width=None, height=None, inter=cv2.INTER_AREA):
+    # initialize the dimensions of the image to be resized and
+    # grab the image size
+    dim = None
+    (h, w) = image.shape[:2]
+
+    # if both the width and height are None, then return the
+    # original image
+    if width is None and height is None:
+        return image
+
+    # check to see if the width is None
+    if width is None:
+        # calculate the ratio of the height and construct the
+        # dimensions
+        r = height / float(h)
+        dim = (int(w * r), height)
+
+    # otherwise, the height is None
+    else:
+        # calculate the ratio of the width and construct the
+        # dimensions
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    # resize the image
+    resized = cv2.resize(image, dim, interpolation=inter)
+
+    # return the resized image
+    return resized
