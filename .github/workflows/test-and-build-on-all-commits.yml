@@ -56,15 +56,17 @@ jobs:
         run: |
           PYTHONPATH=pitop python -m pytest --cov=pitop --cov-report=xml
 
+      - name: DEBUG
+        run: |
+          ls -lR
+
       - name: Upload test coverage report to Codecov
         uses: codecov/codecov-action@v1
         with:
-          files: ./coverage1.xml,./coverage2.xml
-          directory: ./coverage/reports/
+          files: ./coverage.xml
           flags: unittests
           env_vars: OS,PYTHON
           fail_ci_if_error: true
-          path_to_write_report: ./coverage/codecov_report.txt
           verbose: true
 
   test-readme-render:
