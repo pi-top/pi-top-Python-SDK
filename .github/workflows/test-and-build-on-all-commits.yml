@@ -8,7 +8,7 @@ on:
       - "ci-test-*"
 
 jobs:
-  test-pre-commit:
+  pre-commit-checks:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -20,13 +20,11 @@ jobs:
       - name: Run all pre-commit checks against all files
         uses: pre-commit/action@v2.0.0
 
-  test-python-linting:
+  python-lint-check:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Lint code
         uses: ricardochaves/python-lint@v1.3.0
@@ -50,7 +48,7 @@ jobs:
           use-isort: false
           # extra-isort-options: ""
 
-  test-python-pytest:
+  python-test-coverage:
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Python
@@ -76,26 +74,22 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
-          path: main
 
       - name: Install dependencies
         run: |
           sudo apt-get install libv4l-dev # for building PyV4L2Camera
-          pip install "./main[test]"
+          pip install .[test]
 
-      - name: Run pytest
+      - name: Run tests, generate coverage report
         run: |
-          python -m pytest main
+          python -m pytest --cov=pitop .
+          coverage html
 
   test-readme-render:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -112,7 +106,7 @@ jobs:
           python -m readme_renderer README.rst -o /dev/null
 
   build-debian-packages:
-    needs: [ test-pre-commit, test-python-linting, test-python-pytest, test-readme-render ]
+    needs: [ pre-commit-checks, python-lint-check, python-test-coverage, test-readme-render ]
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -120,8 +114,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Patch changelog (snapshot)
         run: |
