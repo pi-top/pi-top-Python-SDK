@@ -5,6 +5,8 @@ API - pi-top Peripheral Devices
 pi-topPROTO+
 ==================
 
+.. image:: _static/peripherals/pi-topPROTO+.jpg
+
 This module provides 2 classes - a simple way to use a pi-topPROTO+'s onboard ADC (analog-to-digital converter), and another to use it as a distance sensor.
 
 These classes will work with original pi-top, pi-topCEED and pi-top [3]. pi-top [4] does not support the pi-topPROTO+'s modular rail connector, and so will not work.
