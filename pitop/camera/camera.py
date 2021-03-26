@@ -32,7 +32,7 @@ class Camera(Stateful, Recreatable):
 
     def __init__(self,
                  index=None,
-                 resolution=None,
+                 resolution=(640, 480),
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
                  format='PIL',
