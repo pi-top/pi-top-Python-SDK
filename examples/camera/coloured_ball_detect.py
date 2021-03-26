@@ -4,7 +4,7 @@ from signal import pause
 import cv2
 
 
-def process_frame_for_ball(frame):
+def process_frame(frame):
     ball_data = process_frame_for_ball(frame, colours='red', image_return_format="OpenCV")
     if ball_data.center is not None:
         center = ball_data.center
@@ -13,7 +13,7 @@ def process_frame_for_ball(frame):
     cv2.waitKey(1)
 
 
-camera = Camera(0, (640, 480), rotate_angle=90)
-camera.on_frame = process_frame_for_ball
+camera = Camera(rotate_angle=90)
+camera.on_frame = process_frame
 
 pause()
