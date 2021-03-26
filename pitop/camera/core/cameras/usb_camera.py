@@ -18,11 +18,6 @@ class UsbCamera:
         else:
             self._rotate_angle = rotate_angle
 
-        try:
-            if resolution is not None:
-                self.__camera = V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
-            else:
-                self.__camera = V4L2Camera(f"/dev/video{index}")
         for idx in indexes:
             try:
                 self.__camera = self.create_camera_object(idx, resolution)
