@@ -107,9 +107,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install readme-renderer
 
-      - name: Test README
+      - name: Test README can be rendered
         run: |
-          python -m readme_renderer README.rst -o /tmp/README.html
+          python -m readme_renderer README.rst -o /dev/null
 
   build-debian-packages:
     needs: [ test-pre-commit, test-python-linting, test-python-pytest, test-readme-render ]
