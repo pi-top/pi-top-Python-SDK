@@ -1,4 +1,4 @@
-from pitop.pma import IMU
+from pitop import IMU
 from time import sleep
 from dataclasses import fields
 

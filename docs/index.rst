@@ -52,11 +52,10 @@ modules available in the library:
 .. code-block:: python
 
     from time import sleep
-    from pitop.pma import UltrasonicSensor
-    from pitop.miniscreen import Miniscreen
+    from pitop import UltrasonicSensor, Miniscreen
 
-    miniscreen = Miniscreen()
     utrasonic = UltrasonicSensor("D1")
+    miniscreen = Miniscreen()
 
     while True:
         miniscreen.display_text(utrasonic.distance)

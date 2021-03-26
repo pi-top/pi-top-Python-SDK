@@ -127,8 +127,4 @@ autodoc_mock_imports = [
     'simple_pid',
     'smbus',
     'zmq',
-    # gpiozero dependencies
-    'RPi',
-    'RPIO',
-    'pigpio',
 ]

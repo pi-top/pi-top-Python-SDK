@@ -5,7 +5,7 @@ if not environ.get('DISPLAY'):
 
 
 def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):
-    """Plot an ellipsoid"""
+    """Plot an ellipsoid."""
     u = np.linspace(0.0, 2.0 * np.pi, 100)
     v = np.linspace(0.0, np.pi, 100)
 

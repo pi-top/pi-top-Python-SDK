@@ -16,11 +16,13 @@ Build-Depends:
  python3-gpiozero,
 # Required for building the docs (see rules file)
  python3-pip,
-Standards-Version: 4.5.0
+# Required for autodetecting camera devices
+ v4l-utils,
+Standards-Version: 4.5.1
 Homepage: https://pi-top.com
 
 Package: python3-pitop-full
-Architecture: any
+Architecture: all
 Depends:
  ${misc:Depends},
  python3-opencv,
@@ -34,7 +36,7 @@ Description: pi-top Python 3 Library - Complete
  components for full pi-top support.
 
 Package: python3-pitop
-Architecture: any
+Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},

@@ -4,18 +4,10 @@ from pitop.processing.utils.vision_functions import (
     colour_mask,
     find_centroid,
     find_largest_contour,
+    import_opencv,
     scale_frame,
 )
 from pitop.core import ImageFunctions
-
-
-def import_opencv():
-    try:
-        import cv2
-        return cv2
-    except (ImportError, ModuleNotFoundError):
-        raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv'.") from None
 
 
 def calculate_blue_limits():
@@ -40,7 +32,7 @@ def calculate_blue_limits():
 
 def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     cv2 = import_opencv()
-    cv_frame = ImageFunctions.pil_to_opencv(frame)
+    cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
     hsv_lower, hsv_upper = calculate_blue_limits()
@@ -60,10 +52,10 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
     if image_format.lower() != 'opencv':
-        robot_view_img = ImageFunctions.opencv_to_pil(robot_view_img)
+        robot_view_img = ImageFunctions.convert(robot_view_img, format="PIL")
 
     class dotdict(dict):
-        """dot.notation access to dictionary attributes"""
+        """dot.notation access to dictionary attributes."""
         __getattr__ = dict.get
         __setattr__ = dict.__setitem__
         __delattr__ = dict.__delitem__

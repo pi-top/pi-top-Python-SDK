@@ -10,3 +10,4 @@ tar-ignore = .github
 tar-ignore = .tox
 tar-ignore = *.fzz
 tar-ignore = *.xcf
+tar-ignore = Jenkinsfile

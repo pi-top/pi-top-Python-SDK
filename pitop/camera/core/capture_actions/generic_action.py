@@ -7,9 +7,8 @@ from inspect import signature
 
 
 class GenericAction(CaptureActionBase):
-    """
-    Class that executes the provided :data:`callback` whenever a camera frame
-    is processed
+    """Class that executes the provided :data:`callback` whenever a camera
+    frame is processed.
 
     :param function callback_on_frame: A callback function that will be called with each new frame as the first argument.
     :param int frame_interval: The callback will run every frame_interval frames, decreasing the frame rate of processing.
@@ -30,7 +29,7 @@ class GenericAction(CaptureActionBase):
 
     def process(self, frame):
         if isinstance(self.__format, str) and self.__format.lower() == 'opencv':
-            frame = ImageFunctions.pil_to_opencv(frame)
+            frame = ImageFunctions.convert(frame, format="opencv")
 
         if self.__elapsed_frames % self.__frame_interval == 0:
             if self.callback_has_argument:

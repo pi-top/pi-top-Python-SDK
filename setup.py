@@ -1,4 +1,4 @@
-"pi-top Python SDK"
+"""pi-top Python SDK."""
 
 import os
 import sys
@@ -113,12 +113,12 @@ __requires__ = [
     # Proto+ #
     ##########
     "python-sonic",
-    "RPi.GPIO",
 
     #########
     # Pulse #
     #########
     "pyserial",
+    "smbus",
 
     ##############
     # Algorithms #

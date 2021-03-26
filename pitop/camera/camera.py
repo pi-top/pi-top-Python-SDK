@@ -5,33 +5,39 @@ from .core import (
     CameraTypes)
 from .core.capture_actions import CaptureActions
 from pitop.core import ImageFunctions
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
 
 from pitop.pma.common import type_check
 
-from threading import Thread, Event
+from enum import Enum
 from inspect import signature
+from threading import Thread, Event
 
 
-class Camera:
-    """
-    Provides a variety of high-level functionality for using the PMA USB Camera, including capturing
-    images and video, and processing image data from the camera
+class Camera(Stateful, Recreatable):
+    """Provides a variety of high-level functionality for using the PMA USB
+    Camera, including capturing images and video, and processing image data
+    from the camera.
 
     :type index: int
     :param index:
         ID of the video capturing device to open.
-        To open default camera using default backend just pass 0.
+        Passing `None` will cause the backend to autodetect the
+        available video capture devices and attempt to use them.
     """
     __VALID_FORMATS = ('opencv', 'pil')
 
     def __init__(self,
-                 index=0,
+                 index=None,
                  resolution=None,
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
-                 format='PIL'
+                 format='PIL',
+                 name="camera"
                  ):
-
         # Initialise private variables
         self._resolution = resolution
         self._format = None
@@ -44,7 +50,7 @@ class Camera:
 
         # Internal
         self._index = index
-        self._camera_type = camera_type
+        self._camera_type = CameraTypes(camera_type)
         self._path_to_images = path_to_images
 
         if self._camera_type == CameraTypes.USB_CAMERA:
@@ -59,12 +65,29 @@ class Camera:
         self.__process_image_thread = Thread(target=self.__process_camera_output, daemon=True)
         self.__process_image_thread.start()
 
+        self.name = name
+        Stateful.__init__(self)
+        Recreatable.__init__(self, config_dict={
+            "index": index,
+            "resolution": resolution,
+            "camera_type": camera_type.value if isinstance(camera_type, Enum) else camera_type,
+            "path_to_images": path_to_images,
+            "format": format,
+            "name": self.name,
+        })
+
+    @property
+    def own_state(self):
+        return {
+            "running": lambda: self.__process_image_thread.is_alive(),
+            "capture_actions": lambda: self.__frame_handler.current_actions(),
+        }
+
     @classmethod
     @type_check
     def from_file_system(cls, path_to_images: str):
-        """
-        Alternative classmethod to create an instance of a :class:`Camera` object using a :data:`FileSystemCamera`
-        """
+        """Alternative classmethod to create an instance of a :class:`Camera`
+        object using a :data:`FileSystemCamera`"""
         return cls(camera_type=CameraTypes.FILE_SYSTEM_CAMERA, path_to_images=path_to_images)
 
     @property
@@ -73,17 +96,13 @@ class Camera:
 
     @format.setter
     def format(self, format_value):
-        format_value = str(format_value).lower()
-        if format_value not in self.__VALID_FORMATS:
-            raise ValueError(f"Invalid format '{format_value}'. Use one of the following: {self.__VALID_FORMATS}")
-        self._format = format_value
+        ImageFunctions.image_format_check(format_value)
+        self._format = format_value.lower()
 
     @classmethod
-    @type_check
-    def from_usb(cls, index: int = 0):
-        """
-        Alternative classmethod to create an instance of a :class:`Camera` object using a :data:`UsbCamera`
-        """
+    def from_usb(cls, index=None):
+        """Alternative classmethod to create an instance of a :class:`Camera`
+        object using a :data:`UsbCamera`"""
         return cls(camera_type=CameraTypes.USB_CAMERA, index=index)
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
@@ -93,23 +112,18 @@ class Camera:
             self.__process_image_thread.join()
 
     def is_recording(self):
-        """
-        Returns True if recording mode is enabled
-        """
+        """Returns True if recording mode is enabled."""
 
         return self.__frame_handler.is_running_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
 
     def is_detecting_motion(self):
-        """
-        Returns True if motion detection mode is enabled
-        """
+        """Returns True if motion detection mode is enabled."""
 
         return self.__frame_handler.is_running_action(CaptureActions.DETECT_MOTION)
 
     @type_check
     def capture_image(self, output_file_name=""):
-        """
-        Capture a single frame image to file
+        """Capture a single frame image to file.
 
         .. note::
             If no :data:`output_file_name` argument is provided, images will be stored in `~/Camera`.
@@ -123,8 +137,7 @@ class Camera:
 
     @type_check
     def start_video_capture(self, output_file_name="", fps=20.0, resolution=None):
-        """
-        Begin capturing video from the camera.
+        """Begin capturing video from the camera.
 
         .. note::
             If no :data:`output_file_name` argument is provided, video will be stored in `~/Camera`.
@@ -143,17 +156,18 @@ class Camera:
         self.__frame_handler.register_action(CaptureActions.CAPTURE_VIDEO_TO_FILE, locals())
 
     def stop_video_capture(self):
-        """
-        Stop capturing video from the camera. Does nothing unless :class:`start_video_capture` has been called.
+        """Stop capturing video from the camera.
+
+        Does nothing unless :class:`start_video_capture` has been
+        called.
         """
 
         self.__frame_handler.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
 
     @type_check
     def start_detecting_motion(self, callback_on_motion, moving_object_minimum_area=300):
-        """
-        Begin processing image data from the camera, attempting to detect motion. When motion is
-        detected, call the function passed in.
+        """Begin processing image data from the camera, attempting to detect
+        motion. When motion is detected, call the function passed in.
 
         .. warning::
             The callback function can take either no arguments or only one, which will be used to provide the image back
@@ -175,16 +189,18 @@ class Camera:
         self.__frame_handler.register_action(CaptureActions.DETECT_MOTION, args)
 
     def stop_detecting_motion(self):
-        """
-        Stop running the motion detection processing. Does nothing unless :class:`start_detecting_motion` has been called.
+        """Stop running the motion detection processing.
+
+        Does nothing unless :class:`start_detecting_motion` has been
+        called.
         """
 
         self.__frame_handler.remove_action(CaptureActions.DETECT_MOTION)
 
     @type_check
     def start_handling_frames(self, callback_on_frame, frame_interval=1, format=None):
-        """
-        Begin calling the passed callback with each new frame, allowing for custom processing.
+        """Begin calling the passed callback with each new frame, allowing for
+        custom processing.
 
         .. warning::
             The callback function can take either no arguments or only one, which will be used to provide the image back
@@ -214,8 +230,10 @@ class Camera:
         self.__frame_handler.register_action(CaptureActions.HANDLE_FRAME, args)
 
     def stop_handling_frames(self):
-        """
-        Stops handling camera frames. Does nothing unless :class:`start_handling_frames` has been called.
+        """Stops handling camera frames.
+
+        Does nothing unless :class:`start_handling_frames` has been
+        called.
         """
 
         self.__frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
@@ -224,7 +242,7 @@ class Camera:
         image = self.__frame_handler.frame
 
         if self.format.lower() == "opencv":
-            image = ImageFunctions.pil_to_opencv(image)
+            image = ImageFunctions.convert(image, format="opencv")
 
         return image
 
@@ -242,8 +260,8 @@ class Camera:
                 print(f"Error in camera frame handler: {e}")
 
     def current_frame(self, format=None):
-        """
-        Returns the latest frame captured by the camera. This method is non-blocking and can return the same frame multiple times.
+        """Returns the latest frame captured by the camera. This method is non-
+        blocking and can return the same frame multiple times.
 
         By default the returned image is formatted as a :class:`PIL.Image.Image`.
 
@@ -258,8 +276,8 @@ class Camera:
         return self.__get_processed_current_frame()
 
     def get_frame(self, format=None):
-        """
-        Returns the next frame captured by the camera. This method blocks until a new frame is available.
+        """Returns the next frame captured by the camera. This method blocks
+        until a new frame is available.
 
         :type format: string
         :param format:

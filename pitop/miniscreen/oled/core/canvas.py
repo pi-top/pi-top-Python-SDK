@@ -7,10 +7,9 @@ from PIL import (
 
 
 class Canvas:
-    """
-    The canvas class can be used to assemble complex images (e.g. a mix of images and text)
-    and then render the entire image to the screen as a single frame.
-    """
+    """The canvas class can be used to assemble complex images (e.g. a mix of
+    images and text) and then render the entire image to the screen as a single
+    frame."""
 
     def __init__(self, image):
         # Image object to be used to draw to device
@@ -64,16 +63,13 @@ class Canvas:
     ##################################################
 
     def clear(self):
-        """
-        Clears the canvas.
-        """
+        """Clears the canvas."""
         self.__draw.rectangle(self.bounding_box, 0)
 
     # TODO: add 'size' parameter for images being rendered to canvas
     # TODO: add 'fill', 'stretch', 'crop', etc. to OLED images - currently, they only stretch by default
     def image(self, xy, image):
-        """
-        Renders an image to the canvas at a given position.
+        """Renders an image to the canvas at a given position.
 
         The image should be provided as a PIL Image object.
 
@@ -87,8 +83,7 @@ class Canvas:
         self.__draw.bitmap(xy, self.process_image(image), 1)
 
     def text(self, xy, text, fill=1, spacing=0, align="left"):
-        """
-        Draws a single line of text to the canvas.
+        """Draws a single line of text to the canvas.
 
         Use the position methods in this class to specify the `xy`
         position parameter, e.g. `top_left`, `top_right`.
@@ -112,9 +107,8 @@ class Canvas:
         )
 
     def multiline_text(self, xy, text, fill=1, spacing=0, align="left"):
-        """
-        Draws multi-line text to the canvas. Text that is too long for the screen
-        will automatically wrap to the next line.
+        """Draws multi-line text to the canvas. Text that is too long for the
+        screen will automatically wrap to the next line.
 
         Use the position methods in this class to specify the `xy`
         position parameter, e.g. `top_left`, `top_right`.
@@ -161,9 +155,8 @@ class Canvas:
         )
 
     def arc(self, xy, start, end, fill=1):
-        """
-        Draws an arc (a portion of a circle outline) between the start and end angles, inside
-        the given bounding box.
+        """Draws an arc (a portion of a circle outline) between the start and
+        end angles, inside the given bounding box.
 
         :param tuple xy: Four points to define the bounding box. Sequence of
             ``[(x0, y0), (x1, y1)]`` or ``[x0, y0, x1, y1]``.
@@ -175,8 +168,7 @@ class Canvas:
         self.__draw.arc(xy, start, end, fill)
 
     def chord(self, xy, start, end, fill=1, outline=1):
-        """
-        Same as arc(), but connects the end points with a straight line and
+        """Same as arc(), but connects the end points with a straight line and
         can fill the enclosed space.
 
         :param tuple xy: Four points to define the bounding box. Sequence of
@@ -190,8 +182,7 @@ class Canvas:
         self.__draw.chord(xy, start, end, fill, outline)
 
     def ellipse(self, xy, fill=1, outline=1):
-        """
-        Draws an ellipse inside the given bounding box.
+        """Draws an ellipse inside the given bounding box.
 
         :param tuple xy: Four points to define the bounding box. Sequence of either
             ``[(x0, y0), (x1, y1)]`` or ``[x0, y0, x1, y1]``
@@ -201,8 +192,7 @@ class Canvas:
         self.__draw.ellipse(xy, fill, outline)
 
     def line(self, xy, fill=1, width=1):
-        """
-        Draws a line between the coordinates in the **xy** list.
+        """Draws a line between the coordinates in the **xy** list.
 
         :param tuple xy: Sequence of either 2-tuples like ``[(x,y), (x,y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
@@ -212,9 +202,8 @@ class Canvas:
         self.__draw.line(xy, fill, width)
 
     def pieslice(self, xy, start, end, fill=1, outline=1):
-        """
-        Same as arc, but also draws straight lines between the end points and the
-        center of the bounding box.
+        """Same as arc, but also draws straight lines between the end points
+        and the center of the bounding box.
 
         :param tuple xy: Four points to define the bounding box. Sequence of
             ``[(x0, y0), (x1, y1)]`` or ``[x0, y0, x1, y1]``
@@ -227,8 +216,7 @@ class Canvas:
         self.__draw.pieslice(xy, start, end, fill, outline)
 
     def point(self, xy, fill=1):
-        """
-        Draws points (individual pixels) at the given coordinates.
+        """Draws points (individual pixels) at the given coordinates.
 
         :param tuple xy: Sequence of either 2-tuples like ``[(x,y), (x,y), ...]`` or
             numeric values like ``[x, y, x, y, ...]``
@@ -237,8 +225,7 @@ class Canvas:
         self.__draw.point(xy, fill)
 
     def polygon(self, xy, fill=1):
-        """
-        Draws a polygon.
+        """Draws a polygon.
 
         The polygon outline consists of straight lines between the given
         coordinates, plus a straight line between the last and the first
@@ -251,8 +238,7 @@ class Canvas:
         self.__draw.polygon(xy, fill)
 
     def rectangle(self, xy, fill=1):
-        """
-        Draws a rectangle.
+        """Draws a rectangle.
 
         :param tuple xy: Four points to define the bounding box. Sequence of either
             ``[(x0, y0), (x1, y1)]`` or ``[x0, y0, x1, y1]``. The second point
@@ -269,8 +255,7 @@ class Canvas:
         return self.__bounding_box
 
     def get_bounding_box(self):
-        """
-        Gets the bounding rectangle of the pi-top OLED display as a tuple.
+        """Gets the bounding rectangle of the pi-top OLED display as a tuple.
 
         :return: A tuple containing the bounding rectangle of the canvas
         :rtype: tuple
@@ -278,8 +263,7 @@ class Canvas:
         return self.bounding_box
 
     def __get_corner(self, pos1, pos2):
-        """
-        Gets corner of bounding box.
+        """Gets corner of bounding box.
 
         :return: coordinates of the corner
         :rtype: tuple
@@ -290,8 +274,7 @@ class Canvas:
         )
 
     def top_left(self):
-        """
-        Gets the top left corner of the pi-top OLED display.
+        """Gets the top left corner of the pi-top OLED display.
 
         :return: The top-left coordinates of the canvas bounding box as a tuple
         :rtype: tuple
@@ -299,8 +282,7 @@ class Canvas:
         return self.__get_corner(0, 1)
 
     def top_right(self):
-        """
-        Gets the top-right corner of the pi-top OLED display.
+        """Gets the top-right corner of the pi-top OLED display.
 
         :return: The top-right coordinates of the canvas bounding box as a tuple
         :rtype: tuple
@@ -308,8 +290,7 @@ class Canvas:
         return self.__get_corner(2, 1)
 
     def bottom_left(self):
-        """
-        Gets the bottom-left corner of the pi-top OLED display.
+        """Gets the bottom-left corner of the pi-top OLED display.
 
         :return: The bottom-left coordinates of the canvas bounding box as a tuple
         :rtype: tuple
@@ -317,8 +298,7 @@ class Canvas:
         return self.__get_corner(0, 3)
 
     def bottom_right(self):
-        """
-        Gets the bottom-right corner of the pi-top OLED display.
+        """Gets the bottom-right corner of the pi-top OLED display.
 
         :return: The bottom-right coordinates of the canvas bounding box as a tuple
         :rtype: tuple
@@ -326,8 +306,7 @@ class Canvas:
         return self.__get_corner(2, 3)
 
     def get_size(self):
-        """
-        Gets the dimensions of the pi-top OLED display
+        """Gets the dimensions of the pi-top OLED display.
 
         :return: The dimensions of the canvas as a tuple
         :rtype: tuple
@@ -335,8 +314,7 @@ class Canvas:
         return self._image.size
 
     def get_width(self):
-        """
-        Gets the width of the  pi-top OLED display
+        """Gets the width of the  pi-top OLED display.
 
         :return: The width of canvas in pixels
         :rtype: int
@@ -344,8 +322,7 @@ class Canvas:
         return self._image.size[0]
 
     def get_height(self):
-        """
-        Gets the height of the pi-top OLED display
+        """Gets the height of the pi-top OLED display.
 
         :return: The height of canvas in pixels
         :rtype: int
@@ -357,9 +334,7 @@ class Canvas:
     ##################################################
 
     def __update_font(self):
-        """
-        Updates font
-        """
+        """Updates font."""
         if self.__font_path is None:
             raise Exception(
                 "No font path set - call set_font_path(font_path)"
@@ -367,8 +342,9 @@ class Canvas:
         self.__font = ImageFont.truetype(self.__font_path, size=self.__font_size)
 
     def __check_for_and_get_font(self):
-        """
-        Checks if the font is set. if the font is not set raise exception.
+        """Checks if the font is set.
+
+        if the font is not set raise exception.
         :return: font or raise exception if _font = None
         """
         if self.__font is None:
@@ -378,9 +354,7 @@ class Canvas:
         return self.__font
 
     def __init_font(self):
-        """
-        Initialize font to primary or fall back font.
-        """
+        """Initialize font to primary or fall back font."""
         primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
         fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
 
@@ -390,8 +364,8 @@ class Canvas:
             self.set_font(fallback_font_path, self.__font_size)
 
     def get_font_path(self):
-        """
-        Gets the path of the current font used for rendering text to the canvas.
+        """Gets the path of the current font used for rendering text to the
+        canvas.
 
         :return: The path to the font file
         :rtype: string
@@ -399,16 +373,15 @@ class Canvas:
         return self.__font_path
 
     def set_font_path(self, font_path):
-        """
-        Sets the path of the current font used for rendering text to the canvas.
+        """Sets the path of the current font used for rendering text to the
+        canvas.
 
         :param string font_path: The font file to use for text rendering
         """
         self.set_font(font_path)
 
     def set_font(self, font_path, font_size=None):
-        """
-        Sets the font and pixel size used for rendering text to the canvas.
+        """Sets the font and pixel size used for rendering text to the canvas.
 
         :param string font_path: The path to the font file
         :param int font_size: The font size to use
@@ -419,8 +392,7 @@ class Canvas:
         self.__update_font()
 
     def get_font_size(self):
-        """
-        Gets the current font size used for rendering text to the canvas.
+        """Gets the current font size used for rendering text to the canvas.
 
         :return: The current font size
         :rtype: int
@@ -428,8 +400,7 @@ class Canvas:
         return self.__font_size
 
     def set_font_size(self, font_size):
-        """
-        Gets the current font size used for rendering text to the canvas.
+        """Gets the current font size used for rendering text to the canvas.
 
         :param int font_size: The font size to use
         """
@@ -437,9 +408,8 @@ class Canvas:
         self.__update_font()
 
     def textsize(self, text, spacing=4):
-        """
-        Return the size of the given string, in pixels, as it would be rendered
-        to the canvas.
+        """Return the size of the given string, in pixels, as it would be
+        rendered to the canvas.
 
         :param string text:  Text to be measured. If it contains any newline
             characters, the text is passed on to multiline_textsize()
@@ -452,9 +422,8 @@ class Canvas:
         )
 
     def multiline_textsize(self, text, spacing=4):
-        """
-        Return the size of the given string, in pixels, as it would be rendered
-        to the canvas.
+        """Return the size of the given string, in pixels, as it would be
+        rendered to the canvas.
 
         :param string text:  Text to be measured. If it contains any newline
             characters, the text is passed on to multiline_textsize()

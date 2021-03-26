@@ -38,8 +38,12 @@ class OledCLI(CliBaseClass):
             return file_path
 
         try:
+
             if self.args.oled_subcommand == "capture":
-                oled = Miniscreen(_exclusive_mode=True)
+                oled = Miniscreen()
+
+            if self.args.oled_subcommand == "display":
+                oled = Miniscreen()
 
                 if self.args.capture_subcommand == "save":
                     file_path = path_to_stored_file(self.args.path)

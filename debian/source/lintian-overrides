@@ -1,0 +1,2 @@
+# python3-all-dev required to compile documentation. Ignore this warning for main packages
+py-pitop-sdk source: build-depends-on-python-dev-with-no-arch-any
