@@ -136,8 +136,6 @@ def process_frame_for_ball(frame, colours=("red",), image_return_format: str = "
 
         ball_center, ball_radius = find_most_likely_ball(contours, colour, resized_frame)
 
-        # kalman update
-
         detection_points[colour].appendleft(ball_center)
 
         if ball_center is not None:
