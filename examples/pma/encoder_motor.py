@@ -1,4 +1,8 @@
-from pitop.pma import EncoderMotor, ForwardDirection, BrakingType
+from pitop import (
+    EncoderMotor,
+    ForwardDirection,
+    BrakingType
+)
 from time import sleep
 
 # Setup the motor

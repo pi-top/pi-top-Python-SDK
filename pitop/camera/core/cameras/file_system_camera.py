@@ -11,8 +11,8 @@ class FsImage:
 
 
 class FileSystemCamera:
-    """
-    Class that mocks the behaviour of a camera, by using a set of pictures from the given :data:`path`
+    """Class that mocks the behaviour of a camera, by using a set of pictures
+    from the given :data:`path`
 
     :param str path: path where images to be used by the camera are located in the system
     :param str file_starts_with: filter images from the given path to use only the ones that start with the given string

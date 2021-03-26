@@ -33,7 +33,7 @@ property to "OpenCV":
 
 .. code-block:: python
 
-    from pitop.camera import Camera
+    from pitop import Camera
 
     c = Camera()
     c.format = "OpenCV"
@@ -42,7 +42,7 @@ This can be also be done by passing the format to the camera's constructor:
 
 .. code-block:: python
 
-    from pitop.camera import Camera
+    from pitop import Camera
 
     c = Camera(format="OpenCV")
 

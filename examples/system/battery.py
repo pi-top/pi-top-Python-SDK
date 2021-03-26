@@ -1,7 +1,7 @@
-from pitop.battery import Battery
+from pitop import Pitop
 
 
-battery = Battery()
+battery = Pitop().battery
 
 print(f"Battery capacity: {battery.capacity}")
 print(f"Battery time remaining: {battery.time_remaining}")

@@ -1,4 +1,4 @@
-from pitop.pma import LightSensor
+from pitop import LightSensor
 from time import sleep
 
 light_sensor = LightSensor("A1")

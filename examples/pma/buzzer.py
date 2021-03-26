@@ -1,4 +1,4 @@
-from pitop.pma import Buzzer
+from pitop import Buzzer
 from time import sleep
 
 buzzer = Buzzer("D4")

@@ -23,8 +23,9 @@ lookup_dict = {
 
 
 def get_parser():
-    """Configures the argument parser according to the CLI classes
-    defined in ´lookup_dict´, and returns the parsed arguments.
+    """Configures the argument parser according to the CLI classes defined in.
+
+    ´lookup_dict´, and returns the parsed arguments.
 
     Returns:
         ArgumentParser: parser object
@@ -44,7 +45,7 @@ def get_parser():
 
 
 def run(args):
-    """Executes the command according to the provided arguments"""
+    """Executes the command according to the provided arguments."""
     exit_code = 1
     cli = None
     try:

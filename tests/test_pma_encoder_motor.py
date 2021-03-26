@@ -23,7 +23,7 @@ from math import pi
 @skip
 class EncoderMotorTestCase(TestCase):
     def test_internal_attributes_on_instance(self):
-        """Default values of attributes are set when creating object"""
+        """Default values of attributes are set when creating object."""
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
@@ -34,7 +34,7 @@ class EncoderMotorTestCase(TestCase):
         self.assertEquals(wheel.forward_direction, ForwardDirection.CLOCKWISE)
 
     def test_max_speed(self):
-        """Max speed calculation based on max rpm"""
+        """Max speed calculation based on max rpm."""
         EncoderMotor.max_rpm = Mock()
         EncoderMotor.max_rpm = 142
         EncoderMotor._wheel_circumference = 0.075
@@ -47,7 +47,8 @@ class EncoderMotorTestCase(TestCase):
         self.assertEquals(round(wheel.max_speed, 3), 0.476)
 
     def test_forward_uses_correct_direction(self):
-        """Forward method uses correct direction when calling set_target_speed"""
+        """Forward method uses correct direction when calling
+        set_target_speed."""
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
@@ -58,7 +59,8 @@ class EncoderMotorTestCase(TestCase):
         mock_set_target_speed.assert_called_once_with(1, Direction.FORWARD, 0.0)
 
     def test_backward_uses_correct_direction(self):
-        """Backward method uses correct direction when calling set_target_speed"""
+        """Backward method uses correct direction when calling
+        set_target_speed."""
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
@@ -69,7 +71,7 @@ class EncoderMotorTestCase(TestCase):
         mock_set_target_speed.assert_called_once_with(1, Direction.BACK, 0.0)
 
     def test_wheel_diameter_change_updates_wheel_circumference(self):
-        """Updating wheel diameter changes wheel circumference"""
+        """Updating wheel diameter changes wheel circumference."""
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
@@ -83,7 +85,7 @@ class EncoderMotorTestCase(TestCase):
         self.assertEquals(wheel._wheel_circumference, new_diameter * pi)
 
     def test_wheel_diameter_cant_be_zero_or_negative(self):
-        """Wheel diameter must be higher than zero"""
+        """Wheel diameter must be higher than zero."""
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
@@ -94,7 +96,7 @@ class EncoderMotorTestCase(TestCase):
                 wheel.wheel_diameter = invalid_diameter
 
     def test_set_target_speed_calls_set_target_rpm_with_correct_params(self):
-        """set_target_speed calls set_target_rpm with correct params"""
+        """set_target_speed calls set_target_rpm with correct params."""
         set_target_rpm_mock = EncoderMotor.set_target_rpm = Mock()
 
         wheel = EncoderMotor(
@@ -117,7 +119,7 @@ class EncoderMotorTestCase(TestCase):
             set_target_rpm_mock.assert_called_with(target_speed_in_rpm, direction, target_motor_rotations)
 
     def test_set_target_speed_fails_when_requesting_an_out_of_range_speed(self):
-        """set_target_speed fails if requesting a value out of range"""
+        """set_target_speed fails if requesting a value out of range."""
         set_target_rpm_mock = EncoderMotor.set_target_rpm = Mock()
 
         wheel = EncoderMotor(

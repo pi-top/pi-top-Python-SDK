@@ -17,7 +17,7 @@ try:
     import RPi.GPIO as GPIO
     # Suppress warning in Luma serial class
     GPIO.setwarnings(False)
-except RuntimeError:
+except (ImportError, RuntimeError):
     # This can only be run on Raspberry Pi
     # and is only required for reducing logging
     pass
@@ -123,9 +123,7 @@ class OledDeviceController:
 
     @spi_bus.setter
     def spi_bus(self, bus):
-        '''
-        Request SPI bus change from pi-top device manager
-        '''
+        """Request SPI bus change from pi-top device manager."""
         assert bus in range(0, 2)
 
         if self.__spi_bus == bus:

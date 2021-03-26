@@ -5,9 +5,8 @@ from abc import ABC, abstractmethod
 
 
 class CaptureActionBase(ABC):
-    """
-    Abstract class from which all capture actions classes must inherit from.
-    """
+    """Abstract class from which all capture actions classes must inherit
+    from."""
 
     @abstractmethod
     def process(self, frame):
