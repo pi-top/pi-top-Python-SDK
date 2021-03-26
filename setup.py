@@ -119,6 +119,7 @@ __requires__ = [
     # Pulse #
     #########
     "pyserial",
+    "smbus",
 
     ##############
     # Algorithms #
