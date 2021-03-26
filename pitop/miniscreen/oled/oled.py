@@ -402,7 +402,9 @@ class OLED:
         self.__fps_regulator.stop_timer()
 
         if invert:
-            image_to_display = ImageOps.invert(image_to_display)
+            image_to_display = ImageOps.invert(
+                image_to_display.convert('L')
+            ).convert('1')
 
         if force or self.should_redisplay(image_to_display):
             self.device.display(image_to_display)
