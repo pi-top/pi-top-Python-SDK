@@ -87,8 +87,8 @@ def centroid_reposition(centroid, scale, frame):
     if centroid is None:
         return None
     # scale centroid so it matches original camera frame resolution
-    centroid_x = int(centroid[0]/scale)
-    centroid_y = int(centroid[1]/scale)
+    centroid_x = int(centroid[0] / scale)
+    centroid_y = int(centroid[1] / scale)
     # convert so (0, 0) is in the middle of the frame
     centroid_x = centroid_x - int(frame.shape[1] / 2)
     centroid_y = int(frame.shape[0] / 2) - centroid_y

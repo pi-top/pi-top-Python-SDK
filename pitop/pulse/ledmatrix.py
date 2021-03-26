@@ -575,8 +575,7 @@ def run_tests():
         for c in range(3):
             for x in range(_w):
                 for y in range(_h):
-                    set_pixel(x, y, 255 if c == 0 else 0, 255 if c ==
-                              1 else 0, 255 if c == 2 else 0)
+                    set_pixel(x, y, 255 if c == 0 else 0, 255 if c == 1 else 0, 255 if c == 2 else 0)
 
                 show()
                 sleep(0.05)

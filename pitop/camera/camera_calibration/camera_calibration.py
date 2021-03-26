@@ -84,7 +84,7 @@ def calibrate_camera_and_pickle_mtx_dist():
         ret, corners = cv2.findChessboardCorners(gray, (nx, ny), None)
 
         # If found, add object points, image points
-        if ret == True:
+        if ret is True:
             objpoints.append(objp)
 
             # get better accuracy on the corner locations
@@ -121,4 +121,3 @@ def calibrate_camera_and_pickle_mtx_dist():
 if __name__ == '__main__':
     get_images()
     calibrate_camera_and_pickle_mtx_dist()
-
