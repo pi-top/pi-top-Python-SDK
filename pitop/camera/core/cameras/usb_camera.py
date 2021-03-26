@@ -7,9 +7,7 @@ from pitopcommon.command_runner import run_command
 
 
 class UsbCamera:
-    def __init__(self, index: int = 0, resolution=None, rotate_angle: int = 0):
-        self.index = index
-    def __init__(self, index=None, resolution=None):
+    def __init__(self, index: int = None, resolution=None, rotate_angle: int = 0):
         # if no index is provided, loop over available video devices
         indexes = self.list_device_indexes() if index is None else [index]
         self.__camera = None
@@ -61,6 +59,7 @@ class UsbCamera:
             pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
 
         return pil_image
+
     @staticmethod
     def list_device_indexes():
         try:

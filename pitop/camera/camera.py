@@ -31,7 +31,7 @@ class Camera(Stateful, Recreatable):
     __VALID_FORMATS = ('opencv', 'pil')
 
     def __init__(self,
-                 index=0,
+                 index=None,
                  resolution=(640, 480),
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
