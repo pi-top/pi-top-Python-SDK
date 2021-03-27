@@ -15,6 +15,12 @@ repos:
     hooks:
     - id: docformatter
 
+-   repo: https://github.com/myint/rstcheck
+    rev: '3f92957478422df87bd730abde66f089cc1ee19b'
+    hooks:
+    - id: rstcheck
+      args: ["--recursive"]
+
 -   repo: https://github.com/pre-commit/mirrors-autopep8
     rev: v1.5.4
     hooks:
