@@ -1,5 +1,5 @@
 from pitop import Camera
-from pitop.processing.algorithms import FaceDetector
+from pitop.processing.algorithms import FaceDetectorDLib
 from signal import pause
 import cv2
 
@@ -18,7 +18,7 @@ def find_faces(frame):
 
 
 camera = Camera(format="OpenCV", rotate_angle=180)
-face_detector = FaceDetector()
+face_detector = FaceDetectorDLib()
 
 camera.on_frame = find_faces
 
