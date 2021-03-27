@@ -2,7 +2,6 @@ import os
 import cv2
 import dlib
 from pitop.processing.utils.vision_functions import (
-    find_largest_rectangle,
     resize,
     center_reposition
 )
@@ -46,36 +45,28 @@ class FaceDetectorDLib:
 
         gray = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2GRAY)
 
-        a = 0
-        if a:
-            # TODO: use dlib object tracker instead of searching from scratch every time
+        if False:
+            # TODO: fix this
+            # TODO: then try use dlib object tracker instead of searching from scratch every time
             # https://www.pyimagesearch.com/2018/10/22/object-tracking-with-dlib/
-
             # Limit search area to speed up the framerate if previous face was found
             image_search_rectangle = self.__get_face_search_rectangle(self._face_rectangle)
             x, y, w, h = image_search_rectangle
             cropped_image = gray[y:y + h, x:x + w]
             rectangles_dlib = self._detector(cropped_image, 0)
-
-            i = 0
-            for (i, rectangle_dlib) in enumerate(rectangles_dlib):
-                # convert coordinates to full frame resolution
-                rectangle_dlib.left += x
-                rectangle_dlib.top += y
-                rectangle_dlib.right += x
-                rectangle_dlib.bottom += y
-                # TODO:
+            crop_offsets = (x, y)
         else:
             rectangles_dlib = self._detector(gray, 0)
+            crop_offsets = (0, 0)
 
-        face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
+        self._face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib, crop_offsets)
 
-        if face_rectangle is not None:
+        if self._face_rectangle is not None:
             self._face_found = True
             robot_view = cv_frame.copy()
-            self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
+            self.__draw_on_frame(robot_view, self._face_rectangle, face_center, face_features)
             face_center = center_reposition(face_center, cv_frame)  # has to be done after OpenCV draw functions
-            rectangle_dimensions = face_rectangle[2:4]
+            rectangle_dimensions = self._face_rectangle[2:4]
         else:
             self._face_found = False
             robot_view = cv_frame
@@ -88,13 +79,16 @@ class FaceDetectorDLib:
             "rectangle_dimensions": rectangle_dimensions
         })
 
-    def __process_rectangles(self, gray, rectangles_dlib):
+    def __process_rectangles(self, gray, rectangles_dlib, crop_offsets):
+        x_offset, y_offset = crop_offsets
         area = 0
         largest_rectangle_dlib = None
         face_rectangle = None
         face_center = None
         for (i, rectangle_dlib) in enumerate(rectangles_dlib):
             x, y, w, h = face_utils.rect_to_bb(rectangle_dlib)
+            x += x_offset
+            y += y_offset
             current_area = w * h
             if current_area > area:
                 area = current_area
@@ -106,6 +100,14 @@ class FaceDetectorDLib:
         if largest_rectangle_dlib is not None:
             face_features_dlib = self._predictor(gray, largest_rectangle_dlib)
             face_features = face_utils.shape_to_np(face_features_dlib)
+
+            # face_features = [(x + x_offset, y + y_offset) for (x, y) in face_features]
+            face_features = face_features + crop_offsets
+
+            # for (i, (x, y)) in enumerate(face_features):
+            #     x += x_offset
+            #     y += y_offset
+            #     face_features[i] =
 
         return face_rectangle, face_center, face_features
 
