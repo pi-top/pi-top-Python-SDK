@@ -1,5 +1,4 @@
 *.py[cdo]
-*.jpg
 
 # Editor detritus
 *.vim
