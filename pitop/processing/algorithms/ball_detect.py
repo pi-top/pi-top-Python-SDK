@@ -173,59 +173,23 @@ def process_frame_for_ball(frame, colours=("red",), image_return_format: str = "
     else:
         robot_view = resized_frame
 
-    if len(colours) == 1:
-        colour = colours[0]
-        return DotDict({
+    ball_data = DotDict({})
+    ball_data["robot_view"] = robot_view
+
+    for colour in colours:
+        ball_data[colour] = DotDict({
             "found": ball_finds[colour],
             "center": ball_centers[colour],
-            "robot_view": robot_view,
             "radius": ball_radii[colour],
-            "angle": ball_angles[colour],
-            colour: DotDict({
-                "found": ball_finds[colour],
-                "center": ball_centers[colour],
-                "robot_view": robot_view,
-                "radius": ball_radii[colour],
-                "angle": ball_angles[colour]
-            }),
+            "angle": ball_angles[colour]
         })
-    elif len(colours) == 2:
-        return DotDict({
-            "robot_view": robot_view,
-            colours[0]: DotDict({
-                "found": ball_finds[colours[0]],
-                "center": ball_centers[colours[0]],
-                "radius": ball_radii[colours[0]],
-                "angle": ball_angles[colours[0]]
-            }),
-            colours[1]: DotDict({
-                "found": ball_finds[colours[1]],
-                "center": ball_centers[colours[1]],
-                "radius": ball_radii[colours[1]],
-                "angle": ball_angles[colours[1]]
-            })
 
-        })
-    elif len(colours) == 3:
-        return DotDict({
-            "robot_view": robot_view,
-            colours[0]: DotDict({
-                "found": ball_finds[colours[0]],
-                "center": ball_centers[colours[0]],
-                "radius": ball_radii[colours[0]],
-                "angle": ball_angles[colours[0]]
-            }),
-            colours[1]: DotDict({
-                "found": ball_finds[colours[1]],
-                "center": ball_centers[colours[1]],
-                "radius": ball_radii[colours[1]],
-                "angle": ball_angles[colours[1]]
-            }),
-            colours[2]: DotDict({
-                "found": ball_finds[colours[2]],
-                "center": ball_centers[colours[2]],
-                "radius": ball_radii[colours[2]],
-                "angle": ball_angles[colours[2]]
-            })
+    if len(colours) == 1:
+        # if only searching one colour, add convenience data so ball_data.data_type can be used directly
+        colour = colours[0]
+        ball_data["found"] = ball_finds[colour]
+        ball_data["center"] = ball_centers[colour]
+        ball_data["radius"] = ball_radii[colour]
+        ball_data["angle"] = ball_angles[colour]
 
-        })
+    return ball_data
