@@ -57,8 +57,8 @@ class ADCProbe():
 
             results = self.read_all()
 
-            print("| " + str(results[0]) + "\t| " + str(results[1]) + "\t| " + str(results[2])
-                  + "\t| " + str(results[3]) + "\t| " + str(results[4]) + "\t| " + str(results[5]) + "\t|")
+            print("| " + str(results[0]) + "\t| " + str(results[1]) + "\t| " + str(results[2]) +
+                  "\t| " + str(results[3]) + "\t| " + str(results[4]) + "\t| " + str(results[5]) + "\t|")
             sleep(delay)
 
     def __connect(self):
