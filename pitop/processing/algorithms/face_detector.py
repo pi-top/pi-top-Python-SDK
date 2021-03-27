@@ -22,6 +22,7 @@ class DotDict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
+
 class FaceDetector:
     def __init__(self):
         self._face_cascade = cv2.CascadeClassifier(os.path.join(abs_file_path, cascade_model_classifier))
