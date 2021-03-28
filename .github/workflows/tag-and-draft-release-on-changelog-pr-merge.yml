@@ -43,6 +43,13 @@ jobs:
         with:
           build: true
           upload: false
+          dist_dir: "dist"
+
+      - name: Upload Python distribution artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
+          path: "dist"
 
   build-debian:
     needs: check-should-run
