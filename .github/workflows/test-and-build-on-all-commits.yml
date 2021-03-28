@@ -62,16 +62,13 @@ jobs:
             -e RELEASE=0 \
             pitop/gbp-dch-gen:latest
 
-      - name: Add 'debian-changelog-line-too-long' Lintian override for patched changelog
-        run: |
-          grep "^Package: " debian/control | awk '{print $2}' | xargs -n1 -I % sh -c "echo '%: debian-changelog-line-too-long' >> debian/%.lintian-overrides"
-
       - name: Build Debian package
         run: |
           mkdir -p /tmp/artifacts/{src,bin}
           docker run --rm \
             --volume ${{ github.workspace }}:/src \
             --volume /tmp/artifacts/bin:/build \
+            -e LINTIAN_TAGS_TO_SUPPRESS="debian-changelog-line-too-long"
             pitop/deb-build:latest
 
       - name: Separate Debian source package files from binary

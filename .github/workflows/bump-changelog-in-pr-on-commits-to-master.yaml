@@ -22,21 +22,8 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           branch: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
-          commit-message: Bump debian/changelog with proposed change for next release
-          title: "[CI] Update debian/changelog for next release"
-          body: |
-            Proposal for next version's changelog, automatically updated on each push to master.
-
-            ### Release Process
-            - [ ] Modify the changelog as necessary (e.g. amend version, tidy format)
-            - [ ] Mark as ready for review
-            - [ ] Squash and merge, leaving commit message unchanged
-
-            ### What Happens Next?
-            This will trigger a workflow that [prepares a GitHub Release](../tree/master/.github/workflows/tag-and-draft-release-on-changelog-pr-merge.yml) by tagging the released version in the changelog and creating a draft release.
-            Publishing this Release will trigger the [release deployment](../tree/master/.github/workflows/deploy-release-on-publish.yml) workflow, that uploads to public release repositories, etc.
-
-            Note: tests will not run on this branch until a user acts upon this PR/branch. Close the PR and reopen to trigger tests.
-            See [here](https://github.com/peter-evans/create-pull-request/blob/master/docs/concepts-guidelines.md#triggering-further-workflow-runs) for more info.
+          commit-message: ${{ secrets.CI_CHANGELOG_BUMP_COMMIT_MESSAGE }}
+          title: ${{ secrets.CI_CHANGELOG_BUMP_TITLE }}
+          body: ${{ secrets.CI_CHANGELOG_BUMP_BODY }}
           draft: true
           labels: "ci"
