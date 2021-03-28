@@ -68,28 +68,28 @@ jobs:
 
       - name: Build Debian package
         run: |
-          mkdir -p /tmp/artifacts/{src,bin}
+          mkdir -p .tmp/artifacts/{src,bin}
           docker run --rm \
             --volume ${{ github.workspace }}:/src \
-            --volume /tmp/artifacts/bin:/build \
+            --volume .tmp/artifacts/bin:/build \
             pitop/deb-build:latest
 
       - name: Separate Debian source package files from binary
         run: |
-          mv /tmp/artifacts/bin/* /tmp/artifacts/src/
-          mv /tmp/artifacts/src/*.deb /tmp/artifacts/bin/
+          mv .tmp/artifacts/bin/* .tmp/artifacts/src/
+          mv .tmp/artifacts/src/*.deb .tmp/artifacts/bin/
 
       - name: Upload Debian source package files
         uses: actions/upload-artifact@v2
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
-          path: "/tmp/artifacts/src/"
+          path: ".tmp/artifacts/src/"
 
       - name: Upload Debian binary packages
         uses: actions/upload-artifact@v2
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-          path: "/tmp/artifacts/bin/"
+          path: ".tmp/artifacts/bin/"
 
       - name: Create pre-release
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -97,5 +97,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            /tmp/artifacts/src/*
-            /tmp/artifacts/bin/*
+            .tmp/artifacts/src/*
+            .tmp/artifacts/bin/*
