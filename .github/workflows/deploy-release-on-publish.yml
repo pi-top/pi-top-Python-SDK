@@ -35,5 +35,3 @@ jobs:
           password: ${{ secrets.PYPI_TOKEN }}
           build: true
           upload: github.event_name == 'release' && github.event.action == 'published'
-
-      # TODO: publish to apt repository
