@@ -106,6 +106,7 @@ jobs:
             ${{ github.workspace }}/.artifacts/*
 
   create-version-update-changelog-pr:
+    if: ${{ github.ref == 'refs/heads/master' }}
     needs: build-debian-packages
     runs-on: ubuntu-20.04
     steps:
