@@ -25,7 +25,7 @@ jobs:
           echo "::set-output name=should_run::${conditions_met}"
 
   add-version-tag:
-    needs: [ check-should-run ]
+    needs: check-should-run
     if: needs.check-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
@@ -41,7 +41,7 @@ jobs:
           git push --force --tags
 
   build-python:
-    needs: [ add-version-tag ]
+    needs: add-version-tag
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -75,7 +75,7 @@ jobs:
             path: "${{ github.workspace }}/dist"
 
   build-debian:
-    needs: [ add-version-tag ]
+    needs: add-version-tag
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -129,44 +129,11 @@ jobs:
           DEB_VER=$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")
           echo "::set-output name=deb_ver::$DEB_VER"
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
-          release_name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
-          draft: true
-          prerelease: false
-          body: |
-            The SDK and its related CI workflows are still in active development and subject to breaking changes.
-            However, this release is regarded as "fairly stable" and the SDK itself should work in most of the detailed use-cases.
-
       - name: Download Python artifact
         uses: actions/download-artifact@v2
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
             path: "./py"
-
-      - name: Get Python wheel filename
-        id: get_py_whl_filename
-        run: |
-          cd ./py
-          WHL_NAME=$(ls | grep "^pitop-.*.whl$")
-          echo "::set-output name=filename::$WHL_NAME"
-
-      # More info:
-      # https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-      - name: Upload Python wheel
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./py/${{ steps.get_py_whl_filename.outputs.filename }}
-          asset_name: ${{ steps.get_py_whl_filename.outputs.filename }}
-          asset_content_type: text/plain
 
       - name: Download Debian binary artifacts
         uses: actions/download-artifact@v2
@@ -180,104 +147,19 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
             path: "./deb-src/"
 
-      - name: Get main package filename
-        id: get_deb_main_pkg_filename
-        run: |
-          cd ./deb
-          PKG_NAME=$(ls | grep "^python3-pitop_.*.deb$")
-          echo "::set-output name=filename::$PKG_NAME"
-
-      - name: Upload main Debian package
-        uses: actions/upload-release-asset@v1
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
+          name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
+          draft: true
+          prerelease: false
+          body: |
+            The SDK and its related CI workflows are still in active development and subject to breaking changes.
+            However, this release is regarded as "fairly stable" and the SDK itself should work in most of the detailed use-cases.
+          files: |
+            ./py/*
+            ./deb/*
+            ./deb-src/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb/${{ steps.get_deb_main_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_deb_main_pkg_filename.outputs.filename }}
-          asset_content_type: application/vnd.debian.binary-package
-
-      - name: Get docs package filename
-        id: get_deb_docs_pkg_filename
-        run: |
-          cd ./deb
-          PKG_NAME=$(ls | grep "^python3-pitop-doc_.*.deb$")
-          echo "::set-output name=filename::$PKG_NAME"
-
-      - name: Upload docs Debian package
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb/${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
-          asset_name: ${{ steps.get_deb_docs_pkg_filename.outputs.filename }}
-          asset_content_type: application/vnd.debian.binary-package
-
-      - name: Get dsc filename
-        id: get_dsc_filename
-        run: |
-          cd ./deb-src
-          DSC_FILENAME=$(ls | grep "^py-pitop-sdk_.*.dsc$")
-          echo "::set-output name=filename::$DSC_FILENAME"
-
-      - name: Upload dsc filename
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb-src/${{ steps.get_dsc_filename.outputs.filename }}
-          asset_name: ${{ steps.get_dsc_filename.outputs.filename }}
-          asset_content_type: text/plain
-
-      - name: Get buildinfo filename
-        id: get_buildinfo_filename
-        run: |
-          cd ./deb-src
-          BUILDINFO_FILENAME=$(ls | grep "^py-pitop-sdk_.*.buildinfo$")
-          echo "::set-output name=filename::$BUILDINFO_FILENAME"
-
-      - name: Upload buildinfo filename
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb-src/${{ steps.get_buildinfo_filename.outputs.filename }}
-          asset_name: ${{ steps.get_buildinfo_filename.outputs.filename }}
-          asset_content_type: text/plain
-
-      - name: Get changes filename
-        id: get_changes_filename
-        run: |
-          cd ./deb-src
-          CHANGES_FILENAME=$(ls | grep "^py-pitop-sdk_.*.changes$")
-          echo "::set-output name=filename::$CHANGES_FILENAME"
-
-      - name: Upload changes filename
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb-src/${{ steps.get_changes_filename.outputs.filename }}
-          asset_name: ${{ steps.get_changes_filename.outputs.filename }}
-          asset_content_type: text/plain
-
-      - name: Get source filename
-        id: get_source_filename
-        run: |
-          cd ./deb-src
-          SOURCE_FILENAME=$(ls | grep "^py-pitop-sdk_.*.tar.xz$")
-          echo "::set-output name=filename::$SOURCE_FILENAME"
-
-      - name: Upload source filename
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./deb-src/${{ steps.get_source_filename.outputs.filename }}
-          asset_name: ${{ steps.get_source_filename.outputs.filename }}
-          asset_content_type: text/plain
