@@ -76,20 +76,20 @@ jobs:
 
       - name: Separate Debian source package files from binary
         run: |
-          mv .tmp/artifacts/bin/* .tmp/artifacts/src/
-          mv .tmp/artifacts/src/*.deb .tmp/artifacts/bin/
+          mv /tmp/artifacts/bin/* /tmp/artifacts/src/
+          mv /tmp/artifacts/src/*.deb /tmp/artifacts/bin/
 
       - name: Upload Debian source package files
         uses: actions/upload-artifact@v2
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
-          path: ".tmp/artifacts/src/"
+          path: "/tmp/artifacts/src/"
 
       - name: Upload Debian binary packages
         uses: actions/upload-artifact@v2
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
-          path: ".tmp/artifacts/bin/"
+          path: "/tmp/artifacts/bin/"
 
       - name: Move artifacts to current working directory
         run: |
