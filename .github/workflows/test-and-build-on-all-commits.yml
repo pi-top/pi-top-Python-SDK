@@ -28,14 +28,12 @@ jobs:
 
       - name: Run tests
         run: |
-          docker run \
-            --rm \
-            --name sdk-py-tests \
+          docker run --rm \
             --volume ${{ github.workspace }}:/src \
-            --env RUN_PYTHON_TESTS=1 \
-            --env PYTHON_TESTS_DIR=./tests \
-            --env PYTHON_TARGET_DIR=. \
-            --env PYTHON_COVERAGE_DIR=pitop \
+            -e RUN_PYTHON_TESTS=1 \
+            -e PYTHON_TESTS_DIR=./tests \
+            -e PYTHON_TARGET_DIR=. \
+            -e PYTHON_COVERAGE_DIR=pitop \
             pitop/test-run
 
       - name: Upload test coverage report to Codecov
