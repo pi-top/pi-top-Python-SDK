@@ -10,7 +10,6 @@ jobs:
     outputs:
       should_run: ${{ steps.check_should_run.outputs.should_run }}
     steps:
-
       - name: Set 'should run' variable
         id: check_should_run
         env:
@@ -24,24 +23,9 @@ jobs:
           fi
           echo "::set-output name=should_run::${conditions_met}"
 
-  add-version-tag:
+  build-python:
     needs: check-should-run
     if: needs.check-should-run.outputs.should_run == 'true'
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
-
-      - name: Create and push Debian version tag
-        run: |
-          new_version="$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")"
-          git tag --force "v${new_version}"
-          git push --force --tags
-
-  build-python:
-    needs: add-version-tag
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -49,33 +33,20 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.x"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install setuptools wheel twine
-
-      - name: Build
-        # Create source distribution (sdist) and wheel (bdist_wheel)
-        # By default, both will be placed in dist/ under the current directory
-        run: |
-          python setup.py sdist bdist_wheel
-
-      - name: Upload Python distribution artifacts
-        uses: actions/upload-artifact@v2
+      - uses: casperdcl/deploy-pypi@v2
         with:
-            name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
-            path: "${{ github.workspace }}/dist"
+          build: true
+          upload: false
 
   build-debian:
-    needs: add-version-tag
+    needs: check-should-run
+    if: needs.check-should-run.outputs.should_run == 'true'
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -83,8 +54,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Build Debian package
         run: |
@@ -123,12 +92,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get Debian Version
-        id: get_deb_version
-        run: |
-          DEB_VER=$(head -n1 debian/changelog | awk '{print $2}' | cut -d'-' -f1 | sed "s/(//g" | sed "s/)//g")
-          echo "::set-output name=deb_ver::$DEB_VER"
-
       - name: Download Python artifact
         uses: actions/download-artifact@v2
         with:
@@ -146,6 +109,13 @@ jobs:
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
             path: "./deb-src/"
+
+      - name: Get Debian Version
+        id: get_deb_version
+        run: |
+          sudo apt install -y dpkg-dev
+          DEB_VER=$(dpkg-parsechangelog -Sversion)
+          echo "::set-output name=deb_ver::$DEB_VER"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
