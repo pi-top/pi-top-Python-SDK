@@ -34,35 +34,16 @@ jobs:
   deploy-release:
     runs-on: ubuntu-20.04
     steps:
-      - name: Download latest release's assets
-        run: |
-          sudo apt-get install -y curl jq wget
-          curl -s "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/latest" | jq -r ".assets | .[] | .browser_download_url" | xargs -n1 wget
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
         with:
-          python-version: "3.x"
+          ref: ${{ env.GITHUB_SHA }}
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install twine
-
-      - name: Deploy to TestPyPI
-        if: github.event_name != 'release' || github.event.action != 'published'
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --repository testpypi --verbose *.whl
-
-      - name: Deploy to PyPI
-        if: github.event_name == 'release' && github.event.action == 'published'
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: |
-          twine upload --verbose *.whl
+      - name: Upload to PyPI
+        uses: casperdcl/deploy-pypi@v2
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          build: true
+          upload: github.event_name == 'release' && github.event.action == 'published'
 
       # TODO: publish to apt repository
