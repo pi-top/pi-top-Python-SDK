@@ -115,18 +115,16 @@ jobs:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
             path: "./deb-src/"
 
-      - name: Get Debian Version
-        id: get_deb_version
+      - name: Determine version
         run: |
           sudo apt install -y dpkg-dev
-          DEB_VER=$(dpkg-parsechangelog -Sversion)
-          echo "::set-output name=deb_ver::$DEB_VER"
+          echo "::set-env name=VERSION::$(dpkg-parsechangelog -Sversion)"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
-          name: "v${{ steps.get_deb_version.outputs.deb_ver }}"
+          tag_name: "v${VERSION}"
+          name: "v${VERSION}"
           draft: true
           prerelease: false
           body: |
