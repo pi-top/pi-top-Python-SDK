@@ -1,10 +1,9 @@
 name: Test and Build Packages on All Commits
-# TODO: provide latest commit to 'master' as pre-release GitHub Release
 
-# Don't run on branches intended for CI modifications
 on:
   push:
     branches-ignore:
+      # Don't run on branches intended for CI modifications
       - "ci-test-*"
 
 jobs:
@@ -21,40 +20,21 @@ jobs:
         uses: pre-commit/action@v2.0.0
 
   python-test-coverage:
+    needs: pre-commit-checks
     runs-on: ubuntu-20.04
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.7" # as on pi, because PyV4L2Camera errors on 3.9
-
-      - name: Install pip
-        run: |
-          python -m pip install --upgrade pip
-
-      # Install pitopcommon from source in case latest version is required
-      # and is not yet published to PyPi
-      - name: Checkout pitopcommon
-        uses: actions/checkout@v2
-        with:
-          repository: pi-top/pi-top-Python-Common-Library
-          path: pi-top-Python-Common-Library
-
-      - name: Install pitopcommon
-        run: |
-          pip install ./pi-top-Python-Common-Library
-
       - name: Checkout code
         uses: actions/checkout@v2.2.0
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get install libv4l-dev # for building PyV4L2Camera
-          pip install .[test]
-
       - name: Run tests
         run: |
-          PYTHONPATH=pitop python -m pytest --cov=pitop --cov-report=xml
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            -e RUN_PYTHON_TESTS=1 \
+            -e PYTHON_TESTS_DIR=./tests \
+            -e PYTHON_TARGET_DIR=. \
+            -e PYTHON_COVERAGE_DIR=pitop \
+            pitop/test-run
 
       - name: Upload test coverage report to Codecov
         uses: codecov/codecov-action@v1
@@ -65,28 +45,8 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-  test-readme-render:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install readme-renderer
-
-      - name: Test README can be rendered
-        run: |
-          python -m readme_renderer README.rst -o /dev/null
-
   build-debian-packages:
-    needs: [ pre-commit-checks, python-test-coverage, test-readme-render ]
+    needs: python-test-coverage
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
