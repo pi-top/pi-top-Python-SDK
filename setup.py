@@ -128,7 +128,6 @@ __requires__ = [
 __extra_requires__ = {
     "computer_vision": ["opencv"],
     "doc": ["sphinx"],
-    "test": ["pytest", "coverage", "mock", "pytest-cov", "pytest-mock"],
 }
 
 __entry_points__ = {
