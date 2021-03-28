@@ -11,29 +11,31 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-20.04
     steps:
-      - name: Get latest release's version
-        id: release_version
-        run: |
-          sudo apt-get install -y curl jq wget
-
-          LATEST_VERSION=$(curl -s ${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/releases/latest | jq -r ".target_commitish")
-          echo "::set-output name=latest_version_commit::$LATEST_VERSION"
-
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
 
       - name: Tag release commit as 'stable' for ReadTheDocs
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "stable"
-          commit_sha: ${{ steps.release_version.outputs.latest_version_commit }}
+          commit_sha: ${{ env.GITHUB_SHA }}
           force_push_tag: true
 
   deploy-release:
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          ref: ${{ env.GITHUB_SHA }}
+
+      - name: Upload to PyPI
+        uses: casperdcl/deploy-pypi@v2
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
+          build: true
+          upload: github.event_name == 'release' && github.event.action == 'published'
+
       - name: Download latest release's assets
         run: |
           mkdir -p ${{ github.workspace }}/deb

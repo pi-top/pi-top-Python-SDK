@@ -7,17 +7,36 @@ mock_sys_info.is_pi = MagicMock(return_value=False)
 mock_curr_session_info = modules["pitopcommon.current_session_info"] = MagicMock()
 mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 
-modules["pitopcommon.lock"] = MagicMock()
-modules["pitopcommon.ptdm"] = MagicMock()
-modules["pitopcommon.logger"] = MagicMock()
-modules["numpy"] = MagicMock()
-modules["luma.core.interface.serial"] = MagicMock()
-modules["luma.oled.device"] = MagicMock()
+modules_to_patch = [
+    "PIL",
+    "luma.core.interface.serial",
+    "luma.oled.device",
+    "pyinotify",
+    "pitop.camera",
+    "numpy",
+    "simple_pid",
+    "pitopcommon.smbus_device",
+    "pitopcommon.logger",
+    "pitopcommon.singleton",
+    "pitopcommon.common_ids",
+    "pitopcommon.current_session_info",
+    "pitopcommon.ptdm",
+    "pitopcommon.firmware_device",
+    "pitopcommon.command_runner",
+    "pitopcommon.common_names",
+
+]
+for module in modules_to_patch:
+    modules[module] = MagicMock()
 
 from pitop.miniscreen import Miniscreen
 from unittest import TestCase, skip
 from PIL import Image
 from os import environ, path
+
+# Avoid getting the mocked modules in other tests
+for patched_module in modules_to_patch:
+    del modules[patched_module]
 
 
 root = path.dirname(path.dirname(path.abspath(__file__)))
