@@ -68,10 +68,10 @@ jobs:
 
       - name: Build Debian package
         run: |
-          mkdir -p .tmp/artifacts/{src,bin}
+          mkdir -p /tmp/artifacts/{src,bin}
           docker run --rm \
             --volume ${{ github.workspace }}:/src \
-            --volume .tmp/artifacts/bin:/build \
+            --volume /tmp/artifacts/bin:/build \
             pitop/deb-build:latest
 
       - name: Separate Debian source package files from binary
@@ -91,11 +91,15 @@ jobs:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: ".tmp/artifacts/bin/"
 
+      - name: Move artifacts to current working directory
+        run: |
+          mkdir -p ${{ github.workspace }}/.artifacts
+          mv /tmp/artifacts/**/* ${{ github.workspace }}/.artifacts
+
       - name: Create pre-release
         if: ${{ github.ref == 'refs/heads/master' }}
         uses: eine/tip@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
-            .tmp/artifacts/src/*
-            .tmp/artifacts/bin/*
+            ${{ github.workspace }}/.artifacts/*
