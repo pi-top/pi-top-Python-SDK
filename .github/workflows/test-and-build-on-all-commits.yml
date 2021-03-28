@@ -1,10 +1,9 @@
 name: Test and Build Packages on All Commits
-# TODO: provide latest commit to 'master' as pre-release GitHub Release
 
-# Don't run on branches intended for CI modifications
 on:
   push:
     branches-ignore:
+      # Don't run on branches intended for CI modifications
       - "ci-test-*"
 
 jobs:
@@ -21,6 +20,7 @@ jobs:
         uses: pre-commit/action@v2.0.0
 
   python-test-coverage:
+    needs: pre-commit-checks
     runs-on: ubuntu-20.04
     steps:
       - name: Set up Python
@@ -65,28 +65,8 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-  test-readme-render:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install readme-renderer
-
-      - name: Test README can be rendered
-        run: |
-          python -m readme_renderer README.rst -o /dev/null
-
   build-debian-packages:
-    needs: [ pre-commit-checks, python-test-coverage, test-readme-render ]
+    needs: python-test-coverage
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action

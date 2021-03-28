@@ -232,7 +232,7 @@ peripherals
 
 Example:
 
-.. code-block:: bash
+..
 
     pi@pi-top:~ $ pi-top devices
     HUB ===================================================
@@ -247,8 +247,6 @@ Example:
     [   ] pi-topSPEAKER (v1) - Mono
     [   ] pi-topSPEAKER (v2)
 
-.. code-block:: bash
-
     pi@pi-top:~ $ pt devices peripherals
     [ ✓ ] pi-top [4] Expansion Plate (v21.5)
     [   ] pi-top Touchscreen
@@ -258,8 +256,6 @@ Example:
     [   ] pi-topSPEAKER (v1) - Right channel
     [   ] pi-topSPEAKER (v1) - Mono
     [   ] pi-topSPEAKER (v2)
-
-.. code-block:: bash
 
     pi@pi-top:~ $ pt devices hub --name-only
     pi-top [4]
