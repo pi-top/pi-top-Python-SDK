@@ -90,3 +90,12 @@ jobs:
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "/tmp/artifacts/bin/"
+
+      - name: Create pre-release
+        if: ${{ github.ref == 'refs/heads/master' }}
+        uses: eine/tip@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            /tmp/artifacts/src/*
+            /tmp/artifacts/bin/*
