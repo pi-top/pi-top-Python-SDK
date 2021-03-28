@@ -54,6 +54,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Patch changelog (snapshot)
         run: |
@@ -100,3 +102,29 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
             ${{ github.workspace }}/.artifacts/*
+
+  create-version-update-changelog-pr:
+    needs: build-debian-packages
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
+
+      - name: Patch changelog (release)
+        run: |
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            -e RELEASE=1 \
+            pitop/gbp-dch-gen:latest
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          branch: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+          commit-message: ${{ secrets.CI_CHANGELOG_BUMP_COMMIT_MESSAGE }}
+          title: ${{ secrets.CI_CHANGELOG_BUMP_TITLE }}
+          body: ${{ secrets.CI_CHANGELOG_BUMP_BODY }}
+          draft: true
+          labels: "ci"
