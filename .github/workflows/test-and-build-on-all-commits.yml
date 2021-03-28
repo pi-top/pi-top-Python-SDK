@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7.3
+          python-version: 3.7
 
       - name: Run all pre-commit checks against all files
         uses: pre-commit/action@v2.0.0
