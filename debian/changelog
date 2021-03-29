@@ -1,3 +1,63 @@
+py-pitop-sdk (0.17.2) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Track state and recreate Pitop object (#261)
+
+  [ Mike Roberts ]
+  * Standards-Version: 4.5.1
+
+  [ duwudi ]
+  * Line detector example: move forward when line is found (#274)
+
+  [ Jorge Capona ]
+  * Loop over available devices to create camera object (#271)
+  * ServoMotor: don't use setting on angle/speed properties (#272)
+
+  [ Mike Roberts ]
+  * Add PROTO+ image to docs (#279)
+  * Add pre-commit checks to CI (#280)
+  * Add missing smbus dependency (#281)
+  * Add pixel inversion support to miniscreen (#252)
+  * Drop RPi.GPIO dependency (#282)
+  * Pulse: replace SMBus dep with common lib (#283)
+  * Proto+: use public I2C methods (#285)
+
+  [ duwudi ]
+  * Add giphy miniscreen startup example (#212)
+
+  [ Mike Roberts ]
+  * Render README to /dev/null
+  * Test coverage reporting (#286)
+
+  [ Jorge Capona ]
+  * Health check improvements (#284)
+
+  [ Mike Roberts ]
+  * Stop previously running background thread when displaying anything (#287)
+  * Use pre-commit for RST format check (#288)
+
+  [ Jorge Capona ]
+  * Re-add tests (#275)
+
+  [ Mike Roberts ]
+  * Create pre-release on each successful build on master (#289)
+  * /tmp --> .tmp for eine/tip to find files in current directory
+  * Move to ${{ github.workspace }}/.artifacts
+  * Fix .tmp
+  * Suppress Lintian tags instead of overriding package
+  * Generalise CI: use secrets for PR settings
+  * Fix docker run command formatting
+  * Add spelling-error-in-changelog as tag to suppress
+  * Create changelog PR after successful build
+  * CI: use Python 3.7.3
+  * Add initial dependabot configuration
+  * Reduce number of GitHub Action workflow steps (#290)
+  * Add Lintian comment
+  * Use 'set-env' not 'set-output' for version
+  * CI: PR body on single line
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 29 Mar 2021 14:32:26 +0000
+
 py-pitop-sdk (0.17.1) buster; urgency=medium
 
   * Allow importing main objects from module root
