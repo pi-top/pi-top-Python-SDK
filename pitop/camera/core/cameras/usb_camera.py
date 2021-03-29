@@ -64,10 +64,10 @@ class UsbCamera:
             pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
 
         if self._flip_top_bottom:
-            pil_image = pil_image.transpose(pil_image, Image.FLIP_TOP_BOTTOM)
+            pil_image = pil_image.transpose(method=Image.FLIP_TOP_BOTTOM)
 
         if self._flip_left_right:
-            pil_image = pil_image.transpose(pil_image, Image.FLIP_LEFT_RIGHT)
+            pil_image = pil_image.transpose(method=Image.FLIP_LEFT_RIGHT)
 
         return pil_image
 
