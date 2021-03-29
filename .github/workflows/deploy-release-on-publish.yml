@@ -13,12 +13,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
+        with:
+          ref: ${{ env.GITHUB_SHA }}
 
       - name: Tag release commit as 'stable' for ReadTheDocs
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "stable"
-          commit_sha: ${{ env.GITHUB_SHA }}
           force_push_tag: true
 
   deploy-release:
