@@ -1,1 +1,1 @@
-from .face_detector_dlib import FaceDetectorDLib
+from .face_detector import FaceDetector
