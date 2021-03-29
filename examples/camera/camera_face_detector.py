@@ -20,7 +20,7 @@ def find_faces(frame):
         print("Cannot find face!")
 
 
-camera = Camera(format="OpenCV", rotate_angle=180)
+camera = Camera(format="OpenCV", flip_top_bottom=True)
 face_detector = FaceDetector(input_format="OpenCV", output_format="OpenCV")
 
 camera.on_frame = find_faces
