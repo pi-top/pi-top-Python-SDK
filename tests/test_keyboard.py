@@ -1,7 +1,7 @@
-# from unittest.mock import MagicMock, patch
-from unittest import TestCase, main
+from unittest import TestCase, skip
 
 
+@skip("TODO")
 class KeyboardTestCase(TestCase):
     def setUp(self):
         pass
@@ -11,7 +11,3 @@ class KeyboardTestCase(TestCase):
 
     def test_example(self):
         pass
-
-
-if __name__ == "__main__":
-    main()
