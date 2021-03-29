@@ -293,8 +293,7 @@ class OLED:
         invert=False,
         auto_word_wrap=True
     ):
-        """
-        Renders text to the screen at a given position and size.
+        """Renders text to the screen at a given position and size.
 
         The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
         specifying the `xy` position parameter.
@@ -317,47 +316,6 @@ class OLED:
 
         image = self.__empty_image
 
-        # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).text(
-            xy,
-            str(text),
-            font=ImageFont.truetype(
-                self.__font_path(),
-                size=font_size
-            ),
-            fill=1,
-            spacing=0,
-            align="left"
-        )
-
-        # Display image
-        self.display_image(image, invert=invert)
-
-    def display_multiline_text(self, text, xy=None, font_size=None):
-        """Renders multi-lined text to the screen at a given position and size.
-        Text that is too long for the screen will automatically wrap to the
-        next line.
-
-        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
-        specifying the `xy` position parameter.
-
-        :param string text: The text to render
-        :param tuple xy: The position on the screen to render the image. If not
-            provided or passed as `None` the image will be drawn in the top-left of
-            the screen.
-        :param int font_size: The font size in pixels. If not provided or passed as
-            `None`, the default font size will be used
-        """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        # Create empty image
-        image = self.__empty_image
-
-        # Create font
         font = ImageFont.truetype(
             self.__font_path(),
             size=font_size
@@ -377,7 +335,7 @@ class OLED:
         )
 
         # Display image
-        self.display_image(image)
+        self.display_image(image, invert=invert)
 
     def __display(self, image_to_display, force=False, invert=False):
         self.stop_animated_image()
@@ -509,8 +467,7 @@ class OLED:
     # Deprecation support #
     #######################
     def display_multiline_text(self, text, xy=None, font_size=None):
-        """
-        Renders multi-lined text to the screen at a given position and size.
+        """Renders multi-lined text to the screen at a given position and size.
 
         .. warning::
             This method is deprecated and will be deleted on the next major release of the SDK.
