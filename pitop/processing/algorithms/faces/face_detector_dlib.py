@@ -5,6 +5,7 @@ from pitop.processing.utils.vision_functions import (
     resize,
     center_reposition
 )
+from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
 from imutils import face_utils
 
@@ -63,10 +64,12 @@ class FaceDetectorDLib:
             self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
             face_center = center_reposition(face_center, cv_frame)  # has to be done after OpenCV draw functions
             rectangle_dimensions = face_rectangle[2:4]
+            face_angle = get_face_angle(face_features)
         else:
             face_found = False
             robot_view = cv_frame
             rectangle_dimensions = None
+            face_angle = None
 
         if self._output_format.lower() == "pil":
             robot_view = ImageFunctions.convert(robot_view, format='PIL')
@@ -76,6 +79,7 @@ class FaceDetectorDLib:
             "center": face_center,
             "robot_view": robot_view,
             "face_features": face_features,
+            "face_angle": face_angle,
             "rectangle_dimensions": rectangle_dimensions
         })
 
