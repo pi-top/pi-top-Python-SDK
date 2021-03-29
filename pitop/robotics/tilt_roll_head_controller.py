@@ -65,7 +65,6 @@ class TiltRollHeadController(Stateful, Recreatable):
             angle = -angle
         current_angle = self.roll_servo.current_angle
         state = current_angle - angle
-        print(state)
         if abs(state) < 1.0:
             self.roll_servo.sweep(speed=0)
         else:
