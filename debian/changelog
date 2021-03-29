@@ -1,3 +1,13 @@
+py-pitop-sdk (0.18.2) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Use github.sha instead of env.GITHUB_SHA in workflow
+
+  [ github-actions[bot] ]
+  * [CI] Update debian/changelog for next release (#299)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 29 Mar 2021 18:05:46 +0000
+
 py-pitop-sdk (0.18.1) buster; urgency=medium
 
   * Remove unused global from example
