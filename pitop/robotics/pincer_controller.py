@@ -7,7 +7,8 @@ from pitop.core.mixins import (
 
 
 class PincerController(Stateful, Recreatable):
-    """Represents a pincer that uses two servo motors connected parallel to each other."""
+    """Represents a pincer that uses two servo motors connected parallel to
+    each other."""
     _initialized = False
 
     def __init__(self, right_pincer_port="S0", left_pincer_port="S3", name="pincers"):
