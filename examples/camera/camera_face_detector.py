@@ -12,7 +12,10 @@ def find_faces(frame):
     cv2.waitKey(1)
 
     if face.found:
-        print(f"Face angle: {face.angle}")
+        print(f"Face angle: {face.angle} \n"
+              f"Face center: {face.center} \n"
+              f"Face dimensions: {face.dimensions} \n"
+              f"Number of dlib Features: {len(face.features)} \n")
     else:
         print("Cannot find face!")
 
