@@ -25,19 +25,27 @@ class DotDict(dict):
 
 
 class FaceDetectorDLib:
-    def __init__(self):
+    def __init__(self, process_image_width: int = 320, input_format: str = "PIL", output_format: str = "PIL"):
+        """
+        :param process_image_width: image width to scale to for image processing
+        :param input_format: input image format
+        :param output_format: output image format
+        """
+        self._process_image_width = process_image_width
+        self._input_format = input_format
+        self._output_format = output_format
         self._detector = dlib.get_frontal_face_detector()
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._frame_resolution = None
-        self._frame = None
-        self._face_found = False
-        self._face_rectangle = None
 
     def detect(self, frame):
 
-        cv_frame = ImageFunctions.convert(frame, format='OpenCV')
+        if self._input_format.lower() == "pil":
+            cv_frame = ImageFunctions.convert(frame, format='OpenCV')
+        else:
+            cv_frame = frame
 
-        cv_frame = resize(cv_frame, width=320)
+        cv_frame = resize(cv_frame, width=self._process_image_width)
 
         if self._frame_resolution is None:
             height, width = cv_frame.shape[0:2]
@@ -45,50 +53,39 @@ class FaceDetectorDLib:
 
         gray = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2GRAY)
 
-        if False:
-            # TODO: fix this
-            # TODO: then try use dlib object tracker instead of searching from scratch every time
-            # https://www.pyimagesearch.com/2018/10/22/object-tracking-with-dlib/
-            # Limit search area to speed up the framerate if previous face was found
-            image_search_rectangle = self.__get_face_search_rectangle(self._face_rectangle)
-            x, y, w, h = image_search_rectangle
-            cropped_image = gray[y:y + h, x:x + w]
-            rectangles_dlib = self._detector(cropped_image, 0)
-            crop_offsets = (x, y)
-        else:
-            rectangles_dlib = self._detector(gray, 0)
-            crop_offsets = (0, 0)
+        rectangles_dlib = self._detector(gray, 0)
 
-        self._face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib, crop_offsets)
+        face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
 
-        if self._face_rectangle is not None:
-            self._face_found = True
+        if face_rectangle is not None:
+            face_found = True
             robot_view = cv_frame.copy()
-            self.__draw_on_frame(robot_view, self._face_rectangle, face_center, face_features)
+            self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
             face_center = center_reposition(face_center, cv_frame)  # has to be done after OpenCV draw functions
-            rectangle_dimensions = self._face_rectangle[2:4]
+            rectangle_dimensions = face_rectangle[2:4]
         else:
-            self._face_found = False
+            face_found = False
             robot_view = cv_frame
             rectangle_dimensions = None
 
+        if self._output_format.lower() == "pil":
+            robot_view = ImageFunctions.convert(robot_view, format='PIL')
+
         return DotDict({
-            "found": self._face_found,
+            "found": face_found,
             "center": face_center,
             "robot_view": robot_view,
+            "face_features": face_features,
             "rectangle_dimensions": rectangle_dimensions
         })
 
-    def __process_rectangles(self, gray, rectangles_dlib, crop_offsets):
-        x_offset, y_offset = crop_offsets
+    def __process_rectangles(self, gray, rectangles_dlib):
         area = 0
         largest_rectangle_dlib = None
         face_rectangle = None
         face_center = None
         for (i, rectangle_dlib) in enumerate(rectangles_dlib):
             x, y, w, h = face_utils.rect_to_bb(rectangle_dlib)
-            x += x_offset
-            y += y_offset
             current_area = w * h
             if current_area > area:
                 area = current_area
@@ -101,34 +98,7 @@ class FaceDetectorDLib:
             face_features_dlib = self._predictor(gray, largest_rectangle_dlib)
             face_features = face_utils.shape_to_np(face_features_dlib)
 
-            # face_features = [(x + x_offset, y + y_offset) for (x, y) in face_features]
-            face_features = face_features + crop_offsets
-
-            # for (i, (x, y)) in enumerate(face_features):
-            #     x += x_offset
-            #     y += y_offset
-            #     face_features[i] =
-
         return face_rectangle, face_center, face_features
-
-    def __get_face_search_rectangle(self, previous_face_rectangle: tuple):
-        search_scaler = 2
-        x, y, w, h = previous_face_rectangle
-
-        w_new = w * search_scaler
-        h_new = h * search_scaler
-        x_new = x - int((w_new - w) / 2)
-        y_new = y - int((h_new - h) / 2)
-
-        # limit x and y to be from 0 to image resolution
-        x_new = min(self._frame_resolution[0], max(0, x_new))
-        y_new = min(self._frame_resolution[1], max(0, y_new))
-
-        # limit rectangle to lie within bounds of frame
-        w_new = min(self._frame_resolution[0] - x_new, w_new)
-        h_new = min(self._frame_resolution[1] - y_new, h_new)
-
-        return x_new, y_new, w_new, h_new
 
     @staticmethod
     def __draw_on_frame(frame, face_rectangle, face_center, face_features):

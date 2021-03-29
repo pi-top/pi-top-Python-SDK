@@ -18,7 +18,7 @@ def find_faces(frame):
 
 
 camera = Camera(format="OpenCV", rotate_angle=180)
-face_detector = FaceDetectorDLib()
+face_detector = FaceDetectorDLib(input_format="OpenCV", output_format="OpenCV")
 
 camera.on_frame = find_faces
 
