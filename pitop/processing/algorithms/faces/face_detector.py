@@ -80,7 +80,7 @@ class FaceDetector:
             "robot_view": robot_view,
             "features": face_features,
             "angle": face_angle,
-            "rectangle_dimensions": rectangle_dimensions
+            "dimensions": rectangle_dimensions
         })
 
     def __process_rectangles(self, gray, rectangles_dlib):
