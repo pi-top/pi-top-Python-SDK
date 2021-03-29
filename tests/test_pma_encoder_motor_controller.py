@@ -1,21 +1,31 @@
-from unittest.mock import Mock
 from sys import modules
+from unittest import TestCase
+from unittest.mock import Mock, patch
 
-modules["io"] = Mock()
-modules["gpiozero"] = Mock()
-modules["gpiozero.exc"] = Mock()
-modules["cv2"] = Mock()
-modules["numpy"] = Mock()
-modules["pitopcommon.smbus_device"] = Mock()
-modules["pitopcommon.logger"] = Mock()
-modules["pitopcommon.singleton"] = Mock()
-modules["pitop.pma.ultrasonic_sensor"] = Mock()
+modules_to_patch = [
+    "pitop.camera",
+    "numpy",
+    "simple_pid",
+    "pitopcommon.smbus_device",
+    "pitopcommon.logger",
+    "pitopcommon.singleton",
+    "pitopcommon.common_ids",
+    "pitopcommon.current_session_info",
+    "pitopcommon.ptdm",
+    "pitopcommon.firmware_device",
+    "pitopcommon.command_runner",
+    "pitopcommon.common_names",
 
-from pitopcommon.bitwise_ops import join_bytes
-from pitop.pma.encoder_motor_controller import (
-    EncoderMotorController,
-    split_into_bytes
+]
+for module in modules_to_patch:
+    modules[module] = Mock()
+
+
+from pitopcommon.bitwise_ops import (
+    join_bytes,
+    split_into_bytes,
 )
+from pitop.pma.encoder_motor_controller import EncoderMotorController
 from pitop.pma.common.encoder_motor_registers import (
     MotorControlRegisters,
     MotorRegisterTypes,
@@ -23,11 +33,13 @@ from pitop.pma.common.encoder_motor_registers import (
     EncoderMotorM1
 )
 from pitop.pma.parameters import BrakingType
-from unittest import TestCase, skip
-from unittest.mock import patch
 
 
-@skip
+# Avoid getting the mocked modules in other tests
+for patched_module in modules_to_patch:
+    del modules[patched_module]
+
+
 class EncoderMotorControllerTestCase(TestCase):
 
     @patch.object(EncoderMotorController, "set_braking_type")

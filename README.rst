@@ -49,6 +49,9 @@ Build Status: Latest
 .. image:: https://img.shields.io/pypi/v/pitop
    :alt: PyPI release
 
+.. image:: https://img.shields.io/codecov/c/gh/pi-top/pi-top-Python-SDK?token=hfbgB9Got4
+   :alt: Codecov
+
 .. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
     :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
     :alt: Documentation Status

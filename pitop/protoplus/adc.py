@@ -1,10 +1,12 @@
 from pitopcommon.i2c_device import I2CDevice
+from pitopcommon.bitwise_ops import split_into_bytes
 from time import sleep
 
 
 class ADCProbe():
 
     __device_address = 0x2A
+    __register_address = 0
     __channel_count = 6
     __adc_ratio = 20
 
@@ -30,8 +32,8 @@ class ADCProbe():
             print("Could not connect to device")
             return self.__error_array
 
-        # TODO: use a proper public method here
-        results = self.__device._read_data(self.__channel_count)
+        results_reading = self.__device.read_n_unsigned_bytes(self.__register_address, number_of_bytes=self.__channel_count)
+        results = split_into_bytes(results_reading, self.__channel_count, little_endian=False)
         data_read_len = len(results)
         self.__disconnect()
 

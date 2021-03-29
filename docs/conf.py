@@ -125,10 +125,5 @@ autodoc_mock_imports = [
     'scipy',
     'serial',
     'simple_pid',
-    'smbus',
     'zmq',
-    # gpiozero dependencies
-    'RPi',
-    'RPIO',
-    'pigpio',
 ]
