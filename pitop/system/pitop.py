@@ -1,16 +1,12 @@
-from pitop.battery import Battery
-from pitop.display import Display
-from pitop.miniscreen import Miniscreen
-
-from pitop.system import device_info
-from pitop.system.peripherals import connected_plate
-from pitop.system.port_manager import PortManager
-
-from pitopcommon.common_names import DeviceName
 from pitopcommon.singleton import Singleton
+from pitop.core.mixins import (
+    Componentable,
+    SupportsBattery,
+    SupportsMiniscreen,
+)
 
 
-class Pitop(metaclass=Singleton):
+class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):
     """Represents a pi-top Device.
 
     When creating a `Pitop` object, multiple properties will be set,
@@ -20,141 +16,21 @@ class Pitop(metaclass=Singleton):
 
     The Pitop class is a Singleton. This means that only one instance per process will
     be created. In practice, this means that if in a particular project you instance a Pitop
-    class in 2 different files, they will share the internal state: you should be able to
-    register components in one file (using :meth:`register_pma_component`) and retrieve
-    it to use it in another file (using :meth:`get_component_on_pma_port`).
+    class in 2 different files, they will share the internal state.
+
+    *property* miniscreen
+        If using a pi-top [4], this property returns a :class:`pitop.miniscreen.Miniscreen` object, to interact with the device's Miniscreen.
+
+
+    *property* oled
+        Refer to `miniscreen`.
+
+
+    *property* battery
+        If using a pi-top with a battery, this property returns a :class:`pitop.battery.Battery` object, to interact with the device's battery.
     """
 
     def __init__(self):
-        self._battery = None
-        self._miniscreen = None
-        self._port_manager = None
-        self._plate = None
-
-        device = device_info()
-        self.type = device["name"]
-        self.fw_version = device["fw_version"]
-
-        if self.type != DeviceName.pi_top_ceed.value:
-            self._battery = Battery()
-
-        if self.type == DeviceName.pi_top_4.value:
-            self._miniscreen = Miniscreen()
-            self._port_manager = PortManager(state={})
-            self._plate = connected_plate()
-        else:
-            self._display = Display()
-
-    @property
-    def battery(self):
-        """If not using a pi-topCEED, it returns a
-        :class:`pitop.battery.Battery` object to interact with the miniscreen
-        OLED display.
-
-        This will return None if on a pi-topCEED.
-        """
-        return self._battery
-
-    @property
-    def display(self):
-        """If not using a pi-top [4], returns an instance of
-        :class:`pitop.display.Display` to interact with the on-board display.
-
-        This will return None if on a pi-top [4].
-        """
-        return self._display
-
-    @property
-    def miniscreen(self):
-        """If using a pi-top [4], it returns a
-        :class:`pitop.miniscreen.Miniscreen` object to interact with the
-        miniscreen OLED display.
-
-        This will return None if not on a pi-top [4].
-        """
-        return self._miniscreen
-
-    @property
-    def oled(self):
-        """If using a pi-top [4], it returns a
-        :class:`pitop.miniscreen.Miniscreen` object to interact with the
-        miniscreen OLED display.
-
-        This will return None if not on a pi-top [4].
-
-        .. warning::
-           This property is deprecated in favor of :func:`miniscreen`, and will be deleted on the next major release of the SDK.
-        """
-        return self._miniscreen
-
-    @property
-    def up_button(self):
-        """If using a pi-top [4], it returns a
-        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
-        miniscreen up button.
-
-        This will return None if not on a pi-top [4].
-        """
-        return self._miniscreen.up_button
-
-    @property
-    def down_button(self):
-        """If using a pi-top [4], it returns a
-        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
-        miniscreen down button.
-
-        This will return None if not on a pi-top [4].
-        """
-        return self._miniscreen.down_button
-
-    @property
-    def select_button(self):
-        """If using a pi-top [4], it returns a
-        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
-        miniscreen select button.
-
-        This will return None if not on a pi-top [4].
-        """
-
-        return self._miniscreen.select_button
-
-    @property
-    def cancel_button(self):
-        """If using a pi-top [4], it returns a
-        :class:`pitop.miniscreen.MiniscreenButton` object to interact with the
-        miniscreen cancel button.
-
-        This will return None if not on a pi-top [4].
-        """
-        return self._miniscreen.cancel_button
-
-    def register_pma_component(self, component_instance):
-        """If using a pi-top [4], register a PMA component as being connected.
-        This allows the pi-top instance to keep track of what component is
-        connected and where.
-
-        This will return None if not on a pi-top [4].
-
-        :param component_instance: Instance of a PMA component.
-        """
-        self._port_manager.register_pma_component(component_instance)
-
-    def drop_pma_component(self, port):
-        """If using a pi-top [4], unregister a PMA component as being
-        connected. This will free the port to be reused if necessary.
-
-        This will return None if not on a pi-top [4].
-
-        :param str port: name of the PMA port where the component to be dropped is connected.
-        """
-        self._port_manager.drop_pma_component(port)
-
-    def get_component_on_pma_port(self, port):
-        """If using a pi-top [4], get the instance of the PMA component
-        connected to a given port.
-
-        This will return None if not on a pi-top [4].
-
-        :param str port: name of the PMA port where the component to be retrieved is connected.
-        """
-        return self._port_manager.get_component_on_pma_port(port)
+        SupportsMiniscreen.__init__(self)
+        SupportsBattery.__init__(self)
+        Componentable.__init__(self)

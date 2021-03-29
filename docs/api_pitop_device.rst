@@ -32,6 +32,19 @@ Class Reference: Pitop
 
 All pi-tops come with some software-controllable onboard hardware. These sections of the API make it easy to access and change the state of your pi-top hardware.
 
+Using the Pitop object
+-----------------------------------
+
+Attaching objects and saving configuration to a file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../examples/system/pitop_save_configuration.py
+
+Loading an existing configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../examples/system/pitop_load_configuration.py
+
 pi-top Battery
 ==============
 
@@ -55,7 +68,7 @@ state change events.
 
 This class will work with original pi-top, pi-topCEED and pi-top [3].
 
-..note::
+.. note ::
   Not compatible with pi-top [4].
 
   pi-top [4] has no onboard display, and the official pi-top [4] FHD Display is not software-controllable.

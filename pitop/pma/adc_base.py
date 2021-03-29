@@ -1,9 +1,14 @@
 import time
-from .plate_interface import PlateInterface
-from .common import get_pin_for_port
+
+from pitop.core.mixins import (
+    Stateful,
+    Recreatable,
+)
+from pitop.pma.plate_interface import PlateInterface
+from pitop.pma.common import get_pin_for_port
 
 
-class ADCBase:
+class ADCBase(Stateful, Recreatable):
     """Encapsulates the behaviour of an Analog-to-Digital Converter (ADC).
 
     An internal class used as a base for other components.
@@ -16,12 +21,22 @@ class ADCBase:
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name, pin_number=1):
+    def __init__(self, port_name, pin_number=1, name="adcbase"):
         self._pma_port = port_name
+        self.name = name
 
         self.is_current = False
         self.channel = get_pin_for_port(self._pma_port, pin_number)
         self.__adc_device = PlateInterface().get_device_mcu()
+
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name,  "pin_number": pin_number, "name": self.name})
+
+    @property
+    def own_state(self):
+        return {
+            'value': lambda: self.value,
+        }
 
     def read(self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False):
         """Take a reading from the chosen ADC channel, or get an average value
@@ -57,3 +72,7 @@ class ADCBase:
     # read 16 bits register
     def __read_register(self, read_address):
         return self.__adc_device.read_unsigned_word(read_address, little_endian=True)
+
+    @property
+    def value(self):
+        raise NotImplementedError
