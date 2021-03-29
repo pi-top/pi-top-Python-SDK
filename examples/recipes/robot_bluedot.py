@@ -13,7 +13,6 @@ drive = DriveController(left_motor_port="M3", right_motor_port="M0")
 
 
 def move(pos):
-    global lock
     if lock.locked():
         return
 
@@ -38,13 +37,11 @@ def move(pos):
 
 
 def stop(pos):
-    global lock
     lock.acquire()
     drive.stop()
 
 
 def start(pos):
-    global lock
     if lock.locked():
         lock.release()
     move(pos)
