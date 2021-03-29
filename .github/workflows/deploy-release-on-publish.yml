@@ -32,6 +32,7 @@ jobs:
       - name: Upload to PyPI
         uses: casperdcl/deploy-pypi@v2
         with:
-          password: ${{ secrets.PYPI_TOKEN }}
+          username: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
           build: true
           upload: github.event_name == 'release' && github.event.action == 'published'
