@@ -78,8 +78,8 @@ class FaceDetector:
             "found": face_found,
             "center": face_center,
             "robot_view": robot_view,
-            "face_features": face_features,
-            "face_angle": face_angle,
+            "features": face_features,
+            "angle": face_angle,
             "rectangle_dimensions": rectangle_dimensions
         })
 
