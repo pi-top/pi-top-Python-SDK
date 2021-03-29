@@ -18,7 +18,7 @@ jobs:
         uses: rickstaa/action-create-tag@v1
         with:
           tag: "stable"
-          commit_sha: ${{ env.GITHUB_SHA }}
+          commit_sha: ${{ github.sha }}
           force_push_tag: true
 
   deploy-release:
@@ -27,11 +27,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
         with:
-          ref: ${{ env.GITHUB_SHA }}
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
 
       - name: Upload to PyPI
         uses: casperdcl/deploy-pypi@v2
         with:
-          password: ${{ secrets.PYPI_TOKEN }}
+          user: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
           build: true
-          upload: github.event_name == 'release' && github.event.action == 'published'
+          upload: ${{ github.event_name == 'release' && github.event.action == 'published' }}
