@@ -7,7 +7,13 @@ from pitopcommon.command_runner import run_command
 
 
 class UsbCamera:
-    def __init__(self, index: int = None, resolution=None, rotate_angle: int = 0):
+    def __init__(self,
+                 index: int = None,
+                 resolution=None,
+                 rotate_angle: int = 0,
+                 flip_top_bottom: bool = False,
+                 flip_left_right: bool = False):
+
         # if no index is provided, loop over available video devices
         indexes = self.list_device_indexes() if index is None else [index]
         self.__camera = None
@@ -17,6 +23,9 @@ class UsbCamera:
             raise ValueError("Rotate angle must be -90, 0, 90 or 180 degrees")
         else:
             self._rotate_angle = rotate_angle
+
+        self._flip_top_bottom = flip_top_bottom
+        self._flip_left_right = flip_left_right
 
         for idx in indexes:
             try:
@@ -53,6 +62,12 @@ class UsbCamera:
 
         if self._rotate_angle != 0:
             pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
+
+        if self._flip_top_bottom:
+            pil_image = pil_image.transpose(pil_image, Image.FLIP_TOP_BOTTOM)
+
+        if self._flip_left_right:
+            pil_image = pil_image.transpose(pil_image, Image.FLIP_LEFT_RIGHT)
 
         return pil_image
 
