@@ -11,46 +11,33 @@ def get_face_angle(face_features):
     """
     left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
     right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
-
+    left_eyebrow_start, left_eyebrow_end = face_utils.FACIAL_LANDMARKS_IDXS["left_eyebrow"]
+    right_eyebrow_start, right_eyebrow_end = face_utils.FACIAL_LANDMARKS_IDXS["right_eyebrow"]
     jaw_start, jaw_end = face_utils.FACIAL_LANDMARKS_68_IDXS["jaw"]
 
     left_eye = face_features[left_eye_start:left_eye_end]
     right_eye = face_features[right_eye_start:right_eye_end]
 
-    left_eye_position = np.average(left_eye, axis=0)
-    right_eye_position = np.average(right_eye, axis=0)
+    left_eyebrow = face_features[left_eyebrow_start: left_eyebrow_end]
+    right_eyebrow = face_features[right_eyebrow_start: right_eyebrow_end]
 
-    position_diff = left_eye_position - right_eye_position
+    jaw = face_features[jaw_start:jaw_end]
+    left_jaw = jaw[10:18]
+    right_jaw = jaw[0:9]
+
+    left_mouth = np.take(face_features, (52, 53, 54, 55, 56, 63, 64, 65), axis=0)
+    right_mouth = np.take(face_features, (48, 49, 50, 58, 59, 60, 61, 67), axis=0)
+
+    all_left_points = np.vstack((left_eye, left_eyebrow, left_jaw, left_mouth))
+    all_right_points = np.vstack((right_eye, right_eyebrow, right_jaw, right_mouth))
+
+    left_centroid = np.average(all_left_points, axis=0)
+    right_centroid = np.average(all_right_points, axis=0)
+
+    position_diff = left_centroid - right_centroid
 
     x_diff, y_diff = position_diff
 
     angle = math.degrees(math.atan(y_diff/x_diff))
-
-    return angle
-
-
-central_face_features = (27, 28, 29, 30, 33, 51, 62, 66, 57, 8)
-
-
-def get_face_angle_2(face_features):
-    """
-
-    :param face_features:
-    :return:
-    """
-    central_points = np.take(face_features, central_face_features, axis=0)
-    x = central_points[:, 0]
-    y = central_points[:, 1]
-
-    A = np.vstack([x, np.ones(len(x))]).T
-
-    m, c = np.linalg.lstsq(A, y, rcond=None)[0]
-
-    angle = math.degrees(math.atan(-m))
-
-    if angle > 0:
-        angle = 90 - angle
-    else:
-        angle = -90 - angle
 
     return angle
