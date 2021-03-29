@@ -29,6 +29,11 @@ jobs:
         with:
           ref: ${{ github.sha }}
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
       - name: Upload to PyPI
         uses: casperdcl/deploy-pypi@v2
         with:
