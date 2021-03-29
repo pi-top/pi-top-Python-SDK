@@ -99,7 +99,7 @@ class DriveController(Stateful, Recreatable):
             self._linear_speed_x_hold = linear_speed_x
         else:
             self._linear_speed_x_hold = 0
-        self.robot_move(linear_speed_x, 0)
+        self.__robot_move(linear_speed_x, 0)
 
     @is_initialized
     def backward(self, speed_factor, hold=False):
@@ -168,7 +168,7 @@ class DriveController(Stateful, Recreatable):
     def stop(self):
         """Stop any movement being performed by the motors."""
         self._linear_speed_x_hold = 0
-        self.robot_move(0, 0)
+        self.__robot_move(0, 0)
 
     def stop_rotation(self):
         """Stop any angular movement performed by the robot.
