@@ -127,8 +127,7 @@ jobs:
           name: "v${VERSION}"
           draft: true
           prerelease: false
-          body: |
-            ${{ secrets.GH_RELEASE_BODY_TEXT }}
+          body: ${{ secrets.GH_RELEASE_BODY_TEXT }}
           files: |
             ./py/*
             ./deb/*
