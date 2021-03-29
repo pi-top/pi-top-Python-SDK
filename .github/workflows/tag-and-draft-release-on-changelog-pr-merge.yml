@@ -118,7 +118,7 @@ jobs:
       - name: Determine version
         run: |
           sudo apt install -y dpkg-dev
-          echo "::set-env name=VERSION::$(dpkg-parsechangelog -Sversion)"
+          echo "VERSION=$(dpkg-parsechangelog -Sversion)" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
