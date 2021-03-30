@@ -233,7 +233,7 @@ class ImuCalibration:
             roll_check = check_z_axis
 
         while True:
-            roll, pitch = self.accelerometer_orientation
+            roll, pitch = self.accelerometer_orientation()
             if roll_check(roll, pitch):
                 break
             else:
