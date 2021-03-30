@@ -20,7 +20,8 @@ for module in modules_to_patch:
 from pitop.pma.servo_controller import ServoController
 from pitop.pma.common.servo_motor_registers import (
     ServoMotorS0,
-    ServoMotorSetup
+    ServoMotorSetup,
+    ServoRegisterTypes,
 )
 
 # Avoid getting the mocked modules in other tests
@@ -79,3 +80,30 @@ class ServoControllerTestCase(TestCase):
 
             self.assertEquals(controller.pwm_frequency(), pwm_frequency_value)
             read_unsigned_byte_mock.assert_called_with(ServoMotorSetup.REGISTER_PWM_FREQUENCY)
+
+    def test_acceleration_mode_read_write(self):
+        """Registers read/written when setting/reading acceleration mode
+        to/from MCU."""
+        # create instance
+        controller = ServoController(port="S0")
+
+        with patch.object(controller, "_mcu_device") as mcu_device_mock:
+            for acceleration_mode in (0, 1):
+                # setup r/w mocks
+                write_byte_mock = mcu_device_mock.write_byte = Mock()
+                read_unsigned_byte_mock = mcu_device_mock.read_unsigned_byte = Mock(return_value=acceleration_mode)
+
+                # test
+                controller.set_acceleration_mode(acceleration_mode)
+                write_byte_mock.assert_called_with(ServoMotorS0.get(ServoRegisterTypes.ACC_MODE), acceleration_mode)
+
+                self.assertEquals(controller.get_acceleration_mode(), acceleration_mode)
+                read_unsigned_byte_mock.assert_called_with(ServoMotorS0.get(ServoRegisterTypes.ACC_MODE))
+
+    def test_acceleration_mode_fails_on_invalid_type(self):
+        """Can't set acceleration mode if provided mode has invalid type."""
+        controller = ServoController(port="S0")
+
+        for acceleration_mode in ('a', 0.1):
+            with self.assertRaises(TypeError):
+                controller.set_acceleration_mode(acceleration_mode)

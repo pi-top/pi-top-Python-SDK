@@ -99,7 +99,6 @@ class ServoController:
 
         self._mcu_device.write_n_bytes(self.registers[ServoRegisterTypes.ANGLE_AND_SPEED], list_to_send)
 
-    @type_check
     def get_acceleration_mode(self):
         return self._mcu_device.read_unsigned_byte(self.registers[ServoRegisterTypes.ACC_MODE])
 
