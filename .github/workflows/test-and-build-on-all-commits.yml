@@ -1,28 +1,9 @@
 name: Test and Build Packages on All Commits
 
-on:
-  push:
-    branches-ignore:
-      # Don't run on branches intended for CI modifications
-      - "ci-test-*"
+on: push
 
 jobs:
-  pre-commit-checks:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Run all pre-commit checks against all files
-        uses: pre-commit/action@v2.0.0
-
-  python-test-coverage:
-    needs: pre-commit-checks
+  test-coverage:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
@@ -48,7 +29,7 @@ jobs:
           verbose: true
 
   build-debian-packages:
-    needs: python-test-coverage
+    needs: test-coverage
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -72,7 +53,7 @@ jobs:
           docker run --rm \
             --volume ${{ github.workspace }}:/src \
             --volume /tmp/artifacts/bin:/build \
-            -e LINTIAN_TAGS_TO_SUPPRESS="debian-changelog-line-too-long,spelling-error-in-changelog" \
+            -e LINTIAN_TAGS_TO_SUPPRESS="debian-changelog-line-too-long,spelling-error-in-changelog,unreleased-changelog-distribution" \
             pitop/deb-build:latest
 
       - name: Separate Debian source package files from binary
