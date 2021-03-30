@@ -4,7 +4,10 @@ from .core import (
     FrameHandler,
     CameraTypes)
 from .core.capture_actions import CaptureActions
-from pitop.core import ImageFunctions
+from pitop.core.functions import (
+    image_format_check,
+    image_convert,
+)
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -96,7 +99,7 @@ class Camera(Stateful, Recreatable):
 
     @format.setter
     def format(self, format_value):
-        ImageFunctions.image_format_check(format_value)
+        image_format_check(format_value)
         self._format = format_value.lower()
 
     @classmethod
@@ -242,7 +245,7 @@ class Camera(Stateful, Recreatable):
         image = self.__frame_handler.frame
 
         if self.format.lower() == "opencv":
-            image = ImageFunctions.convert(image, format="opencv")
+            image = image_convert(image, format="opencv")
 
         return image
 

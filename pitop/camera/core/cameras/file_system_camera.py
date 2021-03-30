@@ -1,11 +1,11 @@
-from pitop.core import ImageFunctions
+from pitop.core.functions import get_pil_image_from_path
 import os
 
 
 class FsImage:
     def __init__(self, path: str):
         self.path = path
-        self.data = ImageFunctions.get_pil_image_from_path(self.path)
+        self.data = get_pil_image_from_path(self.path)
         if self.data is None:
             raise AttributeError(f"Couldn't load image {path}")
 

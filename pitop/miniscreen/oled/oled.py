@@ -1,5 +1,8 @@
-from pitop.core import ImageFunctions
-from pitop.core.image_utils import ImageText
+from pitop.core.functions import (
+    get_pil_image_from_path,
+    # get_word_wrapped_text,
+    get_font_size,
+)
 from .core import (
     Canvas,
     FPS_Regulator,
@@ -260,7 +263,7 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         self.display_image(
-            ImageFunctions.get_pil_image_from_path(file_path_or_url),
+            get_pil_image_from_path(file_path_or_url),
             xy=xy,
             invert=invert,
         )
@@ -289,10 +292,12 @@ class OLED:
         self,
         text,
         xy=None,
-        font_size=30,
+        font_size=None,
         invert=False,
-        auto_word_wrap=True,
-        align="left"
+        word_wrap=True,
+        align="justify",
+        max_width=None,
+        max_height=None
     ):
         """Renders text to the screen at a given position and size.
 
@@ -306,62 +311,53 @@ class OLED:
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
-        :param auto_word_wrap: Add newlines to text that is too wide for the display
+        :param word_wrap: Add newlines to text that is too wide for the display
         """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
 
         image = self.__empty_image
 
-        font = ImageFont.truetype(
-            self.__font_path(),
-            size=font_size
-        )
+        x, y = xy
 
-        font = 'unifont.ttf'
-        img = ImageText((800, 600), background=(255, 255, 255, 200))  # 200 = alpha
+        # Limit to bottom right of the image if not specified
+        if max_width is None:
+            max_width = image.width - x
 
-        box_width, box_height = img.write_text_box(
-            xy=xy,
-            text=text,
-            font_filename=self.__font_path(),
-            font_size=font_size,
-            color=1,
-            box_width=200,
-            place=align
-        )
+        if max_height is None:
+            max_height = image.height - y
 
-        text_width, text_height = img.write_text(
-            xy=xy,
-            text=text,
-            font_filename=self.__font_path(),
-            font_size=font_size,
-            color=1,
-            max_width=None,
-            max_height=None,
-        )
+        # Dynamic font size if not specified
+        if font_size is None:
 
-        # You don't need to specify text size: can specify max_width or max_height
-        # and tell write_text to fill the text in this space, so it'll compute font
-        # size automatically
-        # write_text will return (width, height) of the wrote text
-        img.write_text((100, 350), 'test fill', font_filename=font,
-                       font_size='fill', max_height=150, color=1)
+            # if word_wrap:
+            #     text = get_word_wrapped_text(
+            #         text,
+            #         self.__font_path,
+            #         font_size,
+            #         xy,
+            #         image
+            #     )
 
-        if auto_word_wrap:
-            text = ImageFunctions.get_word_wrapped_text_for_image(text, font, xy, image)
+            font_size = get_font_size(
+                text,
+                self.__font_path,
+                word_wrap,
+                max_width,
+                max_height
+            )
 
-        # 'Draw' text to empty image, using desired font size
+        if xy is None:
+            xy = self.top_left
+
         ImageDraw.Draw(image).text(
-            xy,
-            str(text),
-            font=font,
+            (x, y),
+            text,
+            font=ImageFont.truetype(
+                self.__font_path,
+                font_size
+            ),
             fill=1,
             spacing=0,
-            align="left"
+            align=align
         )
 
         # Display image
@@ -392,7 +388,7 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
-        image = ImageFunctions.get_pil_image_from_path(file_path_or_url)
+        image = get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
 
     def play_animated_image(self, image, background=False, loop=False):
@@ -512,7 +508,7 @@ class OLED:
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
         """
-        self.display_text(text, xy=None, font_size=None, auto_word_wrap=True)
+        self.display_text(text, xy=None, font_size=None, word_wrap=True)
 
     def display(self, force=False):
         """Displays what is on the current canvas to the screen as a single
@@ -642,6 +638,7 @@ class OLED:
         if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
 
+    @property
     def __font_path(self):
         primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
         fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
