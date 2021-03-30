@@ -99,6 +99,16 @@ class ServoController:
 
         self._mcu_device.write_n_bytes(self.registers[ServoRegisterTypes.ANGLE_AND_SPEED], list_to_send)
 
+    def get_acceleration_mode(self):
+        return self._mcu_device.read_unsigned_byte(self.registers[ServoRegisterTypes.ACC_MODE])
+
     @type_check
     def set_acceleration_mode(self, mode: int):
+        """Set the acceleration mode of the servo.
+
+        When set to 0, the servo will run in 'normal mode', where speed
+        is constant. When set to 1, the servo will run in 'smoothed
+        mode', where a linear acceleration profile is used to ramp speed
+        at start and end of cycle.
+        """
         self._mcu_device.write_byte(self.registers[ServoRegisterTypes.ACC_MODE], mode)
