@@ -1,4 +1,5 @@
 from pitop.core import ImageFunctions
+from pitop.core.image_utils import ImageText
 from .core import (
     Canvas,
     FPS_Regulator,
@@ -284,14 +285,14 @@ class OLED:
             invert=invert,
         )
 
-    # TODO: also add align!
     def display_text(
         self,
         text,
         xy=None,
         font_size=30,
         invert=False,
-        auto_word_wrap=True
+        auto_word_wrap=True,
+        align="left"
     ):
         """Renders text to the screen at a given position and size.
 
@@ -311,7 +312,6 @@ class OLED:
             xy = self.top_left
 
         if font_size is None:
-            # Possible future feature - dynamic font size calculation?
             font_size = 30
 
         image = self.__empty_image
@@ -320,6 +320,36 @@ class OLED:
             self.__font_path(),
             size=font_size
         )
+
+        font = 'unifont.ttf'
+        img = ImageText((800, 600), background=(255, 255, 255, 200))  # 200 = alpha
+
+        box_width, box_height = img.write_text_box(
+            xy=xy,
+            text=text,
+            font_filename=self.__font_path(),
+            font_size=font_size,
+            color=1,
+            box_width=200,
+            place=align
+        )
+
+        text_width, text_height = img.write_text(
+            xy=xy,
+            text=text,
+            font_filename=self.__font_path(),
+            font_size=font_size,
+            color=1,
+            max_width=None,
+            max_height=None,
+        )
+
+        # You don't need to specify text size: can specify max_width or max_height
+        # and tell write_text to fill the text in this space, so it'll compute font
+        # size automatically
+        # write_text will return (width, height) of the wrote text
+        img.write_text((100, 350), 'test fill', font_filename=font,
+                       font_size='fill', max_height=150, color=1)
 
         if auto_word_wrap:
             text = ImageFunctions.get_word_wrapped_text_for_image(text, font, xy, image)
