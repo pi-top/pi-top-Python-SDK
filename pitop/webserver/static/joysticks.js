@@ -45,26 +45,26 @@ function panTiltTwistPublisher(angular_y, angular_z) {
 }
 
 ['left', 'right'].forEach((position) => {
-    const nippleZone = document.getElementById(position + 'NippleContainer');
+    const joystickZone = document.getElementById(position + 'JoystickContainer');
 
-    const nipple = nipplejs.create({
-        zone: nippleZone,
+    const joystick = joystickjs.create({
+        zone: joystickZone,
         mode: 'static',
         size: 200,
         position: {top: 50, [position]: 50}
     }).get();
 
-    nipple.on('move', (evt, nipple) => {
+    joystick.on('move', (evt, joystick) => {
 
-        let direction = nipple.angle.degree - 90;
+        let direction = joystick.angle.degree - 90;
         if (direction > 180) {
-            direction = -(450 - nipple.angle.degree);
+            direction = -(450 - joystick.angle.degree);
         }
 
         if (position === "left") {
-            // nipple distance max is 100, so set that to be maximum speeds
-            let linear = Math.cos(direction / 57.29) * nipple.distance * MAX_LINEAR_SPEED / 100.0;
-            let angular = Math.sin(direction / 57.29) * nipple.distance * MAX_ANGULAR_SPEED / 100.0;
+            // joystick distance max is 100, so set that to be maximum speeds
+            let linear = Math.cos(direction / 57.29) * joystick.distance * MAX_LINEAR_SPEED / 100.0;
+            let angular = Math.sin(direction / 57.29) * joystick.distance * MAX_ANGULAR_SPEED / 100.0;
             if (publishCmdVelImmediately) {
               publishCmdVelImmediately = false;
               cmdVelTwistPublisher(linear, angular);
@@ -73,8 +73,8 @@ function panTiltTwistPublisher(angular_y, angular_z) {
               }, 50);
             }
         } else {
-            let angular_y = -Math.cos(direction / 57.29) * nipple.distance * MAX_SERVO_SPEED / 100.0;
-            let angular_z = Math.sin(direction / 57.29) * nipple.distance * MAX_SERVO_SPEED / 100.0;
+            let angular_y = -Math.cos(direction / 57.29) * joystick.distance * MAX_SERVO_SPEED / 100.0;
+            let angular_z = Math.sin(direction / 57.29) * joystick.distance * MAX_SERVO_SPEED / 100.0;
             if (publishPanTiltImmediately) {
               publishPanTiltImmediately = false;
               panTiltTwistPublisher(angular_y, angular_z);
@@ -86,9 +86,9 @@ function panTiltTwistPublisher(angular_y, angular_z) {
         }
     });
 
-    nipple.on('end', (evt) => {
-        nipple.frontPosition.x = 0;
-        nipple.frontPosition.y = 0;
+    joystick.on('end', (evt) => {
+        joystick.frontPosition.x = 0;
+        joystick.frontPosition.y = 0;
         if (position === "left") {
           for (let i = 0; i < 3; i++) {
               setTimeout(function () {
