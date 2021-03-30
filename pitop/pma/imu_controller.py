@@ -3,7 +3,6 @@
 from .common.imu_registers import ImuRegisters, RegisterTypes, RawRegisterTypes, OrientationRegisterTypes, ScaleMappings
 from .common.imu_registers import MagCalHardTypes, MagCalSoftTypes, MagCalRegisterTypes
 from .plate_interface import PlateInterface
-from pitopcommon.logger import PTLogger
 import numpy as np
 
 
@@ -31,7 +30,6 @@ class ImuController:
         self.__orientation_enable = False
         self.__acc_scaler = None
         self.__gyro_scaler = None
-        self.__mag_cal_error_count = 0
 
     def cleanup(self):
         self.acc_enable = False
@@ -95,12 +93,8 @@ class ImuController:
 
     @acc_scaler.setter
     def acc_scaler(self, scaler: int):
+        self.__acc_scaler = scaler
         self.__data_scale_config_write(RegisterTypes.ACC, scaler)
-        if self.acc_scaler == scaler:
-            self.__acc_scaler = scaler
-        else:
-            # if values don't match, repeat trying until they do
-            self.acc_scaler = scaler
 
     @property
     def gyro_scaler(self):
@@ -108,12 +102,8 @@ class ImuController:
 
     @gyro_scaler.setter
     def gyro_scaler(self, scaler: int):
+        self.__gyro_scaler = scaler
         self.__data_scale_config_write(RegisterTypes.GYRO, scaler)
-        if self.gyro_scaler == scaler:
-            self.__gyro_scaler = scaler
-        else:
-            # if values don't match, repeat trying until they do
-            self.gyro_scaler = scaler
 
     @property
     def accelerometer_raw(self):
@@ -203,15 +193,7 @@ class ImuController:
         equal_hard = np.allclose(hard_iron_offset_read, hard_iron_offset, atol=1 / self.__HARD_IRON_SCALE_FACTOR)
         equal_soft = np.allclose(soft_iron_matrix_read, soft_iron_matrix, atol=1 / self.__SOFT_IRON_SCALE_FACTOR)
         if not equal_hard or not equal_soft:
-            self.__mag_cal_error_count += 1
-            if self.__mag_cal_error_count > 5:
-                PTLogger.error("Cannot write magnetometer calibration settings, try re-docking the pi-top [4] to "
-                               "Expansion Plate")
-                exit()
-            # if values don't match, repeat trying until they do
-            self.write_mag_cal_params(hard_iron_offset, soft_iron_matrix)
-        else:
-            self.__mag_cal_error_count = 0
+            raise Exception("Cannot write magnetometer calibration settings - try re-docking Expansion Plate to pi-top [4].")
 
     def __read_imu_data(self, data_register: int):
         return self.__mcu_device.read_signed_word(data_register, little_endian=True)

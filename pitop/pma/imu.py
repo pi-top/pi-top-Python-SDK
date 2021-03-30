@@ -41,8 +41,6 @@ class Orientation(BaseDataType):
 class IMU:
     def __init__(self):
         self.imu_controller = ImuController()
-        self.imu_controller.acc_scaler = 2
-        self.imu_controller.gyro_scaler = 250
         atexit.register(self.imu_controller.cleanup)
 
     @property
