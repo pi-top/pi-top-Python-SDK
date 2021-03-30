@@ -1,10 +1,6 @@
 name: Test and Build Packages on All Commits
 
-on:
-  push:
-    branches-ignore:
-      # Don't run on branches intended for CI modifications
-      - "ci-test-*"
+on: push
 
 jobs:
   python-test-coverage:
