@@ -1,10 +1,9 @@
-name: Test and Build Packages on All Commits
+name: Test and Build
 
 on:
+  pull_request:
   push:
-    branches-ignore:
-      # Don't run on branches intended for CI modifications
-      - "ci-test-*"
+    branches: [master]
 
 jobs:
   pre-commit-checks:
@@ -12,6 +11,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -20,6 +21,8 @@ jobs:
 
       - name: Run all pre-commit checks against all files
         uses: pre-commit/action@v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   python-test-coverage:
     needs: pre-commit-checks
