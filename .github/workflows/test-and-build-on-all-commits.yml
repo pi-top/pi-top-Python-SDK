@@ -8,7 +8,6 @@ on:
 
 jobs:
   python-test-coverage:
-    needs: pre-commit-checks
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
