@@ -15,10 +15,6 @@ class ImuController:
     __SOFT_IRON_SCALE_FACTOR = 1000.0
 
     def __init__(self):
-        # TODO - review member variables vs get/set properties
-        self.acc_scaler = 2
-        self.gyro_scaler = 250
-
         self.__data_registers = ImuRegisters.DATA
         self.__enable_registers = ImuRegisters.ENABLE
         self.__config_registers = ImuRegisters.CONFIG
@@ -30,6 +26,10 @@ class ImuController:
         self.__orientation_enable = False
         self.__acc_scaler = None
         self.__gyro_scaler = None
+
+        # TODO - review member variables vs get/set properties
+        self.acc_scaler = 2
+        self.gyro_scaler = 250
 
     def cleanup(self):
         self.acc_enable = False
