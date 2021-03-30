@@ -26,22 +26,21 @@ def command(ws):
     print('Command socket disconnected')
 
 
+def handle_frame(frame):
+    buffered = BytesIO()
+    frame.save(buffered, format="JPEG", optimize=True, quality=30)
+    global frame_bytes
+    frame_bytes = buffered.getvalue()
+
+
 @app.route('/video.mjpg')
 def video():
     def gen():
         while True:
-            try:
-                frame = alex.camera.get_frame()
-                buffered = BytesIO()
-                frame.save(buffered, format="JPEG", optimize=True, quality=30)
-                frame_bytes = buffered.getvalue()
-
-                yield (
-                    b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
-                )
-            except Exception:
-                pass
+            yield (
+                b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+            )
 
     print('Video socket connected')
     return Response(
@@ -92,6 +91,8 @@ if __name__ == "__main__":
     frame_bytes = None
 
     port = 8070
+
+    alex.camera.on_frame = handle_frame
 
     print(f"Server starting on port {port}")
     try:
