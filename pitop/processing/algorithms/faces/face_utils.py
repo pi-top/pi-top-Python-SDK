@@ -51,3 +51,67 @@ def get_face_angle(face_features):
     angle = math.degrees(math.atan(y_diff/x_diff))
 
     return angle
+
+
+def load_emotion_model():
+    from joblib import load
+    import os
+    # directory where calibration output pickle file is located
+    model_dir = 'models'
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    abs_file_path = os.path.join(script_dir, model_dir)
+
+    # Filename used to save the camera calibration result (mtx,dist)
+    model_filename = 'svc_model_ckplus_7.joblib'
+    model = load(open(os.path.join(abs_file_path, model_filename), "rb"))
+
+    return model
+
+
+class DotDict(dict):
+    """dot.notation access to dictionary attributes."""
+    __getattr__ = dict.get
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+
+model = load_emotion_model()
+
+emotions = ['anger', 'contempt', 'disgust', 'fear', 'happy', 'sadness', 'surprise']
+from scipy.spatial import distance
+
+def emotion_classifier(face_features, face_dimensions):
+
+    def get_feature_vector(features, normalizer):
+
+        face_feature_mean = features.mean(axis=0)
+
+        v0 = np.array([1, 0])
+
+        feature_vector = []
+        for landmark in features:
+            euclidean_distance = distance.euclidean(landmark, face_feature_mean) * normalizer
+            relative_vector = (landmark - face_feature_mean) * normalizer
+            angle = np.math.atan2(np.linalg.det([v0, relative_vector]), np.dot(v0, relative_vector))
+            feature_vector.append(relative_vector[0])
+            feature_vector.append(relative_vector[1])
+            feature_vector.append(euclidean_distance)
+            feature_vector.append(angle)
+
+        return np.asarray([feature_vector])
+
+    if len(face_features) != 68:
+        raise ValueError("This function is only compatible with dlib's 68 landmark feature")
+
+    normalizer = 1.0/math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
+    X = get_feature_vector(face_features, normalizer)
+
+    probabilities = model.predict_proba(X)[0]
+
+    max_index = np.argmax(probabilities)
+
+    return DotDict({
+        "type": emotions[max_index],
+        "confidence": probabilities[max_index]
+    })
+

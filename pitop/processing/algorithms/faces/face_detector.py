@@ -8,6 +8,7 @@ from pitop.processing.utils.vision_functions import (
 from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
 from imutils import face_utils
+from pitop.camera.camera_calibration.load_parameters import load_camera_cal
 
 # directory where calibration output pickle file is located
 classifier_dir = 'predictors'
@@ -38,21 +39,24 @@ class FaceDetector:
         self._detector = dlib.get_frontal_face_detector()
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._frame_resolution = None
+        self._clahe_filter = cv2.createCLAHE(clipLimit=5)
+        self._mtx, self._dist = load_camera_cal()
 
     def detect(self, frame):
 
         if self._input_format.lower() == "pil":
-            cv_frame = ImageFunctions.convert(frame, format='OpenCV')
-        else:
-            cv_frame = frame
+            frame = ImageFunctions.convert(frame, format='OpenCV')
 
-        cv_frame = resize(cv_frame, width=self._process_image_width)
+        undistorted_frame = cv2.undistort(frame, self._mtx, self._dist, None, self._mtx)
+
+        resized_frame = resize(undistorted_frame, width=self._process_image_width)
 
         if self._frame_resolution is None:
-            height, width = cv_frame.shape[0:2]
+            height, width = resized_frame.shape[0:2]
             self._frame_resolution = (width, height)
 
-        gray = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
+        gray = self._clahe_filter.apply(gray)
 
         rectangles_dlib = self._detector(gray, 0)
 
@@ -60,14 +64,14 @@ class FaceDetector:
 
         if face_rectangle is not None:
             face_found = True
-            robot_view = cv_frame.copy()
+            robot_view = resized_frame.copy()
             self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
-            face_center = center_reposition(face_center, cv_frame)  # has to be done after OpenCV draw functions
+            face_center = center_reposition(face_center, resized_frame)  # has to be done after OpenCV draw functions
             rectangle_dimensions = face_rectangle[2:4]
             face_angle = get_face_angle(face_features)
         else:
             face_found = False
-            robot_view = cv_frame
+            robot_view = resized_frame
             rectangle_dimensions = None
             face_angle = None
 
