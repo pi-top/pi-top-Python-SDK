@@ -47,7 +47,7 @@ function panTiltTwistPublisher(angular_y, angular_z) {
 ['left', 'right'].forEach((position) => {
     const joystickZone = document.getElementById(position + 'JoystickContainer');
 
-    const joystick = joystickjs.create({
+    const joystick = nipplejs.create({
         zone: joystickZone,
         mode: 'static',
         size: 200,
