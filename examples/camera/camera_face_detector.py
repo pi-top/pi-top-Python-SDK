@@ -17,7 +17,7 @@ def find_faces(frame):
         #       f"Face center: {face.center} \n"
         #       f"Face dimensions: {face.dimensions} \n"
         #       f"Number of dlib Features: {len(face.features)} \n")
-        emotion = emotion_detector(face.features, face.dimensions)
+        emotion = face_detector.get_emotion()
         if emotion.confidence > 0.4:
             print(emotion.type, emotion.confidence)
     else:

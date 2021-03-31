@@ -9,6 +9,9 @@ from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
 from imutils import face_utils
 from pitop.camera.camera_calibration.load_parameters import load_camera_cal
+import numpy as np
+import math
+from .face_utils import load_emotion_model
 
 # directory where calibration output pickle file is located
 classifier_dir = 'predictors'
@@ -44,6 +47,10 @@ class FaceDetector:
         self._dist = None
         self._mtx_new = None
         self._camera_cal_updated = False
+        self._face_features = None
+        self._face_dimensions = None
+        self._emotion_model = load_emotion_model()
+        self._emotions = ['anger', 'disgust', 'happy', 'sadness', 'surprise']
 
     def detect(self, frame):
 
@@ -69,19 +76,19 @@ class FaceDetector:
 
         rectangles_dlib = self._detector(gray, 0)
 
-        face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
+        face_rectangle, face_center, self._face_features = self.__process_rectangles(gray, rectangles_dlib)
 
         if face_rectangle is not None:
             face_found = True
             robot_view = resized_frame.copy()
             self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
             face_center = center_reposition(face_center, resized_frame)  # has to be done after OpenCV draw functions
-            rectangle_dimensions = face_rectangle[2:4]
-            face_angle = get_face_angle(face_features)
+            self._face_dimensions = face_rectangle[2:4]
+            face_angle = get_face_angle(self._face_features)
         else:
             face_found = False
             robot_view = resized_frame
-            rectangle_dimensions = None
+            self._face_dimensions = None
             face_angle = None
 
         if self._output_format.lower() == "pil":
@@ -91,9 +98,9 @@ class FaceDetector:
             "found": face_found,
             "center": face_center,
             "robot_view": robot_view,
-            "features": face_features,
+            "features": self._face_features,
             "angle": face_angle,
-            "dimensions": rectangle_dimensions
+            "dimensions": self._face_dimensions
         })
 
     def __process_rectangles(self, gray, rectangles_dlib):
@@ -125,3 +132,30 @@ class FaceDetector:
                        thickness=4, line_type=cv2.FILLED)
         for (x, y) in face_features:
             cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
+
+    def get_emotion(self):
+
+        def get_feature_vector(features, normalizer):
+            face_feature_mean = features.mean(axis=0)
+
+            feature_vector = []
+            for landmark in features:
+                relative_vector = (landmark - face_feature_mean) * normalizer
+                feature_vector.append(relative_vector[0])
+                feature_vector.append(relative_vector[1])
+
+            return np.asarray([feature_vector])
+
+        if len(self._face_features) != 68:
+            raise ValueError("This function is only compatible with dlib's 68 landmark feature")
+
+        normalizer = 1.0 / math.sqrt(self._face_dimensions[0] ** 2 + self._face_dimensions[1] ** 2)
+
+        X = get_feature_vector(self._face_features, normalizer)
+        probabilities = self._emotion_model.predict_proba(X)[0]
+        max_index = np.argmax(probabilities)
+
+        return DotDict({
+            "type": self._emotions[max_index],
+            "confidence": probabilities[max_index]
+        })
