@@ -1,4 +1,4 @@
-from pitop.processing.algorithms.faces import FaceDetector, emotion_classifier
+from pitop.processing.algorithms.faces import FaceDetector, emotion_detector
 import cv2
 
 face_detector = FaceDetector(input_format="OpenCV", output_format="OpenCV")
@@ -9,7 +9,7 @@ while count < 7:
 
     face = face_detector.detect(test_image)
     if face.found:
-        emotion = emotion_classifier(face.features, face.dimensions)
+        emotion = emotion_detector(face.features, face.dimensions)
         print(emotion.type, emotion.confidence)
         cv2.imshow("robotview", face.robot_view)
         cv2.waitKey(0)

@@ -1,5 +1,5 @@
 from pitop import Camera
-from pitop.processing.algorithms.faces import FaceDetector, emotion_classifier
+from pitop.processing.algorithms.faces import FaceDetector, emotion_detector
 from signal import pause
 from imutils.convenience import resize
 import cv2
@@ -17,7 +17,7 @@ def find_faces(frame):
         #       f"Face center: {face.center} \n"
         #       f"Face dimensions: {face.dimensions} \n"
         #       f"Number of dlib Features: {len(face.features)} \n")
-        emotion = emotion_classifier(face.features, face.dimensions)
+        emotion = emotion_detector(face.features, face.dimensions)
         if emotion.confidence > 0.4:
             print(emotion.type, emotion.confidence)
     else:
