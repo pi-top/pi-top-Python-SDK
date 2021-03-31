@@ -25,6 +25,9 @@ def create_app(robot_instance):
 
 
 def run_webserver(robot_instance, port=8070, serve_forever=True):
+    for component in ("pan_tilt", "drive", "camera"):
+        if not hasattr(robot_instance, component):
+            raise AttributeError(f"Provided robot object needs to have a '{component}' component.")
     print(f"\n\nOpen a new tab in your browser and go to http://127.0.0.1:{port}/")
 
     server = WSGIServer(
