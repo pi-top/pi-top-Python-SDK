@@ -38,23 +38,32 @@ class FaceDetector:
         self._output_format = output_format
         self._detector = dlib.get_frontal_face_detector()
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
-        self._frame_resolution = None
+        self._roi = None
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
-        self._mtx, self._dist = load_camera_cal()
+        self._mtx = None
+        self._dist = None
+        self._mtx_new = None
+        self._camera_cal_updated = False
 
     def detect(self, frame):
 
         if self._input_format.lower() == "pil":
             frame = ImageFunctions.convert(frame, format='OpenCV')
 
-        undistorted_frame = cv2.undistort(frame, self._mtx, self._dist, None, self._mtx)
+        if not self._camera_cal_updated:
+            height, width = frame.shape[0:2]
+            self._mtx, self._dist = load_camera_cal(width=width, height=height)
+            self._mtx_new, self._roi = cv2.getOptimalNewCameraMatrix(self._mtx, self._dist,
+                                                                     (width, height), 1, (width, height))
+            self._camera_cal_updated = True
+
+        undistorted_frame = cv2.undistort(frame, self._mtx, self._dist, None, self._mtx_new)
+
+        # crop to roi
+        x, y, w, h = self._roi
+        undistorted_frame = undistorted_frame[y:y+h, x:x+w]
 
         resized_frame = resize(undistorted_frame, width=self._process_image_width)
-
-        if self._frame_resolution is None:
-            height, width = resized_frame.shape[0:2]
-            self._frame_resolution = (width, height)
-
         gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
         gray = self._clahe_filter.apply(gray)
 
