@@ -127,8 +127,11 @@ __requires__ = [
     #############
     # Webserver #
     #############
-    "Flask",
-    "Flask-Sockets",
+    "flask",
+    "flask-cors",
+    "flask-sockets",
+    "gevent",
+    "gevent-websocket",
 ]
 
 __extra_requires__ = {
