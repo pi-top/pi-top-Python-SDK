@@ -67,8 +67,9 @@ def handle_command(message):
         robot.drive.robot_move(linear_speed, angular_speed)
 
     elif msg_type == 'pan_tilt':
-        robot.pan_servo.target_speed = msg_data.get("angular", dict()).get("z")
-        robot.tilt_servo.target_speed = msg_data.get("angular", dict()).get("y")
+        conversion_factor = 90.0 / 100.0
+        robot.pan_tilt.pan_servo.target_angle = msg_data.get("angular", dict()).get("z") * conversion_factor
+        robot.pan_tilt.tilt_servo.target_angle = msg_data.get("angular", dict()).get("y") * conversion_factor
 
     else:
         print(f"Unrecognised command: {msg_type}")
