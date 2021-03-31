@@ -47,8 +47,6 @@ class FaceDetector:
         self._dist = None
         self._mtx_new = None
         self._camera_cal_updated = False
-        self._face_features = None
-        self._face_dimensions = None
         self._emotion_model = load_emotion_model()
         self._emotions = ['anger', 'disgust', 'happy', 'sadness', 'surprise']
 
@@ -76,20 +74,23 @@ class FaceDetector:
 
         rectangles_dlib = self._detector(gray, 0)
 
-        face_rectangle, face_center, self._face_features = self.__process_rectangles(gray, rectangles_dlib)
+        face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
 
         if face_rectangle is not None:
             face_found = True
             robot_view = resized_frame.copy()
-            self.__draw_on_frame(robot_view, face_rectangle, face_center, self._face_features)
+            face_dimensions = face_rectangle[2:4]
+            face_angle = get_face_angle(face_features)
+            emotion = self._get_emotion(face_features, face_dimensions)
+            self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features, emotion)
             face_center = center_reposition(face_center, resized_frame)  # has to be done after OpenCV draw functions
-            self._face_dimensions = face_rectangle[2:4]
-            face_angle = get_face_angle(self._face_features)
+
         else:
             face_found = False
             robot_view = resized_frame
-            self._face_dimensions = None
+            face_dimensions = None
             face_angle = None
+            emotion = None
 
         if self._output_format.lower() == "pil":
             robot_view = ImageFunctions.convert(robot_view, format='PIL')
@@ -98,9 +99,10 @@ class FaceDetector:
             "found": face_found,
             "center": face_center,
             "robot_view": robot_view,
-            "features": self._face_features,
+            "features": face_features,
             "angle": face_angle,
-            "dimensions": self._face_dimensions
+            "dimensions": face_dimensions,
+            "emotion": emotion
         })
 
     def __process_rectangles(self, gray, rectangles_dlib):
@@ -125,15 +127,35 @@ class FaceDetector:
         return face_rectangle, face_center, face_features
 
     @staticmethod
-    def __draw_on_frame(frame, face_rectangle, face_center, face_features):
+    def __draw_on_frame(frame, face_rectangle, face_center, face_features, emotion):
         x, y, w, h = face_rectangle
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        cv2.drawMarker(frame, face_center, (100, 60, 240), markerType=cv2.MARKER_CROSS, markerSize=20,
-                       thickness=4, line_type=cv2.FILLED)
+
+        font = cv2.FONT_HERSHEY_PLAIN
+        font_scale = 1
+        font_thickness = 1
+        text = f"{round(emotion.confidence * 100)}% {emotion.type}"
+        text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
+        text_width, text_height = text_size
+
+        text_x = (x + w // 2) - (text_width // 2)
+        text_y = y - 5
+
+        if emotion.confidence < 0.5:
+            text_colour = (0, 0, 255)
+        elif 0.5 <= emotion.confidence < 0.75:
+            text_colour = (0, 165, 255)
+        else:
+            text_colour = (0, 255, 0)
+
+        cv2.putText(frame, text, (text_x, text_y), font, font_scale, text_colour, thickness=font_thickness)
+
+        cv2.drawMarker(frame, face_center, (100, 60, 240), markerType=cv2.MARKER_CROSS, markerSize=10,
+                       thickness=2, line_type=cv2.FILLED)
         for (x, y) in face_features:
             cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
 
-    def get_emotion(self):
+    def _get_emotion(self, face_features, face_dimensions):
 
         def get_feature_vector(features, normalizer):
             face_feature_mean = features.mean(axis=0)
@@ -146,16 +168,17 @@ class FaceDetector:
 
             return np.asarray([feature_vector])
 
-        if len(self._face_features) != 68:
+        if len(face_features) != 68:
             raise ValueError("This function is only compatible with dlib's 68 landmark feature")
 
-        normalizer = 1.0 / math.sqrt(self._face_dimensions[0] ** 2 + self._face_dimensions[1] ** 2)
+        normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
 
-        X = get_feature_vector(self._face_features, normalizer)
+        # TODO: use face angle to rotate face features before calculating emotion
+        X = get_feature_vector(face_features, normalizer)
         probabilities = self._emotion_model.predict_proba(X)[0]
         max_index = np.argmax(probabilities)
 
         return DotDict({
             "type": self._emotions[max_index],
-            "confidence": probabilities[max_index]
+            "confidence": round(probabilities[max_index], 2)
         })
