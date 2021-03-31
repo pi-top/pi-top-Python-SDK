@@ -77,7 +77,7 @@ class DriveController(Stateful, Recreatable):
         return rpm_left, rpm_right
 
     @is_initialized
-    def __robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
+    def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
@@ -99,7 +99,7 @@ class DriveController(Stateful, Recreatable):
             self._linear_speed_x_hold = linear_speed_x
         else:
             self._linear_speed_x_hold = 0
-        self.__robot_move(linear_speed_x, 0)
+        self.robot_move(linear_speed_x, 0)
 
     @is_initialized
     def backward(self, speed_factor, hold=False):
@@ -124,7 +124,7 @@ class DriveController(Stateful, Recreatable):
             Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
         """
 
-        self.__robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
+        self.robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
 
     @is_initialized
     def right(self, speed_factor, turn_radius=0):
@@ -143,7 +143,7 @@ class DriveController(Stateful, Recreatable):
         """Make the robot move in the direction of the specified angle, while
         maintaining the current linear speed."""
         angular_speed = self.__target_lock_pid_controller(angle)
-        self.__robot_move(self._linear_speed_x_hold, angular_speed)
+        self.robot_move(self._linear_speed_x_hold, angular_speed)
 
     @is_initialized
     def rotate(self, angle, time_to_take):
@@ -168,7 +168,7 @@ class DriveController(Stateful, Recreatable):
     def stop(self):
         """Stop any movement being performed by the motors."""
         self._linear_speed_x_hold = 0
-        self.__robot_move(0, 0)
+        self.robot_move(0, 0)
 
     def stop_rotation(self):
         """Stop any angular movement performed by the robot.
@@ -179,7 +179,7 @@ class DriveController(Stateful, Recreatable):
         to continue the linear movement, so it will continue to move
         forward.
         """
-        self.__robot_move(self._linear_speed_x_hold, 0)
+        self.robot_move(self._linear_speed_x_hold, 0)
 
     def _speed_to_rpm(self, speed):
         rpm = round(60.0 * speed / self._wheel_circumference, 1)

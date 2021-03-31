@@ -64,8 +64,7 @@ def handle_command(message):
     if msg_type == 'cmd_vel':
         linear_speed = msg_data.get("linear", dict()).get("x")
         angular_speed = msg_data.get("angular", dict()).get("z")
-        # TODO: expose method
-        robot.drive._DriveController__robot_move(linear_speed, angular_speed)
+        robot.drive.robot_move(linear_speed, angular_speed)
 
     elif msg_type == 'pan_tilt':
         robot.pan_servo.target_speed = msg_data.get("angular", dict()).get("z")
