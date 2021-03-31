@@ -1,3 +1,3 @@
 # python3-all-dev required to compile documentation. Ignore this warning for main packages
 py-pitop-sdk source: build-depends-on-python-dev-with-no-arch-any
-py-pitop-sdk source: source-is-missing pitop/labs/webserver/static/vendor/nipplejs.js
+py-pitop-sdk source: source-is-missing pitop/labs/webserver/static/vendor/nipplejs.js line length is 17987 characters (>512)
