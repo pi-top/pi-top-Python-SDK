@@ -128,6 +128,7 @@ __requires__ = [
     # Face detection & emotion classification #
     ###########################################
     "dlib",
+    "imutils",
     "scikit-learn",
 ]
 
