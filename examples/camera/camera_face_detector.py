@@ -18,10 +18,11 @@ def find_faces(frame):
         #       f"Face dimensions: {face.dimensions} \n"
         #       f"Number of dlib Features: {len(face.features)} \n")
         emotion = emotion_classifier(face.features, face.dimensions)
-        if emotion.confidence > 0.7:
+        if emotion.confidence > 0.4:
             print(emotion.type, emotion.confidence)
     else:
-        print("Cannot find face!")
+        pass
+        # print("Cannot find face!")
 
 
 camera = Camera(format="OpenCV", flip_top_bottom=True)
