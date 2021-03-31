@@ -123,6 +123,12 @@ __requires__ = [
     # Algorithms #
     ##############
     "simple_pid",
+
+    ###########################################
+    # Face detection & emotion classification #
+    ###########################################
+    "dlib",
+    "scikit-learn",
 ]
 
 __extra_requires__ = {

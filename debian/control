@@ -27,6 +27,10 @@ Depends:
  ${misc:Depends},
  python3-opencv,
  python3-pitop (= ${binary:Version}),
+ libopenblas-dev,
+# Required for face detection & emotion mapping
+ liblapack-dev,
+ libatlas-base-dev,
 Recommends:
  python3-pitop-doc (= ${source:Version}),
 Description: pi-top Python 3 Library - Complete
