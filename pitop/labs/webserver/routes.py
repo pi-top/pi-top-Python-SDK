@@ -32,10 +32,13 @@ def handle_frame(frame):
 def video():
     def gen():
         while True:
-            yield (
-                b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
-            )
+            try:
+                yield (
+                    b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+                )
+            except Exception:
+                pass
 
     print('Video socket connected')
     return Response(
