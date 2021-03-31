@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from pitop import AlexRobot
 from pitop.labs.webserver import run_webserver
 
