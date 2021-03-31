@@ -9,7 +9,7 @@ while count < 7:
 
     face = face_detector.detect(test_image)
     if face.found:
-        emotion = face_detector.get_emotion()
+        emotion = face.emotion
         print(emotion.type, emotion.confidence)
         cv2.imshow("robotview", face.robot_view)
         cv2.waitKey(0)
