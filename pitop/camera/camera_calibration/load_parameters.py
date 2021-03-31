@@ -6,12 +6,10 @@ calibration_outputs_dir = 'calibration_output'
 script_dir = os.path.dirname(os.path.realpath(__file__))
 abs_file_path = os.path.join(script_dir, calibration_outputs_dir)
 
-# Filename used to save the camera calibration result (mtx,dist)
-calibration_mtx_dist_filename = 'camera_cal_dist_pickle_640-480.p'  # _640-480
+# Filename used to save the camera calibration result (mtx, dist)
+calibration_mtx_dist_filename = 'camera_cal_dist_pickle_640-480.p'
 
-# calibration_width = 1280
-# calibration_height = 720
-
+# Camera resolution used for calibration
 calibration_width = 640
 calibration_height = 480
 
@@ -28,8 +26,6 @@ def load_camera_cal(width: int, height: int):
     mtx = dist_pickle["mtx"]
     dist = dist_pickle["dist"]
 
-    print(mtx)
-
     scale_factor_x = width / calibration_width
     scale_factor_y = height / calibration_height
 
@@ -37,7 +33,5 @@ def load_camera_cal(width: int, height: int):
     mtx[1][1] = mtx[1][1] * scale_factor_y
     mtx[0][2] = mtx[0][2] * scale_factor_x
     mtx[1][2] = mtx[1][2] * scale_factor_y
-
-    print(mtx)
 
     return mtx, dist
