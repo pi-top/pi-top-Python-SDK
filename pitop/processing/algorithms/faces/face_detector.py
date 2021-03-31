@@ -81,7 +81,7 @@ class FaceDetector:
         if face_rectangle is not None:
             face_found = True
             robot_view = resized_frame.copy()
-            self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
+            self.__draw_on_frame(robot_view, face_rectangle, face_center, self._face_features)
             face_center = center_reposition(face_center, resized_frame)  # has to be done after OpenCV draw functions
             self._face_dimensions = face_rectangle[2:4]
             face_angle = get_face_angle(self._face_features)
