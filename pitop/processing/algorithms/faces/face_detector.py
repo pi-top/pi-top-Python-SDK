@@ -132,8 +132,8 @@ class FaceDetector:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
         font = cv2.FONT_HERSHEY_PLAIN
-        font_scale = 1
-        font_thickness = 1
+        font_scale = 1.2
+        font_thickness = 2
         text = f"{round(emotion.confidence * 100)}% {emotion.type}"
         text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
         text_width, text_height = text_size
