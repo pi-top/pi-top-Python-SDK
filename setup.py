@@ -124,9 +124,9 @@ __requires__ = [
     ##############
     "simple_pid",
 
-    ###########################################
-    # Face detection & emotion classification #
-    ###########################################
+    #############################
+    # Advanced image processing #
+    #############################
     "dlib",
     "imutils",
     "scikit-learn",
