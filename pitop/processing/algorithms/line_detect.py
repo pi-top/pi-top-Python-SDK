@@ -42,12 +42,14 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     centroid = None
     scaled_image_centroid = None
     rectangle_dimensions = None
+    angle = None
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
         centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
         bounding_rectangle = cv2.boundingRect(line_contour)
         rectangle_dimensions = bounding_rectangle[2:5]
+        angle = get_control_angle(centroid, resized_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
@@ -64,17 +66,17 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
         "line_center": centroid,
         "robot_view": robot_view_img,
         "rectangle_dimensions": rectangle_dimensions,
-        "angle": get_control_angle(centroid, robot_view_img),
+        "angle": angle,
     })
 
 
 def get_control_angle(centroid, frame):
     if centroid is None:
-        return 0
+        return None
     # physically, this represents an approximation between chassis rotation center and camera
     # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
     # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
-    chassis_center_y = -int(frame.size[1])
+    chassis_center_y = -int(frame.shape[1])
 
     # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
     # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
@@ -87,9 +89,9 @@ def centroid_reposition(centroid, scale, frame):
     if centroid is None:
         return None
     # scale centroid so it matches original camera frame resolution
-    centroid_x = int(centroid[0]/scale)
-    centroid_y = int(centroid[1]/scale)
-    # convert so (0, 0) is at the middle bottom of the frame
+    centroid_x = int(centroid[0] / scale)
+    centroid_y = int(centroid[1] / scale)
+    # convert so (0, 0) is in the middle of the frame
     centroid_x = centroid_x - int(frame.shape[1] / 2)
     centroid_y = int(frame.shape[0] / 2) - centroid_y
 
