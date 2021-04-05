@@ -62,7 +62,7 @@ class DriveController(Stateful, Recreatable):
             return fcn(self, *args, **kwargs)
         return check_initialization
 
-    def __calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
+    def _calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
         speed_left = linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
@@ -80,7 +80,7 @@ class DriveController(Stateful, Recreatable):
     def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
-        rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
+        rpm_left, rpm_right = self._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
         self.left_motor.set_target_rpm(target_rpm=rpm_left)
         self.right_motor.set_target_rpm(target_rpm=rpm_right)
 
@@ -157,7 +157,7 @@ class DriveController(Stateful, Recreatable):
         angular_speed = angle_radians / time_to_take
 
         angular_speed = angular_speed * angle / abs(angle)
-        rpm_left, rpm_right = self.__calculate_motor_rpms(0, angular_speed, turn_radius=0)
+        rpm_left, rpm_right = self._calculate_motor_rpms(0, angular_speed, turn_radius=0)
         rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
         self.left_motor.set_target_rpm(target_rpm=rpm_left,
                                        total_rotations=rotations*rpm_left/abs(rpm_left))
