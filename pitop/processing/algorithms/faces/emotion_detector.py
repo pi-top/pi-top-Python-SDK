@@ -16,7 +16,7 @@ class EmotionDetector:
         self._mtx_new = None
         self._camera_cal_updated = False
         self._emotion_model = load_emotion_model()
-        self._emotions = ['Anger', 'Disgust', 'Happy', 'Sadness', 'Surprise']
+        self._emotions = ['Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
 
     def detect(self, face):
         frame = face.frame.copy()
