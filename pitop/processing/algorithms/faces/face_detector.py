@@ -13,9 +13,9 @@ from pitop.processing.utils.vision_functions import import_opencv
 
 cv2 = import_opencv()
 
-classifier_dir = 'predictors'
+predictor_dir = 'predictors'
 script_dir = os.path.dirname(os.path.realpath(__file__))
-abs_file_path = os.path.join(script_dir, classifier_dir)
+abs_file_path = os.path.join(script_dir, predictor_dir)
 predictor_file_name = "shape_predictor_68_face_landmarks.dat"
 
 
