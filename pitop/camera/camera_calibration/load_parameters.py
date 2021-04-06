@@ -15,11 +15,9 @@ calibration_height = 480
 
 
 def load_camera_cal(width: int, height: int):
-    """
-    Read in the saved camera matrix and distortion coefficients
-    These are the arrays we calculated using cv2.calibrateCamera()
-    Also scales calibration matrix based on resolution being used
-    """
+    """Read in the saved camera matrix and distortion coefficients These are
+    the arrays we calculated using cv2.calibrateCamera() Also scales
+    calibration matrix based on resolution being used."""
 
     dist_pickle = pickle.load(open(os.path.join(abs_file_path, calibration_mtx_dist_filename), "rb"))
 
