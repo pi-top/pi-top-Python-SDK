@@ -1,3 +1,4 @@
+import os
 import cv2
 import dlib
 from pitop.processing.utils.vision_functions import (
@@ -7,9 +8,13 @@ from pitop.processing.utils.vision_functions import (
 from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
 from imutils import face_utils
-import numpy as np
-import math
 from pitop.core.data_stuctures import DotDict
+
+
+classifier_dir = 'predictors'
+script_dir = os.path.dirname(os.path.realpath(__file__))
+abs_file_path = os.path.join(script_dir, classifier_dir)
+predictor_file_name = "shape_predictor_68_face_landmarks.dat"
 
 
 class FaceDetector:
@@ -23,6 +28,7 @@ class FaceDetector:
         self._input_format = input_format
         self._output_format = output_format
         self._detector = dlib.get_frontal_face_detector()
+        self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
 
@@ -32,7 +38,7 @@ class FaceDetector:
 
         if self._frame_scaler is None:
             height, width = frame.shape[0:2]
-            self._frame_scaler = self._process_image_width / width
+            self._frame_scaler = width / self._process_image_width
 
         resized_frame = resize(frame, width=self._process_image_width)
         gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
@@ -43,6 +49,11 @@ class FaceDetector:
         face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
 
         if face_rectangle is not None:
+            # resize back to original frame resolution
+            face_rectangle = tuple((int(item * self._frame_scaler) for item in face_rectangle))
+            face_center = tuple((int(item * self._frame_scaler) for item in face_center))
+            face_features = (face_features * self._frame_scaler).astype("int")
+
             face_found = True
             robot_view = frame.copy()
             face_dimensions = face_rectangle[2:4]
@@ -66,6 +77,8 @@ class FaceDetector:
             "features": face_features,
             "angle": face_angle,
             "dimensions": face_dimensions,
+            "rectangle": face_rectangle,
+            "frame": frame
         })
 
     def __process_rectangles(self, gray, rectangles_dlib):
@@ -87,11 +100,6 @@ class FaceDetector:
             face_features_dlib = self._predictor(gray, largest_rectangle_dlib)
             face_features = face_utils.shape_to_np(face_features_dlib)
 
-        # resize back to original frame resolution
-        face_rectangle = (int(item * self._frame_scaler) for item in face_rectangle)
-        face_center = (int(item * self._frame_scaler) for item in face_center)
-        face_features = (face_features * self._frame_scaler).astype("int")
-
         return face_rectangle, face_center, face_features
 
     @staticmethod
@@ -100,7 +108,7 @@ class FaceDetector:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
         cv2.drawMarker(frame, face_center, (100, 60, 240), markerType=cv2.MARKER_CROSS, markerSize=10,
-                       thickness=2, line_type=cv2.FILLED)
+                       thickness=3, line_type=cv2.FILLED)
 
         for (x, y) in face_features:
-            cv2.circle(frame, (x, y), 1, (0, 0, 255), -1)
+            cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
