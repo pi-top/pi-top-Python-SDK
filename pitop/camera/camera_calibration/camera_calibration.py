@@ -46,11 +46,11 @@ def get_images():
 
 
 def calibrate_camera_and_pickle_mtx_dist():
-    '''
-    Calibrate camera based on set of chessboard images.
-    Undistort one of the images from camera set as a test.
-    Save the camera calibration results for later use (mtx,dst)
-    '''
+    """Calibrate camera based on set of chessboard images.
+
+    Undistort one of the images from camera set as a test. Save the
+    camera calibration results for later use (mtx,dst)
+    """
     # termination criteria
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -116,4 +116,3 @@ def calibrate_camera_and_pickle_mtx_dist():
 if __name__ == '__main__':
     get_images()
     calibrate_camera_and_pickle_mtx_dist()
-

@@ -16,7 +16,7 @@ Assuming you have already cloned the project examples directory onto your pi-top
 1. `cd` into the `camera_calibration` directory
 1. run `python3 camera_calibration.py`
    1. A preview of the camera frame will display on screen (use VNC or a HDMI display to see)
-   1. Take 20 photos using the circle button on the pi-top [4]. 
+   1. Take 20 photos using the circle button on the pi-top [4].
    1. Get as many perspectives as possible and vary the distance between: filling the frame with the chessboard and; chessboard taking up about half of the frame.
 1. Once the `get_images` function has finished, the main calibration function will automatically start.
 1. Check the images in the `calibration_output` folder to ensure the points are drawn accurately and that the test image appears to have no distortion on it.

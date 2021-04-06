@@ -31,7 +31,7 @@ class EmotionDetector:
             height, width = frame.shape[0:2]
             self._mtx, self._dist = load_camera_cal(width=width, height=height)
             self._mtx_new, _ = cv2.getOptimalNewCameraMatrix(self._mtx, self._dist,
-                                                                     (width, height), 1, (width, height))
+                                                             (width, height), 1, (width, height))
             self._camera_cal_updated = True
 
         if face.found:
