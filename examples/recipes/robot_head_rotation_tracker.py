@@ -2,7 +2,9 @@ from pitop import Camera
 from pitop.processing.algorithms.faces import FaceDetector
 from pitop import Pitop, TiltRollHeadController
 from signal import pause
-import cv2
+from pitop.processing.utils.vision_functions import import_opencv
+
+cv2 = import_opencv()
 
 
 def track_face(frame):

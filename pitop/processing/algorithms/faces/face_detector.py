@@ -1,15 +1,17 @@
 import os
-import cv2
 import dlib
-from pitop.processing.utils.vision_functions import (
-    resize,
-    center_reposition
-)
+from pitop.processing.utils.vision_functions import center_reposition
 from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
-from imutils import face_utils
+from imutils import (
+    face_utils,
+    resize,
+)
 from pitop.core.data_stuctures import DotDict
+from pitop.processing.utils.vision_functions import import_opencv
 
+
+cv2 = import_opencv()
 
 classifier_dir = 'predictors'
 script_dir = os.path.dirname(os.path.realpath(__file__))

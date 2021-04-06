@@ -1,10 +1,12 @@
-import cv2
 from os import environ
 from pitopcommon.current_session_info import get_first_display
 from pitop import Camera
 from pitop.processing.algorithms.faces import FaceDetector
 from signal import pause
+from pitop.processing.utils.vision_functions import import_opencv
 
+
+cv2 = import_opencv()
 
 environ["DISPLAY"] = get_first_display()
 

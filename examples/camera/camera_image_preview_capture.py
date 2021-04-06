@@ -1,9 +1,11 @@
 from pitop import Pitop, Camera
-import cv2
 from time import sleep
 from os import environ
 from pitopcommon.current_session_info import get_first_display
+from pitop.processing.utils.vision_functions import import_opencv
 
+
+cv2 = import_opencv()
 
 environ["DISPLAY"] = get_first_display()
 

@@ -1,12 +1,14 @@
 import numpy as np
-import cv2
 import glob
 import pickle
 from os.path import join, basename
 from pitop.miniscreen.buttons import SelectButton
 from pitop import Camera
 from time import sleep
-import sys
+from pitop.processing.utils.vision_functions import import_opencv
+
+
+cv2 = import_opencv()
 
 # Where are the camera images for calibration?
 camera_cal_dir_glob = 'calibration_images/calibration*.jpg'
