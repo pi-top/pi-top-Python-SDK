@@ -1,5 +1,4 @@
 from pitop.core import ImageFunctions
-from pitop.camera.camera_calibration.load_parameters import load_camera_cal
 import numpy as np
 import math
 from .face_utils import load_emotion_model
@@ -14,43 +13,32 @@ class EmotionDetector:
     def __init__(self, input_format: str = "PIL", output_format: str = "PIL"):
         self._input_format = input_format
         self._output_format = output_format
-        self._mtx = None
-        self._dist = None
-        self._mtx_new = None
-        self._camera_cal_updated = False
         self._emotion_model = load_emotion_model()
         self._emotions = ['Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
 
     def detect(self, face):
         frame = face.frame.copy()
+
         if self._input_format.lower() == "pil":
             frame = ImageFunctions.convert(frame, format='OpenCV')
 
-        # TODO: test calibration with new classifier once finished,, decide whether to keep or not
-        if not self._camera_cal_updated:
-            height, width = frame.shape[0:2]
-            self._mtx, self._dist = load_camera_cal(width=width, height=height)
-            self._mtx_new, _ = cv2.getOptimalNewCameraMatrix(self._mtx, self._dist,
-                                                                     (width, height), 1, (width, height))
-            self._camera_cal_updated = True
-
         if face.found:
             robot_view = frame.copy()
-            type, confidence = self._get_emotion(face.features, face.dimensions)
-            self.__draw_on_frame(robot_view, face.rectangle, type, confidence)
+            emotion_type, emotion_confidence = self._get_emotion(face.features, face.dimensions)
+            self.__draw_on_frame(robot_view, face.rectangle, emotion_type, emotion_confidence)
 
         else:
             robot_view = frame
-            type = None
-            confidence = None
+            emotion_type = None
+            emotion_confidence = None
 
         if self._output_format.lower() == "pil":
             robot_view = ImageFunctions.convert(robot_view, format='PIL')
 
         return DotDict({
             "robot_view": robot_view,
-            "type": type,
-            "confidence": confidence
+            "type": emotion_type,
+            "confidence": emotion_confidence
         })
 
     @staticmethod
@@ -82,6 +70,7 @@ class EmotionDetector:
         def get_feature_vector(features, normalizer):
             face_feature_mean = features.mean(axis=0)
             # TODO: use face angle to rotate face features before calculating emotion
+            #  Can either retrain SVC to be angle agnostic or rotate face features to always have both eyes level
 
             feature_vector = []
             for landmark in features:
@@ -101,13 +90,3 @@ class EmotionDetector:
         max_index = np.argmax(probabilities)
 
         return self._emotions[max_index], round(probabilities[max_index], 2)
-
-    def __get_undistorted_features(self, face_features):
-        face_features_reshaped = face_features.reshape(face_features.shape[0], 1, 2).astype(np.float32)
-
-        face_features_undistorted = cv2.undistortPoints(face_features_reshaped,
-                                                        self._mtx, self._dist, None, self._mtx_new)
-
-        face_features_undistorted = face_features_undistorted.reshape(face_features.shape[0], 2).astype(int)
-
-        return face_features_undistorted
