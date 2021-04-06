@@ -1,7 +1,15 @@
-from pitop import Camera
-from signal import pause
-from pitop.processing.algorithms.faces import FaceDetector, EmotionDetector
 import cv2
+from os import environ
+from pitopcommon.current_session_info import get_first_display
+from pitop import Camera
+from pitop.processing.algorithms.faces import (
+    FaceDetector,
+    EmotionDetector
+)
+from signal import pause
+
+
+environ["DISPLAY"] = get_first_display()
 
 
 def frame_callback(frame):
@@ -16,6 +24,12 @@ def frame_callback(frame):
             print(":)")
         elif emotion.type == "Sad":
             print(":(")
+        elif emotion.type == "Anger":
+            print(":c")
+        elif emotion.type == "Disgust":
+            print("D:<")
+        elif emotion.type == "Surprise":
+            print(":O")
 
     else:
         print("Face not found")
