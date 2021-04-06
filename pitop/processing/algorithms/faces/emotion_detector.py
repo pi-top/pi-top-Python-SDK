@@ -23,10 +23,11 @@ class EmotionDetector:
         if self._input_format.lower() == "pil":
             frame = ImageFunctions.convert(frame, format='OpenCV')
 
+        # TODO: test calibration with new classifier once finished,, decide whether to keep or not
         if not self._camera_cal_updated:
             height, width = frame.shape[0:2]
             self._mtx, self._dist = load_camera_cal(width=width, height=height)
-            self._mtx_new, self._roi = cv2.getOptimalNewCameraMatrix(self._mtx, self._dist,
+            self._mtx_new, _ = cv2.getOptimalNewCameraMatrix(self._mtx, self._dist,
                                                                      (width, height), 1, (width, height))
             self._camera_cal_updated = True
 
@@ -97,3 +98,13 @@ class EmotionDetector:
         max_index = np.argmax(probabilities)
 
         return self._emotions[max_index], round(probabilities[max_index], 2)
+
+    def __get_undistorted_features(self, face_features):
+        face_features_reshaped = face_features.reshape(face_features.shape[0], 1, 2).astype(np.float32)
+
+        face_features_undistorted = cv2.undistortPoints(face_features_reshaped,
+                                                        self._mtx, self._dist, None, self._mtx_new)
+
+        face_features_undistorted = face_features_undistorted.reshape(face_features.shape[0], 2).astype(int)
+
+        return face_features_undistorted
