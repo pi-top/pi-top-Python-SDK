@@ -2,7 +2,7 @@ import pickle
 import os
 
 # directory where calibration output pickle file is located
-calibration_outputs_dir = 'calibration_output'
+calibration_outputs_dir = ''
 script_dir = os.path.dirname(os.path.realpath(__file__))
 abs_file_path = os.path.join(script_dir, calibration_outputs_dir)
 
