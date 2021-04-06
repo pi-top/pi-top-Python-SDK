@@ -1,6 +1,11 @@
 from pitop import Pitop, Camera
 import cv2
 from time import sleep
+from os import environ
+from pitopcommon.current_session_info import get_first_display
+
+
+environ["DISPLAY"] = get_first_display()
 
 miniscreen = Pitop().miniscreen
 
@@ -9,6 +14,7 @@ directory = "images/"
 button = miniscreen.select_button
 
 picture_count = 0
+
 
 while True:
     frame = cam.get_frame()
@@ -21,5 +27,6 @@ while True:
         sleep(0.5)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
 
 cv2.destroyAllWindows()
