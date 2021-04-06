@@ -4,8 +4,8 @@ import math
 
 
 def get_face_angle(face_features):
-    """
-    Returns angle in degrees of face from dlib face features
+    """Returns angle in degrees of face from dlib face features.
+
     :param face_features: dlib face features
     :return: angle of face in degrees
     """

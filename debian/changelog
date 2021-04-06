@@ -1,3 +1,27 @@
+py-pitop-sdk (0.18.1) buster; urgency=medium
+
+  * Remove unused global from example
+  * Improve handling of camera object deletion
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 29 Mar 2021 17:34:35 +0000
+
+py-pitop-sdk (0.18.0) buster; urgency=medium
+
+  * Track state and recreate Pitop object
+  * Loop over available devices to create camera object
+  * ServoMotor: don't use setting on angle/speed properties
+  * Fix line detector example
+  * Add giphy miniscreen startup example
+  * Improvements to health check CLI
+  * Miniscreen: stop background thread when displaying anything
+  * Add pixel inversion support to miniscreen
+  * Add PROTO+ image to docs
+  * Drop RPi.GPIO dependency
+  * Use common library's SMBUS to communicate with pi-topPULSE
+  * Proto+: use public I2C methods (#285)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Sun, 28 Mar 2021 21:13:39 +0000
+
 py-pitop-sdk (0.17.1) buster; urgency=medium
 
   * Allow importing main objects from module root

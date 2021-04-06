@@ -84,6 +84,9 @@ class Camera(Stateful, Recreatable):
             "path_to_images": path_to_images,
             "format": format,
             "name": self.name,
+            "flip_top_bottom": self._flip_top_bottom,
+            "flip_left_right": self._flip_left_right,
+            "rotate_angle": self._rotate_angle,
         })
 
     @property

@@ -1,8 +1,16 @@
+import cv2
+from os import environ
+from signal import pause
+
+from pitopcommon.current_session_info import get_first_display
 from pitop import Camera
 from pitop.processing.algorithms.faces import FaceDetector
 from signal import pause
 from imutils.convenience import resize
 import cv2
+
+
+environ["DISPLAY"] = get_first_display()
 
 
 def find_faces(frame):

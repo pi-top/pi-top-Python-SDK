@@ -179,6 +179,25 @@ class ServoMotor(Stateful, Recreatable):
         return speed
 
     @property
+    def smooth_acceleration(self):
+        """Gets whether or not the servo is configured to use a linear
+        acceleration profile to ramp speed at start and end of cycle.
+
+        :return: boolean value of the acceleration mode
+        """
+        return self.__controller.get_acceleration_mode() == 1
+
+    @smooth_acceleration.setter
+    def smooth_acceleration(self, enabled: bool):
+        """Sets whether or not the servo is configured to use a linear
+        acceleration profile to ramp speed at start and end of cycle.
+
+        :type enabled: bool
+        :param enabled: acceleration mode state
+        """
+        self.__controller.set_acceleration_mode(int(enabled))
+
+    @property
     def target_angle(self):
         """Returns the last target angle that has been set.
 

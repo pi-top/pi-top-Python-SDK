@@ -123,6 +123,13 @@ __requires__ = [
     # Algorithms #
     ##############
     "simple_pid",
+
+    #############################
+    # Advanced image processing #
+    #############################
+    "dlib",
+    "imutils",
+    "scikit-learn",
 ]
 
 __extra_requires__ = {

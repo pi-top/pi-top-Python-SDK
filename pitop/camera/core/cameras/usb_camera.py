@@ -47,8 +47,12 @@ class UsbCamera:
             return V4L2Camera(f"/dev/video{index}")
 
     def __del__(self):
-        if hasattr(self.__camera, "close"):
-            self.__camera.close()
+        try:
+            if hasattr(self.__camera, "close"):
+                self.__camera.close()
+        except AttributeError:
+            # Camera was not initialized
+            pass
 
     def get_frame(self):
         # Always PIL format

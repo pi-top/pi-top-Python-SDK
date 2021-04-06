@@ -10,3 +10,6 @@ python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera
 scipy python3-scipy
 simple_pid python3-simple-pid
+dlib python3-dlib
+scikit-learn python3-sklearn
+imutils python3-imutils
