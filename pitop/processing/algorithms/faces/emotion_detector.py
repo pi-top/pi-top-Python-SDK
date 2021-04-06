@@ -24,7 +24,7 @@ class EmotionDetector:
 
         if face.found:
             robot_view = frame.copy()
-            emotion_type, emotion_confidence = self._get_emotion(face.features, face.dimensions)
+            emotion_type, emotion_confidence = self.__get_emotion(face.features, face.dimensions)
             self.__draw_on_frame(robot_view, face.rectangle, emotion_type, emotion_confidence)
 
         else:
@@ -65,7 +65,7 @@ class EmotionDetector:
 
         cv2.putText(frame, text, (text_x, text_y), font, font_scale, text_colour, thickness=font_thickness)
 
-    def _get_emotion(self, face_features, face_dimensions):
+    def __get_emotion(self, face_features, face_dimensions):
 
         def get_feature_vector(features, normalizer):
             face_feature_mean = features.mean(axis=0)
