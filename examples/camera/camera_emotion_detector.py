@@ -9,14 +9,9 @@ def frame_callback(frame):
     emotion = emotion_detector.detect(face)
 
     cv2.imshow("Emotion", emotion.robot_view)
-    cv2.imshow("Face", face.robot_view)
     cv2.waitKey(1)
 
     if face.found:
-        print(f"Face angle: {face.angle} \n"
-              f"Face center: {face.center} \n"
-              f"Face dimensions: {face.dimensions} \n")
-
         if emotion.type == "Happy":
             print(":)")
         elif emotion.type == "Sad":
