@@ -8,9 +8,6 @@ from flask import (
 from . import sockets
 
 
-frame_bytes = None
-
-
 @sockets.route('/command')
 def command(ws):
     print('Command socket connected')
@@ -21,18 +18,18 @@ def command(ws):
     print('Command socket disconnected')
 
 
-def handle_frame(frame):
-    buffered = BytesIO()
-    frame.save(buffered, format="JPEG", optimize=True, quality=30)
-    global frame_bytes
-    frame_bytes = buffered.getvalue()
-
-
 @app.route('/video.mjpg')
 def video():
+    robot = app.config['robot']
+
     def gen():
         while True:
             try:
+                frame = robot.camera.get_frame()
+                buffered = BytesIO()
+                frame.save(buffered, format="JPEG", optimize=True, quality=30)
+                frame_bytes = buffered.getvalue()
+
                 yield (
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
