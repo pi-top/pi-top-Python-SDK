@@ -26,7 +26,7 @@ def command(ws):
 def handle_frame(frame):
     try:
         buffered = BytesIO()
-        frame.save(buffered, format="JPEG", optimize=True, quality=30)
+        frame.save(buffered, format="JPEG")
         global frame_bytes
         frame_bytes = buffered.getvalue()
         new_frame_event.set()
