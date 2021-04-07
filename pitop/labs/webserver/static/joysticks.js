@@ -7,8 +7,8 @@ var cmd_vel_twist = {
   }
 };
 
-var pan_tilt_twist = {
-  'angular': {
+var pan_tilt_position = {
+  'angle': {
     'y': 0.0,
     'z': 0.0
   }
@@ -16,7 +16,7 @@ var pan_tilt_twist = {
 
 const MAX_LINEAR_SPEED = 0.44;
 const MAX_ANGULAR_SPEED = 5.12;
-const MAX_SERVO_SPEED = 100;
+const MAX_SERVO_ANGLE = 90;
 var publishCmdVelImmediately = true;
 var publishPanTiltImmediately = true;
 
@@ -28,20 +28,18 @@ function cmdVelTwistPublisher(linear, angular) {
         cmd_vel_twist.linear.x = 0;
         cmd_vel_twist.angular.z = 0;
     }
-    // console.log(linear)
     window.command['cmd_vel'](cmd_vel_twist);
 }
 
-function panTiltTwistPublisher(angular_y, angular_z) {
-    if (angular_y !== undefined && angular_z !== undefined) {
-        pan_tilt_twist.angular.y = angular_y;
-        pan_tilt_twist.angular.z = angular_z;
+function panTiltPositionPublisher(angle_y, angle_z) {
+    if (angle_y !== undefined && angle_z !== undefined) {
+        pan_tilt_position.angle.y = angle_y;
+        pan_tilt_position.angle.z = angle_z;
     } else {
-        pan_tilt_twist.linear.x = 0;
-        pan_tilt_twist.angular.z = 0;
+        pan_tilt_position.angle.y = 0;
+        pan_tilt_position.angle.z = 0;
     }
-    // console.log(linear)
-    window.command['pan_tilt'](pan_tilt_twist);
+    window.command['pan_tilt'](pan_tilt_position);
 }
 
 ['left', 'right'].forEach((position) => {
@@ -73,11 +71,11 @@ function panTiltTwistPublisher(angular_y, angular_z) {
               }, 50);
             }
         } else {
-            let angular_y = -Math.cos(direction / 57.29) * joystick.distance * MAX_SERVO_SPEED / 100.0;
-            let angular_z = Math.sin(direction / 57.29) * joystick.distance * MAX_SERVO_SPEED / 100.0;
+            let angle_y = -Math.cos(direction / 57.29) * joystick.distance * MAX_SERVO_ANGLE / 100.0;
+            let angle_z = Math.sin(direction / 57.29) * joystick.distance * MAX_SERVO_ANGLE / 100.0;
             if (publishPanTiltImmediately) {
               publishPanTiltImmediately = false;
-              panTiltTwistPublisher(angular_y, angular_z);
+              panTiltPositionPublisher(angle_y, angle_z);
               setTimeout(function () {
                 publishPanTiltImmediately = true;
               }, 50);
@@ -98,7 +96,7 @@ function panTiltTwistPublisher(angular_y, angular_z) {
         } else {
             for (let i = 0; i < 3; i++) {
               setTimeout(function () {
-                panTiltTwistPublisher(0, 0);
+                panTiltPositionPublisher(0, 0);
               }, i * 10);
           }
         }
