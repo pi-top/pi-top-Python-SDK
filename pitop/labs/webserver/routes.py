@@ -39,7 +39,7 @@ def handle_frame(frame):
 def video():
     def gen():
         while True:
-            if new_frame_event.wait(timeout=0):
+            if new_frame_event.wait(timeout=0.1):
                 yield (
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
