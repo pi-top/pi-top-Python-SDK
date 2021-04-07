@@ -32,7 +32,8 @@ def frame_callback(frame):
             print("D:<")
         elif emotion.type == "Surprise":
             print(":O")
-
+        elif emotion.type == "Neutral":
+            print(":|")
     else:
         print("Face not found")
 
