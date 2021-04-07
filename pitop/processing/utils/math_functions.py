@@ -2,11 +2,25 @@ from numpy import cumsum, insert, append, shape, delete
 
 
 def running_mean(old_array, new_value):
+    """
+    Calculates a running mean from either a 1d numpy array of single measurements or a 2d numpy array
+    of 1d numpy array measurements.
+    :param old_array: Stored historical values either as a 1d numpy array or a 2d numpy array
+    :param new_value: New value to add. For a 1d array this will be a single value. For a 2d Nxm numpy array, this
+    will be a 1d numpy array that has m values, where N is the number of samples to average over.
+    :return: tuple where index 0 is the new array and index 1 is the new mean.
+    """
     def calculate_mean(x, N):
-        cum_sum = cumsum(insert(x, 0, 0))
+        cum_sum = cumsum(insert(x, 0, 0, axis=0), axis=0)
         return (cum_sum[N:] - cum_sum[:-N]) / float(N)
 
-    new_array = append(delete(old_array, 0), new_value)
+    array_shape = old_array.shape
+    if old_array.ndim == 2:
+        new_value = new_value.reshape(1, array_shape[1])
+        new_array = append(delete(old_array, 0, axis=0), new_value, axis=0)
+    else:
+        new_array = append(delete(old_array, 0, axis=0), new_value)
+
     new_mean = calculate_mean(new_array, shape(new_array)[0])[0]
     return new_array, new_mean
 
