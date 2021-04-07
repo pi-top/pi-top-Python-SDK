@@ -23,6 +23,7 @@ def create_app(robot_instance):
     with app.app_context():
         from . import routes  # noqa: F401
         app.config['robot'] = robot_instance
+        robot_instance.camera.on_frame = routes.handle_frame
         return app
 
 
