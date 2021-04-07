@@ -29,7 +29,7 @@ def create_app(robot_instance):
 
 def get_device_ip_addresses():
     ip_addresses = list()
-    for interface in ("wlan0", "ptusb0", "lo"):
+    for interface in ("wlan0", "ptusb0"):
         ip_address = get_internal_ip(interface)
         if is_url("http://" + ip_address):
             ip_addresses.append(ip_address)
