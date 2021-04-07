@@ -72,7 +72,7 @@ class EmotionDetector:
 
     def __get_emotion(self, face):
 
-        def get_feature_vector(features, face_angle, face_dimensions):
+        def get_feature_vector(features, face_dimensions):
             normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
             face_feature_mean = features.mean(axis=0)
             feature_vector = []
@@ -83,50 +83,10 @@ class EmotionDetector:
 
             return np.asarray([feature_vector])
 
-        def get_feature_vector2(features, face_angle, face_dimensions):
-            # TODO: use face angle to rotate face features before calculating emotion
-            #  Can either retrain SVC to be angle agnostic or rotate face features to always have both eyes level
-            # features = np.dot(rotation_matrix, features.T).T
-
-            normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
-
-            rotation_matrix = np.array([[np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
-                                        [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))]])
-
-            face_feature_mean = features.mean(axis=0)
-            feature_vector = []
-            for landmark in features:
-                relative_vector = (landmark - face_feature_mean) * normalizer
-                # print(f'rv: {relative_vector}')
-                relative_vector_rotated = rotation_matrix @ relative_vector
-                # print(f'rr: {relative_vector_rotated}')
-                feature_vector.append(relative_vector_rotated[0])
-                feature_vector.append(relative_vector_rotated[1])
-
-            return np.asarray([feature_vector])
-
-        def get_feature_vector3(features, face_angle, face_dimensions):
-            normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
-            face_feature_mean = features.mean(axis=0)
-            x_0 = np.cos(np.radians(face_angle))
-            y_0 = np.sin(np.radians(face_angle))
-            v0 = np.array([x_0, y_0])  # horizontal vector for angle reference
-            feature_vector = []
-            for landmark in features:
-                euclidean_distance = distance.euclidean(landmark, face_feature_mean) * normalizer
-                relative_vector = (landmark - face_feature_mean) * normalizer
-                angle = np.math.atan2(np.linalg.det([v0, relative_vector]), np.dot(v0, relative_vector))
-                # feature_vector.append(relative_vector[0])
-                # feature_vector.append(relative_vector[1])
-                feature_vector.append(euclidean_distance)
-                feature_vector.append(angle)
-
-            return np.asarray([feature_vector])
-
         if len(face.features) != 68:
             raise ValueError("This function is only compatible with dlib's 68 landmark feature")
 
-        X = get_feature_vector(face.features, face.angle, face.dimensions)
+        X = get_feature_vector(face.features, face.dimensions)
         probabilities = self._emotion_model.predict_proba(X)[0]
 
         self._probability_mean_array, probabilities_mean = running_mean(self._probability_mean_array, probabilities)
