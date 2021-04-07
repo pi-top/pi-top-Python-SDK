@@ -47,7 +47,8 @@ def run_webserver(robot_instance, port=8070, serve_forever=True):
 
     print("Open a new tab in your browser and go to:")
     for ip_address in ip_addresses:
-        print(f"\t- http://{ip_address}:{port}/")
+        url = f"http://{ip_address}:{port}/"
+        print(f"\t\u001b]8;;{url}\u001b\\{url}\u001b]8;;\u001b\\")
 
     server = WSGIServer(
         ('0.0.0.0', port),
