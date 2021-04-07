@@ -1,2 +1,4 @@
 gpiozero
 pitopcommon
+flask
+flask_sockets

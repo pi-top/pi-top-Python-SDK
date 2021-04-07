@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>Web Controller</title>
+    <script type="text/javascript" src="./static/vendor/nipplejs.js"></script>
+    <script type="text/javascript" src="./static/command.js"></script>
+  </head>
+  <body style="background-color: #00B2A2; margin: 0">
+    <header>{% block header %}{% endblock %}</header>
+    <div id="main" style="width: 100vw; height: 60vh;">
+      {% block joysticks %}
+        <div id="joysticks" style="display: flex; justify-content: space-between; padding: 80px;">
+          {% block leftjoystick %}
+            <div id="leftJoystickContainer" style="position: relative; width: 200px; height: 200px"></div>
+          {% endblock %}
+          {% block rightjoystick %}
+            <div id="rightJoystickContainer" style="position: relative; width: 200px; height: 200px"></div>
+          {% endblock %}
+        </div>
+      {% endblock %}
+    </div>
+    <br/>
+    <img src="video.mjpg" style="height: 100vh; position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: -1;" />
+    <script type="text/javascript" src="./static/joysticks.js"></script>
+  </body>
+</html>
