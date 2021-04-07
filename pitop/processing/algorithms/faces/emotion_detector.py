@@ -89,7 +89,6 @@ class EmotionDetector:
         probabilities = self._emotion_model.predict_proba(X)[0]
 
         self._probability_mean_array, probabilities_mean = running_mean(self._probability_mean_array, probabilities)
-        probabilities_mean = probabilities
         max_index = np.argmax(probabilities_mean)
 
         return self._emotions[max_index], round(probabilities[max_index], 2)
