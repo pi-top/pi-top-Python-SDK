@@ -19,7 +19,7 @@ def track_face(frame):
         robot.tilt_roll.track_head_angle(face_angle)
         print(f"Face angle: {face.angle}")
     else:
-        robot.tilt_roll.stop()
+        robot.tilt_roll.roll_servo.sweep(speed=0)
         print("Cannot find face!")
 
 
