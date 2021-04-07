@@ -48,7 +48,7 @@ def get_face_angle(face_features):
 
     x_diff, y_diff = position_diff
 
-    angle = math.degrees(math.atan(y_diff/x_diff))
+    angle = -math.degrees(math.atan(y_diff/x_diff))
 
     return angle
 
@@ -62,7 +62,7 @@ def load_emotion_model():
     abs_file_path = os.path.join(script_dir, model_dir)
 
     # Filename used to save the camera calibration result (mtx,dist)
-    model_filename = 'svc_emotion_model_x-y_linear.joblib'
+    model_filename = 'svc_emotion_model_x-y_linear_with_neutral.joblib'
     model = load(open(os.path.join(abs_file_path, model_filename), "rb"))
 
     return model

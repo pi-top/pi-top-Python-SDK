@@ -61,7 +61,7 @@ class TiltRollHeadController(Stateful, Recreatable):
         self.roll_servo.sweep(speed=0)
 
     def track_head_angle(self, angle, flipped=True):
-        if flipped:
+        if not flipped:
             angle = -angle
         current_angle = self.roll_servo.current_angle
         state = current_angle - angle
