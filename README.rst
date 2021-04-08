@@ -1,3 +1,36 @@
+.. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
+    :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
+    :alt: Documentation
+
+.. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
+    :alt: GitHub tag (latest by date)
+
+.. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
+    :alt: GitHub release (latest by date)
+
+.. image:: https://img.shields.io/pypi/v/pitop
+   :target: https://pypi.org/project/pitop
+   :alt: PyPI release
+
+.. image:: https://github.com/pi-top/pi-top-Python-SDK/actions/workflows/test-and-build-on-all-commits.yml/badge.svg
+  :target: https://github.com/pi-top/pi-top-Python-SDK/actions?query=workflow%3Agh+branch%3Amaster+event%3Apush
+  :alt: GitHub Workflow Status
+
+.. image:: https://img.shields.io/lgtm/grade/python/g/pi-top/pi-top-Python-SDK.svg
+   :target: https://lgtm.com/projects/g/pi-top/pi-top-Python-SDK/context:python
+   :alt: Language grade: Python
+
+.. image:: https://img.shields.io/lgtm/grade/javascript/g/pi-top/pi-top-Python-SDK.svg
+   :target: https://lgtm.com/projects/g/pi-top/pi-top-Python-SDK/context:javascript
+   :alt: Language grade: Javascript
+
+.. image:: https://img.shields.io/codecov/c/gh/pi-top/pi-top-Python-SDK?token=hfbgB9Got4
+   :alt: Codecov
+
+.. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
+   :target: https://github.com/pre-commit/pre-commit
+   :alt: pre-commit
+
 ===========================
 pi-top Python SDK (Preview)
 ===========================
@@ -31,30 +64,6 @@ Backwards Compatibility
 =======================
 
 When this library reaches v1.0.0, we will aim to maintain backwards-compatibility thereafter. Until then, every effort will be made to ensure stable support, but it cannot be guaranteed. Breaking changes will be clearly documented.
-
---------------------
-Build Status: Latest
---------------------
-
-.. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Build,%20Test%20and%20Publish
-   :alt: GitHub Workflow Status
-
-
-.. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
-    :alt: GitHub tag (latest by date)
-
-.. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
-    :alt: GitHub release (latest by date)
-
-.. image:: https://img.shields.io/pypi/v/pitop
-   :alt: PyPI release
-
-.. image:: https://img.shields.io/codecov/c/gh/pi-top/pi-top-Python-SDK?token=hfbgB9Got4
-   :alt: Codecov
-
-.. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
-    :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
-    :alt: Documentation Status
 
 -----
 About
