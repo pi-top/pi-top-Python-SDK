@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "ci-test-publish-release-*" ]
   release:
-    types: [published]
+    types: published
 
 jobs:
   add-stable-tag:
@@ -21,7 +21,7 @@ jobs:
           commit_sha: ${{ github.sha }}
           force_push_tag: true
 
-  deploy-release:
+  deploy-python-release:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
