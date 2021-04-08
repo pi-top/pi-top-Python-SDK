@@ -30,7 +30,7 @@ class ADCBase(Stateful, Recreatable):
         self.__adc_device = PlateInterface().get_device_mcu()
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name, "pin_number": pin_number, "name": self.name})
+        Recreatable.__init__(self, {"port_name": port_name,  "pin_number": pin_number, "name": self.name})
 
     @property
     def own_state(self):
