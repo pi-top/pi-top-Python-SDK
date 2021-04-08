@@ -3,9 +3,11 @@
     :alt: Documentation
 
 .. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
+    :target: https://github.com/pi-top/pi-top-Python-SDK/releases
     :alt: GitHub tag (latest by date)
 
 .. image:: https://img.shields.io/github/v/release/pi-top/pi-top-Python-SDK
+    :target: https://github.com/pi-top/pi-top-Python-SDK/releases
     :alt: GitHub release (latest by date)
 
 .. image:: https://img.shields.io/pypi/v/pitop
@@ -25,11 +27,12 @@
    :alt: Language grade: Javascript
 
 .. image:: https://img.shields.io/codecov/c/gh/pi-top/pi-top-Python-SDK?token=hfbgB9Got4
+   :target: https://app.codecov.io/gh/pi-top/pi-top-Python-SDK
    :alt: Codecov
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
-   :target: https://github.com/pre-commit/pre-commit
-   :alt: pre-commit
+   :target: https://pre-commit.ci
+   :alt: pre-commit.ci
 
 ===========================
 pi-top Python SDK (Preview)
