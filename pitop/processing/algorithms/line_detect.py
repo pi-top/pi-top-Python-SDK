@@ -42,12 +42,14 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     centroid = None
     scaled_image_centroid = None
     rectangle_dimensions = None
+    angle = None
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
         centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
         bounding_rectangle = cv2.boundingRect(line_contour)
         rectangle_dimensions = bounding_rectangle[2:5]
+        angle = get_control_angle(centroid, resized_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
@@ -64,13 +66,13 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
         "line_center": centroid,
         "robot_view": robot_view_img,
         "rectangle_dimensions": rectangle_dimensions,
-        "angle": get_control_angle(centroid, robot_view_img),
+        "angle": angle,
     })
 
 
 def get_control_angle(centroid, frame):
     if centroid is None:
-        return 0
+        return None
     # physically, this represents an approximation between chassis rotation center and camera
     # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
     # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
