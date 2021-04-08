@@ -6,11 +6,7 @@ from flask import (
     send_from_directory,
 )
 from . import sockets
-from gevent.event import Event
-
-
-frame_bytes = None
-new_frame_event = Event()
+import gevent
 
 
 @sockets.route('/command')
@@ -23,31 +19,34 @@ def command(ws):
     print('Command socket disconnected')
 
 
-def handle_frame(frame):
+def get_frame(camera):
     try:
+        frame = camera.get_frame()
         buffered = BytesIO()
         frame.save(buffered, format="JPEG")
-        global frame_bytes
-        frame_bytes = buffered.getvalue()
-        new_frame_event.set()
-        new_frame_event.clear()
-    except Exception:
-        pass
+        return buffered.getvalue()
+    except Exception as e:
+        print(e)
 
 
 @app.route('/video.mjpg')
 def video():
-    def gen():
+    camera = app.config['robot'].camera
+    pool = gevent.get_hub().threadpool
+
+    def gen_frames(camera, pool):
         while True:
-            if new_frame_event.wait(timeout=0.1):
-                yield (
-                    b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
-                )
+            # get_frame in thread so it won't block handler greenlets
+            frame_bytes = pool.spawn(get_frame, camera).get()
+            yield (
+                b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+            )
+
 
     print('Video socket connected')
     return Response(
-        gen(),
+        gen_frames(camera, pool),
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
 
