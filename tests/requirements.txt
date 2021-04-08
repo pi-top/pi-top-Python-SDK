@@ -2,3 +2,4 @@ gpiozero
 pitopcommon
 flask
 flask_sockets
+flask_cors
