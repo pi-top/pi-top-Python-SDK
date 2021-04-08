@@ -1,4 +1,4 @@
-from flask import Flask, Response, send_from_directory, render_template
+from flask import Flask, send_from_directory, render_template
 from flask_cors import CORS
 from flask_sockets import Sockets
 from gevent.pywsgi import WSGIServer
