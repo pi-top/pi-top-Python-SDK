@@ -1,6 +1,5 @@
 from flask import Blueprint, current_app as app
 import json
-import os
 
 socket_blueprint = Blueprint('controller_socket', __name__)
 

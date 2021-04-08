@@ -1,23 +1,19 @@
+import gevent
 from flask import Blueprint, render_template, current_app as app, abort, Response
-from gevent.event import Event
+from io import BytesIO
 
 blueprint = Blueprint('controller', __name__,
                       template_folder='templates', static_folder='static')
 
-frame_bytes = None
-new_frame_event = Event()
 
-
-def handle_frame(frame):
+def get_frame(camera):
     try:
+        frame = camera.get_frame()
         buffered = BytesIO()
         frame.save(buffered, format="JPEG")
-        global frame_bytes
-        frame_bytes = buffered.getvalue()
-        new_frame_event.set()
-        new_frame_event.clear()
-    except Exception:
-        pass
+        return buffered.getvalue()
+    except Exception as e:
+        print(e)
 
 
 @blueprint.route('/')
@@ -27,23 +23,22 @@ def index():
 
 @blueprint.route('/video.mjpg')
 def video():
+    pool = gevent.get_hub().threadpool
     camera = app.config.get('camera', None)
     if camera is None:
         return abort(409)
 
-    if camera.handle_frame is None:
-        camera.handle_frame = handle_frame
-
-    def frame_generator():
+    def generate_frames():
         while True:
-            if new_frame_event.wait(timeout=0):
-                yield (
-                    b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
-                )
+            # get_frame in thread so it won't block handler greenlets
+            frame_bytes = pool.spawn(get_frame, camera).get()
+            yield (
+                b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+            )
 
     print('Video socket connected')
     return Response(
-        frame_generator(),
+        generate_frames(),
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
