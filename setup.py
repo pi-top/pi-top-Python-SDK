@@ -124,6 +124,15 @@ __requires__ = [
     ##############
     "simple_pid",
 
+    #############
+    # Webserver #
+    #############
+    "flask",
+    "flask-cors",
+    "flask-sockets",
+    "gevent",
+    "gevent-websocket",
+
     #############################
     # Advanced image processing #
     #############################
