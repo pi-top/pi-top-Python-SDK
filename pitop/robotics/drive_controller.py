@@ -17,18 +17,7 @@ from pitop.pma import (
     ForwardDirection,
 )
 
-
 from pitop.pma.plate_interface import PlateInterface
-
-motor_sync_bits = {
-    "M0": 0b0000001,
-    "M1": 0b0000010,
-    "M2": 0b0000100,
-    "M3": 0b0001000,
-}
-
-motor_sync_config_register = 0x57
-motor_sync_start_register = 0x58
 
 
 class DriveController(Stateful, Recreatable):
@@ -68,7 +57,6 @@ class DriveController(Stateful, Recreatable):
                                                 output_limits=(-self._max_robot_angular_speed,
                                                                self._max_robot_angular_speed)
                                                 )
-        # self.__sync_motors()
 
         self._initialized = True
 
@@ -105,7 +93,6 @@ class DriveController(Stateful, Recreatable):
         rpm_left, rpm_right = self.__calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
         self.left_motor.set_target_rpm(target_rpm=rpm_left)
         self.right_motor.set_target_rpm(target_rpm=rpm_right)
-        # self.__sync_start()
 
     @is_initialized
     def forward(self, speed_factor, hold=False):
@@ -211,13 +198,6 @@ class DriveController(Stateful, Recreatable):
     def _rpm_to_speed(self, rpm):
         speed = round(rpm * self._wheel_circumference / 60.0, 3)
         return speed
-
-    def __sync_motors(self):
-        sync_config = motor_sync_bits[self._left_motor_port] | motor_sync_bits[self._right_motor_port]
-        self.__mcu_device.write_byte(motor_sync_config_register, sync_config)
-
-    def __sync_start(self):
-        self.__mcu_device.write_byte(motor_sync_start_register, 1)
 
     @property
     def wheel_separation(self):
