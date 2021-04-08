@@ -1,1 +1,2 @@
-from .web import WebServer, WebController
+from .web.webserver import WebServer
+from .web.webcontroller import WebController
