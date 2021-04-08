@@ -99,7 +99,7 @@ html_static_path = ['_static']
 autodoc_mock_imports = [
     'cv2',
     'flask',
-    'flask-sockets',
+    'flask_sockets',
     'numpy',
     'imageio',
     'luma',
@@ -107,7 +107,6 @@ autodoc_mock_imports = [
     'luma.core',
     'matplotlib',
     'mpl_toolkits',
-    'pitopcommon',
     'pitopcommon.bitwise_ops',
     'pitopcommon.command_runner',
     'pitopcommon.common_ids',
