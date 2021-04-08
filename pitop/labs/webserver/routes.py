@@ -43,7 +43,6 @@ def video():
                 b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
             )
 
-
     print('Video socket connected')
     return Response(
         gen_frames(camera, pool),
