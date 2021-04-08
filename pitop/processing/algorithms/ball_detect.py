@@ -1,6 +1,5 @@
 from collections import deque
 import numpy as np
-import cv2
 import imutils
 from .line_detect import (
     get_control_angle,
@@ -8,6 +7,11 @@ from .line_detect import (
 )
 from pitop.core import ImageFunctions
 from pitop.processing.utils.vision_functions import scale_frame
+from typing import Union
+from pitop.processing.utils.vision_functions import import_opencv
+
+
+cv2 = import_opencv()
 
 
 class DotDict(dict):
@@ -54,7 +58,13 @@ detection_points = {
 }
 
 
-def colour_filter(frame, colour: str = "red", return_binary_mask=False, image_format: str = "PIL", image_return_format: str = "PIL"):
+def colour_filter(frame,
+                  colour: str = "red",
+                  return_binary_mask=False,
+                  image_format: str = "PIL",
+                  image_return_format: str = "PIL"
+                  ):
+
     if image_format.lower() == 'pil':
         frame = ImageFunctions.convert(frame, format="OpenCV")
 
@@ -116,57 +126,59 @@ def find_most_likely_ball(contours, colour, resized_frame):
     return ball_center, ball_radius
 
 
-def process_frame_for_ball(frame, colours=("red",), image_return_format: str = "PIL", scale_factor=0.5):
+def process_frame_for_ball(frame, colour: Union[str, tuple] = "red", image_return_format: str = "PIL", scale_factor=0.5):
+    if type(colour) == str:
+        colour = (colour, )
+    if len(colour) > 3:
+        raise ValueError('Cannot pass more than three colours.')
+
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
-
-    if len(colours) > 3:
-        raise ValueError('Cannot pass more than three colours.')
 
     ball_centers = {}
     ball_radii = {}
     ball_angles = {}
     ball_finds = {}
-    for colour in colours:
-        mask = colour_filter(resized_frame, colour=colour, return_binary_mask=True, image_format="OpenCV",
+    for _colour in colour:
+        mask = colour_filter(resized_frame, colour=_colour, return_binary_mask=True, image_format="OpenCV",
                              image_return_format="OpenCV")
 
         contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         contours = imutils.grab_contours(contours)  # fixes problems with OpenCV changing their protocol
 
-        ball_center, ball_radius = find_most_likely_ball(contours, colour, resized_frame)
+        ball_center, ball_radius = find_most_likely_ball(contours, _colour, resized_frame)
 
-        detection_points[colour].appendleft(ball_center)
+        detection_points[_colour].appendleft(ball_center)
 
         if ball_center is not None:
             # draw the circle and centroid on the frame, then update the list of tracked points
             cv2.circle(resized_frame, ball_center, ball_radius, (0, 255, 255), 2)
-            cv2.circle(resized_frame, ball_center, 5, draw_colour[colour], -1)
+            cv2.circle(resized_frame, ball_center, 5, draw_colour[_colour], -1)
 
             # Reposition centre so (0, 0) is in the middle for the user.
             # Keep scale as 1 as user sees scaled down 320x240 image in Further
             ball_center = centroid_reposition(ball_center, 1, resized_frame)
             ball_angle = get_control_angle(ball_center, resized_frame)
 
-            ball_centers[colour] = ball_center
-            ball_radii[colour] = ball_radius
-            ball_angles[colour] = ball_angle
-            ball_finds[colour] = True
+            ball_centers[_colour] = ball_center
+            ball_radii[_colour] = ball_radius
+            ball_angles[_colour] = ball_angle
+            ball_finds[_colour] = True
         else:
-            ball_centers[colour] = None
-            ball_radii[colour] = None
-            ball_angles[colour] = None
-            ball_finds[colour] = False
+            ball_centers[_colour] = None
+            ball_radii[_colour] = None
+            ball_angles[_colour] = None
+            ball_finds[_colour] = False
 
-        for i in range(1, len(detection_points[colour])):
+        for i in range(1, len(detection_points[_colour])):
             # if either of the tracked points are None, ignore them
-            if detection_points[colour][i - 1] is None or detection_points[colour][i] is None:
+            if detection_points[_colour][i - 1] is None or detection_points[_colour][i] is None:
                 continue
             # otherwise, compute the thickness of the line and draw the connecting lines
             thickness = int(np.sqrt(BUFFER_LENGTH / float(i + 1)))
 
-            cv2.line(resized_frame, detection_points[colour][i - 1], detection_points[colour][i],
-                     draw_colour[colour], thickness)
+            cv2.line(resized_frame, detection_points[_colour][i - 1], detection_points[_colour][i],
+                     draw_colour[_colour], thickness)
 
     if image_return_format.lower() != 'opencv':
         robot_view = ImageFunctions.convert(resized_frame, format="PIL")
@@ -176,20 +188,20 @@ def process_frame_for_ball(frame, colours=("red",), image_return_format: str = "
     ball_data = DotDict({})
     ball_data["robot_view"] = robot_view
 
-    for colour in colours:
-        ball_data[colour] = DotDict({
-            "found": ball_finds[colour],
-            "center": ball_centers[colour],
-            "radius": ball_radii[colour],
-            "angle": ball_angles[colour]
+    for _colour in colour:
+        ball_data[_colour] = DotDict({
+            "found": ball_finds[_colour],
+            "center": ball_centers[_colour],
+            "radius": ball_radii[_colour],
+            "angle": ball_angles[_colour]
         })
 
-    if len(colours) == 1:
+    if len(colour) == 1:
         # if only searching one colour, add convenience data so ball_data.data_type can be used directly
-        colour = colours[0]
-        ball_data["found"] = ball_finds[colour]
-        ball_data["center"] = ball_centers[colour]
-        ball_data["radius"] = ball_radii[colour]
-        ball_data["angle"] = ball_angles[colour]
+        _colour = colour[0]
+        ball_data["found"] = ball_finds[_colour]
+        ball_data["center"] = ball_centers[_colour]
+        ball_data["radius"] = ball_radii[_colour]
+        ball_data["angle"] = ball_angles[_colour]
 
     return ball_data
