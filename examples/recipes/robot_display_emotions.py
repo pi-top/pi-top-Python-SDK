@@ -42,7 +42,7 @@ def draw_top_text(canvas, text):
     canvas.text(confidence_text_pos, text, fill=1, font=text_font)
 
 
-def draw_emoji(canvas, emoji, bounding_box, offset_y=0):
+def draw_emoji(canvas, emoji, bounding_box, offset_y=2):
     emoji_text = emoji_unicodes[emoji]
     w_e, h_e = emoji_font.getsize(emoji_text)
     x_b, y_b, w_b, h_b = bounding_box
