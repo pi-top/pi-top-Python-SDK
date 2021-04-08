@@ -1,6 +1,8 @@
-from imutils import face_utils
 import numpy as np
 import math
+from os import path
+
+from pitop.core.utils import suppress_output
 
 
 def get_face_angle(face_features):
@@ -9,6 +11,7 @@ def get_face_angle(face_features):
     :param face_features: dlib face features
     :return: angle of face in degrees
     """
+    from imutils import face_utils
     if len(face_features) == 68:
         left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
         right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
@@ -55,14 +58,15 @@ def get_face_angle(face_features):
 
 def load_emotion_model():
     from joblib import load
-    import os
     # directory where calibration output pickle file is located
     model_dir = 'models'
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    abs_file_path = os.path.join(script_dir, model_dir)
+    script_dir = path.dirname(path.realpath(__file__))
+    abs_file_path = path.join(script_dir, model_dir)
 
-    # Filename used to save the camera calibration result (mtx,dist)
     model_filename = 'svc_emotion_model_x-y_linear_with_neutral.joblib'
-    model = load(open(os.path.join(abs_file_path, model_filename), "rb"))
+    model_file = open(path.join(abs_file_path, model_filename), "rb")
 
+    # supress DeprecationWarning thrown by a thread on joblib
+    with suppress_output():
+        model = load(model_file)
     return model
