@@ -7,7 +7,6 @@ from time import sleep
 
 from simple_pid import PID
 
-from pitop.core.exceptions import UninitializedComponent
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -21,7 +20,6 @@ from pitop.pma import (
 class DriveController(Stateful, Recreatable):
     """Represents a vehicle with two wheels connected by an axis, and an
     optional support wheel or caster."""
-    _initialized = False
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
         self.name = name
@@ -50,17 +48,9 @@ class DriveController(Stateful, Recreatable):
                                                 output_limits=(-self._max_robot_angular_speed,
                                                                self._max_robot_angular_speed)
                                                 )
-        self._initialized = True
 
         Stateful.__init__(self, children=['left_motor', 'right_motor'])
         Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port, "right_motor_port": right_motor_port, "name": self.name})
-
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("DriveController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
 
     def _calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -76,7 +66,6 @@ class DriveController(Stateful, Recreatable):
 
         return rpm_left, rpm_right
 
-    @is_initialized
     def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
@@ -84,7 +73,6 @@ class DriveController(Stateful, Recreatable):
         self.left_motor.set_target_rpm(target_rpm=rpm_left)
         self.right_motor.set_target_rpm(target_rpm=rpm_right)
 
-    @is_initialized
     def forward(self, speed_factor, hold=False):
         """Move the robot forward.
 
@@ -101,7 +89,6 @@ class DriveController(Stateful, Recreatable):
             self._linear_speed_x_hold = 0
         self.robot_move(linear_speed_x, 0)
 
-    @is_initialized
     def backward(self, speed_factor, hold=False):
         """Move the robot backward.
 
@@ -113,7 +100,6 @@ class DriveController(Stateful, Recreatable):
         """
         self.forward(-speed_factor, hold)
 
-    @is_initialized
     def left(self, speed_factor, turn_radius=0):
         """Make the robot move to the left, using a circular trajectory.
 
@@ -126,7 +112,6 @@ class DriveController(Stateful, Recreatable):
 
         self.robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
 
-    @is_initialized
     def right(self, speed_factor, turn_radius=0):
         """Make the robot move to the right, using a circular trajectory.
 
@@ -145,7 +130,6 @@ class DriveController(Stateful, Recreatable):
         angular_speed = self.__target_lock_pid_controller(angle)
         self.robot_move(self._linear_speed_x_hold, angular_speed)
 
-    @is_initialized
     def rotate(self, angle, time_to_take):
         """Rotate the robot in place by a given angle and stop.
 

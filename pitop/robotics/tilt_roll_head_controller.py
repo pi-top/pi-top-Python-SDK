@@ -1,4 +1,3 @@
-from pitop.core.exceptions import UninitializedComponent
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -10,7 +9,6 @@ from simple_pid import PID
 
 class TiltRollHeadController(Stateful, Recreatable):
     CALIBRATION_FILE_NAME = "tilt_roll.conf"
-    _initialized = False
     _roll_servo = None
     _tilt_servo = None
 
@@ -18,7 +16,6 @@ class TiltRollHeadController(Stateful, Recreatable):
         self.name = name
         self._roll_servo = ServoMotor(servo_roll_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
-        self._initialized = True
 
         self._head_roll_pid = PID(Kp=3.0,
                                   Ki=1.5,
@@ -30,20 +27,11 @@ class TiltRollHeadController(Stateful, Recreatable):
         Stateful.__init__(self, children=['_roll_servo', '_tilt_servo'])
         Recreatable.__init__(self, config_dict={'servo_roll_port': servo_roll_port, 'servo_tilt_port': servo_tilt_port, 'name': name})
 
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("TiltRollHeadController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
-
     @property
-    @is_initialized
     def roll_servo(self):
         return self._roll_servo
 
     @property
-    @is_initialized
     def tilt_servo(self):
         return self._tilt_servo
 
@@ -62,7 +50,6 @@ class TiltRollHeadController(Stateful, Recreatable):
             servo_speed = self._head_roll_pid(state)
             self.roll_servo.sweep(speed=servo_speed)
 
-    @is_initialized
     def calibrate(self, save=True, reset=False):
         """Calibrates the assembly to work in optimal conditions.
 
