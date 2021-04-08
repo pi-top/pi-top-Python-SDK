@@ -123,6 +123,15 @@ __requires__ = [
     # Algorithms #
     ##############
     "simple_pid",
+
+    #############
+    # Webserver #
+    #############
+    "flask",
+    "flask-cors",
+    "flask-sockets",
+    "gevent",
+    "gevent-websocket",
 ]
 
 __extra_requires__ = {
