@@ -1,4 +1,5 @@
-from pitop import DriveController, PanTiltController, Camera, WebController
+from pitop import DriveController, PanTiltController, Camera
+from pitop.labs import WebController
 from helpers import calculate_velocity_twist, calculate_pan_tilt_angle
 
 drive = DriveController()

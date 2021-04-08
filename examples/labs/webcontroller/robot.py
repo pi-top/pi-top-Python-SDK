@@ -1,4 +1,5 @@
-from pitop import Pitop, DriveController, PanTiltController, Camera, WebController
+from pitop import Pitop, DriveController, PanTiltController, Camera
+from pitop.labs import WebController
 from helpers import calculate_velocity_twist, calculate_pan_tilt_angle
 
 robot = Pitop()
