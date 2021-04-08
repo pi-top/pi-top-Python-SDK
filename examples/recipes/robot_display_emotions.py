@@ -31,7 +31,6 @@ emoji_unicodes = {
 
 text_font = ImageFont.truetype("VeraMono.ttf", size=12)
 emoji_font = ImageFont.truetype("Symbola.ttf", size=50, encoding='unic')
-padding = 2
 looking_for_face_count = 0
 contrast_reset = False
 miniscreen_contrast = 255
