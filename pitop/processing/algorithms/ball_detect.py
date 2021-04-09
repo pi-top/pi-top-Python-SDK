@@ -228,8 +228,6 @@ class BallDetector:
                 c2 = max(contours_compare, key=cv2.contourArea)
                 match_value = cv2.matchShapes(contour, c2, 1, 0.0)  # closer to zero is a better match
 
-                print(match_value)
-
                 # most likely ball is a mixture of largest area and one that is most "ball-shaped"
                 likelihood_index = area / (match_value + 1e-5)
 
