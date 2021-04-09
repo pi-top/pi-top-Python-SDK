@@ -8,7 +8,6 @@ from imutils import (
     resize,
 )
 from pitop.core.data_stuctures import DotDict
-import numpy as np
 from pitop.processing.utils.vision_functions import import_opencv
 
 
