@@ -1,11 +1,11 @@
 from collections import deque
 import numpy as np
 import imutils
-from .line_detect import (
-    get_control_angle
-)
 from pitop.core import ImageFunctions
-from pitop.processing.utils.vision_functions import center_reposition
+from pitop.processing.utils.vision_functions import (
+    center_reposition,
+    get_control_angle,
+)
 from typing import Union
 from imutils import resize
 from pitop.core.data_stuctures import DotDict
