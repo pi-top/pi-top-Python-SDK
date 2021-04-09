@@ -25,7 +25,6 @@ def handle_command(message):
     return handler()
 
 
-
 @socket_blueprint.route('/command')
 def command(ws):
     print('Command socket connected')
