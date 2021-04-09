@@ -29,7 +29,7 @@ class EmotionDetector:
         if face.found:
             robot_view = frame.copy()
             emotion_type, emotion_confidence = self.__get_emotion(face)
-            self.__draw_on_frame(robot_view, face.rectangle, emotion_type, emotion_confidence)
+            self.__draw_on_frame(robot_view, face.rectangle, emotion_type, emotion_confidence, face.features)
 
         else:
             robot_view = frame
@@ -46,7 +46,7 @@ class EmotionDetector:
         })
 
     @staticmethod
-    def __draw_on_frame(frame, face_rectangle, emotion_type, emotion_confidence):
+    def __draw_on_frame(frame, face_rectangle, emotion_type, emotion_confidence, face_features):
         x, y, w, h = face_rectangle
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
@@ -69,23 +69,53 @@ class EmotionDetector:
 
         cv2.putText(frame, text, (text_x, text_y), font, font_scale, text_colour, thickness=font_thickness)
 
+        for (x, y) in face_features:
+            cv2.circle(frame, (int(x), int(y)), 2, (0, 0, 255), -1)
+
     def __get_emotion(self, face):
 
-        def get_feature_vector(features, face_dimensions):
+        def get_feature_vector(features, face_dimensions, features_new):
             normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
+
             face_feature_mean = features.mean(axis=0)
+            face_feature_mean_new = features_new.mean(axis=0)
             feature_vector = []
             for landmark in features:
                 relative_vector = (landmark - face_feature_mean) * normalizer
                 feature_vector.append(relative_vector[0])
                 feature_vector.append(relative_vector[1])
 
-            return np.asarray([feature_vector])
+            feature_vector_new = []
+            for landmark_new in features_new:
+                relative_vector_new = (landmark_new - face_feature_mean_new) * normalizer
+                feature_vector_new.append(relative_vector_new[0])
+                feature_vector_new.append(relative_vector_new[1])
+
+            # similar = np.asarray([feature_vector_new]) == np.asarray([feature_vector])
+            # print(similar)
+            return np.asarray([feature_vector_new])
 
         if len(face.features) != 68:
             raise ValueError("This function is only compatible with dlib's 68 landmark feature")
 
-        X = get_feature_vector(face.features, face.dimensions)
+        rotation_matrix = np.array([[np.cos(np.radians(face.angle)), -np.sin(np.radians(face.angle))],
+                                    [np.sin(np.radians(face.angle)), np.cos(np.radians(face.angle))]])
+
+        face_features_new = rotation_matrix.dot(face.features.T).T
+        # face_rectangle_x = face.rectangle[0]
+        # face_rectangle_y = face.rectangle[1]
+
+        # face_rectangle_pos_rotated = rotation_matrix @ np.array([[face_rectangle_x], [face_rectangle_y]])
+
+        # face_rectangle = (int(face_rectangle_pos_rotated[0].item()),
+        #                   int(face_rectangle_pos_rotated[1].item()),
+        #                   face_rectangle[2],
+        #                   face_rectangle[3])
+
+        # print(face_features_new == face.features)
+
+
+        X = get_feature_vector(face.features, face.dimensions, face_features_new)
         probabilities = self._emotion_model.predict_proba(X)[0]
 
         self._probability_mean_array, probabilities_mean = running_mean(self._probability_mean_array, probabilities)

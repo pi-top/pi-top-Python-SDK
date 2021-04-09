@@ -8,6 +8,7 @@ from imutils import (
     resize,
 )
 from pitop.core.data_stuctures import DotDict
+import numpy as np
 from pitop.processing.utils.vision_functions import import_opencv
 
 
@@ -60,7 +61,26 @@ class FaceDetector:
             robot_view = frame.copy()
             face_dimensions = face_rectangle[2:4]
             face_angle = get_face_angle(face_features)
+
             self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
+
+
+            # rotation_matrix = np.array([[np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
+            #                             [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))]])
+            #
+            # # relative_face_features = face_features - face_center
+            # face_features = rotation_matrix.dot(face_features.T).T
+            # face_rectangle_x = face_rectangle[0]
+            # face_rectangle_y = face_rectangle[1]
+            #
+            # face_rectangle_pos_rotated = rotation_matrix @ np.array([[face_rectangle_x], [face_rectangle_y]])
+            #
+            # face_rectangle = (int(face_rectangle_pos_rotated[0].item()),
+            #                   int(face_rectangle_pos_rotated[1].item()),
+            #                   face_rectangle[2],
+            #                   face_rectangle[3])
+
+
             face_center = center_reposition(face_center, frame)  # has to be done after OpenCV draw functions
 
         else:
