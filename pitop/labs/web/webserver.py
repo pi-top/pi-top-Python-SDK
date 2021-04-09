@@ -31,7 +31,7 @@ def create_app(
         if Path('./{}.html'.format(path)).is_file():
             return render_template('{}.html'.format(path))
 
-        return send_from_directory('static', path)
+        return send_from_directory(app.static_folder, path)
 
     return app
 
