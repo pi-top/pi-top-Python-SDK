@@ -1,3 +1,4 @@
+from time import time
 from pitop import DriveController, PanTiltController, Camera
 from pitop.labs import WebController
 from helpers import calculate_velocity_twist, calculate_pan_tilt_angle
@@ -22,16 +23,14 @@ def right_joystick(data):
     pan_tilt.tilt_servo.target_angle = angle.get('y')
 
 
-def reset(data):
-    drive.robot_move(0, 0)
-    pan_tilt.pan_servo.target_angle = 0
-    pan_tilt.tilt_servo.target_angle = 0
+def photo():
+    camera.current_frame().save(f'web_controller_{time()}.jpg')
 
 
 controller = WebController(camera=camera, handlers={
     'left_joystick': left_joystick,
     'right_joystick': right_joystick,
-    'reset': reset
+    'photo': photo
 })
 
 controller.serve_forever()
