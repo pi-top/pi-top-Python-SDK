@@ -69,6 +69,7 @@ def find_largest_rectangle(rectangles):
 def center_reposition(center, frame):
     """Reposition center so that (0, 0) is in the middle of the frame instead
     of OpenCV standard which is at top left.
+
     :param center: OpenCV center (x, y)
     :param frame: Frame to reposition center within
     :return:
