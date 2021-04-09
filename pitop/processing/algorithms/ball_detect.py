@@ -1,33 +1,39 @@
 from collections import deque
 import numpy as np
-import imutils
 from pitop.core import ImageFunctions
 from pitop.processing.utils.vision_functions import (
     center_reposition,
     get_control_angle,
 )
 from typing import Union
-from imutils import resize
+from imutils import resize, grab_contours
+from imutils.video import FPS
 from pitop.core.data_stuctures import DotDict
+import atexit
 from pitop.processing.utils.vision_functions import import_opencv
 
 
 cv2 = import_opencv()
 
-
 colour_ranges = {
-    'red': {
-        'lower': (150, 75, 75),
-        'upper': (200, 255, 255)
-    },
-    'green': {
-        'lower': (40, 100, 75),
+    'red': [
+        {
+            'lower': (150, 75, 75),
+            'upper': (179, 255, 255)
+        },
+        {
+            'lower': (0, 75, 75),
+            'upper': (5, 255, 255)
+        }
+    ],
+    'green': [{
+        'lower': (60, 100, 75),
         'upper': (90, 255, 255)
-    },
-    'blue': {
+    }],
+    'blue': [{
         'lower': (100, 100, 75),
-        'upper': (140, 255, 255)
-    }
+        'upper': (130, 255, 255)
+    }]
 }
 
 draw_colour = {
@@ -53,7 +59,11 @@ detection_points = {
 
 
 class BallDetector:
-    def __init__(self, process_image_width: int = 320, input_format: str = "PIL", output_format: str = "PIL"):
+    def __init__(self,
+                 process_image_width: int = 320,
+                 input_format: str = "PIL",
+                 output_format: str = "PIL",
+                 print_fps: bool = False):
         """
         :param process_image_width: image width to scale to for image processing
         :param input_format: input image format
@@ -63,6 +73,10 @@ class BallDetector:
         self._input_format = input_format
         self._output_format = output_format
         self._frame_scaler = None
+        self._print_fps = print_fps
+        if self._print_fps:
+            self._fps = FPS().start()
+            atexit.register(self.__print_fps)
 
     def detect(self, frame, colour: Union[str, tuple] = "red"):
         if type(colour) == str:
@@ -89,7 +103,7 @@ class BallDetector:
                                       output_format="OpenCV")
 
             contours = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            contours = imutils.grab_contours(contours)  # fixes problems with OpenCV changing their protocol
+            contours = grab_contours(contours)  # fixes problems with OpenCV changing their protocol
 
             ball_center, ball_radius = self.__find_most_likely_ball(contours, _colour, resized_frame)
 
@@ -123,7 +137,7 @@ class BallDetector:
                 # otherwise, compute the thickness of the line and draw the connecting lines
                 thickness = int(np.sqrt(BUFFER_LENGTH / float(i + 1)))
 
-                cv2.line(resized_frame, detection_points[_colour][i - 1], detection_points[_colour][i],
+                cv2.line(robot_view, detection_points[_colour][i - 1], detection_points[_colour][i],
                          draw_colour[_colour], thickness)
 
         if self._output_format.lower() != 'opencv':
@@ -148,12 +162,20 @@ class BallDetector:
             ball_data["radius"] = ball_radii[_colour]
             ball_data["angle"] = ball_angles[_colour]
 
+        if self._print_fps:
+            self._fps.update()
+
         return ball_data
+
+    def __print_fps(self):
+        self._fps.stop()
+        print(f"[INFO] Elapsed time: {self._fps.elapsed():.2f}")
+        print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     @staticmethod
     def colour_filter(frame,
                       colour: str = "red",
-                      return_binary_mask=False,
+                      return_binary_mask: bool = False,
                       input_format: str = "PIL",
                       output_format: str = "PIL"
                       ):
@@ -164,13 +186,19 @@ class BallDetector:
         if colour.lower() not in ('red', 'green', 'blue'):
             raise ValueError('Colour must be "red", "green" or "blue"')
 
-        hsv_lower = colour_ranges[colour]['lower']
-        hsv_upper = colour_ranges[colour]['upper']
-        blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+        blurred = cv2.blur(frame, (11, 11))
         hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
-        mask = cv2.erode(mask, None, iterations=4)
-        mask = cv2.dilate(mask, None, iterations=4)
+
+        masks = []
+        for colour_range in colour_ranges[colour]:
+            hsv_lower = colour_range['lower']
+            hsv_upper = colour_range['upper']
+            mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
+            masks.append(mask)
+        mask = sum(masks)
+
+        mask = cv2.erode(mask, None, iterations=1)
+        mask = cv2.dilate(mask, None, iterations=1)
 
         if not return_binary_mask:
             mask = cv2.bitwise_and(frame, frame, mask=mask)
@@ -196,12 +224,14 @@ class BallDetector:
                 mask_to_compare = np.zeros(resized_frame.shape[:2], dtype="uint8")
                 cv2.circle(mask_to_compare, (int(x), int(y)), int(radius), 255, -1)
                 contours_compare = cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-                contours_compare = imutils.grab_contours(contours_compare)
+                contours_compare = grab_contours(contours_compare)
                 c2 = max(contours_compare, key=cv2.contourArea)
                 match_value = cv2.matchShapes(contour, c2, 1, 0.0)  # closer to zero is a better match
 
+                print(match_value)
+
                 # most likely ball is a mixture of largest area and one that is most "ball-shaped"
-                likelihood_index = area / match_value
+                likelihood_index = area / (match_value + 1e-5)
 
                 # check if this contour is more likely than the last
                 if likelihood_index > max_likelihood_index:
