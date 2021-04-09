@@ -74,26 +74,17 @@ class EmotionDetector:
 
     def __get_emotion(self, face):
 
-        def get_feature_vector(features, face_dimensions, features_new):
+        def get_feature_vector(features, face_dimensions):
             normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
 
             face_feature_mean = features.mean(axis=0)
-            face_feature_mean_new = features_new.mean(axis=0)
             feature_vector = []
             for landmark in features:
                 relative_vector = (landmark - face_feature_mean) * normalizer
                 feature_vector.append(relative_vector[0])
                 feature_vector.append(relative_vector[1])
 
-            feature_vector_new = []
-            for landmark_new in features_new:
-                relative_vector_new = (landmark_new - face_feature_mean_new) * normalizer
-                feature_vector_new.append(relative_vector_new[0])
-                feature_vector_new.append(relative_vector_new[1])
-
-            # similar = np.asarray([feature_vector_new]) == np.asarray([feature_vector])
-            # print(similar)
-            return np.asarray([feature_vector_new])
+            return np.asarray([feature_vector])
 
         if len(face.features) != 68:
             raise ValueError("This function is only compatible with dlib's 68 landmark feature")
@@ -101,21 +92,9 @@ class EmotionDetector:
         rotation_matrix = np.array([[np.cos(np.radians(face.angle)), -np.sin(np.radians(face.angle))],
                                     [np.sin(np.radians(face.angle)), np.cos(np.radians(face.angle))]])
 
-        face_features_new = rotation_matrix.dot(face.features.T).T
-        # face_rectangle_x = face.rectangle[0]
-        # face_rectangle_y = face.rectangle[1]
+        face_features_rotated = rotation_matrix.dot(face.features.T).T
 
-        # face_rectangle_pos_rotated = rotation_matrix @ np.array([[face_rectangle_x], [face_rectangle_y]])
-
-        # face_rectangle = (int(face_rectangle_pos_rotated[0].item()),
-        #                   int(face_rectangle_pos_rotated[1].item()),
-        #                   face_rectangle[2],
-        #                   face_rectangle[3])
-
-        # print(face_features_new == face.features)
-
-
-        X = get_feature_vector(face.features, face.dimensions, face_features_new)
+        X = get_feature_vector(face_features_rotated, face.dimensions)
         probabilities = self._emotion_model.predict_proba(X)[0]
 
         self._probability_mean_array, probabilities_mean = running_mean(self._probability_mean_array, probabilities)
