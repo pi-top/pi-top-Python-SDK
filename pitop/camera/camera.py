@@ -12,7 +12,6 @@ from pitop.core.mixins import (
 
 from pitop.pma.common import type_check
 
-from copy import deepcopy
 from enum import Enum
 from inspect import signature
 from threading import Thread, Event
@@ -133,7 +132,7 @@ class Camera(Stateful, Recreatable):
             The filename into which to write the image.
         """
 
-        self.__frame_handler.register_action(CaptureActions.CAPTURE_SINGLE_FRAME, locals())
+        self.__frame_handler.register_action(CaptureActions.CAPTURE_SINGLE_FRAME, {"output_file_name": output_file_name})
 
     @type_check
     def start_video_capture(self, output_file_name="", fps=20.0, resolution=None):
@@ -153,7 +152,12 @@ class Camera(Stateful, Recreatable):
             The resolution to use for the captured video. Defaults to (640, 368)
         """
 
-        self.__frame_handler.register_action(CaptureActions.CAPTURE_VIDEO_TO_FILE, locals())
+        args = {
+            "output_file_name": output_file_name,
+            "fps": fps,
+            "resolution": resolution
+        }
+        self.__frame_handler.register_action(CaptureActions.CAPTURE_VIDEO_TO_FILE, args)
 
     def stop_video_capture(self):
         """Stop capturing video from the camera.
@@ -182,7 +186,10 @@ class Camera(Stateful, Recreatable):
             The sensitivity of the motion detection, measured as the area of pixels changing between frames that constitutes motion.
         """
 
-        args = deepcopy(locals())
+        args = {
+            "callback_on_motion": callback_on_motion,
+            "moving_object_minimum_area": moving_object_minimum_area,
+        }
         callback_signature = signature(callback_on_motion)
         if len(callback_signature.parameters) > 1:
             raise ValueError("Invalid callback signature: it should receive at most one argument.")
@@ -221,9 +228,11 @@ class Camera(Stateful, Recreatable):
         if format is not None:
             print("'format' is no longer supported in this function. "
                   "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
-
-        args = deepcopy(locals())
-        args.update({'format': self.format})
+        args = {
+            "callback_on_frame": callback_on_frame,
+            "frame_interval": frame_interval,
+            "format": self.format,
+        }
         callback_signature = signature(callback_on_frame)
         if len(callback_signature.parameters) == 0:
             raise ValueError("Invalid callback signature: it should receive at least one argument.")

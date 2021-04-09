@@ -1,5 +1,4 @@
 import importlib
-from copy import deepcopy
 from json import (
     dump,
     dumps,
@@ -18,11 +17,13 @@ class Recreatable:
     runtime.
     """
 
-    def __init__(self, config_dict={}):
+    def __init__(self, config_dict=None):
         if not isinstance(config_dict, dict):
             raise TypeError("Argument must be a dictionary")
 
-        self._config = deepcopy(config_dict)
+        if config_dict is None:
+            config_dict = {}
+        self._config = config_dict
         self._config.update({"classname": self.__class__.__name__,
                              "module": self.__module__,
                              "version": "0.17.0"})
