@@ -62,7 +62,7 @@ def load_emotion_model():
     abs_file_path = os.path.join(script_dir, model_dir)
 
     # Filename used to save the camera calibration result (mtx,dist)
-    model_filename = 'svc_emotion_model_x-y_linear_with_neutral.joblib'
+    model_filename = 'svc_emotion_model_x-y_linear_with_neutral_20-2.joblib'
     model = load(open(os.path.join(abs_file_path, model_filename), "rb"))
 
     return model
