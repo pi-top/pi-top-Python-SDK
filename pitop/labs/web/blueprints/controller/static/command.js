@@ -1,8 +1,8 @@
-const commandProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-const commandHost = window.location.host;
-const commandUri = `${commandProtocol}//${commandHost}/command`;
+const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+const host = window.location.host;
+const publishUri = `${protocol}//${host}/publish`;
 
-const socket = new WebSocket(commandUri);
+const socket = new WebSocket(publishUri);
 const socketReady = new Promise((resolve) => (socket.onopen = resolve));
 
 window.publish = async function publish(message) {

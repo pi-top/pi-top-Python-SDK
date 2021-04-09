@@ -13,7 +13,7 @@ def log_unhandled_message(message_type, message_data):
     print(f"Unhandled message \"{message_type}\": {pretty_message_data}")
 
 
-def handle_command(message):
+def handle_message(message):
     parsed_message = json.loads(message)
 
     message_type = parsed_message.get('type', '')
@@ -33,11 +33,11 @@ def handle_command(message):
     handler()
 
 
-@socket_blueprint.route('/command')
-def command(ws):
-    print('Command socket connected')
+@socket_blueprint.route('/publish')
+def publish(ws):
+    print('Publish socket connected')
     while not ws.closed:
         message = ws.receive()
         if message:
-            handle_command(message)
-    print('Command socket disconnected')
+            handle_message(message)
+    print('Publish socket disconnected')
