@@ -17,8 +17,6 @@ from pitop.pma import (
     ForwardDirection,
 )
 
-from pitop.pma.plate_interface import PlateInterface
-
 
 class DriveController(Stateful, Recreatable):
     """Represents a vehicle with two wheels connected by an axis, and an
