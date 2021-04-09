@@ -58,14 +58,13 @@ def get_face_angle(face_features):
 
 def load_emotion_model():
     from joblib import load
-    # directory where calibration output pickle file is located
+
     model_dir = 'models'
     script_dir = path.dirname(path.realpath(__file__))
     abs_file_path = path.join(script_dir, model_dir)
 
-    # Filename used to save the camera calibration result (mtx,dist)
     model_filename = 'svc_emotion_model_x-y_linear_with_neutral_20-2.joblib'
-    model = load(open(os.path.join(abs_file_path, model_filename), "rb"))
+    model_file = open(path.join(abs_file_path, model_filename), "rb")
 
     # supress DeprecationWarning thrown by a thread on joblib
     with suppress_output():
