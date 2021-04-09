@@ -35,8 +35,6 @@ class DriveController(Stateful, Recreatable):
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x_hold = 0
 
-        self.__mcu_device = PlateInterface().get_device_mcu()
-
         self._left_motor_port = left_motor_port
         self._right_motor_port = right_motor_port
 
