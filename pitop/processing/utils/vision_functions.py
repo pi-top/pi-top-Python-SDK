@@ -66,14 +66,6 @@ def find_largest_rectangle(rectangles):
     return rectangles[largest_index]
 
 
-def scale_frame(frame, scale):
-    cv2 = import_opencv()
-    scaled_width = int(frame.shape[1] * scale)
-    scaled_height = int(frame.shape[0] * scale)
-    dim = (scaled_width, scaled_height)
-    return cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-
-
 def center_reposition(center, frame):
     """Reposition center so that (0, 0) is in the middle of the frame instead
     of OpenCV standard which is at top left.
@@ -88,3 +80,19 @@ def center_reposition(center, frame):
     center_y = int(frame.shape[0] / 2) - center[1]
 
     return center_x, center_y
+
+
+def get_control_angle(center, frame):
+    from numpy import arctan, pi
+    if center is None:
+        return None
+    # physically, this represents an approximation between chassis rotation center and camera
+    # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
+    # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
+    chassis_center_y = -int(frame.shape[1])
+
+    # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
+    # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
+    delta_y = abs(center[1] - chassis_center_y)
+
+    return arctan(center[0] / delta_y) * 180.0 / pi
