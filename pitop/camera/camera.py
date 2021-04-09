@@ -12,6 +12,7 @@ from pitop.core.mixins import (
 
 from pitop.pma.common import type_check
 
+from copy import deepcopy
 from enum import Enum
 from inspect import signature
 from threading import Thread, Event
@@ -84,7 +85,6 @@ class Camera(Stateful, Recreatable):
         }
 
     @classmethod
-    @type_check
     def from_file_system(cls, path_to_images: str):
         """Alternative classmethod to create an instance of a :class:`Camera`
         object using a :data:`FileSystemCamera`"""
@@ -182,7 +182,7 @@ class Camera(Stateful, Recreatable):
             The sensitivity of the motion detection, measured as the area of pixels changing between frames that constitutes motion.
         """
 
-        args = locals()
+        args = deepcopy(locals())
         callback_signature = signature(callback_on_motion)
         if len(callback_signature.parameters) > 1:
             raise ValueError("Invalid callback signature: it should receive at most one argument.")
@@ -222,7 +222,7 @@ class Camera(Stateful, Recreatable):
             print("'format' is no longer supported in this function. "
                   "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
 
-        args = locals()
+        args = deepcopy(locals())
         args.update({'format': self.format})
         callback_signature = signature(callback_on_frame)
         if len(callback_signature.parameters) == 0:
