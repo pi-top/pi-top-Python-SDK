@@ -1,4 +1,3 @@
-from pitop.core.exceptions import UninitializedComponent
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -9,7 +8,6 @@ from pitop.pma import ServoMotor
 
 class PanTiltController(Stateful, Recreatable):
     CALIBRATION_FILE_NAME = "pan_tilt.conf"
-    _initialized = False
     _pan_servo = None
     _tilt_servo = None
 
@@ -17,29 +15,18 @@ class PanTiltController(Stateful, Recreatable):
         self.name = name
         self._pan_servo = ServoMotor(servo_pan_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
-        self._initialized = True
 
         Stateful.__init__(self, children=['_pan_servo', '_tilt_servo'])
         Recreatable.__init__(self, config_dict={'servo_pan_port': servo_pan_port, 'servo_tilt_port': servo_tilt_port, 'name': name})
 
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("PanTiltController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
-
     @property
-    @is_initialized
     def pan_servo(self):
         return self._pan_servo
 
     @property
-    @is_initialized
     def tilt_servo(self):
         return self._tilt_servo
 
-    @is_initialized
     def calibrate(self, save=True, reset=False):
         """Calibrates the assembly to work in optimal conditions.
 

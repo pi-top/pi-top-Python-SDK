@@ -25,6 +25,7 @@ Package: python3-pitop-full
 Architecture: all
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  python3-opencv,
  python3-pitop (= ${binary:Version}),
  libopenblas-dev,
