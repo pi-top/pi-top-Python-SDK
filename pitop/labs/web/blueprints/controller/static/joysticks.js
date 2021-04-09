@@ -19,11 +19,10 @@ function sanitiseJoystickData(data) {
 }
 
 ["left", "right"].forEach((position) => {
-  const type = `${position}_joystick`;
-
   const joystickZone = document.getElementById(position + "JoystickContainer");
   if (!joystickZone) return;
 
+  const type = `${position}_joystick`;
   const joystick = nipplejs
     .create({
       zone: joystickZone,
