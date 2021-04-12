@@ -7,7 +7,7 @@ from pitop.processing.utils.vision_functions import (
     import_opencv,
     scale_frame,
 )
-from pitop.core import ImageFunctions
+from pitop.core.functions import image_convert
 
 
 def calculate_blue_limits():
@@ -32,7 +32,7 @@ def calculate_blue_limits():
 
 def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     cv2 = import_opencv()
-    cv_frame = ImageFunctions.convert(frame, format="OpenCV")
+    cv_frame = image_convert(frame, format="OpenCV")
 
     resized_frame = scale_frame(cv_frame, scale=scale_factor)
     hsv_lower, hsv_upper = calculate_blue_limits()
@@ -54,7 +54,7 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
     if image_format.lower() != 'opencv':
-        robot_view_img = ImageFunctions.convert(robot_view_img, format="PIL")
+        robot_view_img = image_convert(robot_view_img, format="PIL")
 
     class dotdict(dict):
         """dot.notation access to dictionary attributes."""

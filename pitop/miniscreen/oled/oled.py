@@ -1,4 +1,8 @@
-from pitop.core import ImageFunctions
+from pitop.core.functions import (
+    get_pil_image_from_path,
+    # get_word_wrapped_text,
+    get_font_size,
+)
 from .core import (
     Canvas,
     FPS_Regulator,
@@ -259,7 +263,7 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         self.display_image(
-            ImageFunctions.get_pil_image_from_path(file_path_or_url),
+            get_pil_image_from_path(file_path_or_url),
             xy=xy,
             invert=invert,
         )
@@ -284,9 +288,18 @@ class OLED:
             invert=invert,
         )
 
-    def display_text(self, text, xy=None, font_size=None, invert=False):
-        """Renders a single line of text to the screen at a given position and
-        size.
+    def display_text(
+        self,
+        text,
+        xy=None,
+        font_size=None,
+        invert=False,
+        word_wrap=True,
+        align="justify",
+        max_width=None,
+        max_height=None
+    ):
+        """Renders text to the screen at a given position and size.
 
         The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
         specifying the `xy` position parameter.
@@ -298,105 +311,57 @@ class OLED:
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
+        :param word_wrap: Add newlines to text that is too wide for the display
         """
+
+        image = self.__empty_image
+
+        x, y = xy
+
+        # Limit to bottom right of the image if not specified
+        if max_width is None:
+            max_width = image.width - x
+
+        if max_height is None:
+            max_height = image.height - y
+
+        # Dynamic font size if not specified
+        if font_size is None:
+
+            # if word_wrap:
+            #     text = get_word_wrapped_text(
+            #         text,
+            #         self.__font_path,
+            #         font_size,
+            #         xy,
+            #         image
+            #     )
+
+            font_size = get_font_size(
+                text,
+                self.__font_path,
+                word_wrap,
+                max_width,
+                max_height
+            )
+
         if xy is None:
             xy = self.top_left
 
-        if font_size is None:
-            font_size = 30
-
-        # Create empty image
-        image = self.__empty_image
-
-        # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).text(
-            xy,
-            str(text),
+            (x, y),
+            text,
             font=ImageFont.truetype(
-                self.__font_path(),
-                size=font_size
+                self.__font_path,
+                font_size
             ),
             fill=1,
             spacing=0,
-            align="left"
+            align=align
         )
 
         # Display image
         self.display_image(image, invert=invert)
-
-    def display_multiline_text(self, text, xy=None, font_size=None):
-        """Renders multi-lined text to the screen at a given position and size.
-        Text that is too long for the screen will automatically wrap to the
-        next line.
-
-        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
-        specifying the `xy` position parameter.
-
-        :param string text: The text to render
-        :param tuple xy: The position on the screen to render the image. If not
-            provided or passed as `None` the image will be drawn in the top-left of
-            the screen.
-        :param int font_size: The font size in pixels. If not provided or passed as
-            `None`, the default font size will be used
-        """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        # Create empty image
-        image = self.__empty_image
-
-        # Create font
-        font = ImageFont.truetype(
-            self.__font_path(),
-            size=font_size
-        )
-
-        def format_multiline_text(text):
-            def get_text_size(text):
-                return ImageDraw.Draw(self.__empty_image).textsize(
-                    text=str(text),
-                    font=font,
-                    spacing=0,
-                )
-
-            remaining = self.width
-            space_width, _ = get_text_size(" ")
-            # use this list as a stack, push/popping each line
-            output_text = []
-            # split on whitespace...
-            for word in text.split(None):
-                word_width, _ = get_text_size(word)
-                if word_width + space_width > remaining:
-                    output_text.append(word)
-                    remaining = self.width - word_width
-                else:
-                    if not output_text:
-                        output_text.append(word)
-                    else:
-                        output = output_text.pop()
-                        output += " %s" % word
-                        output_text.append(output)
-                    remaining = remaining - (word_width + space_width)
-            return "\n".join(output_text)
-
-        # Format text
-        text = format_multiline_text(text)
-
-        # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).multiline_text(
-            xy,
-            str(text),
-            font=font,
-            fill=1,
-            spacing=0,
-            align="left"
-        )
-
-        # Display image
-        self.display_image(image)
 
     def __display(self, image_to_display, force=False, invert=False):
         self.stop_animated_image()
@@ -423,7 +388,7 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
-        image = ImageFunctions.get_pil_image_from_path(file_path_or_url)
+        image = get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
 
     def play_animated_image(self, image, background=False, loop=False):
@@ -527,6 +492,24 @@ class OLED:
     #######################
     # Deprecation support #
     #######################
+    def display_multiline_text(self, text, xy=None, font_size=None):
+        """Renders multi-lined text to the screen at a given position and size.
+
+        .. warning::
+            This method is deprecated and will be deleted on the next major release of the SDK.
+
+        The display's positional properties (e.g. `top_left`, `top_right`) can be used to assist with
+        specifying the `xy` position parameter.
+
+        :param string text: The text to render
+        :param tuple xy: The position on the screen to render the image. If not
+            provided or passed as `None` the image will be drawn in the top-left of
+            the screen.
+        :param int font_size: The font size in pixels. If not provided or passed as
+            `None`, the default font size will be used
+        """
+        self.display_text(text, xy=None, font_size=None, word_wrap=True)
+
     def display(self, force=False):
         """Displays what is on the current canvas to the screen as a single
         frame.
@@ -655,6 +638,7 @@ class OLED:
         if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
 
+    @property
     def __font_path(self):
         primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
         fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
