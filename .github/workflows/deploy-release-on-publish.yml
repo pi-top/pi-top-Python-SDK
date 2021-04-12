@@ -2,9 +2,11 @@ name: Deploy Published Release
 
 on:
   push:
-    branches: [ "ci-test-publish-release-*" ]
+    branches:
+      - "ci-test-publish-release-*"
   release:
-    types: published
+    types:
+      - published
 
 jobs:
   add-stable-tag:

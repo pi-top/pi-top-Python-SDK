@@ -2,11 +2,11 @@ name: Update Changelog Draft PR on Commits To Master
 
 on:
   push:
-    branches: master
+    branches:
+      - master
 
 jobs:
   create-version-update-changelog-pr:
-    needs: build-debian-packages
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code

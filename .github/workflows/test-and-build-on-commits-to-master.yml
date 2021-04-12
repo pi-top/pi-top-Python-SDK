@@ -1,6 +1,9 @@
-name: Test and Build Packages on All Commits
+name: Test and Build Packages on Commits To Master
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   test-coverage:
@@ -28,7 +31,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-  build-debian-packages:
+  build-latest-debian-package:
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -71,8 +74,3 @@ jobs:
         with:
           name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
           path: "/tmp/artifacts/bin/"
-
-      - name: Move artifacts to current working directory
-        run: |
-          mkdir -p ${{ github.workspace }}/.artifacts
-          mv /tmp/artifacts/**/* ${{ github.workspace }}/.artifacts

@@ -1,0 +1,67 @@
+name: Test and Build Packages on All PRs
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+
+      - name: Run tests
+        run: |
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            -e RUN_PYTHON_TESTS=1 \
+            -e PYTHON_TESTS_DIR=./tests \
+            -e PYTHON_TARGET_DIR=. \
+            -e PYTHON_COVERAGE_DIR=pitop \
+            pitop/test-run
+
+  build-preview-debian-package:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v1.2.1
+
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
+
+      - name: Patch changelog (snapshot)
+        run: |
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            -e RELEASE=0 \
+            pitop/gbp-dch-gen:latest
+
+      - name: Build Debian package
+        run: |
+          mkdir -p /tmp/artifacts/{src,bin}
+          docker run --rm \
+            --volume ${{ github.workspace }}:/src \
+            --volume /tmp/artifacts/bin:/build \
+            -e LINTIAN_TAGS_TO_SUPPRESS="debian-changelog-line-too-long,spelling-error-in-changelog,unreleased-changelog-distribution" \
+            pitop/deb-build:latest
+
+      - name: Separate Debian source package files from binary
+        run: |
+          mv /tmp/artifacts/bin/* /tmp/artifacts/src/
+          mv /tmp/artifacts/src/*.deb /tmp/artifacts/bin/
+
+      - name: Upload Debian source package files
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb-src"
+          path: "/tmp/artifacts/src/"
+
+      - name: Upload Debian binary packages
+        uses: actions/upload-artifact@v2
+        with:
+          name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-deb"
+          path: "/tmp/artifacts/bin/"
