@@ -1,28 +1,12 @@
-name: Test and Build Packages on All PRs
+name: Test and Build Packages on Commits To Master
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
 jobs:
-  test-coverage:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-
-      - name: Run tests
-        run: |
-          docker run --rm \
-            --volume ${{ github.workspace }}:/src \
-            -e RUN_PYTHON_TESTS=1 \
-            -e PYTHON_TESTS_DIR=./tests \
-            -e PYTHON_TARGET_DIR=. \
-            -e PYTHON_COVERAGE_DIR=pitop \
-            pitop/test-run
-
-  build-preview-debian-package:
+  build-latest-debian-package:
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
