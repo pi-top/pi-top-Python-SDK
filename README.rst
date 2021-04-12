@@ -14,7 +14,7 @@
    :target: https://pypi.org/project/pitop
    :alt: PyPI release
 
-.. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/build-latest-debian-package
+.. image:: .. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Latest%20Build
   :target: https://github.com/pi-top/pi-top-Python-SDK/actions?query=workflow%3A%22Latest+Build%22
   :alt: Latest Build Status
 
