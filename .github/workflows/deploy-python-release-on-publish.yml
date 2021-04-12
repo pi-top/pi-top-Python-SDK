@@ -1,4 +1,4 @@
-name: Deploy Published Release
+name: Deploy Published Python Release
 
 on:
   push:
