@@ -1,5 +1,6 @@
-name: Create Draft GitHub Release And Tag On Merging Changelog PR
+name: Create Draft GitHub Release
 
+# Event: Merging Changelog PR (see 'check-should-run')
 on:
   pull_request:
     types: [closed]
