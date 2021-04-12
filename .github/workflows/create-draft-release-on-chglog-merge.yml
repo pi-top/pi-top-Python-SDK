@@ -117,6 +117,7 @@ jobs:
         uses: actions/checkout@v2.2.0
 
       - name: Download Python artifact
+        if: needs.check-should-run.outputs.is_python_package == 'true'
         uses: actions/download-artifact@v2
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
