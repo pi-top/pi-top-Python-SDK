@@ -12,7 +12,6 @@ image = Image.new(
 canvas = ImageDraw.Draw(image)
 
 speed_factor = 15
-particle_count = 15
 particles = []
 
 

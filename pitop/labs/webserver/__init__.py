@@ -21,7 +21,7 @@ def create_app(robot_instance):
     CORS(app)
 
     with app.app_context():
-        from . import routes  # noqa: F401
+        from . import routes  # noqa: F401, lgtm[py/unused-import]
         app.config['robot'] = robot_instance
         return app
 
