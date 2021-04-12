@@ -13,5 +13,3 @@ override_dh_auto_build:
 	# Fail on warnings; make verbose
 	PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
 	PYTHONPATH=. sphinx-build -W -v -bman  docs/ build/man
-	# Duplicate manual for 'pt' shortcut
-	cp build/man/pi-top.1 build/man/pt.1
