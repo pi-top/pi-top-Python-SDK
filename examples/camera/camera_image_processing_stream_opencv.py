@@ -11,14 +11,15 @@ def show_gray_image(image):
     cv2.waitKey(1)  # Necessary to show image
 
 
-# Use callback function
+# Use callback function for 60s
 cam.on_frame = show_gray_image
 sleep(60)
 
 
-# Use get_frame
-while True:
-    show_gray_image(cam.get_frame())
+# Use get_frame indefinitely
+try:
+    while True:
+        show_gray_image(cam.get_frame())
 
-
-cv2.destroyAllWindows()
+except KeyboardInterrupt:
+    cv2.destroyAllWindows()

@@ -12,7 +12,6 @@ class dotdict(dict):
 
 
 def __run(cli_cls, args):
-    exit_code = 1
     try:
         cli_object = cli_cls(args)
         exit_code = cli_object.run()
