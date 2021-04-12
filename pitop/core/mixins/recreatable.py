@@ -22,7 +22,7 @@ class Recreatable:
             raise TypeError("Argument must be a dictionary")
 
         if config_dict is None:
-            config_dict = {}
+            config_dict = dict()
         self._config = config_dict
         self._config.update({"classname": self.__class__.__name__,
                              "module": self.__module__,
