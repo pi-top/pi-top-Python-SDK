@@ -141,6 +141,9 @@ __extra_requires__ = {
 
 __entry_points__ = {
     "console_scripts": [
+        # 'pt' shortened command
+        "pt=pitopcli.pitop:main",
+        # 'pi-top' longhand/easy-to-remember command
         "pi-top=pitopcli.pitop:main",
     ]
 }
