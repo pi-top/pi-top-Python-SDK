@@ -30,7 +30,7 @@ import atexit
 import numpy as np
 import matplotlib.pyplot as plt
 # Enables "add_subplot(projection='3d')"
-from mpl_toolkits import mplot3d  # noqa: F401
+from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
 from scipy.linalg import sqrtm
 
 from pitopcommon.logger import PTLogger
