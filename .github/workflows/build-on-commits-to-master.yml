@@ -1,4 +1,4 @@
-name: Test and Build Packages on Commits To Master
+name: Latest Build
 
 on:
   push:

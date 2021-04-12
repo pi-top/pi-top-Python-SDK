@@ -1,4 +1,4 @@
-name: Test on All Commits
+name: Test
 
 on: push
 

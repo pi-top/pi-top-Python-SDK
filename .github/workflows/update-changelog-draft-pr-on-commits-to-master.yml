@@ -1,4 +1,4 @@
-name: Update Changelog Draft PR on Commits To Master
+name: Update Changelog Draft PR
 
 on:
   push:
