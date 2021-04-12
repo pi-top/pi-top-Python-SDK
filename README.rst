@@ -14,9 +14,9 @@
    :target: https://pypi.org/project/pitop
    :alt: PyPI release
 
-.. image:: https://github.com/pi-top/pi-top-Python-SDK/actions/workflows/test-and-build-on-all-commits.yml/badge.svg
-  :target: https://github.com/pi-top/pi-top-Python-SDK/actions?query=workflow%3Agh+branch%3Amaster+event%3Apush
-  :alt: GitHub Workflow Status
+.. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/build-latest-debian-package
+  :target: https://github.com/pi-top/pi-top-Python-SDK/actions?query=workflow%3A%22Latest+Build%22
+  :alt: Latest Build Status
 
 .. image:: https://img.shields.io/lgtm/grade/python/g/pi-top/pi-top-Python-SDK.svg
    :target: https://lgtm.com/projects/g/pi-top/pi-top-Python-SDK/context:python
