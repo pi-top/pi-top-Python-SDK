@@ -34,7 +34,7 @@ jobs:
           CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
           PR_MERGED: ${{ github.event.pull_request.merged }}
         run: |
-          if [[ -f "setup.py" ]]; then
+          if [[ -f "${{ github.workspace }}/setup.py" ]]; then
             conditions_met="true"
           else
             conditions_met="false"
