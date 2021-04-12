@@ -129,3 +129,22 @@ autodoc_mock_imports = [
     'simple_pid',
     'zmq',
 ]
+
+# -- Options for manual page output ---------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-man_pages
+man_page_startdocname = 'cli_tools'
+man_page_name = 'pi-top'
+man_page_description = 'pi-top Command Line Tool'
+man_page_authors = [author]
+man_page_section = 1
+man_pages = [
+    (
+        man_page_startdocname,
+        man_page_name,
+        man_page_description,
+        man_page_authors,
+        man_page_section
+    )
+]
+
+man_show_urls = True
