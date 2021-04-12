@@ -20,6 +20,7 @@ alex_config = __load_json("alex.json")
 
 class AlexRobot(Pitop):
     def __init__(self, *args, **kwargs):
+        super(AlexRobot, self).__init__()
         print("AlexRobot class is deprecated. Please use Pitop.from_config(alex_config)")
 
     def __new__(cls, *args, **kwargs):

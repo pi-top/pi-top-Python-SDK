@@ -28,29 +28,31 @@ def get_cpu_rates():
 
 
 ledmatrix.rotation(0)
-while True:
-    rate = get_cpu_rates()
+
+try:
+    while True:
+        rate = get_cpu_rates()
+        ledmatrix.clear()
+        for i in range(0, 4):
+            level = int(6.99 * rate[i])
+            if level < 4:
+                r = 0
+                g = 255
+                b = 0
+            elif level < 6:
+                r = 255
+                g = 255
+                b = 6
+            else:
+                r = 255
+                g = 0
+                b = 0
+            for y in range(0, level + 1):
+                ledmatrix.set_pixel(2 * i, y, r, g, b)
+
+        ledmatrix.show()
+        time.sleep(1)
+
+except KeyboardInterrupt:
     ledmatrix.clear()
-    for i in range(0, 4):
-        level = int(6.99 * rate[i])
-        if level < 4:
-            r = 0
-            g = 255
-            b = 0
-        elif level < 6:
-            r = 255
-            g = 255
-            b = 6
-        else:
-            r = 255
-            g = 0
-            b = 0
-        for y in range(0, level + 1):
-            ledmatrix.set_pixel(2 * i, y, r, g, b)
-
     ledmatrix.show()
-    time.sleep(1)
-
-
-ledmatrix.clear()
-ledmatrix.show()
