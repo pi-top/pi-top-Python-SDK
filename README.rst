@@ -31,8 +31,8 @@
    :alt: Codecov
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
-   :target: https://pre-commit.ci
-   :alt: pre-commit.ci
+   :target: https://results.pre-commit.ci/latest/github/pi-top/pi-top-Python-SDK/master
+   :alt: pre-commit.ci status
 
 ===========================
 pi-top Python SDK (Preview)
