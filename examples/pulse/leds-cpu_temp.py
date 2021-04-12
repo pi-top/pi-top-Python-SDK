@@ -54,17 +54,19 @@ ledmatrix.clear()
 
 lastTemperature = -1
 
-while True:
-    temperature = getCpuTemperature()
-    if temperature != lastTemperature:
-        if temperature < 60:
-            show_number(temperature, 0, 255, 0)
-        elif temperature < 70:
-            show_number(temperature, 255, 255, 0)
-        else:
-            show_number(temperature, 255, 0, 0)
-        lastemperature = temperature
-    time.sleep(2)
+try:
+    while True:
+        temperature = getCpuTemperature()
+        if temperature != lastTemperature:
+            if temperature < 60:
+                show_number(temperature, 0, 255, 0)
+            elif temperature < 70:
+                show_number(temperature, 255, 255, 0)
+            else:
+                show_number(temperature, 255, 0, 0)
+            lastemperature = temperature
+        time.sleep(2)
 
-ledmatrix.clear()
-ledmatrix.show()
+except KeyboardInterrupt:
+    ledmatrix.clear()
+    ledmatrix.show()

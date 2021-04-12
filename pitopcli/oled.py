@@ -21,12 +21,6 @@ class OledCLI(CliBaseClass):
             raise PitopCliInvalidArgument
 
     def run(self) -> int:
-        def is_animated(image):
-            try:
-                return image.is_animated
-            except AttributeError:
-                return False
-
         def path_to_stored_file(arg_path):
             file_path = ""
             if isfile(arg_path):
@@ -75,9 +69,12 @@ class OledCLI(CliBaseClass):
                     oled.canvas.save(f"{file_path}.{extension}")
                 elif self.args.capture_subcommand == "start":
                     file_path = path_to_stored_file(self.args.path)
-                    print(f"Saving video capture to {self.args.path}")
+                    extension = "MP4"
+                    print(f"Saving video capture to {file_path}.{extension}")
+                    # TODO: configure video capture from OLED
                 elif self.args.capture_subcommand == "stop":
                     print("Stopping video capture")
+                    # TODO: configure video capture from OLED
 
             return 0
         except Exception as e:
