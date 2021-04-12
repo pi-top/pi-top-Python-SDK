@@ -1,7 +1,3 @@
-.. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
-    :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
-    :alt: Documentation
-
 .. image:: https://img.shields.io/github/v/tag/pi-top/pi-top-Python-SDK
     :target: https://github.com/pi-top/pi-top-Python-SDK/releases
     :alt: GitHub tag (latest by date)
@@ -17,6 +13,10 @@
 .. image:: https://img.shields.io/github/workflow/status/pi-top/pi-top-Python-SDK/Latest%20Build
   :target: https://github.com/pi-top/pi-top-Python-SDK/actions?query=workflow%3A%22Latest+Build%22
   :alt: Latest Build Status
+
+.. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
+    :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
+    :alt: Documentation
 
 .. image:: https://img.shields.io/lgtm/grade/python/g/pi-top/pi-top-Python-SDK.svg
    :target: https://lgtm.com/projects/g/pi-top/pi-top-Python-SDK/context:python
