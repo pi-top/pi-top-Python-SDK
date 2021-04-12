@@ -58,7 +58,6 @@ def run(args):
             cli.parser.print_help()
     except Exception as e:
         print(f"Error on pitop.run: {e}")
-        pass
 
     return exit_code
 
