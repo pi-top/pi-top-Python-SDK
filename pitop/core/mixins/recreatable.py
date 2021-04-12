@@ -18,17 +18,19 @@ class Recreatable:
     """
 
     def __init__(self, config_dict=None):
+        if config_dict is None:
+            config_dict = dict()
+
         if not isinstance(config_dict, dict):
             raise TypeError("Argument must be a dictionary")
 
-        if config_dict is None:
-            config_dict = dict()
-        self._config = config_dict
-        self._config.update({"classname": self.__class__.__name__,
-                             "module": self.__module__,
-                             "version": "0.17.0"})
+        config_dict.update({"classname": self.__class__.__name__,
+                            "module": self.__module__,
+                            "version": "0.17.0"})
         for k, v in config_dict.items():
-            self._config.update({k: v})
+            config_dict.update({k: v})
+
+        self._config = config_dict
 
     @classmethod
     def from_config(cls, config_dict):
