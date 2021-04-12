@@ -16,6 +16,7 @@ Build-Depends:
  python3-gpiozero,
 # Required for building the docs (see rules file)
  python3-pip,
+ python3-pitopcommon,
 # Required for autodetecting camera devices
  v4l-utils,
 Standards-Version: 4.5.1

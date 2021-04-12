@@ -94,7 +94,7 @@ class UpButton(MiniscreenButton):
     """pi-top [4] Miniscreen 'Up' button."""
 
     def __init__(self):
-        pass
+        super(UpButton, self).__init__()
 
     def __new__(cls):
         return Buttons().up
@@ -104,7 +104,7 @@ class DownButton(MiniscreenButton):
     """pi-top [4] Miniscreen 'Down' button."""
 
     def __init__(self):
-        pass
+        super(DownButton, self).__init__()
 
     def __new__(cls):
         return Buttons().down
@@ -114,7 +114,7 @@ class SelectButton(MiniscreenButton):
     """pi-top [4] Miniscreen 'Select' button."""
 
     def __init__(self):
-        pass
+        super(SelectButton, self).__init__()
 
     def __new__(cls):
         return Buttons().select
@@ -124,7 +124,7 @@ class CancelButton(MiniscreenButton):
     """pi-top [4] Miniscreen 'Cancel' button."""
 
     def __init__(self):
-        pass
+        super(CancelButton, self).__init__()
 
     def __new__(cls):
         return Buttons().cancel
