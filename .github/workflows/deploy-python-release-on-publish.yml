@@ -9,20 +9,6 @@ on:
       - published
 
 jobs:
-  add-stable-tag:
-    if: github.event_name == 'release' && github.event.action == 'published'
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2.2.0
-
-      - name: Tag release commit as 'stable' for ReadTheDocs
-        uses: rickstaa/action-create-tag@v1
-        with:
-          tag: "stable"
-          commit_sha: ${{ github.sha }}
-          force_push_tag: true
-
   deploy-python-release:
     runs-on: ubuntu-20.04
     steps:
