@@ -1,9 +1,9 @@
-name: Test
+name: Run Tests and Upload Coverage Report
 
 on: push
 
 jobs:
-  test-coverage:
+  test-and-upload-coverage-report:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
