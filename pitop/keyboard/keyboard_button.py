@@ -61,7 +61,7 @@ class KeyboardButton:
     @when_pressed.setter
     def when_pressed(self, method=None):
         if method is None:
-            raise "Error: no method assigned"
+            raise Exception("Error: no method assigned")
         self.pressed_method = method
 
     @property
@@ -77,7 +77,7 @@ class KeyboardButton:
     @when_released.setter
     def when_released(self, method=None):
         if method is None:
-            raise "Error: no method assigned"
+            raise Exception("Error: no method assigned")
         self.released_method = method
 
     @property
