@@ -53,19 +53,17 @@ DETECTION_POINTS_BUFFER_LENGTH = 64
 class BallDetector:
     def __init__(self,
                  process_image_width: int = 320,
-                 input_format: str = "PIL",
-                 output_format: str = "PIL",
+                 format: str = "PIL",
                  print_fps: bool = False):
         """
         :param int process_image_width: image width to scale to for image processing
         :param str input_format: input image format
-        :param str output_format: output image format
+        :param str format: output image format
         :param bool print_fps: Boolean that controls whether the algorithm's FPS is printed upon program exit
         """
         self.cv2 = import_opencv()
         self._process_image_width = process_image_width
-        self._input_format = input_format
-        self._output_format = output_format
+        self._output_format = format
         self._detection_points = {
             "red": deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH),
             "green": deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH),
@@ -152,8 +150,7 @@ class BallDetector:
         print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     def __prepare_frames(self, frame):
-        if self._input_format.lower() == "pil":
-            frame = ImageFunctions.convert(frame, format='OpenCV')
+        frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if self._frame_scaler is None:
             height, width = frame.shape[0:2]
