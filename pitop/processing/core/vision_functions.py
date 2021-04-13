@@ -1,3 +1,6 @@
+from matplotlib import colors
+
+
 def import_opencv():
     try:
         import cv2
@@ -110,3 +113,13 @@ def get_object_target_lock_control_angle(center, frame):
     delta_y = abs(center[1] - chassis_center_y)
 
     return arctan(center[0] / delta_y) * 180.0 / pi
+
+
+def tuple_for_color_by_name(color_name):
+    # Tested with red, green, blue
+    if color_name == "green":
+        # green: (0, 128, 0)
+        # lime:  (0, 255, 0)
+        color_name = "lime"
+
+    return tuple(int(i * 255) for i in colors.to_rgb(color_name))
