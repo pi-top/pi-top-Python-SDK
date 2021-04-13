@@ -2,7 +2,7 @@
 
 # Editor detritus
 *.vim
-*.swp
+*.sw*
 tags
 .idea
 
@@ -27,6 +27,7 @@ develop-eggs
 
 # Unit test / coverage reports
 coverage
+*.xml
 .coverage*
 .tox
 .cache

@@ -1,5 +1,6 @@
 gpiozero
 imutils
-numpy==1.18
+numpy
 opencv-python
 pitopcommon
+Pillow

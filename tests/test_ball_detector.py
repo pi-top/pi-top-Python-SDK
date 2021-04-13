@@ -3,12 +3,10 @@ from unittest.mock import Mock
 
 
 modules_to_patch = [
-    "PIL",
     "luma.core.interface.serial",
     "luma.oled.device",
     "pyinotify",
     "pitop.camera",
-    "numpy",
     "simple_pid",
     "pitopcommon.smbus_device",
     "pitopcommon.logger",
@@ -29,7 +27,6 @@ from unittest import TestCase
 from pitop.processing.algorithms.ball_detect import BallDetector
 from pitop.core.ImageFunctions import convert
 from pitop.processing.utils.vision_functions import (
-    import_opencv,
     center_reposition,
 )
 
@@ -40,7 +37,7 @@ for patched_module in modules_to_patch:
 
 import numpy as np
 from PIL import Image
-cv2 = import_opencv()
+import cv2
 
 colour = {
     'red': (0, 0, 255),
@@ -51,8 +48,7 @@ colour = {
 
 class TestBallDetector(TestCase):
 
-    def __init__(self):
-        super(TestCase, self).__init__()
+    def setUp(self):
         self._height = 480
         self._width = 640
         self._MAX_DIMENSION_DIFFERENCE = 3

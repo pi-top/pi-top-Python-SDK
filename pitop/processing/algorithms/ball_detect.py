@@ -8,7 +8,7 @@ from pitop.processing.utils.vision_functions import (
 from typing import Union
 from imutils import resize, grab_contours
 from imutils.video import FPS
-from pitop.core.data_stuctures import DotDict
+from pitop.core.data_structures import DotDict
 import atexit
 from pitop.processing.utils.vision_functions import import_opencv
 
