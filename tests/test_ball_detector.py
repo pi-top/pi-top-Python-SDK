@@ -1,9 +1,21 @@
+from sys import modules
+from unittest.mock import Mock
 from unittest import TestCase
 from pitop.processing.algorithms import BallDetector
 import numpy as np
 from pitop.core.ImageFunctions import convert
-from pitop.processing.utils.vision_functions import import_opencv, center_reposition
+from pitop.processing.utils.vision_functions import (
+    import_opencv,
+    center_reposition,
+)
 from PIL import Image
+
+
+modules_to_patch = [
+    "pitopcommon.ptdm",
+]
+for module in modules_to_patch:
+    modules[module] = Mock()
 
 
 colour = {
