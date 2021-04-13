@@ -40,6 +40,7 @@ for patched_module in modules_to_patch:
 
 import numpy as np
 from PIL import Image
+cv2 = import_opencv()
 
 colour = {
     'red': (0, 0, 255),
@@ -52,7 +53,6 @@ class TestBallDetector(TestCase):
 
     def __init__(self):
         super(TestCase, self).__init__()
-        self.cv2 = import_opencv()
         self._height = 480
         self._width = 640
         self._MAX_DIMENSION_DIFFERENCE = 3
@@ -65,7 +65,7 @@ class TestBallDetector(TestCase):
         ball_radius = 80
 
         red_ball_center = (self._width // 4, self._height // 2)
-        self.cv2.circle(cv_frame, red_ball_center, ball_radius, colour['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, colour['red'], -1)
         red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         pil_frame = convert(cv_frame, "PIL")
@@ -95,15 +95,15 @@ class TestBallDetector(TestCase):
         ball_radius = 80
 
         red_ball_center = (self._width // 4, self._height // 2)
-        self.cv2.circle(cv_frame, red_ball_center, ball_radius, colour['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, colour['red'], -1)
         red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         green_ball_center = (self._width // 2, self._height // 2)
-        self.cv2.circle(cv_frame, green_ball_center, ball_radius, colour['green'], -1)
+        cv2.circle(cv_frame, green_ball_center, ball_radius, colour['green'], -1)
         green_ball_center = center_reposition(green_ball_center, cv_frame)
 
         blue_ball_center = (3 * self._width // 4, self._height // 2)
-        self.cv2.circle(cv_frame, blue_ball_center, ball_radius, colour['blue'], -1)
+        cv2.circle(cv_frame, blue_ball_center, ball_radius, colour['blue'], -1)
         blue_ball_center = center_reposition(blue_ball_center, cv_frame)
 
         pil_frame = convert(cv_frame, "PIL")
