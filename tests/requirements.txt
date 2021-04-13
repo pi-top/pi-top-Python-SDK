@@ -1,2 +1,5 @@
 gpiozero
+imutils
+numpy
+opencv-python
 pitopcommon
