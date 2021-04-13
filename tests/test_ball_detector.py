@@ -1,7 +1,16 @@
 from sys import modules
 from unittest.mock import Mock
+
+
+modules_to_patch = [
+    "pitopcommon.ptdm",
+]
+for module in modules_to_patch:
+    modules[module] = Mock()
+
+
 from unittest import TestCase
-from pitop.processing.algorithms import BallDetector
+from pitop.processing.algorithms.ball_detect import BallDetector
 import numpy as np
 from pitop.core.ImageFunctions import convert
 from pitop.processing.utils.vision_functions import (
@@ -11,11 +20,9 @@ from pitop.processing.utils.vision_functions import (
 from PIL import Image
 
 
-modules_to_patch = [
-    "pitopcommon.ptdm",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
+# Avoid getting the mocked modules in other tests
+for patched_module in modules_to_patch:
+    del modules[patched_module]
 
 
 colour = {
