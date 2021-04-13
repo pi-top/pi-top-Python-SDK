@@ -18,8 +18,7 @@ modules_to_patch = [
     "pitopcommon.ptdm",
     "pitopcommon.firmware_device",
     "pitopcommon.command_runner",
-    "pitopcommon.common_names",
-    "imutils"
+    "pitopcommon.common_names"
 
 ]
 for module in modules_to_patch:
