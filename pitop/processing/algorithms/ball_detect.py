@@ -1,7 +1,7 @@
 from collections import deque
 import numpy as np
 from pitop.core import ImageFunctions
-from pitop.processing.utils.vision_functions import (
+from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
 )
@@ -10,7 +10,7 @@ from imutils import resize, grab_contours
 from imutils.video import FPS
 from pitop.core.data_structures import DotDict
 import atexit
-from pitop.processing.utils.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import import_opencv
 
 colour_ranges = {
     'red': [

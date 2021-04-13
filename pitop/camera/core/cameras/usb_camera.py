@@ -13,7 +13,7 @@ class UsbCamera:
         self.__camera = None
         self.index = None
 
-        if rotate_angle not in (-90, 0, 90, 180):
+        if rotate_angle not in (-270, -180, -90, 0, 90, 180, 270):
             raise ValueError("Rotate angle must be -90, 0, 90 or 180 degrees")
         else:
             self._rotate_angle = rotate_angle
@@ -58,10 +58,10 @@ class UsbCamera:
     @staticmethod
     def list_device_indexes():
         try:
-            run_command("dpkg -l v4l-utils", timeout=1, log_errors=False)
+            run_command("dpkg -l v4l-core", timeout=1, log_errors=False)
         except Exception:
             print("Warning: can't autodetect camera device indexes, using default value 0.")
-            print("Warning: Package v4l-utils is not installed. You can install it by running 'sudo apt install v4l-utils'.")
+            print("Warning: Package v4l-core is not installed. You can install it by running 'sudo apt install v4l-core'.")
             return [0]
 
         indexes = []

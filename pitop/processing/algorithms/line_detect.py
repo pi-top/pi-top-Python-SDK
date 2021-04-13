@@ -1,5 +1,5 @@
 from numpy import array
-from pitop.processing.utils.vision_functions import (
+from pitop.processing.core.vision_functions import (
     colour_mask,
     find_centroid,
     find_largest_contour,

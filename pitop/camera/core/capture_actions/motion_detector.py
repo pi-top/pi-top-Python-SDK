@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
 from numpy import asarray
 
-from pitop.processing.utils.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import import_opencv
 from .capture_action_base import CaptureActionBase
 
 

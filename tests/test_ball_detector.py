@@ -26,7 +26,7 @@ for module in modules_to_patch:
 from unittest import TestCase
 from pitop.processing.algorithms.ball_detect import BallDetector
 from pitop.core.ImageFunctions import convert
-from pitop.processing.utils.vision_functions import (
+from pitop.processing.core.vision_functions import (
     center_reposition,
 )
 
