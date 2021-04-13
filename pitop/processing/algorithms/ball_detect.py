@@ -79,13 +79,13 @@ class BallDetector:
 
     def detect(self, frame, colour: Union[str, tuple] = "red"):
         colours = self.__grab_colours(colour)
-        resized_frame = self.__prepare_frame(frame)
+        cv_frame, resized_frame = self.__prepare_frames(frame)
 
         ball_centers = {}
         ball_radii = {}
         ball_angles = {}
         ball_finds = {}
-        robot_view = frame.copy()
+        robot_view = cv_frame.copy()
         for colour in colours:
             contours = self.__find_contours(resized_frame, colour)
             ball_center, ball_radius = self.__find_most_likely_ball(contours, colour, resized_frame)
@@ -151,7 +151,7 @@ class BallDetector:
         print(f"[INFO] Elapsed time: {self._fps.elapsed():.2f}")
         print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
-    def __prepare_frame(self, frame):
+    def __prepare_frames(self, frame):
         if self._input_format.lower() == "pil":
             frame = ImageFunctions.convert(frame, format='OpenCV')
 
@@ -161,7 +161,7 @@ class BallDetector:
 
         resized_frame = resize(frame, width=self._process_image_width)
 
-        return resized_frame
+        return frame, resized_frame
 
     def __draw_ball_position(self, frame, colour, ball_center, ball_radius):
         self.cv2.circle(frame, ball_center, ball_radius, (0, 255, 255), 2)
