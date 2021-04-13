@@ -1,5 +1,5 @@
 gpiozero
 imutils
-numpy=1.18
+numpy==1.18
 opencv-python
 pitopcommon
