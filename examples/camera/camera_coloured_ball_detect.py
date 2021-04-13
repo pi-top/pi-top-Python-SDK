@@ -7,15 +7,12 @@ import cv2
 def process_frame(frame):
     balls = ball_detector.detect(frame, colour=("red", "green", "blue"))
 
-    # Get data for red ball
     red_ball = balls.red
     print(f'Red ball center: {red_ball.center}')
 
-    # Get data for green ball
     green_ball = balls.green
     print(f'Green ball center: {green_ball.center}')
 
-    # Get data for blue ball
     blue_ball = balls.blue
     print(f'Blue ball center: {blue_ball.center}\n')
 
