@@ -58,13 +58,26 @@ class Ball:
         self.match_limit = match_limits[color]
 
         self.center_points = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
+        self.radius = 0
+        self.angle_from_center = None
 
-        self.radius = None
+    def clear(self):
+        self.center_points.clear()
+        self.radius = 0
         self.angle_from_center = None
 
     @property
+    def angle(self):
+        return self.angle_from_center
+
+    @property
     def center(self):
-        return self.center_points[-1]
+        if len(self.center_points) > 0:
+            return self.center_points[0]
+        return None
+
+    def is_valid(self):
+        return self.center is not None
 
 
 class BallDetector:
@@ -89,64 +102,42 @@ class BallDetector:
             atexit.register(self.__print_fps)
 
     def detect(self, frame, color: Union[str, list] = "red"):
-        def parse_colors(color):
-            colors = None
-            if type(color) == str:
-                assert(color in valid_colors)
-                colors = [color]
-            elif type(color) == list:
-                assert(set(color).issubset(valid_colors))
-                colors = color
+        def parse_colors(color_arg):
+            colors = []
+            if type(color_arg) == str:
+                assert(color_arg in valid_colors)
+                colors = [color_arg]
+            elif type(color_arg) in (list, tuple):
+                assert(set(color_arg).issubset(valid_colors))
+                colors = color_arg
             if len(colors) > 3:
                 raise ValueError("Cannot pass more than three colors.")
 
             return colors
 
+        frame = ImageFunctions.convert(frame, format="OpenCV")
+
         if self._frame_scaler is None:
             _, width = frame.shape[0:2]
             self._frame_scaler = width / self._process_image_width
 
-        frame = ImageFunctions.convert(frame, format="OpenCV")
-
         for c in parse_colors(color):
-            self.balls[c] = self.__find_most_likely_ball(c, frame)
+            self.balls[c] = self.__find_most_likely_ball(ball=self.balls.get(c),
+                                                         color=c,
+                                                         frame=frame)
 
         robot_view = frame.copy()
-        for ball in self.balls:
-            self.__draw_ball_position(robot_view, ball)
-            self.__draw_ball_contrail(robot_view, ball)
+        ball_data = DotDict({})
+        for ball_color, ball_object in self.balls.items():
+            ball_data[ball_color] = ball_object
+            if ball_object.is_valid():
+                self.__draw_ball_position(robot_view, ball_object)
+                self.__draw_ball_contrail(robot_view, ball_object)
 
-        robot_view = ImageFunctions.convert(robot_view, self.format)
-
-        ball_data = self.__prepare_return_data(robot_view)
+        ball_data["robot_view"] = ImageFunctions.convert(robot_view, self.format)
 
         if self._print_fps:
             self._fps.update()
-
-        return ball_data
-
-    def __prepare_return_data(self, robot_view):
-        # TODO: Get this working!
-        ball_data = DotDict({})
-        ball_data["robot_view"] = robot_view
-
-        for ball in self.balls:
-            if ball is None:
-                continue
-
-            ball_data[ball.color] = DotDict({
-                "center": ball.center,
-                "radius": ball.radius,
-                "angle": ball.angle
-            })
-
-        # if len(colors) == 1:
-        #     # if only searching one color, add convenience data so ball_data.data_type can be used directly
-        #     color = colors[0]
-        #     ball_data["found"] = ball.find
-        #     ball_data["center"] = ball.center
-        #     ball_data["radius"] = ball.radius
-        #     ball_data["angle"] = ball.angle
 
         return ball_data
 
@@ -214,22 +205,20 @@ class BallDetector:
             )
         )
 
-    def __find_most_likely_ball(self, color, frame):
+    def __find_most_likely_ball(self, ball, color, frame):
+        if ball is None:
+            ball = Ball(color)
+
         resized_frame = resize(frame, width=self._process_image_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
-            return None
-
-        ball = Ball()
-
-        ball.center = None
-        ball.radius = None
+            return ball
 
         max_likelihood_index = 0
 
         def __meets_minimum_ball_requirements(ball, match_radius, match_value):
             if match_value < ball.match_limit or match_radius > BALL_CLOSE_RADIUS:
-                if ball.radius > MIN_BALL_RADIUS:
+                if match_radius > MIN_BALL_RADIUS:
                     return True
             return False
 
@@ -246,10 +235,13 @@ class BallDetector:
             max_likelihood_index = likelihood_index
 
             # meets minimum requirements
-            if self.__meets_minimum_ball_requirements(ball, match_radius, match_value):
+            if __meets_minimum_ball_requirements(ball, match_radius, match_value):
                 # Scale to original frame size
                 ball.center_points.appendleft(tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y)))))
                 ball.radius = int(match_radius * self._frame_scaler)
+            else:
+                # If the ball existed before, it's cleared
+                ball.clear()
 
             # Get angle between ball center and approximate robot chassis center
             ball.angle_from_center = get_object_target_lock_control_angle(
@@ -260,7 +252,7 @@ class BallDetector:
                 frame
             )
 
-        return None if ball.center is None else ball
+        return ball
 
     def __get_ball_likelihood_parameters(self, frame, contour, x, y, radius):
         area = self.cv2.contourArea(contour)
