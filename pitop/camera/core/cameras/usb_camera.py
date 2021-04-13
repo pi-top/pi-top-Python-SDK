@@ -26,7 +26,7 @@ class UsbCamera:
 
         for idx in indexes:
             try:
-                self.__camera = self.create_camera_object(idx, resolution)
+                self.__camera = create_camera_object(idx, resolution)
                 if self.__camera:
                     self.index = idx
                     break

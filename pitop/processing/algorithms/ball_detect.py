@@ -226,15 +226,14 @@ class BallDetector:
             (x, y), match_radius = self.cv2.minEnclosingCircle(contour)
             area, match_value = self.__get_ball_likelihood_parameters(resized_frame, contour, x, y, match_radius)
 
-            # most likely ball is a mixture of largest area and one that is most "ball-shaped"
+            # Most likely ball is a mixture of largest area and one that is most "ball-shaped"
             likelihood_index = area / (match_value + 1e-5)
             if likelihood_index < max_likelihood_index:
                 continue
 
-            # found most likely ball so far
+            # Found most likely ball so far
             max_likelihood_index = likelihood_index
 
-            # meets minimum requirements
             if __meets_minimum_ball_requirements(ball, match_radius, match_value):
                 # Scale to original frame size
                 ball.center_points.appendleft(tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y)))))
