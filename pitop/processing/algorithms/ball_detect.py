@@ -53,11 +53,10 @@ DETECTION_POINTS_BUFFER_LENGTH = 64
 class BallDetector:
     def __init__(self,
                  process_image_width: int = 320,
-                 format: str = "PIL",
+                 format: str = "OpenCV",
                  print_fps: bool = False):
         """
         :param int process_image_width: image width to scale to for image processing
-        :param str input_format: input image format
         :param str format: output image format
         :param bool print_fps: Boolean that controls whether the algorithm's FPS is printed upon program exit
         """

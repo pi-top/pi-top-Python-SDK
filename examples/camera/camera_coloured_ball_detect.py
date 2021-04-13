@@ -20,8 +20,8 @@ def process_frame(frame):
     cv2.waitKey(1)
 
 
-ball_detector = BallDetector(input_format="OpenCV", format="OpenCV")
-camera = Camera(format="OpenCV")
+ball_detector = BallDetector()
+camera = Camera()
 camera.on_frame = process_frame
 
 pause()
