@@ -47,7 +47,7 @@ ball_match_limits = {
 
 MIN_BALL_RADIUS = 5
 BALL_CLOSE_RADIUS = 50
-BUFFER_LENGTH = 64
+DETECTION_POINTS_BUFFER_LENGTH = 64
 
 
 class BallDetector:
@@ -67,9 +67,9 @@ class BallDetector:
         self._input_format = input_format
         self._output_format = output_format
         self._detection_points = {
-            "red": deque(maxlen=BUFFER_LENGTH),
-            "green": deque(maxlen=BUFFER_LENGTH),
-            "blue": deque(maxlen=BUFFER_LENGTH)
+            "red": deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH),
+            "green": deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH),
+            "blue": deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
         }
         self._frame_scaler = None
         self._print_fps = print_fps
@@ -171,7 +171,7 @@ class BallDetector:
         for i in range(1, len(self._detection_points[colour])):
             if self._detection_points[colour][i - 1] is None or self._detection_points[colour][i] is None:
                 continue
-            thickness = int(np.sqrt(BUFFER_LENGTH / float(i + 1)))
+            thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
             self.cv2.line(frame, self._detection_points[colour][i - 1], self._detection_points[colour][i],
                           draw_colour[colour], thickness)
