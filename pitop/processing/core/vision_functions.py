@@ -115,11 +115,22 @@ def get_object_target_lock_control_angle(center, frame):
     return arctan(center[0] / delta_y) * 180.0 / pi
 
 
-def tuple_for_color_by_name(color_name):
+def tuple_for_color_by_name(color_name, bgr=False):
+    """Returns a tuple representing the provided `color_name`. The default
+    color model used is RGB.
+
+    :param color_name: string with the color name
+    :param bgr: Boolean. If set to True, the color model of the returned tuple is
+    set to BGR.
+    :return: tuple
+    """
     # Tested with red, green, blue
     if color_name == "green":
         # green: (0, 128, 0)
         # lime:  (0, 255, 0)
         color_name = "lime"
 
-    return tuple(int(i * 255) for i in colors.to_rgb(color_name))
+    values = tuple(int(i * 255) for i in colors.to_rgb(color_name))
+    if bgr:
+        return values[::-1]
+    return values
