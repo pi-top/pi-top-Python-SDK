@@ -92,7 +92,7 @@ class BallDetector:
         self.cv2 = import_opencv()
         self._process_image_width = process_image_width
         self.format = format
-        self.balls = {c: None for c in valid_colors}
+        self.balls = {c: Ball(c) for c in valid_colors}
         self._frame_scaler = None
 
         # Enable FPS if environment variable is set
@@ -148,7 +148,7 @@ class BallDetector:
 
     def __draw_ball_position(self, frame, ball):
         self.cv2.circle(frame, ball.center, ball.radius, (0, 255, 255), 2)
-        self.cv2.circle(frame, ball.center, 5, tuple_for_color_by_name(ball.color), -1)
+        self.cv2.circle(frame, ball.center, 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
 
     def __draw_ball_contrail(self, frame, ball):
         for i in range(1, len(ball.center_points)):
@@ -157,7 +157,7 @@ class BallDetector:
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
             self.cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
-                          tuple_for_color_by_name(ball.color), thickness)
+                          tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
     def color_filter(self,
                      frame,

@@ -26,9 +26,6 @@ for module in modules_to_patch:
 from unittest import TestCase
 from pitop.processing.algorithms.ball_detect import BallDetector
 from pitop.core.ImageFunctions import convert
-from pitop.processing.core.vision_functions import (
-    center_reposition,
-)
 
 
 # Avoid getting the mocked modules in other tests
@@ -36,7 +33,6 @@ for patched_module in modules_to_patch:
     del modules[patched_module]
 
 import numpy as np
-from PIL import Image
 import cv2
 
 color = {
@@ -62,16 +58,13 @@ class TestBallDetector(TestCase):
 
         red_ball_center = (self._width // 4, self._height // 2)
         cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
-        red_ball_center = center_reposition(red_ball_center, cv_frame)
 
-        pil_frame = convert(cv_frame, "PIL")
-
-        balls = ball_detector.detect(pil_frame, color="red")
+        balls = ball_detector.detect(cv_frame, color="red")
 
         red_ball = balls.red
 
-        # Check found boolean
-        self.assertTrue(red_ball.found)
+        # Check is_valid() boolean
+        self.assertTrue(red_ball.is_valid())
 
         # Check ball centers
         for u, v in zip(red_ball.center, red_ball_center):
@@ -81,7 +74,7 @@ class TestBallDetector(TestCase):
         self.assertAlmostEqual(red_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
 
         # Check PIL image is returned
-        self.assertIsInstance(balls.robot_view, Image.Image)
+        self.assertIsInstance(balls.robot_view, np.ndarray)
 
     def test_detect_all_balls(self):
         ball_detector = BallDetector()
@@ -92,15 +85,12 @@ class TestBallDetector(TestCase):
 
         red_ball_center = (self._width // 4, self._height // 2)
         cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
-        red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         green_ball_center = (self._width // 2, self._height // 2)
         cv2.circle(cv_frame, green_ball_center, ball_radius, color['green'], -1)
-        green_ball_center = center_reposition(green_ball_center, cv_frame)
 
         blue_ball_center = (3 * self._width // 4, self._height // 2)
         cv2.circle(cv_frame, blue_ball_center, ball_radius, color['blue'], -1)
-        blue_ball_center = center_reposition(blue_ball_center, cv_frame)
 
         pil_frame = convert(cv_frame, "PIL")
 
@@ -110,10 +100,10 @@ class TestBallDetector(TestCase):
         green_ball = balls.green
         blue_ball = balls.blue
 
-        # Check found boolean
-        self.assertTrue(red_ball.found)
-        self.assertTrue(green_ball.found)
-        self.assertTrue(blue_ball.found)
+        # Check is_valid() boolean
+        self.assertTrue(red_ball.is_valid())
+        self.assertTrue(green_ball.is_valid())
+        self.assertTrue(blue_ball.is_valid())
 
         # Check ball centers
         for u, v in zip(red_ball.center, red_ball_center):
@@ -129,7 +119,7 @@ class TestBallDetector(TestCase):
         self.assertAlmostEqual(blue_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
 
         # Check PIL image is returned
-        self.assertIsInstance(balls.robot_view, Image.Image)
+        self.assertIsInstance(balls.robot_view, np.ndarray)
 
     def test_detect_no_balls(self):
         ball_detector = BallDetector()
@@ -141,23 +131,23 @@ class TestBallDetector(TestCase):
         green_ball = balls.green
         blue_ball = balls.blue
 
-        # Check found boolean
-        self.assertFalse(red_ball.found)
-        self.assertFalse(green_ball.found)
-        self.assertFalse(blue_ball.found)
+        # Check is_valid() boolean
+        self.assertFalse(red_ball.is_valid())
+        self.assertFalse(green_ball.is_valid())
+        self.assertFalse(blue_ball.is_valid())
 
         # Check ball centers
         self.assertIsNone(red_ball.center)
         self.assertIsNone(green_ball.center)
         self.assertIsNone(blue_ball.center)
 
-        # Check ball radii
-        self.assertIsNone(red_ball.radius)
-        self.assertIsNone(green_ball.radius)
-        self.assertIsNone(blue_ball.radius)
+        # Check ball radius
+        self.assertEquals(red_ball.radius, 0)
+        self.assertEquals(green_ball.radius, 0)
+        self.assertEquals(blue_ball.radius, 0)
 
         # Check PIL image is returned
-        self.assertIsInstance(balls.robot_view, Image.Image)
+        self.assertIsInstance(balls.robot_view, np.ndarray)
 
 
 if __name__ == "__main__":
