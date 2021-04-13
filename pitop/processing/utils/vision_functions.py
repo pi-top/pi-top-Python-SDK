@@ -84,8 +84,9 @@ def center_reposition(center, frame):
 
 
 def get_object_target_lock_control_angle(center, frame):
-    """
-    Retrieves an angle between the center of an object in the camera's view and the (approximate) robot chassis center.
+    """Retrieves an angle between the center of an object in the camera's view
+    and the (approximate) robot chassis center.
+
     This can be used as input to a PID loop so the object is "target locked" - the robot drives to align itself with
     the object, i.e. aim to minimize difference between chassis angle and object angle.
     :param tuple center:
