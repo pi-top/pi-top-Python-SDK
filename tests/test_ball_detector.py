@@ -3,7 +3,23 @@ from unittest.mock import Mock
 
 
 modules_to_patch = [
+    "PIL",
+    "luma.core.interface.serial",
+    "luma.oled.device",
+    "pyinotify",
+    "pitop.camera",
+    "numpy",
+    "simple_pid",
+    "pitopcommon.smbus_device",
+    "pitopcommon.logger",
+    "pitopcommon.singleton",
+    "pitopcommon.common_ids",
+    "pitopcommon.current_session_info",
     "pitopcommon.ptdm",
+    "pitopcommon.firmware_device",
+    "pitopcommon.command_runner",
+    "pitopcommon.common_names",
+
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
@@ -11,19 +27,19 @@ for module in modules_to_patch:
 
 from unittest import TestCase
 from pitop.processing.algorithms.ball_detect import BallDetector
-import numpy as np
 from pitop.core.ImageFunctions import convert
 from pitop.processing.utils.vision_functions import (
     import_opencv,
     center_reposition,
 )
-from PIL import Image
 
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
     del modules[patched_module]
 
+import numpy as np
+from PIL import Image
 
 colour = {
     'red': (0, 0, 255),
