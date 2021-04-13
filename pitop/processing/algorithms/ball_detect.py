@@ -16,6 +16,8 @@ from pitop.processing.core.vision_functions import (
     tuple_for_color_by_name
 )
 
+valid_colors = ["red", "green", "blue"]
+
 color_ranges = {
     "red": [
         {
@@ -77,7 +79,7 @@ class BallDetector:
         self.cv2 = import_opencv()
         self._process_image_width = process_image_width
         self.format = format
-        self.balls = {c: None for c in ["red", "green", "blue"]}
+        self.balls = {c: None for c in valid_colors}
         self._frame_scaler = None
 
         # Enable FPS if environment variable is set
@@ -88,11 +90,12 @@ class BallDetector:
 
     def detect(self, frame, color: Union[str, list] = "red"):
         def parse_colors(color):
-            # TODO: return a list of color names (e.g. ["red", "blue"])
             colors = None
             if type(color) == str:
-                colors = (color,)
+                assert(color in valid_colors)
+                colors = [color]
             elif type(color) == list:
+                assert(set(color).issubset(valid_colors))
                 colors = color
             if len(colors) > 3:
                 raise ValueError("Cannot pass more than three colors.")
