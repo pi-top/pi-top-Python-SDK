@@ -1,3 +1,6 @@
+from matplotlib import colors
+
+
 def import_opencv():
     try:
         import cv2
@@ -119,5 +122,4 @@ def tuple_for_color_by_name(color_name):
         # lime:  (0, 255, 0)
         color_name = "lime"
 
-    from matplotlib import colors
     return tuple(int(i * 255) for i in colors.to_rgb(color_name))
