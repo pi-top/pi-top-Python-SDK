@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       should_run: ${{ steps.check_should_run.outputs.should_run }}
+      is_python_package: ${{ steps.check_is_python_package.outputs.is_python_package }}
     steps:
       - name: Set 'should run' variable
         id: check_should_run
@@ -24,9 +25,26 @@ jobs:
           fi
           echo "::set-output name=should_run::${conditions_met}"
 
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+
+      - name: Set 'is python package' variable
+        id: check_is_python_package
+        env:
+          CI_CHANGELOG_BUMP_BRANCH: ${{ secrets.CI_CHANGELOG_BUMP_BRANCH }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+        run: |
+          if [[ -f "${{ github.workspace }}/setup.py" ]]; then
+            conditions_met="true"
+          else
+            conditions_met="false"
+          fi
+          echo "::set-output name=is_python_package::${conditions_met}"
+
   build-python:
     needs: check-should-run
-    if: needs.check-should-run.outputs.should_run == 'true'
+    # Only run if setup.py exists
+    if: needs.check-should-run.outputs.should_run == 'true' && needs.check-should-run.outputs.is_python_package == 'true'
     runs-on: ubuntu-20.04
     steps:
       - name: GitHub Environment Variables Action
@@ -99,6 +117,7 @@ jobs:
         uses: actions/checkout@v2.2.0
 
       - name: Download Python artifact
+        if: needs.check-should-run.outputs.is_python_package == 'true'
         uses: actions/download-artifact@v2
         with:
             name: "${{ env.GITHUB_REPOSITORY_NAME }}-#${{ env.GITHUB_SHA_SHORT }}-py"
