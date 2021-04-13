@@ -58,10 +58,10 @@ class UsbCamera:
     @staticmethod
     def list_device_indexes():
         try:
-            run_command("dpkg -l v4l-core", timeout=1, log_errors=False)
+            run_command("dpkg -l v4l-utils", timeout=1, log_errors=False)
         except Exception:
             print("Warning: can't autodetect camera device indexes, using default value 0.")
-            print("Warning: Package v4l-core is not installed. You can install it by running 'sudo apt install v4l-core'.")
+            print("Warning: Package v4l-utils is not installed. You can install it by running 'sudo apt install v4l-utils'.")
             return [0]
 
         indexes = []
