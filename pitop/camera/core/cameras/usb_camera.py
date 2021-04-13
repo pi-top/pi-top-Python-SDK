@@ -47,18 +47,13 @@ class UsbCamera:
 
     def get_frame(self):
         # Always PIL format
-        pil_image = Image.frombytes(
+        return Image.frombytes(
             'RGB',
             (self.__camera.width, self.__camera.height),
             self.__camera.get_frame(),
             'raw',
             'RGB'
-        )
-
-        if self._rotate_angle != 0:
-            pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
-
-        return pil_image
+        ).rotate(angle=self._rotate_angle, expand=True)
 
     @staticmethod
     def list_device_indexes():
