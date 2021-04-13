@@ -39,7 +39,7 @@ import numpy as np
 from PIL import Image
 import cv2
 
-colour = {
+color = {
     'red': (0, 0, 255),
     'green': (0, 255, 0),
     'blue': (255, 0, 0)
@@ -61,12 +61,12 @@ class TestBallDetector(TestCase):
         ball_radius = 80
 
         red_ball_center = (self._width // 4, self._height // 2)
-        cv2.circle(cv_frame, red_ball_center, ball_radius, colour['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
         red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         pil_frame = convert(cv_frame, "PIL")
 
-        balls = ball_detector.detect(pil_frame, colour="red")
+        balls = ball_detector.detect(pil_frame, color="red")
 
         red_ball = balls.red
 
@@ -91,20 +91,20 @@ class TestBallDetector(TestCase):
         ball_radius = 80
 
         red_ball_center = (self._width // 4, self._height // 2)
-        cv2.circle(cv_frame, red_ball_center, ball_radius, colour['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
         red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         green_ball_center = (self._width // 2, self._height // 2)
-        cv2.circle(cv_frame, green_ball_center, ball_radius, colour['green'], -1)
+        cv2.circle(cv_frame, green_ball_center, ball_radius, color['green'], -1)
         green_ball_center = center_reposition(green_ball_center, cv_frame)
 
         blue_ball_center = (3 * self._width // 4, self._height // 2)
-        cv2.circle(cv_frame, blue_ball_center, ball_radius, colour['blue'], -1)
+        cv2.circle(cv_frame, blue_ball_center, ball_radius, color['blue'], -1)
         blue_ball_center = center_reposition(blue_ball_center, cv_frame)
 
         pil_frame = convert(cv_frame, "PIL")
 
-        balls = ball_detector.detect(pil_frame, colour=("red", "green", "blue"))
+        balls = ball_detector.detect(pil_frame, color=("red", "green", "blue"))
 
         red_ball = balls.red
         green_ball = balls.green
@@ -135,7 +135,7 @@ class TestBallDetector(TestCase):
         ball_detector = BallDetector()
         cv_frame = self._blank_cv_frame.copy()
         pil_frame = convert(cv_frame, "PIL")
-        balls = ball_detector.detect(pil_frame, colour=("red", "green", "blue"))
+        balls = ball_detector.detect(pil_frame, color=("red", "green", "blue"))
 
         red_ball = balls.red
         green_ball = balls.green

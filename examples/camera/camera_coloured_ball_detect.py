@@ -5,7 +5,7 @@ import cv2
 
 
 def process_frame(frame):
-    balls = ball_detector.detect(frame, colour=("red", "green", "blue"))
+    balls = ball_detector.detect(frame, color=("red", "green", "blue"))
 
     red_ball = balls.red
     print(f'Red ball center: {red_ball.center}')

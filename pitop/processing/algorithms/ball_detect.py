@@ -12,7 +12,7 @@ from pitop.core.data_structures import DotDict
 import atexit
 from pitop.processing.core.vision_functions import import_opencv
 
-colour_ranges = {
+color_ranges = {
     'red': [
         {
             'lower': (150, 100, 100),
@@ -33,14 +33,14 @@ colour_ranges = {
     }]
 }
 
-draw_colour = {
+draw_color = {
     'red': (0, 0, 255),
     'green': (0, 255, 0),
     'blue': (255, 0, 0)
 }
 
 ball_match_limits = {
-    'red': 0.1,  # red needs to be a higher limit since some skin types are redish in colour
+    'red': 0.1,  # red needs to be a higher limit since some skin types are redish in color
     'green': 0.05,
     'blue': 0.05
 }
@@ -74,8 +74,8 @@ class BallDetector:
             self._fps = FPS().start()
             atexit.register(self.__print_fps)
 
-    def detect(self, frame, colour: Union[str, tuple] = "red"):
-        colours = self.__grab_colours(colour)
+    def detect(self, frame, color: Union[str, tuple] = "red"):
+        colors = self.__grab_colors(color)
         cv_frame, resized_frame = self.__prepare_frames(frame)
 
         ball_centers = {}
@@ -83,37 +83,37 @@ class BallDetector:
         ball_angles = {}
         ball_finds = {}
         robot_view = cv_frame.copy()
-        for colour in colours:
-            contours = self.__find_contours(resized_frame, colour)
-            ball_center, ball_radius = self.__find_most_likely_ball(contours, colour, resized_frame)
+        for color in colors:
+            contours = self.__find_contours(resized_frame, color)
+            ball_center, ball_radius = self.__find_most_likely_ball(contours, color, resized_frame)
 
             if ball_center is not None:
                 ball_center, ball_radius = self.__reposition_to_original_frame_size(ball_center, ball_radius)
 
-                self._detection_points[colour].appendleft(ball_center)
+                self._detection_points[color].appendleft(ball_center)
 
-                self.__draw_ball_position(robot_view, colour, ball_center, ball_radius)
+                self.__draw_ball_position(robot_view, color, ball_center, ball_radius)
 
                 ball_center = center_reposition(ball_center, robot_view)
                 ball_angle = get_object_target_lock_control_angle(ball_center, robot_view)
 
-                ball_centers[colour] = ball_center
-                ball_radii[colour] = ball_radius
-                ball_angles[colour] = ball_angle
-                ball_finds[colour] = True
+                ball_centers[color] = ball_center
+                ball_radii[color] = ball_radius
+                ball_angles[color] = ball_angle
+                ball_finds[color] = True
             else:
-                self._detection_points[colour].appendleft(None)
-                ball_centers[colour] = None
-                ball_radii[colour] = None
-                ball_angles[colour] = None
-                ball_finds[colour] = False
+                self._detection_points[color].appendleft(None)
+                ball_centers[color] = None
+                ball_radii[color] = None
+                ball_angles[color] = None
+                ball_finds[color] = False
 
-            self.__draw_ball_contrail(robot_view, colour)
+            self.__draw_ball_contrail(robot_view, color)
 
         if self._output_format.lower() != 'opencv':
             robot_view = ImageFunctions.convert(robot_view, format="PIL")
 
-        ball_data = self.__prepare_return_data(robot_view, colours, ball_finds, ball_centers, ball_radii, ball_angles)
+        ball_data = self.__prepare_return_data(robot_view, colors, ball_finds, ball_centers, ball_radii, ball_angles)
 
         if self._print_fps:
             self._fps.update()
@@ -121,25 +121,25 @@ class BallDetector:
         return ball_data
 
     @staticmethod
-    def __prepare_return_data(robot_view, colours, ball_finds, ball_centers, ball_radii, ball_angles):
+    def __prepare_return_data(robot_view, colors, ball_finds, ball_centers, ball_radii, ball_angles):
         ball_data = DotDict({})
         ball_data["robot_view"] = robot_view
 
-        for colour in colours:
-            ball_data[colour] = DotDict({
-                "found": ball_finds[colour],
-                "center": ball_centers[colour],
-                "radius": ball_radii[colour],
-                "angle": ball_angles[colour]
+        for color in colors:
+            ball_data[color] = DotDict({
+                "found": ball_finds[color],
+                "center": ball_centers[color],
+                "radius": ball_radii[color],
+                "angle": ball_angles[color]
             })
 
-        if len(colours) == 1:
-            # if only searching one colour, add convenience data so ball_data.data_type can be used directly
-            colour = colours[0]
-            ball_data["found"] = ball_finds[colour]
-            ball_data["center"] = ball_centers[colour]
-            ball_data["radius"] = ball_radii[colour]
-            ball_data["angle"] = ball_angles[colour]
+        if len(colors) == 1:
+            # if only searching one color, add convenience data so ball_data.data_type can be used directly
+            color = colors[0]
+            ball_data["found"] = ball_finds[color]
+            ball_data["center"] = ball_centers[color]
+            ball_data["radius"] = ball_radii[color]
+            ball_data["angle"] = ball_angles[color]
 
         return ball_data
 
@@ -159,18 +159,18 @@ class BallDetector:
 
         return frame, resized_frame
 
-    def __draw_ball_position(self, frame, colour, ball_center, ball_radius):
+    def __draw_ball_position(self, frame, color, ball_center, ball_radius):
         self.cv2.circle(frame, ball_center, ball_radius, (0, 255, 255), 2)
-        self.cv2.circle(frame, ball_center, 5, draw_colour[colour], -1)
+        self.cv2.circle(frame, ball_center, 5, draw_color[color], -1)
 
-    def __draw_ball_contrail(self, frame, colour):
-        for i in range(1, len(self._detection_points[colour])):
-            if self._detection_points[colour][i - 1] is None or self._detection_points[colour][i] is None:
+    def __draw_ball_contrail(self, frame, color):
+        for i in range(1, len(self._detection_points[color])):
+            if self._detection_points[color][i - 1] is None or self._detection_points[color][i] is None:
                 continue
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
-            self.cv2.line(frame, self._detection_points[colour][i - 1], self._detection_points[colour][i],
-                          draw_colour[colour], thickness)
+            self.cv2.line(frame, self._detection_points[color][i - 1], self._detection_points[color][i],
+                          draw_color[color], thickness)
 
     def __reposition_to_original_frame_size(self, ball_center, ball_radius):
         ball_center = tuple((int(item * self._frame_scaler) for item in ball_center))
@@ -179,38 +179,38 @@ class BallDetector:
         return ball_center, ball_radius
 
     @staticmethod
-    def __grab_colours(colour):
-        colours = None
-        if type(colour) == str:
-            colours = (colour,)
-        elif type(colour) == tuple:
-            colours = colour
-        if len(colours) > 3:
-            raise ValueError('Cannot pass more than three colours.')
+    def __grab_colors(color):
+        colors = None
+        if type(color) == str:
+            colors = (color,)
+        elif type(color) == tuple:
+            colors = color
+        if len(colors) > 3:
+            raise ValueError('Cannot pass more than three colors.')
 
-        return colours
+        return colors
 
-    def colour_filter(self,
-                      frame,
-                      colour: str = "red",
-                      return_binary_mask: bool = False,
-                      input_format: str = "PIL",
-                      output_format: str = "PIL"
-                      ):
+    def color_filter(self,
+                     frame,
+                     color: str = "red",
+                     return_binary_mask: bool = False,
+                     input_format: str = "PIL",
+                     output_format: str = "PIL"
+                     ):
 
         if input_format.lower() == 'pil':
             frame = ImageFunctions.convert(frame, format="OpenCV")
 
-        if colour.lower() not in ('red', 'green', 'blue'):
-            raise ValueError('Colour must be "red", "green" or "blue"')
+        if color.lower() not in ('red', 'green', 'blue'):
+            raise ValueError('Color must be "red", "green" or "blue"')
 
         blurred = self.cv2.blur(frame, (11, 11))
         hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
 
         masks = []
-        for colour_range in colour_ranges[colour]:
-            hsv_lower = colour_range['lower']
-            hsv_upper = colour_range['upper']
+        for color_range in color_ranges[color]:
+            hsv_lower = color_range['lower']
+            hsv_upper = color_range['upper']
             mask = self.cv2.inRange(hsv, hsv_lower, hsv_upper)
             masks.append(mask)
         mask = sum(masks)
@@ -226,15 +226,15 @@ class BallDetector:
 
         return mask
 
-    def __find_contours(self, frame, colour):
-        mask = self.colour_filter(frame, colour=colour, return_binary_mask=True, input_format="OpenCV",
-                                  output_format="OpenCV")
+    def __find_contours(self, frame, color):
+        mask = self.color_filter(frame, color=color, return_binary_mask=True, input_format="OpenCV",
+                                 output_format="OpenCV")
 
         contours = self.cv2.findContours(mask.copy(), self.cv2.RETR_EXTERNAL, self.cv2.CHAIN_APPROX_SIMPLE)
         contours = grab_contours(contours)  # fixes problems with OpenCV changing their protocol
         return contours
 
-    def __find_most_likely_ball(self, contours, colour, resized_frame):
+    def __find_most_likely_ball(self, contours, color, resized_frame):
         ball_center = None
         ball_radius = None
         if len(contours) > 0:
@@ -247,7 +247,7 @@ class BallDetector:
                 likelihood_index = area / (match_value + 1e-5)
                 if likelihood_index > max_likelihood_index:
                     max_likelihood_index = likelihood_index
-                    if self.__meets_minimum_ball_requirements(colour, match_value, radius):
+                    if self.__meets_minimum_ball_requirements(color, match_value, radius):
                         ball_center = (int(x), int(y))
                         ball_radius = int(radius)
 
@@ -261,8 +261,8 @@ class BallDetector:
         return area, match_value
 
     @staticmethod
-    def __meets_minimum_ball_requirements(colour, match_value, radius):
-        if match_value < ball_match_limits[colour] or radius > BALL_CLOSE_RADIUS:
+    def __meets_minimum_ball_requirements(color, match_value, radius):
+        if match_value < ball_match_limits[color] or radius > BALL_CLOSE_RADIUS:
             if radius > MIN_BALL_RADIUS:
                 return True
         return False
