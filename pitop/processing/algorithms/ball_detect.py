@@ -18,27 +18,6 @@ from pitop.processing.core.vision_functions import (
 
 valid_colors = ["red", "green", "blue"]
 
-color_ranges = {
-    "red": [
-        {
-            "lower": (150, 100, 100),
-            "upper": (179, 255, 255)
-        },
-        {
-            "lower": (0, 100, 100),
-            "upper": (5, 255, 255)
-        }
-    ],
-    "green": [{
-        "lower": (60, 100, 100),
-        "upper": (90, 255, 255)
-    }],
-    "blue": [{
-        "lower": (100, 100, 100),
-        "upper": (130, 255, 255)
-    }]
-}
-
 MIN_BALL_RADIUS = 5
 BALL_CLOSE_RADIUS = 50
 DETECTION_POINTS_BUFFER_LENGTH = 64
@@ -175,6 +154,26 @@ class BallDetector:
         hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
 
         masks = []
+        color_ranges = {
+            "red": [
+                {
+                    "lower": (150, 100, 100),
+                    "upper": (179, 255, 255)
+                },
+                {
+                    "lower": (0, 100, 100),
+                    "upper": (5, 255, 255)
+                }
+            ],
+            "green": [{
+                "lower": (60, 100, 100),
+                "upper": (90, 255, 255)
+            }],
+            "blue": [{
+                "lower": (100, 100, 100),
+                "upper": (130, 255, 255)
+            }]
+        }
         for color_range in color_ranges[color]:
             hsv_lower = color_range["lower"]
             hsv_upper = color_range["upper"]
