@@ -242,34 +242,34 @@ class BallDetector:
         ball_center = None
         ball_radius = None
         if len(contours) > 0:
-
             max_likelihood_index = 0
             for contour in contours:
-                # loop through all contours and store the most likely one's parameters
                 (x, y), radius = self.cv2.minEnclosingCircle(contour)
-                area = self.cv2.contourArea(contour)
-
-                # compare found contour with a perfect circle contour to dismiss coloured objects that aren't round
-                match_contour = self.__get_circular_match_contour(resized_frame, x, y, radius)
-                match_value = self.cv2.matchShapes(contour, match_contour, 1, 0.0)  # closer to zero is a better match
+                area, match_value = self.__get_ball_likelihood_parameters(resized_frame, contour, x, y, radius)
 
                 # most likely ball is a mixture of largest area and one that is most "ball-shaped"
                 likelihood_index = area / (match_value + 1e-5)
-
-                # check if this contour is more likely than the last
                 if likelihood_index > max_likelihood_index:
-                    # save to new max
                     max_likelihood_index = likelihood_index
-                    # check if the ball is circular. Or if it's so big it's just close to the camera and occluded
-                    if match_value < ball_match_limits[colour] or radius > BALL_CLOSE_RADIUS:
-                        # check if it meets the minimum ball radius
-                        if radius > MIN_BALL_RADIUS:
-                            # ok, we're finally happy that this is an actual ball
-                            # store the values to be used as the most likely ball in frame
-                            ball_center = (int(x), int(y))
-                            ball_radius = int(radius)
+                    if self.__meets_minimum_ball_requirements(colour, match_value, radius):
+                        ball_center = (int(x), int(y))
+                        ball_radius = int(radius)
 
         return ball_center, ball_radius
+
+    def __get_ball_likelihood_parameters(self, frame, contour, x, y, radius):
+        area = self.cv2.contourArea(contour)
+        match_contour = self.__get_circular_match_contour(frame, x, y, radius)
+        match_value = self.cv2.matchShapes(contour, match_contour, 1, 0.0)  # closer to zero is a better match
+
+        return area, match_value
+
+    @staticmethod
+    def __meets_minimum_ball_requirements(colour, match_value, radius):
+        if match_value < ball_match_limits[colour] or radius > BALL_CLOSE_RADIUS:
+            if radius > MIN_BALL_RADIUS:
+                return True
+        return False
 
     def __get_circular_match_contour(self, resized_frame, x, y, radius):
         mask_to_compare = np.zeros(resized_frame.shape[:2], dtype="uint8")
