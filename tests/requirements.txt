@@ -1,3 +1,4 @@
 gpiozero
 pitopcommon
 imutils
+opencv-python
