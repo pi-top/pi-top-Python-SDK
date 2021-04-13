@@ -55,11 +55,14 @@ class Ball:
         }
         self.match_limit = match_limits[color]
 
-        self.detection_points = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
+        self.center_points = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
 
-        self.center = None
         self.radius = None
         self.angle_from_center = None
+
+    @property
+    def center(self):
+        return self.center_points[-1]
 
 
 class BallDetector:
@@ -103,12 +106,7 @@ class BallDetector:
         frame = ImageFunctions.convert(frame, format="OpenCV")
 
         for c in parse_colors(color):
-            ball = self.__find_most_likely_ball(c, frame)
-
-            if ball is not None:
-                ball.detection_points.appendleft(ball.center)
-
-            self.balls[c] = ball
+            self.balls[c] = self.__find_most_likely_ball(c, frame)
 
         robot_view = frame.copy()
         for ball in self.balls:
@@ -159,12 +157,12 @@ class BallDetector:
         self.cv2.circle(frame, ball.center, 5, tuple_for_color_by_name(ball.color), -1)
 
     def __draw_ball_contrail(self, frame, ball):
-        for i in range(1, len(ball.detection_points)):
-            if ball.detection_points[i - 1] is None or ball.detection_points[i] is None:
+        for i in range(1, len(ball.center_points)):
+            if ball.center_points[i - 1] is None or ball.center_points[i] is None:
                 continue
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
-            self.cv2.line(frame, ball.detection_points[i - 1], ball.detection_points[i],
+            self.cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
                           tuple_for_color_by_name(ball.color), thickness)
 
     def color_filter(self,
@@ -247,7 +245,7 @@ class BallDetector:
             # meets minimum requirements
             if self.__meets_minimum_ball_requirements(ball, match_radius, match_value):
                 # Scale to original frame size
-                ball.center = tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y))))
+                ball.center_points.appendleft(tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y)))))
                 ball.radius = int(match_radius * self._frame_scaler)
 
             # Get angle between ball center and approximate robot chassis center
