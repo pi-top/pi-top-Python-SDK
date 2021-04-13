@@ -1,11 +1,7 @@
-from os import environ
-from pitopcommon.current_session_info import get_first_display
 from pitop.camera import Camera
 from pitop.processing.algorithms import BallDetector
 from signal import pause
 import cv2
-
-environ["DISPLAY"] = get_first_display()
 
 
 def process_frame(frame):
