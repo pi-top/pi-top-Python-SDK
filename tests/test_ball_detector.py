@@ -73,7 +73,7 @@ class TestBallDetector(TestCase):
         # Check ball radii
         self.assertAlmostEqual(red_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
 
-        # Check PIL image is returned
+        # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
 
     def test_detect_all_balls(self):
@@ -118,7 +118,7 @@ class TestBallDetector(TestCase):
         self.assertAlmostEqual(green_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
         self.assertAlmostEqual(blue_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
 
-        # Check PIL image is returned
+        # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
 
     def test_detect_no_balls(self):
@@ -146,7 +146,7 @@ class TestBallDetector(TestCase):
         self.assertEquals(green_ball.radius, 0)
         self.assertEquals(blue_ball.radius, 0)
 
-        # Check PIL image is returned
+        # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
 
 

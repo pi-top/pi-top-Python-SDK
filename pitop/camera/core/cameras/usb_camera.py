@@ -18,6 +18,12 @@ class UsbCamera:
         else:
             self._rotate_angle = rotate_angle
 
+        def create_camera_object(index, resolution=None):
+            if resolution is not None:
+                return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
+            else:
+                return V4L2Camera(f"/dev/video{index}")
+
         for idx in indexes:
             try:
                 self.__camera = self.create_camera_object(idx, resolution)
@@ -29,13 +35,6 @@ class UsbCamera:
 
         if self.__camera is None:
             raise IOError("Error opening camera. Make sure it's correctly connected via USB.") from None
-
-    @staticmethod
-    def create_camera_object(index, resolution=None):
-        if resolution is not None:
-            return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
-        else:
-            return V4L2Camera(f"/dev/video{index}")
 
     def __del__(self):
         try:
