@@ -4,7 +4,7 @@ from pitop.processing.utils.vision_functions import (
     find_centroid,
     find_largest_contour,
     import_opencv,
-    get_control_angle,
+    get_object_target_lock_control_angle,
     center_reposition,
 )
 from pitop.core.data_structures import DotDict
@@ -51,7 +51,7 @@ def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
         centroid = center_reposition(scaled_image_centroid, resized_frame)
         bounding_rectangle = cv2.boundingRect(line_contour)
         rectangle_dimensions = bounding_rectangle[2:5]
-        angle = get_control_angle(centroid, resized_frame)
+        angle = get_object_target_lock_control_angle(centroid, resized_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 

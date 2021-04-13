@@ -3,7 +3,7 @@ import numpy as np
 from pitop.core import ImageFunctions
 from pitop.processing.utils.vision_functions import (
     center_reposition,
-    get_control_angle,
+    get_object_target_lock_control_angle,
 )
 from typing import Union
 from imutils import resize, grab_contours
@@ -98,7 +98,7 @@ class BallDetector:
                 self.__draw_ball_position(robot_view, colour, ball_center, ball_radius)
 
                 ball_center = center_reposition(ball_center, robot_view)
-                ball_angle = get_control_angle(ball_center, robot_view)
+                ball_angle = get_object_target_lock_control_angle(ball_center, robot_view)
 
                 ball_centers[colour] = ball_center
                 ball_radii[colour] = ball_radius

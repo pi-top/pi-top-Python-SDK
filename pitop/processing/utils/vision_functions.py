@@ -83,7 +83,20 @@ def center_reposition(center, frame):
     return center_x, center_y
 
 
-def get_control_angle(center, frame):
+def get_object_target_lock_control_angle(center, frame):
+    """
+    Retrieves an angle between the center of an object in the camera's view and the (approximate) robot chassis center.
+    This can be used as input to a PID loop so the object is "target locked" - the robot drives to align itself with
+    the object, i.e. aim to minimize difference between chassis angle and object angle.
+    :param tuple center:
+            (x, y) coordinates of the object in the camera's view where the center of the frame is (0, 0). Please note,
+            this is different from the OpenCV convention where the top left of the frame is (0, 0).
+
+    :param frame:
+            OpenCV frame that has the same scale used for center parameter - this function uses the dimensions of
+            the frame.
+    :return:
+    """
     from numpy import arctan, pi
     if center is None:
         return None
@@ -92,8 +105,7 @@ def get_control_angle(center, frame):
     # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
     chassis_center_y = -int(frame.shape[1])
 
-    # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
-    # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
+    # Anticlockwise is positive angle
     delta_y = abs(center[1] - chassis_center_y)
 
     return arctan(center[0] / delta_y) * 180.0 / pi
