@@ -12,7 +12,7 @@ environ["DISPLAY"] = get_first_display()
 
 
 def process_frame(frame):
-    ball = ball_detector.detect(frame, colour=("red", "green", "blue"))
+    balls = ball_detector.detect(frame, colour=("red", "green", "blue"))
 
     # Get data for red ball
     red_ball = ball.red
