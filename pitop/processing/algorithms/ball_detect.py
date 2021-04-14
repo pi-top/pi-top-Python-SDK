@@ -36,12 +36,14 @@ class Ball:
         }
         self.match_limit = match_limits[color]
 
-        self.center_points = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
+        self.center_points_cv = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
+        self._center = None
         self.radius = 0
         self.angle_from_center = None
 
     def clear(self):
-        self.center_points.appendleft(None)
+        self.center_points_cv.appendleft(None)
+        self.center = None
         self.radius = 0
         self.angle_from_center = None
 
@@ -51,9 +53,11 @@ class Ball:
 
     @property
     def center(self):
-        if len(self.center_points) > 0:
-            return self.center_points[0]
-        return None
+        return self._center
+
+    @center.setter
+    def center(self, value):
+        self._center = value
 
     def is_valid(self):
         return self.center is not None
@@ -125,16 +129,16 @@ class BallDetector:
         print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     def __draw_ball_position(self, frame, ball):
-        self.cv2.circle(frame, ball.center, ball.radius, (0, 255, 255), 2)
-        self.cv2.circle(frame, ball.center, 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
+        self.cv2.circle(frame, ball.center_points_cv[0], ball.radius, (0, 255, 255), 2)
+        self.cv2.circle(frame, ball.center_points_cv[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
 
     def __draw_ball_contrail(self, frame, ball):
-        for i in range(1, len(ball.center_points)):
-            if ball.center_points[i - 1] is None or ball.center_points[i] is None:
+        for i in range(1, len(ball.center_points_cv)):
+            if ball.center_points_cv[i - 1] is None or ball.center_points_cv[i] is None:
                 continue
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
-            self.cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
+            self.cv2.line(frame, ball.center_points_cv[i - 1], ball.center_points_cv[i],
                           tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
     def color_filter(self,
@@ -232,11 +236,12 @@ class BallDetector:
 
             if __meets_minimum_ball_requirements(ball, match_radius, match_value):
                 # Scale to original frame size
-                ball.center_points.appendleft(tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y)))))
+                ball_center_cv = tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y))))
+                ball.center_points_cv.appendleft(ball_center_cv)
+                ball.center = center_reposition(ball_center_cv, frame)
                 ball.radius = int(match_radius * self._frame_scaler)
                 # Get angle between ball center and approximate robot chassis center
-                ball.angle_from_center = get_object_target_lock_control_angle(
-                    center_reposition(ball.center, frame), frame)
+                ball.angle_from_center = get_object_target_lock_control_angle(ball.center, frame)
             else:
                 # If the ball existed before, it's cleared
                 ball.clear()
