@@ -60,7 +60,7 @@ class TestBallDetector(TestCase):
 
         red_ball = balls.red
 
-        # Check is_valid() boolean
+        # Check found boolean
         self.assertTrue(red_ball.found)
 
         # Check ball centers
@@ -74,7 +74,7 @@ class TestBallDetector(TestCase):
         self.assertAlmostEqual(red_ball.angle, red_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
 
         # Check center points deque has been appended
-        self.assertEqual(len(red_ball.center_points_cv), 1)
+        self.assertEqual(len(red_ball.center_points), 1)
 
         # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
@@ -117,7 +117,7 @@ class TestBallDetector(TestCase):
         green_ball = balls.green
         blue_ball = balls.blue
 
-        # Check is_valid() boolean
+        # Check found boolean
         self.assertTrue(red_ball.found)
         self.assertTrue(green_ball.found)
         self.assertTrue(blue_ball.found)
@@ -141,9 +141,9 @@ class TestBallDetector(TestCase):
         self.assertAlmostEqual(blue_ball.angle, blue_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
 
         # Check only one center point has been appended to deque
-        self.assertEqual(len(red_ball.center_points_cv), 1)
-        self.assertEqual(len(green_ball.center_points_cv), 1)
-        self.assertEqual(len(blue_ball.center_points_cv), 1)
+        self.assertEqual(len(red_ball.center_points), 1)
+        self.assertEqual(len(green_ball.center_points), 1)
+        self.assertEqual(len(blue_ball.center_points), 1)
 
         # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
@@ -158,9 +158,9 @@ class TestBallDetector(TestCase):
         blue_ball = balls.blue
 
         # Check center points deque has been appended (even None should get appended if no ball detected)
-        self.assertEqual(len(red_ball.center_points_cv), 2)
-        self.assertEqual(len(green_ball.center_points_cv), 2)
-        self.assertEqual(len(blue_ball.center_points_cv), 2)
+        self.assertEqual(len(red_ball.center_points), 2)
+        self.assertEqual(len(green_ball.center_points), 2)
+        self.assertEqual(len(blue_ball.center_points), 2)
 
     def test_detect_no_balls(self):
         ball_detector = BallDetector()
@@ -172,7 +172,7 @@ class TestBallDetector(TestCase):
         green_ball = balls.green
         blue_ball = balls.blue
 
-        # Check is_valid() boolean
+        # Check found boolean
         self.assertFalse(red_ball.found)
         self.assertFalse(green_ball.found)
         self.assertFalse(blue_ball.found)
@@ -194,9 +194,9 @@ class TestBallDetector(TestCase):
         self.assertIsNone(blue_ball.angle)
 
         # Check center points deque has been appended (even None should get appended if no ball detected)
-        self.assertEqual(len(red_ball.center_points_cv), 1)
-        self.assertEqual(len(green_ball.center_points_cv), 1)
-        self.assertEqual(len(blue_ball.center_points_cv), 1)
+        self.assertEqual(len(red_ball.center_points), 1)
+        self.assertEqual(len(green_ball.center_points), 1)
+        self.assertEqual(len(blue_ball.center_points), 1)
 
         # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
@@ -209,9 +209,9 @@ class TestBallDetector(TestCase):
         blue_ball = balls.blue
 
         # Check center points deque has been appended (even None should get appended if no ball detected)
-        self.assertEqual(len(red_ball.center_points_cv), 2)
-        self.assertEqual(len(green_ball.center_points_cv), 2)
-        self.assertEqual(len(blue_ball.center_points_cv), 2)
+        self.assertEqual(len(red_ball.center_points), 2)
+        self.assertEqual(len(green_ball.center_points), 2)
+        self.assertEqual(len(blue_ball.center_points), 2)
 
     def test_wrong_color_values(self):
         ball_detector = BallDetector()

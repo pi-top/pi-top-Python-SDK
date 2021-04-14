@@ -37,10 +37,10 @@ class BallLikeness:
 
     def __circular_match_contour(self):
         # Initialise empty mask
-        mask_to_compare = np.zeros((self.radius, self.radius), dtype="uint8")
+        mask_to_compare = np.zeros((int(2 * self.radius), int(2 * self.radius)), dtype="uint8")
 
         # Draw circle matching contour's position and radius
-        cv2.circle(mask_to_compare, (int(self.pos[0]), int(self.pos[1])), int(self.radius), 255, -1)
+        cv2.circle(mask_to_compare, (int(self.radius), int(self.radius)), int(self.radius), 255, -1)
 
         return max(
             grab_contours(
@@ -65,13 +65,19 @@ class Ball:
         }
         self.minimum_shape_accuracy = minimum_shape_accuracies[color]
 
-        self._center_points_cv = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
+        self._center_points = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
         self._center = None
         self._radius = 0
         self._angle = None
 
     @property
     def angle(self) -> float:
+        """
+        :return: Angle between the approximate robot chassis center and the ball in the frame. Used for input to a PID
+        algorithm to align a robot chassis with the ball center (drive in a direction that keeps the ball in the middle
+        of the frame).
+        :rtype: float
+        """
         return self._angle
 
     @angle.setter
@@ -80,6 +86,10 @@ class Ball:
 
     @property
     def center(self) -> tuple:
+        """
+        :return: (x, y) coordinates of the ball where (0, 0) is the middle of the image frame used to detect it.
+        :rtype: tuple
+        """
         return self._center
 
     @center.setter
@@ -88,6 +98,10 @@ class Ball:
 
     @property
     def radius(self) -> int:
+        """
+        :return: Radius of the detected ball in pixels in relation to the image frame used to detect it.
+        :rtype: int
+        """
         return self._radius
 
     @radius.setter
@@ -95,24 +109,32 @@ class Ball:
         self._radius = value
 
     @property
-    def center_points_cv(self) -> deque:
-        return self._center_points_cv
+    def center_points(self) -> deque:
+        """
+        :return: deque of (x, y) coordinates for historical ball detections where (0, 0) is the top left of the frame.
+        :rtype: deque
+        """
+        return self._center_points
 
     @property
     def found(self) -> bool:
+        """
+        :return: Boolean to determine if a valid ball was found in the frame.
+        :rtype: bool
+        """
         return self.center is not None
 
     def will_accept(self, ball_likeness: BallLikeness):
         if ball_likeness.radius < self.MIN_BALL_RADIUS:
             return False
 
-        if ball_likeness.radius > self.BALL_CLOSE_RADIUS:
-            return False
-
         if ball_likeness.circular_likeness < self.minimum_shape_accuracy:
-            return False
+            return True
 
-        return True
+        if ball_likeness.radius > self.BALL_CLOSE_RADIUS:
+            return True
+
+        return False
 
 
 class BallDetector:
@@ -184,16 +206,16 @@ class BallDetector:
         print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     def __draw_ball_position(self, frame, ball):
-        cv2.circle(frame, ball.center_points_cv[0], ball.radius, (0, 255, 255), 2)
-        cv2.circle(frame, ball.center_points_cv[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
+        cv2.circle(frame, ball.center_points[0], ball.radius, (0, 255, 255), 2)
+        cv2.circle(frame, ball.center_points[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
 
     def __draw_ball_contrail(self, frame, ball):
-        for i in range(1, len(ball.center_points_cv)):
-            if ball.center_points_cv[i - 1] is None or ball.center_points_cv[i] is None:
+        for i in range(1, len(ball.center_points)):
+            if ball.center_points[i - 1] is None or ball.center_points[i] is None:
                 continue
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
-            cv2.line(frame, ball.center_points_cv[i - 1], ball.center_points_cv[i],
+            cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
                      tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
     def color_filter(self, frame, color: str = "red"):
@@ -257,7 +279,7 @@ class BallDetector:
         resized_frame = resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
-            ball.center_points_cv.appendleft(None)
+            ball.center_points.appendleft(None)
             ball.center = None
             ball.radius = 0
             ball.angle = None
@@ -266,7 +288,7 @@ class BallDetector:
 
         highest_likelihood = 0
 
-        ball_center_cv = None
+        ball_center = None
         ball_radius = None
         for contour in contours:
             ball_likeness = BallLikeness(contour)
@@ -276,16 +298,16 @@ class BallDetector:
 
             # Don't accept future balls which are less likely
             highest_likelihood = ball_likeness.likelihood
-
             if ball.will_accept(ball_likeness):
                 # Scale to original frame size
-                ball_center_cv = tuple(int(coordinate * self._frame_scaler) for coordinate in ball_likeness.pos)
+
+                ball_center = tuple(int(coordinate * self._frame_scaler) for coordinate in ball_likeness.pos)
                 ball_radius = int(ball_likeness.radius * self._frame_scaler)
 
         # Update ball state
-        ball.center_points_cv.appendleft(ball_center_cv)
-        ball.center = center_reposition(ball_center_cv, frame) if ball_center_cv is not None else None
-        ball.angle = get_object_target_lock_control_angle(ball.center, frame) if ball_center_cv is not None else None
+        ball.center_points.appendleft(ball_center)
+        ball.center = center_reposition(ball_center, frame) if ball_center is not None else None
+        ball.angle = get_object_target_lock_control_angle(ball.center, frame) if ball_center is not None else None
         ball.radius = ball_radius
 
         return ball
