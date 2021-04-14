@@ -6,11 +6,12 @@ class WebController(WebServer):
     def __init__(
         self,
         camera=None,
-        handlers={},
+        pubsub_handlers={},
         **kwargs
     ):
         WebServer.__init__(
             self,
-            blueprint=ControllerBlueprint(camera=camera, handlers=handlers),
+            blueprint=ControllerBlueprint(
+                camera=camera, pubsub_handlers=pubsub_handlers),
             **kwargs
         )

@@ -10,7 +10,7 @@ class AlexControllerBlueprint(Blueprint):
         drive=None,
         pan_tilt=None,
         camera=None,
-        handlers={},
+        pubsub_handlers={},
         **kwargs
     ):
         Blueprint.__init__(
@@ -24,20 +24,20 @@ class AlexControllerBlueprint(Blueprint):
         self.drive = drive
         self.pan_tilt = pan_tilt
         self.controller_blueprint = ControllerBlueprint(
-            camera=camera, handlers=handlers)
+            camera=camera, pubsub_handlers=pubsub_handlers)
 
     def register(self, app, options, *args, **kwargs):
         app.register_blueprint(self.controller_blueprint, **options)
 
-        handlers = app.config.get('handlers', {})
+        pubsub_handlers = app.config.get('pubsub_handlers', {})
 
-        if handlers.get('left_joystick') is None:
-            handlers['left_joystick'] = self.left_joystick
+        if pubsub_handlers.get('left_joystick') is None:
+            pubsub_handlers['left_joystick'] = self.left_joystick
 
-        if handlers.get('right_joystick') is None:
-            handlers['right_joystick'] = self.right_joystick
+        if pubsub_handlers.get('right_joystick') is None:
+            pubsub_handlers['right_joystick'] = self.right_joystick
 
-        app.config['handlers'] = handlers
+        app.config['pubsub_handlers'] = pubsub_handlers
 
         Blueprint.register(self, app, options, *args, **kwargs)
 
