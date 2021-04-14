@@ -255,7 +255,7 @@ class BallDetector:
 
         ball.center_points_cv.appendleft(ball_center_cv)
         ball.center = center_reposition(ball_center_cv, frame) if ball_center_cv is not None else None
-        ball.angle = get_object_target_lock_control_angle(ball.center, frame) if ball.is_valid is True else None
+        ball.angle = get_object_target_lock_control_angle(ball.center, frame) if ball_center_cv is not None else None
         ball.radius = ball_radius
 
         return ball
