@@ -81,14 +81,14 @@ class Ball:
 
 class BallDetector:
     def __init__(self,
-                 process_image_width: int = 320,
+                 image_processing_width: int = 320,
                  format: str = "OpenCV"):
         """
-        :param int process_image_width: image width to scale to for image processing
+        :param int image_processing_width: image width to scale to for image processing
         :param str format: output image format
         """
         self.cv2 = import_opencv()
-        self._process_image_width = process_image_width
+        self._image_processing_width = image_processing_width
         self.format = format
         self.balls = {c: Ball(c) for c in valid_colors}
         self._frame_scaler = None
@@ -117,7 +117,7 @@ class BallDetector:
 
         if self._frame_scaler is None:
             _, width = frame.shape[0:2]
-            self._frame_scaler = width / self._process_image_width
+            self._frame_scaler = width / self._image_processing_width
 
         for c in parse_colors(color):
             self.balls[c] = self.__find_most_likely_ball(ball=self.balls.get(c),
@@ -218,7 +218,7 @@ class BallDetector:
         )
 
     def __find_most_likely_ball(self, ball, color, frame):
-        resized_frame = resize(frame, width=self._process_image_width)
+        resized_frame = resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
             ball.no_detection()
