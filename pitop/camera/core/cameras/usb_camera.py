@@ -6,6 +6,9 @@ from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
 from pitopcommon.command_runner import run_command
 
 
+valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
+
+
 class UsbCamera:
     def __init__(self, index: int = None, resolution=None, rotate_angle: int = 0):
         # if no index is provided, loop over available video devices
@@ -13,8 +16,10 @@ class UsbCamera:
         self.__camera = None
         self.index = None
 
-        if rotate_angle not in (-270, -180, -90, 0, 90, 180, 270):
-            raise ValueError("Rotate angle must be -90, 0, 90 or 180 degrees")
+        if rotate_angle not in valid_rotate_angles:
+            raise ValueError(f"Rotate angle must be one of "
+                             f"{', '.join([str(x) for x in valid_rotate_angles[:-1]])} or "
+                             f"{str(valid_rotate_angles[-1])}")
         else:
             self._rotate_angle = rotate_angle
 
