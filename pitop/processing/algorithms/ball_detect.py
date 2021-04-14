@@ -160,16 +160,16 @@ class BallDetector:
             self.cv2.line(frame, ball.center_points_cv[i - 1], ball.center_points_cv[i],
                           tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
-    def colour_filter(self, frame, color: str = "red"):
+    def color_filter(self, frame, color: str = "red"):
         frame = ImageFunctions.convert(frame, format="OpenCV")
-        mask = self.__get_colour_mask(frame, color)
+        mask = self.__get_color_mask(frame, color)
         filtered_image = self.cv2.bitwise_and(frame, frame, mask=mask)
         if self.format.lower() == "pil":
             filtered_image = ImageFunctions.convert(mask, format="PIL")
 
         return filtered_image
 
-    def __get_colour_mask(self, frame, color: str):
+    def __get_color_mask(self, frame, color: str):
         blurred = self.cv2.blur(frame, (11, 11))
         hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
 
@@ -207,7 +207,7 @@ class BallDetector:
         return mask
 
     def __find_contours(self, frame, color):
-        mask = self.__get_colour_mask(frame, color=color)
+        mask = self.__get_color_mask(frame, color=color)
 
         return grab_contours(  # fixes problems with OpenCV changing their protocol
             self.cv2.findContours(
