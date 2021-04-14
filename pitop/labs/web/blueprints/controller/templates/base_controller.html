@@ -1,25 +1,35 @@
 <html>
   <head>
-    <title>Web Controller</title>
-    <script type="text/javascript" src="./static/vendor/nipplejs.js"></script>
-    <script type="text/javascript" src="./static/command.js"></script>
-  </head>
-  <body style="background-color: #00B2A2; margin: 0">
-    <header>{% block header %}{% endblock %}</header>
-    <div id="main" style="width: 100vw; height: 60vh;">
-      {% block joysticks %}
-        <div id="joysticks" style="display: flex; justify-content: space-between; padding: 80px;">
-          {% block leftjoystick %}
-            <div id="leftJoystickContainer" style="position: relative; width: 200px; height: 200px"></div>
-          {% endblock %}
-          {% block rightjoystick %}
-            <div id="rightJoystickContainer" style="position: relative; width: 200px; height: 200px"></div>
-          {% endblock %}
-        </div>
+    {% block head %}
+      <title>{% block title %}Web Controller{% endblock %}</title>
+
+      {% block scripts %}
+        <script type="text/javascript" src="/static/vendor/nipplejs.js"></script>
+        <script type="text/javascript" src="/static/js/publish.js"></script>
+        <script type="text/javascript" src="/static/js/joysticks.js"></script>
+        {% block custom_scripts %}{% endblock %}
       {% endblock %}
-    </div>
-    <br/>
-    <img src="video.mjpg" style="height: 100vh; position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: -1;" />
-    <script type="text/javascript" src="./static/joysticks.js"></script>
+
+      {% block styles %}
+        <link rel="stylesheet" href="/static/css/index.css"></link>
+        <link rel="stylesheet" href="/static/css/joysticks.css"></link>
+        <link rel="stylesheet" href="/static/css/video.css"></link>
+        {% block custom_styles %}{% endblock %}
+      {% endblock %}
+    {% endblock %}
+  </head>
+
+  <body>
+    {% block body %}
+      <header>
+        {% block header %}{% endblock %}
+      </header>
+      <main>
+        {% block main %}{% endblock %}
+      </main>
+      <footer>
+        {% block footer %}{% endblock %}
+      </footer>
+    {% endblock %}
   </body>
 </html>

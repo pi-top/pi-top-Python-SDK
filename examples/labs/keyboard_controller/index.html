@@ -1,0 +1,21 @@
+{% extends "base_controller.html" %}
+
+{% block custom_scripts %}
+  <script type="text/javascript" src="speed.js"></script>
+{% endblock %}
+
+{% block custom_styles %}
+  <link rel="stylesheet" href="styles.css"></link>
+{% endblock %}
+
+{% block main %}
+  {% include "video.html" %}
+
+  <div class="speed-container">
+    <div id="speed-indicator" style="height: 100%"></div>
+  </div>
+
+  <script>
+    showSpeed()
+  </script>
+{% endblock %}

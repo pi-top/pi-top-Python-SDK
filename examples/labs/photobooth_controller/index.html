@@ -1,0 +1,22 @@
+{% extends "base_controller.html" %}
+
+{% block custom_styles %}
+  <link rel="stylesheet" href="styles.css"></link>
+{% endblock %}
+
+{% block custom_scripts %}
+  <script type="text/javascript" src="photo.js"></script>
+{% endblock %}
+
+{% block header %}
+  <input id="name-input" type="text" placeholder="Photo Name"></input>
+
+  <button onclick="savePhoto()">
+    Save Photo
+  </button>
+{% endblock %}
+
+{% block main %}
+  {% include "video.html" %}
+  <div id="flash"></div>
+{% endblock %}

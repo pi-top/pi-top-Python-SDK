@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app as app
 import json
 
-socket_blueprint = Blueprint('controller_socket', __name__)
+publish_blueprint = Blueprint('publish', __name__)
 
 
 def log_unhandled_message(message_type, message_data):
@@ -33,11 +33,9 @@ def handle_message(message):
     handler()
 
 
-@socket_blueprint.route('/publish')
+@publish_blueprint.route('/publish')
 def publish(ws):
-    print('Publish socket connected')
     while not ws.closed:
         message = ws.receive()
         if message:
             handle_message(message)
-    print('Publish socket disconnected')

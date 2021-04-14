@@ -18,17 +18,20 @@ function sanitiseJoystickData(data) {
   };
 }
 
-["left", "right"].forEach((position) => {
-  const joystickZone = document.getElementById(position + "JoystickContainer");
-  if (!joystickZone) return;
+function setupJoystick({ containerId, type } = {}) {
+  const joystickZone = document.getElementById(containerId);
+  if (!joystickZone) {
+    return console.warn(
+      `Unable to setup joystick "${type}", no element with id "${containerId}" found`
+    );
+  }
 
-  const type = `${position}_joystick`;
   const joystick = nipplejs
     .create({
       zone: joystickZone,
       mode: "static",
       size: 200,
-      position: { top: 50, [position]: 50 },
+      position: { top: 100, left: 100 },
     })
     .get();
 
@@ -41,4 +44,6 @@ function sanitiseJoystickData(data) {
     joystick.frontPosition.y = 0;
     publish({ type, data: sanitiseJoystickData(data) });
   });
-});
+
+  return joystick;
+}

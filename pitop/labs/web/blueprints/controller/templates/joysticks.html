@@ -1,0 +1,23 @@
+<div class="joysticks">
+  <div
+    id="leftJoystickContainer"
+    class="joystick"
+    style="margin-right: auto"
+  ></div>
+  <div
+    id="rightJoystickContainer"
+    class="joystick"
+    style="margin-left: auto"
+  ></div>
+
+  <script>
+    setupJoystick({
+      containerId: "leftJoystickContainer",
+      type: "left_joystick",
+    });
+    setupJoystick({
+      containerId: "rightJoystickContainer",
+      type: "right_joystick",
+    });
+  </script>
+</div>

@@ -1,14 +1,16 @@
 from .webserver import WebServer
-from .blueprints.controller import blueprint, socket_blueprint
+from .blueprints.controller import ControllerBlueprint
 
 
 class WebController(WebServer):
-    def __init__(self, camera=None, handlers={}):
-        super().__init__()
-
-        self.app.config['handlers'] = handlers
-        self.app.config['camera'] = camera
-
-        with self.app.app_context():
-            self.app.register_blueprint(blueprint)
-            self.sockets.register_blueprint(socket_blueprint)
+    def __init__(
+        self,
+        camera=None,
+        handlers={},
+        **kwargs
+    ):
+        WebServer.__init__(
+            self,
+            blueprint=ControllerBlueprint(camera=camera, handlers=handlers),
+            **kwargs
+        )

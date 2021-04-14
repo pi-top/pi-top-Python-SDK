@@ -3,13 +3,11 @@ from flask_cors import CORS
 from flask_sockets import Sockets
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
-from pathlib import Path
 
 from pitopcommon.sys_info import get_internal_ip
 from pitopcommon.formatting import is_url
 
 
-# TODO: get __main__.__file__ directory for template and static folders
 def create_app(
         import_name='__main__',
         *args,
@@ -28,23 +26,26 @@ def create_app(
     @app.route('/', defaults={'path': 'index'})
     @app.route('/<path>')
     def send_file(path):
-        if Path('./{}.html'.format(path)).is_file():
-            return render_template('{}.html'.format(path))
-
-        return send_from_directory(app.static_folder, path)
+        try:
+            return render_template(f'{path}.html')
+        except Exception:
+            return send_from_directory(app.static_folder, path)
 
     return app
 
 
 class WebServer(WSGIServer):
-    def __init__(self,
-                 port=8070,
-                 app=create_app()):
+    def __init__(self, port=8070, app=create_app(), blueprint=None):
         self.port = port
         self.app = app
         self.sockets = Sockets(app)
 
-        super().__init__(
+        if blueprint:
+            with self.app.app_context():
+                self.app.register_blueprint(blueprint, sockets=self.sockets)
+
+        WSGIServer.__init__(
+            self,
             ('0.0.0.0', port),
             self.app,
             handler_class=WebSocketHandler)
