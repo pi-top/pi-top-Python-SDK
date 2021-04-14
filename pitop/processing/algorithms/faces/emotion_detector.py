@@ -4,7 +4,7 @@ import math
 from .face_utils import load_emotion_model
 from pitop.core.data_stuctures import DotDict
 from pitop.processing.utils.math_functions import running_mean
-from pitop.processing.utils.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import import_opencv
 
 
 cv2 = import_opencv()

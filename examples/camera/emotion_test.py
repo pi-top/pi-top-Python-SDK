@@ -1,5 +1,5 @@
 from pitop.processing.algorithms.faces import FaceDetector, EmotionDetector
-from pitop.processing.utils.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import import_opencv
 
 
 cv2 = import_opencv()

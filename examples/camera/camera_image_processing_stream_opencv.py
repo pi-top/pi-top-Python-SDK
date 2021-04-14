@@ -1,6 +1,6 @@
 from pitop import Camera
 from time import sleep
-from pitop.processing.utils.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import import_opencv
 
 
 cv2 = import_opencv()

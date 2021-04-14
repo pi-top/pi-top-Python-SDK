@@ -1,6 +1,6 @@
 import os
 import dlib
-from pitop.processing.utils.vision_functions import center_reposition
+from pitop.processing.core.vision_functions import center_reposition
 from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
 from imutils import (
@@ -8,7 +8,7 @@ from imutils import (
     resize,
 )
 from pitop.core.data_stuctures import DotDict
-from pitop.processing.utils.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import import_opencv
 
 
 cv2 = import_opencv()
