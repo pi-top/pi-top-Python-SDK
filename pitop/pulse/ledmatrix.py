@@ -153,7 +153,7 @@ def __signal_handler(signal, frame):
     exit(0)
 
 
-def __get_avg_colour():
+def __get_avg_color():
     """INTERNAL.
 
     Get the average color of the matrix.
@@ -272,7 +272,7 @@ def __rgb_to_bytes_to_send(rgb):
     Format the LED data in the device-specific layout.
     """
 
-    # Create three 5-bit colour vals, splitting the green bits
+    # Create three 5-bit color vals, splitting the green bits
     # into two parts (hardware spec):
     # |XX|G0|G1|R0|R1|R2|R3|R4|
     # |G2|G3|G4|B0|B1|B2|B3|B4|
@@ -430,7 +430,7 @@ def get_pixel(x, y):
 
 
 def set_pixel(x, y, r, g, b):
-    """Set a single pixel to RGB colour.
+    """Set a single pixel to RGB color.
 
     :param x: Horizontal position from 0 to 7
     :param y: Veritcal position from 0 to 7
@@ -446,7 +446,7 @@ def set_pixel(x, y, r, g, b):
 
 
 def set_all(r, g, b):
-    """Set all pixels to a specific colour."""
+    """Set all pixels to a specific color."""
 
     global _pixel_map
 
@@ -493,7 +493,7 @@ def show():
     __sync_with_device()
 
     rotated_pixel_map = __get_rotated_pixel_map()
-    avg_rgb = __get_avg_colour()
+    avg_rgb = __get_avg_color()
 
     __initialise()
 

@@ -1,2 +1,7 @@
 gpiozero
+imutils
+matplotlib
+numpy
+opencv-python
 pitopcommon
+Pillow

@@ -1,0 +1,53 @@
+{
+    "version": "0.17.0",
+    "classname": "Pitop",
+    "module": "pitop.system.pitop",
+    "components": {
+        "camera": {
+            "index": 0,
+            "resolution": [
+                640,
+                480
+            ],
+            "camera_type": 0,
+            "path_to_images": "",
+            "format": "PIL",
+            "name": "camera",
+            "classname": "Camera",
+            "module": "pitop.camera.camera"
+        },
+        "ultrasonic": {
+            "port_name": "D3",
+            "queue_len": 9,
+            "partial": false,
+            "name": "ultrasonic",
+            "classname": "UltrasonicSensor",
+            "module": "pitop.pma.ultrasonic_sensor",
+            "max_distance": 3,
+            "threshold_distance": 0.3
+        },
+        "drive": {
+            "left_motor_port": "M3",
+            "right_motor_port": "M0",
+            "wheel_base": 0.1675,
+            "name": "drive",
+            "classname": "DriveController",
+            "module": "pitop.robotics.drive_controller"
+        },
+        "localization": {
+            "left_motor_port": "M3",
+            "right_motor_port": "M0",
+            "wheel_base": 0.1675,
+            "name": "localization",
+            "classname": "Localization",
+            "module": "pitop.robotics.localization"
+        },
+        "pincers": {
+            "left_pincer_port": "S0",
+            "right_pincer_port": "S3",
+            "name": "pincers",
+            "classname": "PincerController",
+            "module": "pitop.robotics.pincer_controller"
+        }
+    }
+}

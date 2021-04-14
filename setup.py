@@ -132,6 +132,11 @@ __requires__ = [
     "flask-sockets",
     "gevent",
     "gevent-websocket",
+
+    #############################
+    # Advanced image processing #
+    #############################
+    "imutils",
 ]
 
 __extra_requires__ = {
