@@ -20,7 +20,7 @@ valid_colors = ["red", "green", "blue"]
 
 MIN_BALL_RADIUS = 5
 BALL_CLOSE_RADIUS = 50
-DETECTION_POINTS_BUFFER_LENGTH = 64
+DETECTION_POINTS_BUFFER_LENGTH = 16
 
 
 class Ball:
