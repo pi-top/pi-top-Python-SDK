@@ -3,21 +3,12 @@ from unittest.mock import Mock
 
 
 modules_to_patch = [
-    "luma.core.interface.serial",
-    "luma.oled.device",
-    "pyinotify",
-    "pitop.camera",
-    "simple_pid",
-    "pitopcommon.smbus_device",
-    "pitopcommon.logger",
-    "pitopcommon.singleton",
-    "pitopcommon.common_ids",
-    "pitopcommon.current_session_info",
+    "imageio",
     "pitopcommon.ptdm",
-    "pitopcommon.firmware_device",
-    "pitopcommon.command_runner",
-    "pitopcommon.common_names"
-
+    "pitopcommon.smbus_device",
+    "PyV4L2Camera.camera",
+    "PyV4L2Camera.exceptions",
+    "simple_pid",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
