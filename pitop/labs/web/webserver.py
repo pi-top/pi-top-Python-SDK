@@ -31,6 +31,15 @@ def create_app(
         except Exception:
             return send_from_directory(app.static_folder, path)
 
+    @app.after_request
+    def add_header(req):
+        req.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        req.headers["Pragma"] = "no-cache"
+        req.headers["Expires"] = "0"
+        return req
+
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
+
     return app
 
 
