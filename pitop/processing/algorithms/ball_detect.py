@@ -36,30 +36,46 @@ class Ball:
         }
         self.match_limit = match_limits[color]
 
-        self.center_points_cv = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
+        self._center_points_cv = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
         self._center = None
-        self.radius = 0
-        self.angle_from_center = None
+        self._radius = 0
+        self._angle = None
 
     def clear(self):
         self.center_points_cv.appendleft(None)
         self.center = None
         self.radius = 0
-        self.angle_from_center = None
+        self.angle = None
 
     @property
-    def angle(self):
-        return self.angle_from_center
+    def angle(self) -> float:
+        return self._angle
+
+    @angle.setter
+    def angle(self, value: float):
+        self._angle = value
 
     @property
-    def center(self):
+    def center(self) -> tuple:
         return self._center
 
     @center.setter
-    def center(self, value):
+    def center(self, value: tuple):
         self._center = value
 
-    def is_valid(self):
+    @property
+    def radius(self) -> int:
+        return self._radius
+
+    @radius.setter
+    def radius(self, value: int):
+        self._radius = value
+
+    @property
+    def center_points_cv(self) -> deque:
+        return self._center_points_cv
+
+    def is_valid(self) -> bool:
         return self.center is not None
 
 
@@ -241,7 +257,7 @@ class BallDetector:
                 ball.center = center_reposition(ball_center_cv, frame)
                 ball.radius = int(match_radius * self._frame_scaler)
                 # Get angle between ball center and approximate robot chassis center
-                ball.angle_from_center = get_object_target_lock_control_angle(ball.center, frame)
+                ball.angle = get_object_target_lock_control_angle(ball.center, frame)
             else:
                 # If the ball existed before, it's cleared
                 ball.clear()
