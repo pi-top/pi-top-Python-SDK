@@ -157,17 +157,18 @@ class BallDetector:
             self.cv2.line(frame, ball.center_points_cv[i - 1], ball.center_points_cv[i],
                           tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
-    def color_filter(self,
-                     frame,
-                     color: str = "red",
-                     return_binary_mask: bool = False,
-                     format: str = "PIL"
-                     ):
-
+    def colour_filter(self, frame, color: str = "red"):
         frame = ImageFunctions.convert(frame, format="OpenCV")
+        mask = self.__get_colour_mask(frame, color)
+        filtered_image = self.cv2.bitwise_and(frame, frame, mask=mask)
+        if self.format.lower() == "pil":
+            filtered_image = ImageFunctions.convert(mask, format="PIL")
 
-        if color.lower() not in ("red", "green", "blue"):
-            raise ValueError("Color must be 'red', 'green' or 'blue'")
+        return filtered_image
+
+    def __get_colour_mask(self, frame, color: str):
+        if color not in valid_colors:
+            raise ValueError(f"Color must be one of {', '.join(valid_colors[:-1])} or {valid_colors[-1]}")
 
         blurred = self.cv2.blur(frame, (11, 11))
         hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
@@ -203,17 +204,10 @@ class BallDetector:
         mask = self.cv2.erode(mask, None, iterations=1)
         mask = self.cv2.dilate(mask, None, iterations=1)
 
-        if not return_binary_mask:
-            mask = self.cv2.bitwise_and(frame, frame, mask=mask)
-
-        if format.lower() == "pil":
-            mask = ImageFunctions.convert(mask, format="PIL")
-
         return mask
 
     def __find_contours(self, frame, color):
-        mask = self.color_filter(frame, color=color, return_binary_mask=True,
-                                 format="OpenCV")
+        mask = self.__get_colour_mask(frame, color=color)
 
         return grab_contours(  # fixes problems with OpenCV changing their protocol
             self.cv2.findContours(
