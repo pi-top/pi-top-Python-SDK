@@ -70,7 +70,7 @@ class TestBallDetector(TestCase):
         red_ball = balls.red
 
         # Check is_valid() boolean
-        self.assertTrue(red_ball.is_valid())
+        self.assertTrue(red_ball.found)
 
         # Check ball centers
         for u, v in zip(red_ball.center, red_ball_center):
@@ -127,9 +127,9 @@ class TestBallDetector(TestCase):
         blue_ball = balls.blue
 
         # Check is_valid() boolean
-        self.assertTrue(red_ball.is_valid())
-        self.assertTrue(green_ball.is_valid())
-        self.assertTrue(blue_ball.is_valid())
+        self.assertTrue(red_ball.found)
+        self.assertTrue(green_ball.found)
+        self.assertTrue(blue_ball.found)
 
         # Check ball centers
         for u, v in zip(red_ball.center, red_ball_center):
@@ -182,9 +182,10 @@ class TestBallDetector(TestCase):
         blue_ball = balls.blue
 
         # Check is_valid() boolean
-        self.assertFalse(red_ball.is_valid())
-        self.assertFalse(green_ball.is_valid())
-        self.assertFalse(blue_ball.is_valid())
+        self.assertFalse(red_ball.found)
+        self.assertFalse(green_ball.found)
+        self.assertFalse(blue_ball.found)
+        self.assertFalse(blue_ball.found)
 
         # Check ball centers
         self.assertIsNone(red_ball.center)

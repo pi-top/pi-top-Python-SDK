@@ -75,7 +75,8 @@ class Ball:
     def center_points_cv(self) -> deque:
         return self._center_points_cv
 
-    def is_valid(self) -> bool:
+    @property
+    def found(self) -> bool:
         return self.center is not None
 
 
@@ -131,7 +132,7 @@ class BallDetector:
         for ball_color, ball_object in self.balls.items():
             ball_data[ball_color] = ball_object
             self.__draw_ball_contrail(robot_view, ball_object)
-            if ball_object.is_valid():
+            if ball_object.found:
                 self.__draw_ball_position(robot_view, ball_object)
 
         ball_data["robot_view"] = ImageFunctions.convert(robot_view, self.format)

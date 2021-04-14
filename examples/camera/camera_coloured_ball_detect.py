@@ -8,19 +8,19 @@ def process_frame(frame):
     detected_balls = ball_detector.detect(frame, color=["red", "green", "blue"])
 
     red_ball = detected_balls.red
-    if red_ball.is_valid():
+    if red_ball.found:
         print(f'Red ball center: {red_ball.center}')
         print(f'Red ball radius: {red_ball.radius}')
         print(f'Red ball angle: {red_ball.angle}\n')
 
     green_ball = detected_balls.green
-    if green_ball.is_valid():
+    if green_ball.found:
         print(f'Green ball center: {green_ball.center}')
         print(f'Green ball radius: {green_ball.radius}')
         print(f'Green ball angle: {green_ball.angle}\n')
 
     blue_ball = detected_balls.blue
-    if blue_ball.is_valid():
+    if blue_ball.found:
         print(f'Blue ball center: {blue_ball.center}')
         print(f'Blue ball radius: {blue_ball.radius}')
         print(f'Blue ball angle: {blue_ball.angle}\n')
