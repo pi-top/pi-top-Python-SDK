@@ -41,7 +41,7 @@ class Ball:
         self.angle_from_center = None
 
     def clear(self):
-        self.center_points.clear()
+        self.center_points.appendleft(None)
         self.radius = 0
         self.angle_from_center = None
 
@@ -204,19 +204,17 @@ class BallDetector:
         )
 
     def __find_most_likely_ball(self, ball, color, frame):
-        if ball is None:
-            ball = Ball(color)
-
         resized_frame = resize(frame, width=self._process_image_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
+            ball.clear()
             return ball
 
         max_likelihood_index = 0
 
-        def __meets_minimum_ball_requirements(ball, match_radius, match_value):
-            if match_value < ball.match_limit or match_radius > BALL_CLOSE_RADIUS:
-                if match_radius > MIN_BALL_RADIUS:
+        def __meets_minimum_ball_requirements(_ball, _match_radius, _match_value):
+            if _match_value < _ball.match_limit or _match_radius > BALL_CLOSE_RADIUS:
+                if _match_radius > MIN_BALL_RADIUS:
                     return True
             return False
 
@@ -236,18 +234,12 @@ class BallDetector:
                 # Scale to original frame size
                 ball.center_points.appendleft(tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y)))))
                 ball.radius = int(match_radius * self._frame_scaler)
+                # Get angle between ball center and approximate robot chassis center
+                ball.angle_from_center = get_object_target_lock_control_angle(
+                    center_reposition(ball.center, frame), frame)
             else:
                 # If the ball existed before, it's cleared
                 ball.clear()
-
-            # Get angle between ball center and approximate robot chassis center
-            ball.angle_from_center = get_object_target_lock_control_angle(
-                center_reposition(
-                    ball.center,
-                    frame
-                ),
-                frame
-            )
 
         return ball
 
