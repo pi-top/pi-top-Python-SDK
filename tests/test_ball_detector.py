@@ -47,10 +47,12 @@ color = {
 
 
 class TestBallDetector(TestCase):
-    _height = 480
-    _width = 640
-    _MAX_DIMENSION_DIFFERENCE = 3
-    _blank_cv_frame = np.zeros((self._height, self._width, 3), np.uint8)
+
+    def setUp(self):
+        self._height = 480
+        self._width = 640
+        self._MAX_DIMENSION_DIFFERENCE = 3
+        self._blank_cv_frame = np.zeros((self._height, self._width, 3), np.uint8)
 
     def test_detect_one_ball(self):
         ball_detector = BallDetector()
