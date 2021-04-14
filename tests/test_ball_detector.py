@@ -110,6 +110,14 @@ class TestBallDetector(TestCase):
         blue_ball_center = center_reposition(blue_ball_center, cv_frame)
         blue_ball_angle = get_object_target_lock_control_angle(blue_ball_center, cv_frame)
 
+        # insert random colour artifacts to ensure center points deque does not get incremented by them
+        red_artifact_center = (self._width // 4, 0)
+        cv2.circle(cv_frame, red_artifact_center, 20, color['blue'], -1)
+        green_artifact_center = (self._width // 2, 0)
+        cv2.circle(cv_frame, green_artifact_center, 20, color['blue'], -1)
+        blue_artifact_center = (3 * self._width // 4, 0)
+        cv2.circle(cv_frame, blue_artifact_center, 20, color['blue'], -1)
+
         pil_frame = convert(cv_frame, "PIL")
 
         balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
@@ -141,7 +149,7 @@ class TestBallDetector(TestCase):
         self.assertAlmostEqual(green_ball.angle, green_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
         self.assertAlmostEqual(blue_ball.angle, blue_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
 
-        # Check center points deque has been appended
+        # Check only one center point has been appended to deque
         self.assertEqual(len(red_ball.center_points_cv), 1)
         self.assertEqual(len(green_ball.center_points_cv), 1)
         self.assertEqual(len(blue_ball.center_points_cv), 1)
