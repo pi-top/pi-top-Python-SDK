@@ -223,6 +223,8 @@ class TestBallDetector(TestCase):
 
 
 if __name__ == "__main__":
-    TestBallDetector().test_detect_one_ball()
-    TestBallDetector().test_detect_all_balls()
-    TestBallDetector().test_detect_no_balls()
+    test_ball_detector = TestBallDetector()
+    test_ball_detector.setUp()
+    test_ball_detector.test_detect_one_ball()
+    test_ball_detector.test_detect_all_balls()
+    test_ball_detector.test_detect_no_balls()
