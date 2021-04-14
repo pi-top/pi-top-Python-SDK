@@ -99,9 +99,10 @@ def get_object_target_lock_control_angle(center, frame):
     :param frame:
             OpenCV frame that has the same scale used for center parameter - this function uses the dimensions of
             the frame.
-    :return:
+    :return float angle: Angle in degrees to 1 decimal place
     """
-    from numpy import arctan, pi
+    from numpy import arctan
+    from math import degrees
     if center is None:
         return None
     # physically, this represents an approximation between chassis rotation center and camera
@@ -112,7 +113,7 @@ def get_object_target_lock_control_angle(center, frame):
     # Anticlockwise is positive angle
     delta_y = abs(center[1] - chassis_center_y)
 
-    return arctan(center[0] / delta_y) * 180.0 / pi
+    return round(degrees(arctan(center[0] / delta_y)), 1)
 
 
 def tuple_for_color_by_name(color_name, bgr=False):
