@@ -1,6 +1,6 @@
 from flask import Blueprint, current_app as app
 import json
-from inspect import getfullargspec
+from inspect import getfullargspec, ismethod
 
 publish_blueprint = Blueprint('publish', __name__)
 
@@ -28,11 +28,18 @@ def handle_message(message, ws):
         return
 
     spec = getfullargspec(handler)
-    if len(spec.args) == 2 or spec.varargs:
+    if (
+        (len(spec.args) == 3 and ismethod(handler))
+        or (len(spec.args) == 2 and not ismethod(handler))
+        or spec.varargs
+    ):
         handler(message_data, ws)
         return
 
-    if len(spec.args) == 1:
+    if (
+        (len(spec.args) == 2 and ismethod(handler))
+        or (len(spec.args) == 1 and not ismethod(handler))
+    ):
         handler(message_data)
         return
 
