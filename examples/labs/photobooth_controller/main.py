@@ -5,9 +5,9 @@ camera = Camera()
 
 
 def save_photo(data):
-    camera.current_frame().save(f'{data.name}.jpg')
+    camera.current_frame().save(f'{data["name"]}.jpg')
 
 
-controller = WebController(handlers={'save_photo': save_photo})
+controller = WebController(camera=camera, handlers={'save_photo': save_photo})
 
 controller.serve_forever()

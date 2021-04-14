@@ -21,7 +21,7 @@ button {
   min-width: 100px;
   padding: 0 10px;
   text-align: center;
-  background-color: transparent;
+  background-color: var(--background-color);
   opacity: 1;
   margin: 0 5px;
 }
@@ -37,7 +37,7 @@ button:active {
   visibility: hidden;
   background: white;
   height: 100vh;
-  width: 100vh;
+  width: 100vw;
 }
 
 .visible {

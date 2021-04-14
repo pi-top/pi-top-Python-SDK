@@ -22,7 +22,7 @@ class VideoResponse(Response):
             pool = gevent.get_hub().threadpool
             while True:
                 # get_frame in thread so it won't block handler greenlets
-                frame_bytes = pool.spawn(get_frame, camera).get()
+                frame_bytes = pool.spawn(get_frame).get()
                 yield (
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n'+frame_bytes+b'\r\n'
