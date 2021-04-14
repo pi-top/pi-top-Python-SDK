@@ -5,7 +5,7 @@ __pycache__
 
 # Editor detritus
 *.vim
-*.swp
+*.sw*
 tags
 .idea
 .vscode
@@ -31,6 +31,7 @@ develop-eggs
 
 # Unit test / coverage reports
 coverage
+*.xml
 .coverage*
 .tox
 .cache

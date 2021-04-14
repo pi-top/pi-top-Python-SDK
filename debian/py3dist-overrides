@@ -1,5 +1,11 @@
+flask python3-flask
+flask-cors python3-flask-cors
+flask-sockets python3-flask-sockets
+gevent python3-gevent
+gevent-websocket python3-gevent-websocket
 gpiozero python3-gpiozero
 imageio python3-imageio
+imutils python3-imutils
 luma.core python3-luma-core
 luma.oled python3-luma-oled
 matplotlib python3-matplotlib
@@ -10,8 +16,3 @@ python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera
 scipy python3-scipy
 simple_pid python3-simple-pid
-flask python3-flask
-flask-cors python3-flask-cors
-flask-sockets python3-flask-sockets
-gevent python3-gevent
-gevent-websocket python3-gevent-websocket

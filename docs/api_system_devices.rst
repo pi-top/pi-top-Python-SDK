@@ -71,6 +71,11 @@ Processing Camera Frame Stream with OpenCV (Convert to grayscale)
 
 .. literalinclude:: ../examples/camera/camera_image_processing_stream_opencv.py
 
+Ball Color Detection with OpenCV
+-----------------------------------------------------------------
+
+.. literalinclude:: ../examples/camera/camera_coloured_ball_detect.py
+
 Class Reference: USB Camera
 ---------------------------
 

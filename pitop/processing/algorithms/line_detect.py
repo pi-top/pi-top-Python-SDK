@@ -1,13 +1,15 @@
-from numpy import arctan, array, pi
-
-from pitop.processing.utils.vision_functions import (
-    colour_mask,
+from numpy import array
+from pitop.processing.core.vision_functions import (
+    color_mask,
     find_centroid,
     find_largest_contour,
     import_opencv,
-    scale_frame,
+    get_object_target_lock_control_angle,
+    center_reposition,
 )
+from pitop.core.data_structures import DotDict
 from pitop.core import ImageFunctions
+from imutils import resize
 
 
 def calculate_blue_limits():
@@ -30,13 +32,13 @@ def calculate_blue_limits():
     return lower_blue, upper_blue
 
 
-def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
+def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
     cv2 = import_opencv()
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
-    resized_frame = scale_frame(cv_frame, scale=scale_factor)
+    resized_frame = resize(cv_frame, width=process_image_width)
     hsv_lower, hsv_upper = calculate_blue_limits()
-    image_mask = colour_mask(resized_frame, hsv_lower, hsv_upper)
+    image_mask = color_mask(resized_frame, hsv_lower, hsv_upper)
     line_contour = find_largest_contour(image_mask)
 
     centroid = None
@@ -46,56 +48,22 @@ def process_frame_for_line(frame, image_format="PIL", scale_factor=0.5):
     if line_contour is not None:
         # find centroid of contour
         scaled_image_centroid = find_centroid(line_contour)
-        centroid = centroid_reposition(scaled_image_centroid, 1, resized_frame)
+        centroid = center_reposition(scaled_image_centroid, resized_frame)
         bounding_rectangle = cv2.boundingRect(line_contour)
         rectangle_dimensions = bounding_rectangle[2:5]
-        angle = get_control_angle(centroid, resized_frame)
+        angle = get_object_target_lock_control_angle(centroid, resized_frame)
 
     robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
 
     if image_format.lower() != 'opencv':
         robot_view_img = ImageFunctions.convert(robot_view_img, format="PIL")
 
-    class dotdict(dict):
-        """dot.notation access to dictionary attributes."""
-        __getattr__ = dict.get
-        __setattr__ = dict.__setitem__
-        __delattr__ = dict.__delitem__
-
-    return dotdict({
+    return DotDict({
         "line_center": centroid,
         "robot_view": robot_view_img,
         "rectangle_dimensions": rectangle_dimensions,
         "angle": angle,
     })
-
-
-def get_control_angle(centroid, frame):
-    if centroid is None:
-        return None
-    # physically, this represents an approximation between chassis rotation center and camera
-    # the PID loop will deal with basically anything > 1 here, but Kp, Ki and Kd would need to change
-    # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
-    chassis_center_y = -int(frame.shape[1])
-
-    # we want a positive angle to indicate anticlockwise robot rotation per ChassisMoveController coordinate frame
-    # therefore if the line is left of frame, vector angle will be positive and robot will rotate anticlockwise
-    delta_y = abs(centroid[1] - chassis_center_y)
-
-    return arctan(centroid[0] / delta_y) * 180.0 / pi
-
-
-def centroid_reposition(centroid, scale, frame):
-    if centroid is None:
-        return None
-    # scale centroid so it matches original camera frame resolution
-    centroid_x = int(centroid[0] / scale)
-    centroid_y = int(centroid[1] / scale)
-    # convert so (0, 0) is in the middle of the frame
-    centroid_x = centroid_x - int(frame.shape[1] / 2)
-    centroid_y = int(frame.shape[0] / 2) - centroid_y
-
-    return centroid_x, centroid_y
 
 
 def robot_view(frame, image_mask, line_contour, centroid):

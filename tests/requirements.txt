@@ -1,5 +1,10 @@
 gpiozero
+imutils
+matplotlib
+numpy
+opencv-python
 pitopcommon
 flask
 flask_sockets
 flask_cors
+Pillow

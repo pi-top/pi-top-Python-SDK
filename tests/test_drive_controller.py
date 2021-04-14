@@ -120,10 +120,10 @@ class DriveControllerTestCase(TestCase):
 
         test_values = [
             [0, 0, 0, 0, 0],
-            [95.90, 114.00, 1, 1, 0],
-            [104.58, 114.00, 1, 1, 1],
-            [70.70, 84.10, 0.3, 0.3, 0],
-            [103.62, 114.0, 0.3, 0.3, 0.8],
+            [96.39, 114.00, 1, 1, 0],
+            [104.84, 114.00, 1, 1, 1],
+            [70.90, 83.90, 0.3, 0.3, 0],
+            [103.84, 114.0, 0.3, 0.3, 0.8],
         ]
         for exp_rpm_left, exp_rpm_right, linear_speed, angular_speed, turn_radius in test_values:
             rpm_left, rpm_right = d._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
