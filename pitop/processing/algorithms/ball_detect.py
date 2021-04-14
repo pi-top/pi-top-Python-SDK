@@ -103,10 +103,12 @@ class BallDetector:
         def parse_colors(color_arg):
             colors = []
             if type(color_arg) == str:
-                assert(color_arg in valid_colors)
+                if color_arg not in valid_colors:
+                    raise ValueError(f"Valid color values are {', '.join(valid_colors[:-1])} or {valid_colors[-1]}")
                 colors = [color_arg]
             elif type(color_arg) in (list, tuple):
-                assert(set(color_arg).issubset(valid_colors))
+                if not set(color_arg).issubset(valid_colors):
+                    raise ValueError(f"Valid color values are {', '.join(valid_colors[:-1])} or {valid_colors[-1]}")
                 colors = color_arg
             if len(colors) > 3:
                 raise ValueError("Cannot pass more than three colors.")
@@ -167,9 +169,6 @@ class BallDetector:
         return filtered_image
 
     def __get_colour_mask(self, frame, color: str):
-        if color not in valid_colors:
-            raise ValueError(f"Color must be one of {', '.join(valid_colors[:-1])} or {valid_colors[-1]}")
-
         blurred = self.cv2.blur(frame, (11, 11))
         hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
 
