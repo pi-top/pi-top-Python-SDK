@@ -1,4 +1,4 @@
 include pitop/robotics/json/*.json
-include pitop/labs/web/blueprints/controller/templates/*.html
-include pitop/labs/web/blueprints/controller/static/*.js
-include pitop/labs/web/blueprints/controller/static/vendor/*.js
+include pitop/labs/web/blueprints/**/*.html
+include pitop/labs/web/blueprints/**/*.js
+include pitop/labs/web/blueprints/**/*.css
