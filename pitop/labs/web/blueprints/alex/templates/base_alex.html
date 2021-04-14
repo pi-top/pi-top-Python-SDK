@@ -1,6 +1,21 @@
 {% extends "base_controller.html" %}
 
+{% block styles %}
+  {{ super() }}
+  <style>
+    .joysticks {
+      box-sizing: border-box;
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+{% endblock %}
+
 {% block main %}
   <img src="video.mjpg" class="background-video"></img>
-  {% include "joysticks.html" %}
+  <div class="joysticks">
+    <joystick-component type="left_joystick"></joystick-component>
+    <joystick-component type="right_joystick"></joystick-component>
+  </div>
 {% endblock %}
