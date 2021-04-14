@@ -213,6 +213,22 @@ class TestBallDetector(TestCase):
         self.assertEqual(len(green_ball.center_points), 2)
         self.assertEqual(len(blue_ball.center_points), 2)
 
+    def test_detect_close_ball_occluded(self):
+        ball_detector = BallDetector()
+        cv_frame = self._blank_cv_frame.copy()
+
+        ball_radius = self._width // 2
+
+        red_ball_center = (self._width // 2, self._height)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+
+        balls = ball_detector.detect(cv_frame, color="red")
+        red_ball = balls.red
+
+        # Check found boolean
+        self.assertTrue(red_ball.found)
+
+
     def test_wrong_color_values(self):
         ball_detector = BallDetector()
         cv_frame = self._blank_cv_frame.copy()
@@ -229,3 +245,4 @@ if __name__ == "__main__":
     test_ball_detector.test_detect_all_balls()
     test_ball_detector.test_detect_no_balls()
     test_ball_detector.test_wrong_color_values()
+    test_ball_detector.test_detect_close_ball_occluded()
