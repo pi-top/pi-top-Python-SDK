@@ -4,17 +4,25 @@ from pitop.labs import WebController
 drive = DriveController()
 camera = Camera()
 
+speed = 0.2
+
 
 def key_down(data):
+    global speed
+
     key = data.get('key')
     if key == 'w':
-        drive.forward(1, hold=True)
+        drive.forward(speed, hold=True)
     elif key == 's':
-        drive.backward(1, hold=True)
+        drive.backward(speed, hold=True)
     elif key == 'd':
-        drive.right(1)
+        drive.right(speed)
     elif key == 'a':
-        drive.left(1)
+        drive.left(speed)
+    elif key == 'ArrowUp':
+        speed = speed if speed == 1 else speed + 0.2
+    elif key == 'ArrowDown':
+        speed = speed if speed == 0 else speed - 0.2
 
 
 def key_up(data):
@@ -22,9 +30,9 @@ def key_up(data):
     if key == 'w' or key == 's':
         drive.stop()
     elif key == 'd':
-        drive.right(1)
+        drive.right(0)
     elif key == 'a':
-        drive.left(1)
+        drive.left(0)
 
 
 controller = WebController(handlers={
