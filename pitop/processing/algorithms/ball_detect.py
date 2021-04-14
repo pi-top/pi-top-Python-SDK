@@ -15,26 +15,55 @@ from pitop.processing.core.vision_functions import (
     import_opencv,
     tuple_for_color_by_name
 )
+cv2 = import_opencv()
 
-valid_colors = ["red", "green", "blue"]
 
-MIN_BALL_RADIUS = 5
-BALL_CLOSE_RADIUS = 50
+VALID_COLORS = ["red", "green", "blue"]
 DETECTION_POINTS_BUFFER_LENGTH = 16
 
 
+class BallLikeness:
+    def __init__(self, contour):
+        self.contour = contour
+        self.pos, self.radius = cv2.minEnclosingCircle(self.contour)
+        self.area = cv2.contourArea(self.contour)
+
+        self.circular_likeness = cv2.matchShapes(
+            self.contour, self.__circular_match_contour(), 1, 0.0
+        )
+
+        # Most likely ball is a mixture of largest area and one that is most "ball-shaped"
+        self.likelihood = self.area / (self.circular_likeness + 1e-5)
+
+    def __circular_match_contour(self):
+        # Initialise empty mask
+        mask_to_compare = np.zeros((self.radius, self.radius), dtype="uint8")
+
+        # Draw circle matching contour's position and radius
+        cv2.circle(mask_to_compare, (int(self.pos[0]), int(self.pos[1])), int(self.radius), 255, -1)
+
+        return max(
+            grab_contours(
+                cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            ), key=cv2.contourArea
+        )
+
+
 class Ball:
+    MIN_BALL_RADIUS = 5
+    BALL_CLOSE_RADIUS = 50
+
     def __init__(self, color):
         self.color = color
 
-        # Red needs to be a higher limit
+        # 'Holding a red ball' can produce issues
         # since some skin types are redish in color
-        match_limits = {
+        minimum_shape_accuracies = {
             "red": 0.1,
             "green": 0.05,
             "blue": 0.05
         }
-        self.match_limit = match_limits[color]
+        self.minimum_shape_accuracy = minimum_shape_accuracies[color]
 
         self._center_points_cv = deque(maxlen=DETECTION_POINTS_BUFFER_LENGTH)
         self._center = None
@@ -79,6 +108,18 @@ class Ball:
     def found(self) -> bool:
         return self.center is not None
 
+    def will_accept(self, ball_likeness: BallLikeness):
+        if ball_likeness.radius < self.MIN_BALL_RADIUS:
+            return False
+
+        if ball_likeness.radius > self.BALL_CLOSE_RADIUS:
+            return False
+
+        if ball_likeness.circular_likeness < self.minimum_shape_accuracy:
+            return False
+
+        return True
+
 
 class BallDetector:
     def __init__(self,
@@ -88,10 +129,9 @@ class BallDetector:
         :param int image_processing_width: image width to scale to for image processing
         :param str format: output image format
         """
-        self.cv2 = import_opencv()
         self._image_processing_width = image_processing_width
         self.format = format
-        self.balls = {c: Ball(c) for c in valid_colors}
+        self.balls = {c: Ball(c) for c in VALID_COLORS}
         self._frame_scaler = None
 
         # Enable FPS if environment variable is set
@@ -104,12 +144,12 @@ class BallDetector:
         def parse_colors(color_arg):
             colors = []
             if type(color_arg) == str:
-                if color_arg not in valid_colors:
-                    raise ValueError(f"Valid color values are {', '.join(valid_colors[:-1])} or {valid_colors[-1]}")
+                if color_arg not in VALID_COLORS:
+                    raise ValueError(f"Valid color values are {', '.join(VALID_COLORS[:-1])} or {VALID_COLORS[-1]}")
                 colors = [color_arg]
             elif type(color_arg) in (list, tuple):
-                if not set(color_arg).issubset(valid_colors):
-                    raise ValueError(f"Valid color values are {', '.join(valid_colors[:-1])} or {valid_colors[-1]}")
+                if not set(color_arg).issubset(VALID_COLORS):
+                    raise ValueError(f"Valid color values are {', '.join(VALID_COLORS[:-1])} or {VALID_COLORS[-1]}")
                 colors = color_arg
             if len(colors) > 3:
                 raise ValueError("Cannot pass more than three colors.")
@@ -123,9 +163,11 @@ class BallDetector:
             self._frame_scaler = width / self._image_processing_width
 
         for c in parse_colors(color):
-            self.balls[c] = self.__find_most_likely_ball(ball=self.balls.get(c),
-                                                         color=c,
-                                                         frame=frame)
+            self.balls[c] = self.__find_most_likely_ball(
+                ball=self.balls.get(c),
+                frame=frame,
+                color=c
+            )
 
         robot_view = frame.copy()
         ball_data = DotDict({})
@@ -148,8 +190,8 @@ class BallDetector:
         print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     def __draw_ball_position(self, frame, ball):
-        self.cv2.circle(frame, ball.center_points_cv[0], ball.radius, (0, 255, 255), 2)
-        self.cv2.circle(frame, ball.center_points_cv[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
+        cv2.circle(frame, ball.center_points_cv[0], ball.radius, (0, 255, 255), 2)
+        cv2.circle(frame, ball.center_points_cv[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
 
     def __draw_ball_contrail(self, frame, ball):
         for i in range(1, len(ball.center_points_cv)):
@@ -157,21 +199,21 @@ class BallDetector:
                 continue
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
-            self.cv2.line(frame, ball.center_points_cv[i - 1], ball.center_points_cv[i],
-                          tuple_for_color_by_name(ball.color, bgr=True), thickness)
+            cv2.line(frame, ball.center_points_cv[i - 1], ball.center_points_cv[i],
+                     tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
     def color_filter(self, frame, color: str = "red"):
         frame = ImageFunctions.convert(frame, format="OpenCV")
         mask = self.__get_color_mask(frame, color)
-        filtered_image = self.cv2.bitwise_and(frame, frame, mask=mask)
+        filtered_image = cv2.bitwise_and(frame, frame, mask=mask)
         if self.format.lower() == "pil":
             filtered_image = ImageFunctions.convert(mask, format="PIL")
 
         return filtered_image
 
     def __get_color_mask(self, frame, color: str):
-        blurred = self.cv2.blur(frame, (11, 11))
-        hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
+        blurred = cv2.blur(frame, (11, 11))
+        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 
         masks = []
         color_ranges = {
@@ -197,12 +239,12 @@ class BallDetector:
         for color_range in color_ranges[color]:
             hsv_lower = color_range["lower"]
             hsv_upper = color_range["upper"]
-            mask = self.cv2.inRange(hsv, hsv_lower, hsv_upper)
+            mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
             masks.append(mask)
         mask = sum(masks)
 
-        mask = self.cv2.erode(mask, None, iterations=1)
-        mask = self.cv2.dilate(mask, None, iterations=1)
+        mask = cv2.erode(mask, None, iterations=1)
+        mask = cv2.dilate(mask, None, iterations=1)
 
         return mask
 
@@ -210,64 +252,42 @@ class BallDetector:
         mask = self.__get_color_mask(frame, color=color)
 
         return grab_contours(  # fixes problems with OpenCV changing their protocol
-            self.cv2.findContours(
+            cv2.findContours(
                 mask.copy(),
-                self.cv2.RETR_EXTERNAL,
-                self.cv2.CHAIN_APPROX_SIMPLE
+                cv2.RETR_EXTERNAL,
+                cv2.CHAIN_APPROX_SIMPLE
             )
         )
 
-    def __find_most_likely_ball(self, ball, color, frame):
+    def __find_most_likely_ball(self, ball, frame, color):
         resized_frame = resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
             ball.no_detection()
             return ball
 
-        max_likelihood_index = 0
-
-        def __meets_minimum_ball_requirements(_ball, _match_radius, _match_value):
-            if _match_value < _ball.match_limit or _match_radius > BALL_CLOSE_RADIUS:
-                if _match_radius > MIN_BALL_RADIUS:
-                    return True
-            return False
+        highest_likelihood = 0
 
         ball_center_cv = None
         ball_radius = None
         for contour in contours:
-            (x, y), match_radius = self.cv2.minEnclosingCircle(contour)
-            area, match_value = self.__get_ball_likelihood_parameters(resized_frame, contour, x, y, match_radius)
+            ball_likeness = BallLikeness(contour)
 
-            # Most likely ball is a mixture of largest area and one that is most "ball-shaped"
-            likelihood_index = area / (match_value + 1e-5)
-            if likelihood_index < max_likelihood_index:
+            if ball_likeness.likelihood < highest_likelihood:
                 continue
 
-            # Found most likely ball so far
-            max_likelihood_index = likelihood_index
+            # Don't accept future balls which are less likely
+            highest_likelihood = ball_likeness.likelihood
 
-            if __meets_minimum_ball_requirements(ball, match_radius, match_value):
+            if ball.will_accept(ball_likeness):
                 # Scale to original frame size
-                ball_center_cv = tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y))))
-                ball_radius = int(match_radius * self._frame_scaler)
+                ball_center_cv = tuple(int(coordinate * self._frame_scaler) for coordinate in ball_likeness.pos)
+                ball_radius = int(ball_likeness.radius * self._frame_scaler)
 
+        # Update ball state
         ball.center_points_cv.appendleft(ball_center_cv)
         ball.center = center_reposition(ball_center_cv, frame) if ball_center_cv is not None else None
         ball.angle = get_object_target_lock_control_angle(ball.center, frame) if ball_center_cv is not None else None
         ball.radius = ball_radius
 
         return ball
-
-    def __get_ball_likelihood_parameters(self, frame, contour, x, y, radius):
-        area = self.cv2.contourArea(contour)
-        match_contour = self.__get_circular_match_contour(frame, x, y, radius)
-        match_value = self.cv2.matchShapes(contour, match_contour, 1, 0.0)  # closer to zero is a better match
-
-        return area, match_value
-
-    def __get_circular_match_contour(self, resized_frame, x, y, radius):
-        mask_to_compare = np.zeros(resized_frame.shape[:2], dtype="uint8")
-        self.cv2.circle(mask_to_compare, (int(x), int(y)), int(radius), 255, -1)
-        contours_compare = self.cv2.findContours(mask_to_compare, self.cv2.RETR_EXTERNAL, self.cv2.CHAIN_APPROX_SIMPLE)
-        contours_compare = grab_contours(contours_compare)
-        return max(contours_compare, key=self.cv2.contourArea)
