@@ -112,7 +112,7 @@ class TestBallDetector(TestCase):
 
         pil_frame = convert(cv_frame, "PIL")
 
-        balls = ball_detector.detect(pil_frame, color=("red", "green", "blue"))
+        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
 
         red_ball = balls.red
         green_ball = balls.green
@@ -149,11 +149,25 @@ class TestBallDetector(TestCase):
         # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
 
+        # Check that a second false detection attempt still returns a longer deque
+        cv_frame = self._blank_cv_frame.copy()
+        pil_frame = convert(cv_frame, "PIL")
+        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
+
+        red_ball = balls.red
+        green_ball = balls.green
+        blue_ball = balls.blue
+
+        # Check center points deque has been appended (even None should get appended if no ball detected)
+        self.assertEqual(len(red_ball.center_points_cv), 2)
+        self.assertEqual(len(green_ball.center_points_cv), 2)
+        self.assertEqual(len(blue_ball.center_points_cv), 2)
+
     def test_detect_no_balls(self):
         ball_detector = BallDetector()
         cv_frame = self._blank_cv_frame.copy()
         pil_frame = convert(cv_frame, "PIL")
-        balls = ball_detector.detect(pil_frame, color=("red", "green", "blue"))
+        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
 
         red_ball = balls.red
         green_ball = balls.green
@@ -186,6 +200,18 @@ class TestBallDetector(TestCase):
 
         # Check OpenCV image is returned
         self.assertIsInstance(balls.robot_view, np.ndarray)
+
+        # Check that another detection attempt returns a longer deque
+        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
+
+        red_ball = balls.red
+        green_ball = balls.green
+        blue_ball = balls.blue
+
+        # Check center points deque has been appended (even None should get appended if no ball detected)
+        self.assertEqual(len(red_ball.center_points_cv), 2)
+        self.assertEqual(len(green_ball.center_points_cv), 2)
+        self.assertEqual(len(blue_ball.center_points_cv), 2)
 
 
 if __name__ == "__main__":
