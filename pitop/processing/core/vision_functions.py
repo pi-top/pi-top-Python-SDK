@@ -110,7 +110,7 @@ def get_object_target_lock_control_angle(center, frame):
     # with (0, 0) in the middle of the frame, it is currently set to be half the frame height below the frame
     chassis_center_y = -int(frame.shape[1])
 
-    # Anticlockwise is positive angle
+    # Clockwise is positive angle
     delta_y = abs(center[1] - chassis_center_y)
 
     return round(degrees(arctan(center[0] / delta_y)), 1)
