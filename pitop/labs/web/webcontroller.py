@@ -1,5 +1,5 @@
 from .webserver import WebServer
-from .blueprints.controller import ControllerBlueprint, AlexControllerBlueprint
+from .blueprints import ControllerBlueprint, AlexControllerBlueprint
 
 
 class WebController(WebServer):
