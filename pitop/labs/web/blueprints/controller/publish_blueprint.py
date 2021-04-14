@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app as app
 import json
+from inspect import getfullargspec
 
 publish_blueprint = Blueprint('publish', __name__)
 
@@ -13,7 +14,7 @@ def log_unhandled_message(message_type, message_data):
     print(f"Unhandled message \"{message_type}\": {pretty_message_data}")
 
 
-def handle_message(message):
+def handle_message(message, ws):
     parsed_message = json.loads(message)
 
     message_type = parsed_message.get('type', '')
@@ -26,7 +27,12 @@ def handle_message(message):
         log_unhandled_message(message_type, message_data)
         return
 
-    if message_data:
+    spec = getfullargspec(handler)
+    if len(spec.args) == 2 or spec.varargs:
+        handler(message_data, ws)
+        return
+
+    if len(spec.args) == 1:
         handler(message_data)
         return
 
@@ -38,4 +44,4 @@ def publish(ws):
     while not ws.closed:
         message = ws.receive()
         if message:
-            handle_message(message)
+            handle_message(message, ws)
