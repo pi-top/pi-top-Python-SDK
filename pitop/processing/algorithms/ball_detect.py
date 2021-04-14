@@ -129,6 +129,8 @@ class BallDetector:
         for ball_color, ball_object in self.balls.items():
             ball_data[ball_color] = ball_object
             self.__draw_ball_contrail(robot_view, ball_object)
+            # if ball_color == "blue":
+            #     print(ball_object.center_points_cv)
             if ball_object.is_valid():
                 self.__draw_ball_position(robot_view, ball_object)
 
@@ -232,6 +234,8 @@ class BallDetector:
                     return True
             return False
 
+        ball_center_cv = None
+        ball_radius = None
         for contour in contours:
             (x, y), match_radius = self.cv2.minEnclosingCircle(contour)
             area, match_value = self.__get_ball_likelihood_parameters(resized_frame, contour, x, y, match_radius)
@@ -247,14 +251,12 @@ class BallDetector:
             if __meets_minimum_ball_requirements(ball, match_radius, match_value):
                 # Scale to original frame size
                 ball_center_cv = tuple((int(pos * self._frame_scaler) for pos in (int(x), int(y))))
-                ball.center_points_cv.appendleft(ball_center_cv)
-                ball.center = center_reposition(ball_center_cv, frame)
-                ball.radius = int(match_radius * self._frame_scaler)
-                # Get angle between ball center and approximate robot chassis center
-                ball.angle = get_object_target_lock_control_angle(ball.center, frame)
-            else:
-                # If the ball existed before, it's cleared
-                ball.clear()
+                ball_radius = int(match_radius * self._frame_scaler)
+
+        ball.center_points_cv.appendleft(ball_center_cv)
+        ball.center = center_reposition(ball_center_cv, frame) if ball_center_cv is not None else None
+        ball.angle = get_object_target_lock_control_angle(ball.center, frame) if ball.is_valid is True else None
+        ball.radius = ball_radius
 
         return ball
 
