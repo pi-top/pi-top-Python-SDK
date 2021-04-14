@@ -192,9 +192,9 @@ class TestBallDetector(TestCase):
         self.assertIsNone(blue_ball.center)
 
         # Check ball radius
-        self.assertEquals(red_ball.radius, 0)
-        self.assertEquals(green_ball.radius, 0)
-        self.assertEquals(blue_ball.radius, 0)
+        self.assertEqual(red_ball.radius, 0)
+        self.assertEqual(green_ball.radius, 0)
+        self.assertEqual(blue_ball.radius, 0)
 
         # Check ball centers
         self.assertIsNone(red_ball.angle)
@@ -221,6 +221,14 @@ class TestBallDetector(TestCase):
         self.assertEqual(len(green_ball.center_points_cv), 2)
         self.assertEqual(len(blue_ball.center_points_cv), 2)
 
+    def test_wrong_color_values(self):
+        ball_detector = BallDetector()
+        cv_frame = self._blank_cv_frame.copy()
+        pil_frame = convert(cv_frame, "PIL")
+        self.assertRaises(ValueError, ball_detector.detect, pil_frame, color="rainbow")
+        self.assertRaises(ValueError, ball_detector.detect, pil_frame, color=["rainbow", "red"])
+        self.assertRaises(ValueError, ball_detector.detect, pil_frame, color=[0, 1])
+
 
 if __name__ == "__main__":
     test_ball_detector = TestBallDetector()
@@ -228,3 +236,4 @@ if __name__ == "__main__":
     test_ball_detector.test_detect_one_ball()
     test_ball_detector.test_detect_all_balls()
     test_ball_detector.test_detect_no_balls()
+    test_ball_detector.test_wrong_color_values()
