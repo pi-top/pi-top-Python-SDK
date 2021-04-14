@@ -62,8 +62,7 @@ class Ball:
 class BallDetector:
     def __init__(self,
                  process_image_width: int = 320,
-                 format: str = "OpenCV",
-                 print_fps: bool = False):
+                 format: str = "OpenCV"):
         """
         :param int process_image_width: image width to scale to for image processing
         :param str format: output image format
