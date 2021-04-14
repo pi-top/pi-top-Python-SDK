@@ -26,16 +26,19 @@ class DriveController(Stateful, Recreatable):
         self.right_motor_port = right_motor_port
         self.left_motor_port = left_motor_port
 
-        # TODO: increase accuracy of wheel_base and wheel_diameter with empirical testing
-        self._wheel_separation = 0.1725
+        self._wheel_separation = 0.1675
         self._wheel_diameter = 0.074
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x_hold = 0
 
-        self.left_motor = EncoderMotor(port_name=self.left_motor_port,
+        self._left_motor_port = left_motor_port
+        self._right_motor_port = right_motor_port
+
+        self.left_motor = EncoderMotor(port_name=left_motor_port,
                                        forward_direction=ForwardDirection.CLOCKWISE)
-        self.right_motor = EncoderMotor(port_name=self.right_motor_port,
+        self.right_motor = EncoderMotor(port_name=right_motor_port,
                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
+
         self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
 
         self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
@@ -49,8 +52,12 @@ class DriveController(Stateful, Recreatable):
                                                                self._max_robot_angular_speed)
                                                 )
 
+        self._initialized = True
+
         Stateful.__init__(self, children=['left_motor', 'right_motor'])
-        Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port, "right_motor_port": right_motor_port, "name": self.name})
+        Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port,
+                                                "right_motor_port": right_motor_port,
+                                                "name": self.name})
 
     def _calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -144,9 +151,9 @@ class DriveController(Stateful, Recreatable):
         rpm_left, rpm_right = self._calculate_motor_rpms(0, angular_speed, turn_radius=0)
         rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
         self.left_motor.set_target_rpm(target_rpm=rpm_left,
-                                       total_rotations=rotations*rpm_left/abs(rpm_left))
+                                       total_rotations=rotations * rpm_left / abs(rpm_left))
         self.right_motor.set_target_rpm(target_rpm=rpm_right,
-                                        total_rotations=rotations*rpm_right/abs(rpm_right))
+                                        total_rotations=rotations * rpm_right / abs(rpm_right))
         sleep(time_to_take)
 
     def stop(self):
@@ -172,3 +179,7 @@ class DriveController(Stateful, Recreatable):
     def _rpm_to_speed(self, rpm):
         speed = round(rpm * self._wheel_circumference / 60.0, 3)
         return speed
+
+    @property
+    def wheel_separation(self):
+        return self._wheel_separation

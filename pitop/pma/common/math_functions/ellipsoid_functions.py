@@ -1,7 +1,8 @@
 import numpy as np
 from os import environ
+from pitopcommon.current_session_info import get_first_display
 if not environ.get('DISPLAY'):
-    environ['DISPLAY'] = ":0"
+    environ["DISPLAY"] = str(get_first_display())
 
 
 def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):

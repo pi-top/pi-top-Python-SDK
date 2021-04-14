@@ -6,6 +6,9 @@ from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
 from pitopcommon.command_runner import run_command
 
 
+valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
+
+
 class UsbCamera:
     def __init__(self,
                  index: int = None,
@@ -19,17 +22,25 @@ class UsbCamera:
         self.__camera = None
         self.index = None
 
-        if rotate_angle not in (-90, 0, 90, 180):
-            raise ValueError("Rotate angle must be -90, 0, 90 or 180 degrees")
+        self._flip_top_bottom = flip_top_bottom
+        self._flip_left_right = flip_left_right
+        
+        if rotate_angle not in valid_rotate_angles:
+            raise ValueError(f"Rotate angle must be one of "
+                             f"{', '.join([str(x) for x in valid_rotate_angles[:-1]])} or "
+                             f"{str(valid_rotate_angles[-1])}")
         else:
             self._rotate_angle = rotate_angle
 
-        self._flip_top_bottom = flip_top_bottom
-        self._flip_left_right = flip_left_right
+        def create_camera_object(index, resolution=None):
+            if resolution is not None:
+                return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
+            else:
+                return V4L2Camera(f"/dev/video{index}")
 
         for idx in indexes:
             try:
-                self.__camera = self.create_camera_object(idx, resolution)
+                self.__camera = create_camera_object(idx, resolution)
                 if self.__camera:
                     self.index = idx
                     break
@@ -38,13 +49,6 @@ class UsbCamera:
 
         if self.__camera is None:
             raise IOError("Error opening camera. Make sure it's correctly connected via USB.") from None
-
-    @staticmethod
-    def create_camera_object(index, resolution=None):
-        if resolution is not None:
-            return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
-        else:
-            return V4L2Camera(f"/dev/video{index}")
 
     def __del__(self):
         try:
@@ -62,7 +66,7 @@ class UsbCamera:
             self.__camera.get_frame(),
             'raw',
             'RGB'
-        )
+        ).rotate(angle=self._rotate_angle, expand=True)
 
         if self._rotate_angle != 0:
             pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
