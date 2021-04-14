@@ -6,7 +6,10 @@ class Componentable(Stateful, Recreatable):
     """Represents an object that attach components to itself, and that can
     store its internal configuration to recreate itself in the future."""
 
-    def __init__(self, children=[], config_dict={}):
+    def __init__(self, children=[], config_dict=None):
+        if config_dict is None:
+            config_dict = dict()
+
         Stateful.__init__(self, children)
         Recreatable.__init__(self, config_dict)
 
@@ -18,7 +21,7 @@ class Componentable(Stateful, Recreatable):
         If a component fails to be recreated, the main object will still
         be created, but without it.
         """
-        components_config = config_dict.pop("components", {})
+        components_config = config_dict.pop("components", dict())
         # Create main object
         main_obj = super().from_config(config_dict)
 
@@ -63,7 +66,7 @@ class Componentable(Stateful, Recreatable):
     def config(self):
         """Returns the component configuration as a dictionary."""
         cfg = super().config
-        cfg["components"] = {}
+        cfg["components"] = dict()
         for child_name in self.children:
             if hasattr(self, child_name):
                 child_obj = getattr(self, child_name)
