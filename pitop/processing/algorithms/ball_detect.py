@@ -108,9 +108,9 @@ class BallDetector:
         ball_data = DotDict({})
         for ball_color, ball_object in self.balls.items():
             ball_data[ball_color] = ball_object
+            self.__draw_ball_contrail(robot_view, ball_object)
             if ball_object.is_valid():
                 self.__draw_ball_position(robot_view, ball_object)
-                self.__draw_ball_contrail(robot_view, ball_object)
 
         ball_data["robot_view"] = ImageFunctions.convert(robot_view, self.format)
 
