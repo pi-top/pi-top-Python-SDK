@@ -228,6 +228,22 @@ class TestBallDetector(TestCase):
         # Check found boolean
         self.assertTrue(red_ball.found)
 
+    def test_small_circle_not_detected(self):
+        ball_detector = BallDetector()
+        cv_frame = self._blank_cv_frame.copy()
+
+        ball_radius = 9
+
+        red_ball_center = (self._width // 2, self._height // 2)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+
+        balls = ball_detector.detect(cv_frame, color="red")
+        red_ball = balls.red
+
+        self.assertFalse(red_ball.found)
+        self.assertIsNone(red_ball.center)
+        self.assertEqual(red_ball.radius, 0)
+        self.assertIsNone(red_ball.angle)
 
     def test_wrong_color_values(self):
         ball_detector = BallDetector()
@@ -246,3 +262,4 @@ if __name__ == "__main__":
     test_ball_detector.test_detect_no_balls()
     test_ball_detector.test_wrong_color_values()
     test_ball_detector.test_detect_close_ball_occluded()
+    test_ball_detector.test_small_circle_not_detected()
