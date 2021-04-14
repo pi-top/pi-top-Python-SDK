@@ -70,12 +70,6 @@ class Ball:
         self._radius = 0
         self._angle = None
 
-    def no_detection(self):
-        self.center_points_cv.appendleft(None)
-        self.center = None
-        self.radius = 0
-        self.angle = None
-
     @property
     def angle(self) -> float:
         return self._angle
@@ -263,7 +257,11 @@ class BallDetector:
         resized_frame = resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
-            ball.no_detection()
+            ball.center_points_cv.appendleft(None)
+            ball.center = None
+            ball.radius = 0
+            ball.angle = None
+
             return ball
 
         highest_likelihood = 0
