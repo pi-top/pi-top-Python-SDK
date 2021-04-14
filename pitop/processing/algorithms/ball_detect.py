@@ -129,8 +129,6 @@ class BallDetector:
         for ball_color, ball_object in self.balls.items():
             ball_data[ball_color] = ball_object
             self.__draw_ball_contrail(robot_view, ball_object)
-            # if ball_color == "blue":
-            #     print(ball_object.center_points_cv)
             if ball_object.is_valid():
                 self.__draw_ball_position(robot_view, ball_object)
 
