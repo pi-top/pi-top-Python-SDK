@@ -289,7 +289,7 @@ class BallDetector:
         highest_likelihood = 0
 
         ball_center = None
-        ball_radius = None
+        ball_radius = 0
         for contour in contours:
             ball_likeness = BallLikeness(contour)
 
