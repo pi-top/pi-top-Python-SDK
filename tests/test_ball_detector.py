@@ -26,6 +26,7 @@ for module in modules_to_patch:
 from unittest import TestCase
 from pitop.processing.algorithms.ball_detect import BallDetector
 from pitop.core.ImageFunctions import convert
+from pitop.processing.core.vision_functions import center_reposition
 
 
 # Avoid getting the mocked modules in other tests
@@ -58,6 +59,7 @@ class TestBallDetector(TestCase):
 
         red_ball_center = (self._width // 4, self._height // 2)
         cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+        red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         balls = ball_detector.detect(cv_frame, color="red")
 
@@ -85,12 +87,15 @@ class TestBallDetector(TestCase):
 
         red_ball_center = (self._width // 4, self._height // 2)
         cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+        red_ball_center = center_reposition(red_ball_center, cv_frame)
 
         green_ball_center = (self._width // 2, self._height // 2)
         cv2.circle(cv_frame, green_ball_center, ball_radius, color['green'], -1)
+        green_ball_center = center_reposition(green_ball_center, cv_frame)
 
         blue_ball_center = (3 * self._width // 4, self._height // 2)
         cv2.circle(cv_frame, blue_ball_center, ball_radius, color['blue'], -1)
+        blue_ball_center = center_reposition(blue_ball_center, cv_frame)
 
         pil_frame = convert(cv_frame, "PIL")
 
