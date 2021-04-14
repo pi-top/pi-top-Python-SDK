@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from .publish_blueprint import publish_blueprint
+from .pubsub_blueprint import pubsub_blueprint
 from .video_blueprint import video_blueprint
 
 
@@ -29,7 +29,7 @@ class ControllerBlueprint(Blueprint):
         app.config['camera'] = self.camera
 
         # register child blueprints
-        sockets.register_blueprint(publish_blueprint)
+        sockets.register_blueprint(pubsub_blueprint)
         app.register_blueprint(video_blueprint)
 
         # register self

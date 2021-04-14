@@ -2,7 +2,7 @@ from flask import Blueprint, current_app as app
 import json
 from inspect import getfullargspec, ismethod
 
-publish_blueprint = Blueprint('publish', __name__)
+pubsub_blueprint = Blueprint('pubsub', __name__)
 
 
 def log_unhandled_message(message_type, message_data):
@@ -46,8 +46,8 @@ def handle_message(message, ws):
     handler()
 
 
-@publish_blueprint.route('/publish')
-def publish(ws):
+@pubsub_blueprint.route('/pubsub')
+def pubsub(ws):
     while not ws.closed:
         message = ws.receive()
         if message:
