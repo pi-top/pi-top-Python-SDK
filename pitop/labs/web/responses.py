@@ -33,5 +33,4 @@ class VideoResponse(Response):
             generate_frames(),
             mimetype='multipart/x-mixed-replace; boundary=frame',
             **kwargs
-         )
-
+        )
