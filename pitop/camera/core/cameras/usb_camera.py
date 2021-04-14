@@ -24,7 +24,7 @@ class UsbCamera:
 
         self._flip_top_bottom = flip_top_bottom
         self._flip_left_right = flip_left_right
-        
+
         if rotate_angle not in valid_rotate_angles:
             raise ValueError(f"Rotate angle must be one of "
                              f"{', '.join([str(x) for x in valid_rotate_angles[:-1]])} or "
