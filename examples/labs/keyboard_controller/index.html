@@ -31,12 +31,11 @@
       speedIndicator.style = `height:${100 - (speed * 100)}%`;
     }
 
-    window.socket.onmessage = (message) => {
-      const { type, data } = JSON.parse(message.data);
-      if (type === 'speed' && data) {
-        showSpeed(data)
+    subscribe((message) => {
+      if (message.type === 'speed') {
+        showSpeed(message.data)
       }
-    };
+    })
 
     showSpeed()
   </script>
