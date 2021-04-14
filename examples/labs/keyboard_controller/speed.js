@@ -1,9 +1,7 @@
 var speed = 20;
 
-console.log(speed)
 function showSpeed() {
   const speedIndicator = document.getElementById("speed-indicator");
-  console.log(speed)
   speedIndicator.style = `height:${100 - speed}%`;
 }
 
