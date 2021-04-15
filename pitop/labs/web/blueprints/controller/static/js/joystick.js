@@ -24,8 +24,8 @@ class Joystick extends HTMLElement {
   }
 
   connectedCallback() {
-    if (!this.rendered) {
-      this.rendered = true;
+    if (!this.connected) {
+      this.connected = true;
 
       const type =  this.getAttribute("type") || "joystick";
       const mode =  this.getAttribute("mode") || "static";
@@ -42,7 +42,7 @@ class Joystick extends HTMLElement {
         `${style}; position: ${position}; width: ${size}px; height: ${size}px`
       );
 
-      const joystick = nipplejs
+      this.joystick = nipplejs
         .create({
           zone: this,
           mode,
@@ -56,16 +56,21 @@ class Joystick extends HTMLElement {
         })
         .get();
 
-      joystick.on("move", (_, data) => {
+      this.joystick.on("move", (_, data) => {
         publish({ type, data: sanitiseJoystickData(data) });
       });
 
-      joystick.on("end", (_, data) => {
-        joystick.frontPosition.x = 0;
-        joystick.frontPosition.y = 0;
+      this.joystick.on("end", (_, data) => {
+        this.joystick.frontPosition.x = 0;
+        this.joystick.frontPosition.y = 0;
         publish({ type, data: sanitiseJoystickData(data) });
       });
     }
+  }
+
+  disconnectedCallback() {
+    this.joystick.destroy();
+    this.connected = false;
   }
 }
 
