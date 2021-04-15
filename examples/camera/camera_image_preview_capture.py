@@ -22,6 +22,7 @@ while True:
     frame = cam.get_frame()
 
     cv2.imshow("Frame", frame)
+    miniscreen.display_image(frame)
     if button.is_pressed:
         cv2.imwrite(f'{directory}image_{picture_count}.jpg', frame)
         print(f"Frame written to file with ID: {picture_count}\n")
