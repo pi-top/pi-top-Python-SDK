@@ -125,4 +125,3 @@ class TestFaceAndEmotionDetector(TestCase):
         # self.assertEqual(emotion.type, expected_emotion_data[0])
         # self.assertGreaterEqual(emotion.confidence, expected_emotion_data[1])
         self.assertIsInstance(emotion.robot_view, np.ndarray)
-
