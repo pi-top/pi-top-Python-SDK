@@ -139,7 +139,7 @@ right_bounding_box = (w_ms // 2, top_section_height, w_ms // 2, h_ms - top_secti
 wide_bounding_box = (0, top_section_height, w_ms, h_ms - top_section_height)
 
 face_detector = FaceDetector()
-emotion_detector = EmotionDetector(input_format="OpenCV", format="OpenCV")
+emotion_detector = EmotionDetector()
 
 robot.camera.on_frame = frame_callback
 
