@@ -20,33 +20,31 @@ predictor_file_name = "shape_predictor_68_face_landmarks.dat"
 
 
 class FaceDetector:
-    def __init__(self, process_image_width: int = 320, input_format: str = "PIL", output_format: str = "PIL"):
+    def __init__(self, image_processing_width: int = 320, format: str = "OpenCV"):
         """
-        :param process_image_width: image width to scale to for image processing
+        :param image_processing_width: image width to scale to for image processing
         :param input_format: input image format
-        :param output_format: output image format
+        :param format: output image format
         """
-        self._process_image_width = process_image_width
-        self._input_format = input_format
-        self._output_format = output_format
+        self._image_processing_width = image_processing_width
+        self._output_format = format
         self._detector = dlib.get_frontal_face_detector()
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
 
     def detect(self, frame):
-        if self._input_format.lower() == "pil":
-            frame = ImageFunctions.convert(frame, format='OpenCV')
+        frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if self._frame_scaler is None:
             height, width = frame.shape[0:2]
-            self._frame_scaler = width / self._process_image_width
+            self._frame_scaler = width / self._image_processing_width
 
-        resized_frame = resize(frame, width=self._process_image_width)
+        resized_frame = resize(frame, width=self._image_processing_width)
         gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
         gray = self._clahe_filter.apply(gray)
 
-        rectangles_dlib = self._detector(gray, 0)
+        rectangles_dlib = self._detector(gray, 1)
 
         face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
 
