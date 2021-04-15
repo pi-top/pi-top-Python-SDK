@@ -1,5 +1,6 @@
 from sys import modules
 from unittest.mock import Mock
+import unittest
 import os
 
 
@@ -29,57 +30,92 @@ for patched_module in modules_to_patch:
 
 import numpy as np
 import cv2
-from pitop.processing.algorithms.faces import FaceDetector
+from pitop.processing.algorithms.faces import (
+    FaceDetector,
+    EmotionDetector,
+)
+from imutils import rotate_bound, resize
 
 
 face_image_dir = 'assets/face_images'
 script_dir = os.path.dirname(os.path.realpath(__file__))
 abs_file_path = os.path.join(script_dir, face_image_dir)
-neutral_face = "neutral.jpg"
-happy_face = "happy.jpg"
-sad_face = "sad.jpg"
-surprise_face = "surprise.jpg"
-angry_face = "angry.jpg"
-disgust_face = "disgust.jpg"
-
-emotions = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
-face_filenames = [neutral_face, angry_face, disgust_face, happy_face, sad_face, surprise_face]
-
-# self._neutral_face = cv2.imread(os.path.join(abs_file_path, neutral_face))
-#         self._happy_face = cv2.imread(os.path.join(abs_file_path, happy_face))
-#         self._sad_face = cv2.imread(os.path.join(abs_file_path, sad_face))
-#         self._surprised_face = os.path.join(abs_file_path, surprised_face)
-#         self._angry_face = os.path.join(abs_file_path, angry_face)
-#         self._disgust_face = os.path.join(abs_file_path, disgust_face)
+emotion_data = [['Neutral', 0.4], ['Anger', 0.75], ['Disgust', 0.75], ['Happy', 0.95], ['Sad', 0.9], ['Surprise', 0.9]]
+face_filenames = ["neutral.jpg", "anger.jpg", "disgust_3.jpg", "happy.jpg", "sad_3.jpg", "surprise.jpg"]
 
 
-class TestFaceDetector(TestCase):
+class TestFaceAndEmotionDetector(TestCase):
 
     def setUp(self):
-        self._height = 320
+        self._height = 480
         self._width = 640
         self._image_processing_width = 320
         self._frame_scaler = self._width / self._image_processing_width
-        self._MAX_FACE_CENTER_DIFFERENCE = 15
-        self._MAX_FACE_ANGLE_DIFFERENCE = 1
-        self._blank_cv_frame = np.zeros((self._height, self._width, 3), np.uint8)
-        self._face_images = []
+        self._MAX_FACE_CENTER_DIFFERENCE = self._height // 8  # will ensure center not off by processing scale factor
+        self._MAX_FACE_ANGLE_DIFFERENCE = 2
+        self._face_rotate_angle = 10
+        self._blank_cv_frame = np.ones((self._height, self._width, 3), np.uint8) * 255
+
+        # get list of images for testing
+        self._face_image_data = []
+        self._face_images_cw_rotate_data = []
+        self._face_images_ccw_rotate_data = []
         for face_filename in face_filenames:
-            self._face_images.append(cv2.imread(os.path.join(abs_file_path, face_filename)))
+            face_image = cv2.imread(os.path.join(abs_file_path, face_filename))
+            # face_image = resize(face_image, width=160)
+            face_image_height, face_image_width = face_image.shape[0:2]
+            merged_image = self._blank_cv_frame.copy()
+            x_offset = (self._width - face_image_width) // 2
+            y_offset = (self._height - face_image_height) // 2
+            merged_image[y_offset:y_offset + face_image_height, x_offset:x_offset + face_image_width, :] = face_image
+
+            self._face_image_data.append([merged_image, face_image_height])
+            self._face_images_cw_rotate_data.append(
+                [rotate_bound(merged_image, self._face_rotate_angle),
+                 face_image_height]
+            )
+            self._face_images_ccw_rotate_data.append(
+                [rotate_bound(merged_image, -self._face_rotate_angle), face_image_height]
+            )
 
     def test_detect_face(self):
+        self.detections(self._face_image_data)
+
+    @unittest.skip
+    def test_rotated_faces(self):
+        # self.detections(self._face_images_cw_rotate_data, rotation="cw")
+        self.detections(self._face_images_ccw_rotate_data, rotation="ccw")
+
+    def detections(self, face_data, rotation=None):
         face_detector = FaceDetector()
+        emotion_detector = EmotionDetector(apply_mean_filter=False)
 
-        for i, face in enumerate(self._face_images):
+        if rotation == "cw":
+            expected_rotation_angle = -self._face_rotate_angle
+        elif rotation == "ccw":
+            expected_rotation_angle = self._face_rotate_angle
+        else:
+            expected_rotation_angle = 0
+
+        for i, (face, height) in enumerate(face_data):
             face = face_detector.detect(face)
-            print(i)
-            self.assertTrue(face.found)
-            for u, v in zip(face.center, (0, 0)):
-                self.assertAlmostEqual(u, v, delta=self._MAX_FACE_CENTER_DIFFERENCE)
-            self.assertIsInstance(face.robot_view, np.ndarray)
-            self.assertEqual(len(face.features), 68)
-            self.assertAlmostEqual(face.angle, 0, delta=self._MAX_FACE_ANGLE_DIFFERENCE)
+            self.face_assertions(face, expected_rotation_angle, height)
+            emotion = emotion_detector.detect(face)
+            self.emotion_assertions(emotion, expected_emotion_data=emotion_data[i])
 
-    def test_rotated_face(self):
-        pass
+    def face_assertions(self, face, expected_rotation_angle, height):
+        self.assertTrue(face.found)
+        for u, v in zip(face.center, (0, 0)):
+            self.assertAlmostEqual(u, v, delta=self._MAX_FACE_CENTER_DIFFERENCE)
+        self.assertIsInstance(face.robot_view, np.ndarray)
+        self.assertIsInstance(face.frame, np.ndarray)
+        self.assertEqual(len(face.features), 68)
+        self.assertAlmostEqual(face.angle, expected_rotation_angle, delta=height // 2)
+        self.assertAlmostEqual(face.rectangle[3], height, delta=height // 2)
+
+    def emotion_assertions(self, emotion, expected_emotion_data):
+        print(emotion.type, emotion.confidence)
+        self.assertEqual(emotion.type, expected_emotion_data[0])
+        self.assertGreaterEqual(emotion.confidence, expected_emotion_data[1])
+        self.assertIsInstance(emotion.robot_view, np.ndarray)
 
