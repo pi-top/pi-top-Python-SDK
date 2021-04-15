@@ -3,7 +3,7 @@ import numpy as np
 import math
 from .face_utils import load_emotion_model
 from pitop.core.data_stuctures import DotDict
-from pitop.processing.utils.math_functions import running_mean
+from pitop.processing.core.math_functions import running_mean
 from pitop.processing.core.vision_functions import import_opencv
 
 
@@ -13,18 +13,18 @@ cv2 = import_opencv()
 class EmotionDetector:
     __MEAN_N = 5
 
-    def __init__(self, input_format: str = "PIL", output_format: str = "PIL"):
-        self._input_format = input_format
-        self._output_format = output_format
+    def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
+        self._format = format
+        self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
         self._emotions = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
-        self._probability_mean_array = np.zeros((self.__MEAN_N, len(self._emotions)), dtype=float)
+        if self._apply_mean_filter:
+            self._probability_mean_array = np.zeros((self.__MEAN_N, len(self._emotions)), dtype=float)
 
     def detect(self, face):
         frame = face.frame.copy()
 
-        if self._input_format.lower() == "pil":
-            frame = ImageFunctions.convert(frame, format='OpenCV')
+        frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if face.found:
             robot_view = frame.copy()
@@ -36,7 +36,7 @@ class EmotionDetector:
             emotion_type = None
             emotion_confidence = None
 
-        if self._output_format.lower() == "pil":
+        if self._format.lower() == "pil":
             robot_view = ImageFunctions.convert(robot_view, format='PIL')
 
         return DotDict({
@@ -97,7 +97,8 @@ class EmotionDetector:
         X = get_feature_vector(face_features_rotated, face.dimensions)
         probabilities = self._emotion_model.predict_proba(X)[0]
 
-        self._probability_mean_array, probabilities_mean = running_mean(self._probability_mean_array, probabilities)
-        max_index = np.argmax(probabilities_mean)
+        if self._apply_mean_filter:
+            self._probability_mean_array, probabilities = running_mean(self._probability_mean_array, probabilities)
+        max_index = np.argmax(probabilities)
 
         return self._emotions[max_index], round(probabilities[max_index], 2)
