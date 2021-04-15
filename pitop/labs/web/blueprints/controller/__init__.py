@@ -5,7 +5,7 @@ from .video_blueprint import video_blueprint
 
 
 class ControllerBlueprint(Blueprint):
-    def __init__(self, camera=None, pubsub_handlers={}, **kwargs):
+    def __init__(self, camera=None, message_handlers={}, **kwargs):
         Blueprint.__init__(
             self,
             "controller",
@@ -15,7 +15,7 @@ class ControllerBlueprint(Blueprint):
             **kwargs
         )
 
-        self.pubsub_handlers = pubsub_handlers
+        self.message_handlers = message_handlers
         self.camera = camera
 
     def register(self, app, options, *args, **kwargs):
@@ -25,7 +25,7 @@ class ControllerBlueprint(Blueprint):
                 'sockets must be passed to register_blueprint to register ControllerBlueprint')
 
         # setup custom config
-        app.config['pubsub_handlers'] = self.pubsub_handlers
+        app.config['message_handlers'] = self.message_handlers
         app.config['camera'] = self.camera
 
         # register child blueprints

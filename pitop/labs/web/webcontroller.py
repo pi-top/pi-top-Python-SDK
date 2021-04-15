@@ -6,13 +6,13 @@ class WebController(WebServer):
     def __init__(
         self,
         camera=None,
-        pubsub_handlers={},
+        message_handlers={},
         **kwargs
     ):
         WebServer.__init__(
             self,
             blueprint=ControllerBlueprint(
-                camera=camera, pubsub_handlers=pubsub_handlers),
+                camera=camera, message_handlers=message_handlers),
             **kwargs
         )
 
@@ -23,7 +23,7 @@ class AlexWebController(WebServer):
         camera=None,
         drive=None,
         pan_tilt=None,
-        pubsub_handlers={},
+        message_handlers={},
         **kwargs
     ):
         WebServer.__init__(
@@ -32,6 +32,6 @@ class AlexWebController(WebServer):
                 camera=camera,
                 drive=drive,
                 pan_tilt=pan_tilt,
-                pubsub_handlers=pubsub_handlers),
+                message_handlers=message_handlers),
             **kwargs
         )

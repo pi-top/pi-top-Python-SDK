@@ -20,8 +20,8 @@ def handle_message(message, ws):
     message_type = parsed_message.get('type', '')
     message_data = parsed_message.get('data')
 
-    pubsub_handlers = app.config.get('pubsub_handlers', {})
-    handler = pubsub_handlers.get(message_type)
+    message_handlers = app.config.get('message_handlers', {})
+    handler = message_handlers.get(message_type)
 
     if handler is None:
         log_unhandled_message(message_type, message_data)

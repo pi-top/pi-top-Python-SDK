@@ -10,6 +10,6 @@ def save_photo(data):
 
 controller = WebController(
     camera=camera,
-    pubsub_handlers={'save_photo': save_photo})
+    message_handlers={'save_photo': save_photo})
 
 controller.serve_forever()
