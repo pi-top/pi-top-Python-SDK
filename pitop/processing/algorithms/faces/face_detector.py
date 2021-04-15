@@ -44,7 +44,7 @@ class FaceDetector:
         gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
         gray = self._clahe_filter.apply(gray)
 
-        rectangles_dlib = self._detector(gray, 1)
+        rectangles_dlib = self._detector(gray, 0)
 
         face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
 
