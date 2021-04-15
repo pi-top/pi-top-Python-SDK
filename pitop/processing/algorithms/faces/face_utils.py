@@ -69,7 +69,7 @@ def load_emotion_model():
     script_dir = path.dirname(path.realpath(__file__))
     abs_file_path = path.join(script_dir, model_dir)
 
-    model_filename = 'svc_emotion_model_x-y_linear_with_neutral_20-2.joblib'
+    model_filename = 'svc_emotion_model_pupil_normalizer_20-2.joblib'
     model_file_handle = open(path.join(abs_file_path, model_filename), "rb")
     atexit.register(close_file_handle, model_file_handle)
 

@@ -1,10 +1,10 @@
 from pitop.core import ImageFunctions
 import numpy as np
-import math
 from .face_utils import load_emotion_model
 from pitop.core.data_stuctures import DotDict
 from pitop.processing.core.math_functions import running_mean
 from pitop.processing.core.vision_functions import import_opencv
+from imutils import face_utils
 
 
 cv2 = import_opencv()
@@ -74,13 +74,30 @@ class EmotionDetector:
 
     def __get_emotion(self, face):
 
-        def get_feature_vector(features, face_dimensions):
-            normalizer = 1.0 / math.sqrt(face_dimensions[0] ** 2 + face_dimensions[1] ** 2)
+        def get_feature_vector(features, face_angle):
+            # face_feature_mean = features.mean(axis=0)
+            # M = cv2.getRotationMatrix2D(tuple(face_feature_mean), -face_angle, 1.0)
+            # # M = cv2.getRotationMatrix2D((0, 0), -face_angle, 1.0)
+            # ones = np.ones(shape=(len(features), 1))
+            # points_ones = np.hstack([features, ones])
+            # face_features_rotated = M.dot(points_ones.T).T
 
-            face_feature_mean = features.mean(axis=0)
+            rotation_matrix = np.array([[np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
+                                        [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))]])
+
+            face_features_rotated = rotation_matrix.dot(features.T).T
+            face_feature_mean = face_features_rotated.mean(axis=0)
+
+            left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
+            right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+            left_eye_center = np.mean(face_features_rotated[left_eye_start:left_eye_end], axis=0)
+            right_eye_center = np.mean(face_features_rotated[right_eye_start:right_eye_end], axis=0)
+
+            interpupillary_distance = np.linalg.norm(left_eye_center - right_eye_center)
+
             feature_vector = []
-            for landmark in features:
-                relative_vector = (landmark - face_feature_mean) * normalizer
+            for landmark in face_features_rotated:
+                relative_vector = (landmark - face_feature_mean) / interpupillary_distance
                 feature_vector.append(relative_vector[0])
                 feature_vector.append(relative_vector[1])
 
@@ -89,12 +106,8 @@ class EmotionDetector:
         if len(face.features) != 68:
             raise ValueError("This function is only compatible with dlib's 68 landmark feature")
 
-        rotation_matrix = np.array([[np.cos(np.radians(face.angle)), -np.sin(np.radians(face.angle))],
-                                    [np.sin(np.radians(face.angle)), np.cos(np.radians(face.angle))]])
+        X = get_feature_vector(face.features, face.angle)
 
-        face_features_rotated = rotation_matrix.dot(face.features.T).T
-
-        X = get_feature_vector(face_features_rotated, face.dimensions)
         probabilities = self._emotion_model.predict_proba(X)[0]
 
         if self._apply_mean_filter:
