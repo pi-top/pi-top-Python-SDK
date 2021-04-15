@@ -23,6 +23,19 @@ class Joystick extends HTMLElement {
     super();
   }
 
+  getJoystickPosition() {
+    const positionTop =  parseInt(this.getAttribute("positionTop"), 10);
+    const positionLeft =  parseInt(this.getAttribute("positionLeft"), 10);
+    const positionRight =  parseInt(this.getAttribute("positionRight"), 10);
+    const positionBottom =  parseInt(this.getAttribute("positionBottom"), 10);
+    return {
+      top: !Number.isNaN(positionTop) ? positionTop : 100,
+      left: !Number.isNaN(positionLeft) ? positionLeft: 100,
+      right: !Number.isNaN(positionRight) ? positionRight : undefined,
+      bottom: !Number.isNaN(positionBottom) ? positionBottom : undefined,
+    }
+  }
+
   connectedCallback() {
     if (!this.connected) {
       this.connected = true;
@@ -30,11 +43,7 @@ class Joystick extends HTMLElement {
       const type =  this.getAttribute("type") || "joystick";
       const mode =  this.getAttribute("mode") || "static";
       const position =  this.getAttribute("position") || "relative";
-      const size =  +this.getAttribute("size") || 200;
-      const positionTop =  +this.getAttribute("positionTop") || 100;
-      const positionLeft =  +this.getAttribute("positionLeft") || 100;
-      const positionRight =  +this.getAttribute("positionRight") || undefined;
-      const positionBottom =  +this.getAttribute("positionBottom") || undefined;
+      const size =  parseInt(this.getAttribute("size"), 10) || 200;
 
       const style = this.getAttribute("style");
       this.setAttribute(
@@ -47,12 +56,7 @@ class Joystick extends HTMLElement {
           zone: this,
           mode,
           size,
-          position: {
-            top: positionTop,
-            left: positionLeft,
-            right: positionRight,
-            bottom: positionBottom,
-          },
+          position: this.getJoystickPosition(),
         })
         .get();
 
