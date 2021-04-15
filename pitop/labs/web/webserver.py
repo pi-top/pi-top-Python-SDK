@@ -44,13 +44,13 @@ def create_app(
 
 
 class WebServer(WSGIServer):
-    def __init__(self, port=8070, app=create_app(), blueprint=None):
+    def __init__(self, port=8070, app=create_app(), blueprints=[]):
         self.port = port
         self.app = app
         self.sockets = Sockets(app)
 
-        if blueprint:
-            with self.app.app_context():
+        with self.app.app_context():
+            for blueprint in blueprints:
                 self.app.register_blueprint(blueprint, sockets=self.sockets)
 
         WSGIServer.__init__(

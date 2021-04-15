@@ -11,8 +11,10 @@ class WebController(WebServer):
     ):
         WebServer.__init__(
             self,
-            blueprint=ControllerBlueprint(
-                camera=camera, message_handlers=message_handlers),
+            blueprints=[ControllerBlueprint(
+                camera=camera,
+                message_handlers=message_handlers
+            )],
             **kwargs
         )
 
@@ -28,10 +30,11 @@ class AlexWebController(WebServer):
     ):
         WebServer.__init__(
             self,
-            blueprint=AlexControllerBlueprint(
+            blueprints=[AlexControllerBlueprint(
                 camera=camera,
                 drive=drive,
                 pan_tilt=pan_tilt,
-                message_handlers=message_handlers),
+                message_handlers=message_handlers
+            )],
             **kwargs
         )
