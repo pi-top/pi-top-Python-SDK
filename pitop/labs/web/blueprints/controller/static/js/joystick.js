@@ -27,15 +27,32 @@ class Joystick extends HTMLElement {
     if (!this.rendered) {
       this.rendered = true;
 
-      const type = this.getAttribute("type") || "joystick";
-      this.classList.add("joystick");
+      const type =  this.getAttribute("type") || "joystick";
+      const mode =  this.getAttribute("mode") || "static";
+      const position =  this.getAttribute("position") || "relative";
+      const size =  +this.getAttribute("size") || 200;
+      const positionTop =  +this.getAttribute("positionTop") || 100;
+      const positionLeft =  +this.getAttribute("positionLeft") || 100;
+      const positionRight =  +this.getAttribute("positionRight") || undefined;
+      const positionBottom =  +this.getAttribute("positionBottom") || undefined;
+
+      const style = this.getAttribute("style");
+      this.setAttribute(
+        "style",
+        `${style}; position: ${position}; width: ${size}px; height: ${size}px`
+      );
 
       const joystick = nipplejs
         .create({
           zone: this,
-          mode: "static",
-          size: 200,
-          position: { top: 100, left: 100 },
+          mode,
+          size,
+          position: {
+            top: positionTop,
+            left: positionLeft,
+            right: positionRight,
+            bottom: positionBottom,
+          },
         })
         .get();
 

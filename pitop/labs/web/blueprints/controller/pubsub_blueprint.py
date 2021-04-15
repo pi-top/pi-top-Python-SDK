@@ -28,18 +28,11 @@ def handle_message(message, send):
         return
 
     spec = getfullargspec(handler)
-    if (
-        (len(spec.args) == 3 and ismethod(handler))
-        or (len(spec.args) == 2 and not ismethod(handler))
-        or spec.varargs
-    ):
+    if len(spec.args) == (3 if ismethod(handler) else 2) or spec.varargs:
         handler(message_data, send)
         return
 
-    if (
-        (len(spec.args) == 2 and ismethod(handler))
-        or (len(spec.args) == 1 and not ismethod(handler))
-    ):
+    if len(spec.args) == (2 if ismethod(handler) else 1):
         handler(message_data)
         return
 
