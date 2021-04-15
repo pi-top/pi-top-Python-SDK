@@ -1,13 +1,12 @@
 import gevent
 from io import BytesIO
-from flask import Response
-from werkzeug.exceptions import HTTPException
+from flask import Response, abort
 
 
 class VideoResponse(Response):
     def __init__(self, camera=None, *args, **kwargs):
         if camera is None:
-            raise HTTPException(409)
+            abort(500, 'No camera available')
 
         def get_frame():
             try:
