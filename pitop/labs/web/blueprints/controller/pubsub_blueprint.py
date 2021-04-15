@@ -14,7 +14,7 @@ def log_unhandled_message(message_type, message_data):
     print(f"Unhandled message \"{message_type}\": {pretty_message_data}")
 
 
-def handle_message(message, ws):
+def handle_message(message, send):
     parsed_message = json.loads(message)
 
     message_type = parsed_message.get('type', '')
@@ -33,7 +33,7 @@ def handle_message(message, ws):
         or (len(spec.args) == 2 and not ismethod(handler))
         or spec.varargs
     ):
-        handler(message_data, ws)
+        handler(message_data, send)
         return
 
     if (
@@ -48,7 +48,10 @@ def handle_message(message, ws):
 
 @pubsub_blueprint.route('/pubsub')
 def pubsub(ws):
+    def send(response_message):
+        ws.send(json.dumps(response_message))
+
     while not ws.closed:
         message = ws.receive()
         if message:
-            handle_message(message, ws)
+            handle_message(message, send)

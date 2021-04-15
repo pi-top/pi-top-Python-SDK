@@ -1,4 +1,3 @@
-import json
 from pitop import DriveController, Camera
 from pitop.labs import WebController
 
@@ -8,7 +7,7 @@ camera = Camera()
 speed = 0.2
 
 
-def key_down(data, ws):
+def key_down(data, send):
     global speed
 
     key = data.get('key')
@@ -22,10 +21,10 @@ def key_down(data, ws):
         drive.left(speed)
     elif key == 'ArrowUp':
         speed = min(1, speed + 0.2)
-        ws.send(json.dumps({'type': 'speed', 'data': speed}))
+        send({'type': 'speed', 'data': speed})
     elif key == 'ArrowDown':
         speed = max(0, speed - 0.2)
-        ws.send(json.dumps({'type': 'speed', 'data': speed}))
+        send({'type': 'speed', 'data': speed})
 
 
 def key_up(data):
