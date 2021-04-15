@@ -40,8 +40,8 @@ def frame_callback(frame):
 
 camera = Camera(format="OpenCV", flip_top_bottom=True)
 
-face_detector = FaceDetector(input_format="OpenCV", output_format="OpenCV")
-emotion_detector = EmotionDetector(input_format="OpenCV", output_format="OpenCV")
+face_detector = FaceDetector(input_format="OpenCV", format="OpenCV")
+emotion_detector = EmotionDetector(input_format="OpenCV", format="OpenCV")
 
 camera.on_frame = frame_callback
 

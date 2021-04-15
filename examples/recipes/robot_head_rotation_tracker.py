@@ -32,7 +32,7 @@ robot.tilt_roll.roll_servo.target_angle = 0
 
 robot.add_component(Camera(format="OpenCV", flip_top_bottom=True))
 
-face_detector = FaceDetector(input_format="OpenCV", output_format="OpenCV")
+face_detector = FaceDetector(input_format="OpenCV", format="OpenCV")
 
 robot.camera.on_frame = track_face
 

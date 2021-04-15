@@ -1,14 +1,7 @@
-from os import environ
-from pitopcommon.current_session_info import get_first_display
 from pitop import Camera
 from pitop.processing.algorithms.faces import FaceDetector
 from signal import pause
-from pitop.processing.core.vision_functions import import_opencv
-
-
-cv2 = import_opencv()
-
-environ["DISPLAY"] = get_first_display()
+import cv2
 
 
 def find_faces(frame):
@@ -26,8 +19,8 @@ def find_faces(frame):
         print("Cannot find face!")
 
 
-camera = Camera(format="OpenCV", flip_top_bottom=True)
-face_detector = FaceDetector(input_format="OpenCV", output_format="OpenCV")
+camera = Camera(flip_top_bottom=True)
+face_detector = FaceDetector()
 
 camera.on_frame = find_faces
 

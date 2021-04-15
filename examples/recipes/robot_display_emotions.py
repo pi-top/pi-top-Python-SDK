@@ -121,7 +121,7 @@ def frame_callback(frame):
 
 
 robot = Pitop()
-camera = Camera(format="OpenCV", flip_top_bottom=True)
+camera = Camera(flip_top_bottom=True)
 robot.add_component(camera)
 
 image = Image.new(
@@ -138,8 +138,8 @@ left_bounding_box = (0, top_section_height, w_ms // 2, h_ms - top_section_height
 right_bounding_box = (w_ms // 2, top_section_height, w_ms // 2, h_ms - top_section_height)
 wide_bounding_box = (0, top_section_height, w_ms, h_ms - top_section_height)
 
-face_detector = FaceDetector(input_format="OpenCV", output_format="OpenCV")
-emotion_detector = EmotionDetector(input_format="OpenCV", output_format="OpenCV")
+face_detector = FaceDetector()
+emotion_detector = EmotionDetector(input_format="OpenCV", format="OpenCV")
 
 robot.camera.on_frame = frame_callback
 
