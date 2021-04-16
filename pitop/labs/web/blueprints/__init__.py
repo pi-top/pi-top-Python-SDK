@@ -1,5 +1,5 @@
 from .alex import AlexControllerBlueprint
 from .base import BaseBlueprint
 from .controller import ControllerBlueprint
-from .pubsub import PubSubBlueprint
+from .messaging import MessagingBlueprint
 from .video import VideoBlueprint

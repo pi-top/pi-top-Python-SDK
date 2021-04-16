@@ -1,6 +1,6 @@
 const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
 const host = window.location.host;
-const pubsubUri = `${protocol}//${host}/pubsub`;
+const pubsubUri = `${protocol}//${host}/messaging`;
 
 window.socket = new WebSocket(pubsubUri);
 const socketReady = new Promise((resolve) => (socket.onopen = resolve));

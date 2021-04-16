@@ -4,7 +4,6 @@ from .web.blueprints import (
     AlexControllerBlueprint,
     BaseBlueprint,
     ControllerBlueprint,
-    PubSubBlueprint,
-    VideoBlueprint,
-    ControllerBlueprint
+    MessagingBlueprint,
+    VideoBlueprint
 )

@@ -12,13 +12,13 @@ def log_unhandled_message(message_type, message_data):
     print(f"Unhandled message \"{message_type}\": {pretty_message_data}")
 
 
-class PubSubBlueprint(Blueprint):
+class MessagingBlueprint(Blueprint):
     def __init__(self, message_handlers={}, **kwargs):
         Blueprint.__init__(
             self,
-            "pubsub",
+            "messaging",
             __name__,
-            static_folder="pubsub",
+            static_folder="messaging",
             **kwargs
         )
 
@@ -46,9 +46,9 @@ class PubSubBlueprint(Blueprint):
 
             handler()
 
-        self.socket_blueprint = Blueprint("pubsub_socket", __name__)
+        self.socket_blueprint = Blueprint("messaging_socket", __name__)
 
-        @self.socket_blueprint.route('/pubsub')
+        @self.socket_blueprint.route('/messaging')
         def pubsub(ws):
             def send(response_message):
                 ws.send(json.dumps(response_message))
@@ -64,6 +64,6 @@ class PubSubBlueprint(Blueprint):
         sockets = options.get('sockets')
         if sockets is None:
             raise Exception(
-                'Unable to register PubSubBlueprint without sockets')
+                'Unable to register MessagingBlueprint without sockets')
 
         sockets.register_blueprint(self.socket_blueprint)
