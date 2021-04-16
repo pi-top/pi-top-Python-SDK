@@ -74,9 +74,39 @@ class TestFaceAndEmotionDetector(TestCase):
     def test_detect_face(self):
         self.detections(self._face_image_data)
 
-    def test_cw_rotated_faces(self):
+    def test_rotated_faces(self):
         self.detections(self._face_images_cw_rotate_data, rotation="cw")
         self.detections(self._face_images_ccw_rotate_data, rotation="ccw")
+
+    def test_no_face(self):
+        face_detector = FaceDetector()
+        emotion_detector = EmotionDetector(apply_mean_filter=False)
+        frame = self._blank_cv_frame.copy()
+
+        face = face_detector.detect(frame)
+
+        self.assertFalse(face.found)
+        self.assertIsNone(face.center)
+        self.assertIsNone(face.angle)
+        self.assertIsNone(face.features)
+        self.assertIsNone(face.rectangle)
+        self.assertEqual(face.robot_view.shape[0], self._height)
+        self.assertEqual(face.robot_view.shape[1], self._width)
+
+        # check nothing has been drawn to robot view
+        comparison = face.robot_view == frame
+        self.assertTrue(comparison.all())
+
+        emotion = emotion_detector.detect(face)
+
+        self.assertIsNone(emotion.type)
+        self.assertEqual(emotion.confidence, 0.0)
+        self.assertIsInstance(emotion.robot_view, np.ndarray)
+
+        # check nothing has been drawn to robot view
+        comparison = emotion.robot_view == frame
+        self.assertTrue(comparison.all())
+
 
     def detections(self, face_data, rotation=None):
         face_detector = FaceDetector()
@@ -89,11 +119,11 @@ class TestFaceAndEmotionDetector(TestCase):
         else:
             expected_rotation_angle = 0
 
-        for i, (face, width) in enumerate(face_data):
-            face = face_detector.detect(face)
-            self.face_assertions(face, expected_rotation_angle, width)
+        for i, (frame, width) in enumerate(face_data):
+            face = face_detector.detect(frame)
+            self.face_assertions(face=face, expected_rotation_angle=expected_rotation_angle, width=width)
             emotion = emotion_detector.detect(face)
-            self.emotion_assertions(emotion, expected_emotion_data=emotion_data[i])
+            self.emotion_assertions(emotion=emotion, expected_emotion_data=emotion_data[i], frame=frame)
 
     def face_assertions(self, face, expected_rotation_angle, width):
         self.assertTrue(face.found)
@@ -107,7 +137,15 @@ class TestFaceAndEmotionDetector(TestCase):
         self.assertEqual(len(face.features), 68)
         self.assertAlmostEqual(face.rectangle[3], width, delta=width // 2)
 
-    def emotion_assertions(self, emotion, expected_emotion_data):
+        # check something has been drawn to robot view
+        comparison = face.robot_view == face.original_detection_frame
+        self.assertFalse(comparison.all())
+
+    def emotion_assertions(self, emotion, expected_emotion_data, frame):
         self.assertEqual(emotion.type, expected_emotion_data[0])
         self.assertGreaterEqual(emotion.confidence, expected_emotion_data[1])
         self.assertIsInstance(emotion.robot_view, np.ndarray)
+
+        # check something has been drawn to robot view
+        comparison = emotion.robot_view == frame
+        self.assertFalse(comparison.all())
