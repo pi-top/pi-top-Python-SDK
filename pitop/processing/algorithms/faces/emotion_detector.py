@@ -22,7 +22,7 @@ class EmotionDetector:
             self._probability_mean_array = np.zeros((self.__MEAN_N, len(self._emotions)), dtype=float)
 
     def detect(self, face):
-        frame = face.frame.copy()
+        frame = face.original_detection_frame.copy()
 
         frame = ImageFunctions.convert(frame, format='OpenCV')
 

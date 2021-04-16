@@ -103,7 +103,7 @@ class TestFaceAndEmotionDetector(TestCase):
         self.assertIsInstance(face.robot_view, np.ndarray)
         self.assertEqual(face.robot_view.shape[0], self._height)
         self.assertEqual(face.robot_view.shape[1], self._width)
-        self.assertIsInstance(face.frame, np.ndarray)
+        self.assertIsInstance(face.original_detection_frame, np.ndarray)
         self.assertEqual(len(face.features), 68)
         self.assertAlmostEqual(face.rectangle[3], width, delta=width // 2)
 

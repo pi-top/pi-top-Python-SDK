@@ -22,6 +22,72 @@ abs_file_path = os.path.join(script_dir, predictor_dir)
 predictor_file_name = "shape_predictor_68_face_landmarks.dat"
 
 
+class Face:
+    def __init__(self):
+        self._center = None
+        self._features = None
+        self._angle = None
+        self._rectangle = None
+        self._robot_view = None
+        self._original_frame = None
+
+    @property
+    def center(self):
+        return self._center
+
+    @center.setter
+    def center(self, value):
+        self._center = value
+
+    @property
+    def angle(self):
+        return self._angle
+
+    @angle.setter
+    def angle(self, value):
+        self._angle = value
+
+    @property
+    def features(self):
+        return self._features
+
+    @features.setter
+    def features(self, value):
+        self._features = value
+
+    @property
+    def rectangle(self):
+        return self._rectangle
+
+    @rectangle.setter
+    def rectangle(self, value):
+        self._rectangle = value
+
+    @property
+    def robot_view(self):
+        return self._robot_view
+
+    @robot_view.setter
+    def robot_view(self, value):
+        self._robot_view = value
+
+    @property
+    def original_detection_frame(self):
+        return self._original_frame
+
+    @original_detection_frame.setter
+    def original_detection_frame(self, value):
+        self._original_frame = value
+
+    @property
+    def found(self) -> bool:
+        """
+        :return: Boolean to determine if a valid ball was found in the frame.
+        :rtype: bool
+        """
+        return self.center is not None
+
+
 class FaceDetector:
     def __init__(self, image_processing_width: int = 320, format: str = "OpenCV"):
         """
@@ -30,11 +96,12 @@ class FaceDetector:
         :param format: output image format
         """
         self._image_processing_width = image_processing_width
-        self._output_format = format
+        self._format = format
         self._detector = dlib.get_frontal_face_detector()
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
+        self.face = Face()
 
         # Enable FPS if environment variable is set
         self._print_fps = getenv("PT_ENABLE_FPS", "0") == "1"
@@ -51,9 +118,18 @@ class FaceDetector:
         frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if self._frame_scaler is None:
-            height, width = frame.shape[0:2]
+            _, width = frame.shape[0:2]
             self._frame_scaler = width / self._image_processing_width
 
+        self.face = self.__find_largest_face(face=self.face, frame=frame)
+
+        if self._print_fps:
+            self._fps.update()
+
+        return self.face
+
+    def __find_largest_face(self, face, frame):
+        face.original_detection_frame = frame
         resized_frame = resize(frame, width=self._image_processing_width)
         gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
         gray = self._clahe_filter.apply(gray)
@@ -64,40 +140,25 @@ class FaceDetector:
 
         if face_rectangle is not None:
             # resize back to original frame resolution
-            face_rectangle = tuple((int(item * self._frame_scaler) for item in face_rectangle))
+            face.rectangle = tuple((int(item * self._frame_scaler) for item in face_rectangle))
             face_center = tuple((int(item * self._frame_scaler) for item in face_center))
-            face_features = (face_features * self._frame_scaler).astype("int")
+            face.features = (face_features * self._frame_scaler).astype("int")
 
-            face_found = True
-            robot_view = frame.copy()
-            face_dimensions = face_rectangle[2:4]
-            face_angle = get_face_angle(face_features)
+            face.robot_view = frame.copy()
+            # face_dimensions = face_rectangle[2:4]
+            face.angle = get_face_angle(face_features)
 
-            self.__draw_on_frame(robot_view, face_rectangle, face_center, face_features)
-            face_center = center_reposition(face_center, frame)  # has to be done after OpenCV draw functions
+            self.__draw_on_frame(face.robot_view, face.rectangle, face_center, face.features)
+            face.center = center_reposition(face_center, frame)  # has to be done after OpenCV draw functions
 
         else:
-            face_found = False
-            robot_view = frame
-            face_dimensions = None
-            face_angle = None
+            face.robot_view = frame
+            # face_dimensions = None
+            face.angle = None
 
-        if self._output_format.lower() == "pil":
-            robot_view = ImageFunctions.convert(robot_view, format='PIL')
+        self.face.robot_view = ImageFunctions.convert(self.face.robot_view, format=self._format)
 
-        if self._print_fps:
-            self._fps.update()
-
-        return DotDict({
-            "found": face_found,
-            "center": face_center,
-            "robot_view": robot_view,
-            "features": face_features,
-            "angle": face_angle,
-            "dimensions": face_dimensions,
-            "rectangle": face_rectangle,
-            "frame": frame
-        })
+        return face
 
     def __process_rectangles(self, gray, rectangles_dlib):
         area = 0
