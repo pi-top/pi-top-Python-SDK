@@ -107,7 +107,6 @@ class TestFaceAndEmotionDetector(TestCase):
         comparison = emotion.robot_view == frame
         self.assertTrue(comparison.all())
 
-
     def detections(self, face_data, rotation=None):
         face_detector = FaceDetector()
         emotion_detector = EmotionDetector(apply_mean_filter=False)
