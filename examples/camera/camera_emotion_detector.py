@@ -5,7 +5,6 @@ from pitop.processing.algorithms.faces import (
 )
 from signal import pause
 import cv2
-import sys
 
 
 def detect_emotion(frame):
@@ -18,10 +17,7 @@ def detect_emotion(frame):
         print("Face not found!")
 
     cv2.imshow("Emotion", emotion.robot_view)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        camera.on_frame = None
-        cv2.destroyAllWindows()
-        sys.exit()
+    cv2.waitKey(1)
 
 
 camera = Camera(resolution=(640, 480), flip_top_bottom=True)
