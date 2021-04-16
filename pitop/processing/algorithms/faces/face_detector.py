@@ -8,6 +8,9 @@ from imutils import (
     resize,
 )
 from pitop.core.data_stuctures import DotDict
+from imutils.video import FPS
+from os import getenv
+import atexit
 from pitop.processing.core.vision_functions import import_opencv
 
 
@@ -32,6 +35,17 @@ class FaceDetector:
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
+
+        # Enable FPS if environment variable is set
+        self._print_fps = getenv("PT_ENABLE_FPS", "0") == "1"
+        if self._print_fps:
+            self._fps = FPS().start()
+            atexit.register(self.__print_fps)
+
+    def __print_fps(self):
+        self._fps.stop()
+        print(f"[INFO] Elapsed time: {self._fps.elapsed():.2f}")
+        print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     def detect(self, frame):
         frame = ImageFunctions.convert(frame, format='OpenCV')
@@ -70,6 +84,9 @@ class FaceDetector:
 
         if self._output_format.lower() == "pil":
             robot_view = ImageFunctions.convert(robot_view, format='PIL')
+
+        if self._print_fps:
+            self._fps.update()
 
         return DotDict({
             "found": face_found,
