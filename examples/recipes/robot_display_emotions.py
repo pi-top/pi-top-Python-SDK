@@ -5,10 +5,7 @@ from pitop.processing.algorithms.faces import (
     EmotionDetector
 )
 from signal import pause
-from pitop.processing.core.vision_functions import import_opencv
 
-
-cv2 = import_opencv()
 
 '''
 Designed for the Prax robot configuration, this example will use the camera module to detect face emotions.
