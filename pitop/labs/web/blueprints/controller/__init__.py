@@ -21,11 +21,11 @@ class ControllerBlueprint(Blueprint):
         self.pubsub_blueprint = PubSubBlueprint(
             message_handlers=message_handlers)
 
-    def register(self, app, options, **kwargs):
+    def register(self, app, options, *args, **kwargs):
         # register child blueprints
         app.register_blueprint(self.base_blueprint, **options)
         app.register_blueprint(self.video_blueprint, **options)
         app.register_blueprint(self.pubsub_blueprint, **options)
 
         # register self
-        Blueprint.register(self, app, options, **kwargs)
+        Blueprint.register(self, app, options, *args, **kwargs)
