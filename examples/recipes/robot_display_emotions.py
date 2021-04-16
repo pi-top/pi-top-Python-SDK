@@ -118,7 +118,7 @@ def frame_callback(frame):
 
 
 robot = Pitop()
-camera = Camera(flip_top_bottom=True)
+camera = Camera(resolution=(640, 480), flip_top_bottom=True)
 robot.add_component(camera)
 
 image = Image.new(

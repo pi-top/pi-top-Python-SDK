@@ -2,9 +2,7 @@ from pitop import Camera
 from pitop.processing.algorithms.faces import FaceDetector
 from pitop import Pitop, TiltRollHeadController
 from signal import pause
-from pitop.processing.core.vision_functions import import_opencv
-
-cv2 = import_opencv()
+import cv2
 
 
 def track_face(frame):
@@ -30,9 +28,9 @@ robot.tilt_roll.calibrate()
 robot.tilt_roll.tilt_servo.target_angle = 70
 robot.tilt_roll.roll_servo.target_angle = 0
 
-robot.add_component(Camera(format="OpenCV", flip_top_bottom=True))
+robot.add_component(Camera(resolution=(640, 480), flip_top_bottom=True))
 
-face_detector = FaceDetector(input_format="OpenCV", format="OpenCV")
+face_detector = FaceDetector()
 
 robot.camera.on_frame = track_face
 

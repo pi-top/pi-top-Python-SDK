@@ -19,7 +19,7 @@ def find_faces(frame):
         print("Cannot find face!")
 
 
-camera = Camera(flip_top_bottom=True)
+camera = Camera(resolution=(640, 480), flip_top_bottom=True)
 face_detector = FaceDetector()
 
 camera.on_frame = find_faces

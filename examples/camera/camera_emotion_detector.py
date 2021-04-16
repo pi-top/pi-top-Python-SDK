@@ -31,7 +31,7 @@ def detect_emotion(frame):
         print("Face not found")
 
 
-camera = Camera(flip_top_bottom=True)
+camera = Camera(resolution=(640, 480), flip_top_bottom=True)
 
 face_detector = FaceDetector()
 emotion_detector = EmotionDetector()
