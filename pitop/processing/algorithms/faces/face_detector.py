@@ -1,4 +1,3 @@
-import os
 import dlib
 from pitop.processing.core.vision_functions import center_reposition
 from .face_utils import get_face_angle
@@ -8,7 +7,10 @@ from imutils import (
     resize,
 )
 from imutils.video import FPS
-from os import getenv
+from os import (
+    getenv,
+    path
+)
 import atexit
 from pitop.processing.core.vision_functions import (
     import_opencv,
@@ -19,8 +21,8 @@ from pitop.processing.core.vision_functions import (
 cv2 = import_opencv()
 
 predictor_dir = 'predictors'
-script_dir = os.path.dirname(os.path.realpath(__file__))
-abs_file_path = os.path.join(script_dir, predictor_dir)
+script_dir = path.dirname(path.realpath(__file__))
+abs_file_path = path.join(script_dir, predictor_dir)
 predictor_file_name = "shape_predictor_68_face_landmarks.dat"
 
 
@@ -105,7 +107,7 @@ class FaceDetector:
         self._image_processing_width = image_processing_width
         self._format = format
         self._face_rectangle_detector = dlib.get_frontal_face_detector()
-        self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
+        self._predictor = dlib.shape_predictor(path.join(abs_file_path, predictor_file_name))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
