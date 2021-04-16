@@ -1,13 +1,58 @@
 from pitop.core import ImageFunctions
 import numpy as np
 from .face_utils import load_emotion_model
-from pitop.core.data_stuctures import DotDict
 from pitop.processing.core.math_functions import running_mean
-from pitop.processing.core.vision_functions import import_opencv
 from imutils import face_utils
+from pitop.processing.core.vision_functions import (
+    import_opencv,
+    tuple_for_color_by_name,
+)
 
 
 cv2 = import_opencv()
+
+
+class Emotion:
+    def __init__(self):
+        self._type = None
+        self._confidence = None
+        self._robot_view = None
+
+    def clear(self):
+        self.type = None
+        self.confidence = None
+
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        self._type = value
+
+    @property
+    def confidence(self):
+        return self._confidence
+
+    @confidence.setter
+    def confidence(self, value):
+        self._confidence = value
+
+    @property
+    def robot_view(self):
+        return self._robot_view
+
+    @robot_view.setter
+    def robot_view(self, value):
+        self._robot_view = value
+
+    @property
+    def found(self):
+        return self.type is not None
+
+
+left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
+right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
 
 
 class EmotionDetector:
@@ -17,79 +62,34 @@ class EmotionDetector:
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
-        self._emotions = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
+        self._emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
+        self.emotion = Emotion()
+        self.font = cv2.FONT_HERSHEY_PLAIN
+        self.font_scale = 2
+        self.font_thickness = 3
         if self._apply_mean_filter:
-            self._probability_mean_array = np.zeros((self.__MEAN_N, len(self._emotions)), dtype=float)
+            self._probability_mean_array = np.zeros((self.__MEAN_N, len(self._emotion_types)), dtype=float)
 
     def detect(self, face):
-        frame = face.original_detection_frame.copy()
+        frame = ImageFunctions.convert(face.original_detection_frame.copy(), format='OpenCV')
 
-        frame = ImageFunctions.convert(frame, format='OpenCV')
+        if not face.found:
+            self.emotion.clear()
+            self.emotion.robot_view = frame
+            return self.emotion
 
-        if face.found:
-            robot_view = frame.copy()
-            emotion_type, emotion_confidence = self.__get_emotion(face)
-            self.__draw_on_frame(robot_view, face.rectangle, emotion_type, emotion_confidence, face.features)
+        self.emotion = self.__get_emotion(frame=frame, face=face, emotion=self.emotion)
 
-        else:
-            robot_view = frame
-            emotion_type = None
-            emotion_confidence = None
+        return self.emotion
 
-        if self._format.lower() == "pil":
-            robot_view = ImageFunctions.convert(robot_view, format='PIL')
-
-        return DotDict({
-            "robot_view": robot_view,
-            "type": emotion_type,
-            "confidence": emotion_confidence
-        })
-
-    @staticmethod
-    def __draw_on_frame(frame, face_rectangle, emotion_type, emotion_confidence, face_features):
-        x, y, w, h = face_rectangle
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-        font = cv2.FONT_HERSHEY_PLAIN
-        font_scale = 1.5
-        font_thickness = 3
-        text = f"{round(emotion_confidence * 100)}% {emotion_type}"
-        text_size = cv2.getTextSize(text, font, font_scale, font_thickness)[0]
-        text_width, text_height = text_size
-
-        text_x = (x + w // 2) - (text_width // 2)
-        text_y = y - 5
-
-        if emotion_confidence < 0.5:
-            text_colour = (0, 0, 255)
-        elif 0.5 <= emotion_confidence < 0.75:
-            text_colour = (0, 165, 255)
-        else:
-            text_colour = (0, 255, 0)
-
-        cv2.putText(frame, text, (text_x, text_y), font, font_scale, text_colour, thickness=font_thickness)
-
-        for (x, y) in face_features:
-            cv2.circle(frame, (int(x), int(y)), 2, (0, 0, 255), -1)
-
-    def __get_emotion(self, face):
-
-        def get_feature_vector(features, face_angle):
-            # face_feature_mean = features.mean(axis=0)
-            # M = cv2.getRotationMatrix2D(tuple(face_feature_mean), -face_angle, 1.0)
-            # # M = cv2.getRotationMatrix2D((0, 0), -face_angle, 1.0)
-            # ones = np.ones(shape=(len(features), 1))
-            # points_ones = np.hstack([features, ones])
-            # face_features_rotated = M.dot(points_ones.T).T
-
+    def __get_emotion(self, frame, face, emotion):
+        def get_svc_feature_vector(features, face_angle):
             rotation_matrix = np.array([[np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
                                         [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))]])
 
             face_features_rotated = rotation_matrix.dot(features.T).T
             face_feature_mean = face_features_rotated.mean(axis=0)
 
-            left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
-            right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
             left_eye_center = np.mean(face_features_rotated[left_eye_start:left_eye_end], axis=0)
             right_eye_center = np.mean(face_features_rotated[right_eye_start:right_eye_end], axis=0)
 
@@ -106,12 +106,44 @@ class EmotionDetector:
         if len(face.features) != 68:
             raise ValueError("This function is only compatible with dlib's 68 landmark feature")
 
-        X = get_feature_vector(face.features, face.angle)
+        X = get_svc_feature_vector(face.features, face.angle)
 
         probabilities = self._emotion_model.predict_proba(X)[0]
-
         if self._apply_mean_filter:
             self._probability_mean_array, probabilities = running_mean(self._probability_mean_array, probabilities)
-        max_index = np.argmax(probabilities)
 
-        return self._emotions[max_index], round(probabilities[max_index], 2)
+        max_index = int(np.argmax(probabilities))
+
+        emotion.type = self._emotion_types[max_index]
+        emotion.confidence = round(probabilities[max_index], 2)
+
+        emotion.robot_view = ImageFunctions.convert(
+            self.__draw_on_frame(frame=frame.copy(), face=face, emotion=self.emotion),
+            format=self._format
+        )
+
+        return emotion
+
+    def __draw_on_frame(self, frame, face, emotion):
+        x, y, w, h = face.rectangle
+
+        text = f"{round(emotion.confidence * 100)}% {emotion.type}"
+        text_size = cv2.getTextSize(text, self.font, self.font_scale, self.font_thickness)[0]
+
+        text_x = (x + w // 2) - (text_size[0] // 2)
+        text_y = y - 5
+
+        if emotion.confidence < 0.5:
+            text_colour = tuple_for_color_by_name("orangered", bgr=True)
+        elif emotion.confidence < 0.75:
+            text_colour = tuple_for_color_by_name("orange", bgr=True)
+        else:
+            text_colour = tuple_for_color_by_name("springgreen", bgr=True)
+
+        cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
+                    thickness=self.font_thickness)
+
+        for (x, y) in face.features:
+            cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)
+
+        return frame
