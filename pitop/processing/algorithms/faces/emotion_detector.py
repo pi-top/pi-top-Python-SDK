@@ -62,13 +62,13 @@ class EmotionDetector:
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
-        self._emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
+        self.emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
         self.emotion = Emotion()
         self.font = cv2.FONT_HERSHEY_PLAIN
         self.font_scale = 2
         self.font_thickness = 3
         if self._apply_mean_filter:
-            self._probability_mean_array = np.zeros((self.__MEAN_N, len(self._emotion_types)), dtype=float)
+            self._probability_mean_array = np.zeros((self.__MEAN_N, len(self.emotion_types)), dtype=float)
 
     def detect(self, face):
         frame = ImageFunctions.convert(face.original_detection_frame.copy(), format='OpenCV')
@@ -114,7 +114,7 @@ class EmotionDetector:
 
         max_index = int(np.argmax(probabilities))
 
-        emotion.type = self._emotion_types[max_index]
+        emotion.type = self.emotion_types[max_index]
         emotion.confidence = round(probabilities[max_index], 2)
 
         emotion.robot_view = ImageFunctions.convert(
