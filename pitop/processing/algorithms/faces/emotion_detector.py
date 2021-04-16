@@ -15,12 +15,12 @@ cv2 = import_opencv()
 class Emotion:
     def __init__(self):
         self._type = None
-        self._confidence = None
+        self._confidence = 0.0
         self._robot_view = None
 
     def clear(self):
         self.type = None
-        self.confidence = None
+        self.confidence = 0.0
 
     @property
     def type(self):
