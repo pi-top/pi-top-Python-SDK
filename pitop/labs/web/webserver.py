@@ -51,7 +51,7 @@ class WebServer(WSGIServer):
         port=8070,
         app=create_app(),
         blueprints=[BaseBlueprint()]
-     ):
+    ):
         self.port = port
         self.app = app
         self.sockets = Sockets(app)
