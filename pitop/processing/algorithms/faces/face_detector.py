@@ -7,7 +7,6 @@ from imutils import (
     face_utils,
     resize,
 )
-from pitop.core.data_stuctures import DotDict
 from imutils.video import FPS
 from os import getenv
 import atexit
@@ -31,9 +30,15 @@ class Face:
         self._robot_view = None
         self._original_frame = None
 
+    def clear(self):
+        self.center = None
+        self.features = None
+        self.angle = None
+        self.rectangle = None
+
     @property
     def center(self):
-        return self._center
+        return center_reposition(self._center, self.original_detection_frame)
 
     @center.setter
     def center(self, value):
@@ -92,12 +97,11 @@ class FaceDetector:
     def __init__(self, image_processing_width: int = 320, format: str = "OpenCV"):
         """
         :param image_processing_width: image width to scale to for image processing
-        :param input_format: input image format
-        :param format: output image format
+        :param format: desired output image format
         """
         self._image_processing_width = image_processing_width
         self._format = format
-        self._detector = dlib.get_frontal_face_detector()
+        self._face_rectangle_detector = dlib.get_frontal_face_detector()
         self._predictor = dlib.shape_predictor(os.path.join(abs_file_path, predictor_file_name))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
@@ -130,42 +134,44 @@ class FaceDetector:
 
     def __find_largest_face(self, face, frame):
         face.original_detection_frame = frame
-        resized_frame = resize(frame, width=self._image_processing_width)
-        gray = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2GRAY)
-        gray = self._clahe_filter.apply(gray)
 
-        rectangles_dlib = self._detector(gray, 0)
+        gray = self._clahe_filter.apply(
+            cv2.cvtColor(
+                resize(frame, width=self._image_processing_width),
+                cv2.COLOR_BGR2GRAY
+            )
+        )
 
-        face_rectangle, face_center, face_features = self.__process_rectangles(gray, rectangles_dlib)
+        face_rectangle, face_center, face_features = self.__process_rectangles(gray,
+                                                                               self._face_rectangle_detector(gray, 0)
+                                                                               )
+        if face_rectangle is None:
+            face.clear()
+            face.robot_view = ImageFunctions.convert(frame, format=self._format)
+            return face
 
-        if face_rectangle is not None:
-            # resize back to original frame resolution
-            face.rectangle = tuple((int(item * self._frame_scaler) for item in face_rectangle))
-            face_center = tuple((int(item * self._frame_scaler) for item in face_center))
-            face.features = (face_features * self._frame_scaler).astype("int")
+        # resize back to original frame resolution
+        face.rectangle = tuple((int(item * self._frame_scaler) for item in face_rectangle))
+        face.center = tuple((int(item * self._frame_scaler) for item in face_center))
+        face.features = (face_features * self._frame_scaler).astype("int")
+        face.angle = get_face_angle(face.features)
 
-            face.robot_view = frame.copy()
-            # face_dimensions = face_rectangle[2:4]
-            face.angle = get_face_angle(face_features)
-
-            self.__draw_on_frame(face.robot_view, face.rectangle, face_center, face.features)
-            face.center = center_reposition(face_center, frame)  # has to be done after OpenCV draw functions
-
-        else:
-            face.robot_view = frame
-            # face_dimensions = None
-            face.angle = None
-
-        self.face.robot_view = ImageFunctions.convert(self.face.robot_view, format=self._format)
+        face.robot_view = ImageFunctions.convert(
+            self.__draw_on_frame(frame.copy(), face.rectangle, face_center, face.features),
+            format=self._format
+        )
 
         return face
 
     def __process_rectangles(self, gray, rectangles_dlib):
-        area = 0
+        if len(rectangles_dlib) == 0:
+            return None, None, None
+
         largest_rectangle_dlib = None
+        area = 0
         face_rectangle = None
         face_center = None
-        for (i, rectangle_dlib) in enumerate(rectangles_dlib):
+        for rectangle_dlib in rectangles_dlib:
             x, y, w, h = face_utils.rect_to_bb(rectangle_dlib)
             current_area = w * h
             if current_area > area:
@@ -174,10 +180,12 @@ class FaceDetector:
                 face_rectangle = (x, y, w, h)
                 face_center = (int(x + w / 2), int(y + h / 2))
 
-        face_features = None
-        if largest_rectangle_dlib is not None:
-            face_features_dlib = self._predictor(gray, largest_rectangle_dlib)
-            face_features = face_utils.shape_to_np(face_features_dlib)
+        if rectangles_dlib is None:
+            # this should never trigger. Discuss.
+            return None, None, None
+
+        face_features_dlib = self._predictor(gray, largest_rectangle_dlib)
+        face_features = face_utils.shape_to_np(face_features_dlib)
 
         return face_rectangle, face_center, face_features
 
@@ -191,3 +199,5 @@ class FaceDetector:
 
         for (x, y) in face_features:
             cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
+
+        return frame
