@@ -23,13 +23,6 @@ class AlexControllerBlueprint(Blueprint):
 
         self.drive = drive
         self.pan_tilt = pan_tilt
-        self.controller_blueprint = ControllerBlueprint(
-            get_frame=get_frame, message_handlers=message_handlers)
-
-    def register(self, app, options, *args, **kwargs):
-        app.register_blueprint(self.controller_blueprint, **options)
-
-        message_handlers = app.config.get('message_handlers', {})
 
         if message_handlers.get('left_joystick') is None:
             message_handlers['left_joystick'] = self.left_joystick
@@ -37,8 +30,11 @@ class AlexControllerBlueprint(Blueprint):
         if message_handlers.get('right_joystick') is None:
             message_handlers['right_joystick'] = self.right_joystick
 
-        app.config['message_handlers'] = message_handlers
+        self.controller_blueprint = ControllerBlueprint(
+            get_frame=get_frame, message_handlers=message_handlers)
 
+    def register(self, app, options, *args, **kwargs):
+        app.register_blueprint(self.controller_blueprint, **options)
         Blueprint.register(self, app, options, *args, **kwargs)
 
     def left_joystick(self, data):
