@@ -6,7 +6,7 @@ pan_tilt = PanTiltController()
 camera = Camera()
 
 alex_controller = AlexWebController(
-    camera=camera,
+    get_frame=camera.get_frame,
     drive=drive,
     pan_tilt=pan_tilt
 )

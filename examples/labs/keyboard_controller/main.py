@@ -37,7 +37,7 @@ def key_up(data):
         drive.left(0)
 
 
-controller = WebController(camera=camera, message_handlers={
+controller = WebController(get_frame=camera.get_frame, message_handlers={
     'key_down': key_down,
     'key_up': key_up
 })
