@@ -7,6 +7,8 @@ from geventwebsocket.handler import WebSocketHandler
 from pitopcommon.sys_info import get_internal_ip
 from pitopcommon.formatting import is_url
 
+from .blueprints.base import BaseBlueprint
+
 
 def create_app(
         import_name='__main__',
@@ -44,7 +46,12 @@ def create_app(
 
 
 class WebServer(WSGIServer):
-    def __init__(self, port=8070, app=create_app(), blueprints=[]):
+    def __init__(
+        self,
+        port=8070,
+        app=create_app(),
+        blueprints=[BaseBlueprint()]
+     ):
         self.port = port
         self.app = app
         self.sockets = Sockets(app)

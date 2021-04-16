@@ -1,0 +1,24 @@
+<html>
+  <head>
+    {% block head %}
+      <title>{% block title %}{% endblock %}</title>
+  
+      {% block styles %}
+        <link rel="stylesheet" href="/base/css/index.css"></link>
+      {% endblock %}
+
+      {% block scripts %}
+        <script type="text/javascript" src="/base/vendor/nipplejs.min.js"></script>
+        <script type="text/javascript" src="/base/js/joystick-component.js"></script>
+      {% endblock %}
+    {% endblock %}
+  </head>
+
+  <body>
+    {% block body %}
+      <header> {% block header %}{% endblock %} </header>
+      <main> {% block main %}{% endblock %} </main>
+      <footer> {% block footer %}{% endblock %} </footer>
+    {% endblock %}
+  </body>
+</html>

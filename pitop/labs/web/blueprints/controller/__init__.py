@@ -1,11 +1,12 @@
 from flask import Blueprint
 
-from .pubsub_blueprint import pubsub_blueprint
-from .video_blueprint import video_blueprint
+from pitop.labs.web.blueprints.base import BaseBlueprint
+from pitop.labs.web.blueprints.pubsub import PubSubBlueprint
+from pitop.labs.web.blueprints.video import VideoBlueprint
 
 
 class ControllerBlueprint(Blueprint):
-    def __init__(self, camera=None, message_handlers={}, **kwargs):
+    def __init__(self, get_frame=None, message_handlers={}, **kwargs):
         Blueprint.__init__(
             self,
             "controller",
@@ -15,22 +16,16 @@ class ControllerBlueprint(Blueprint):
             **kwargs
         )
 
-        self.message_handlers = message_handlers
-        self.camera = camera
+        self.base_blueprint = BaseBlueprint()
+        self.video_blueprint = VideoBlueprint(get_frame=get_frame)
+        self.pubsub_blueprint = PubSubBlueprint(
+            message_handlers=message_handlers)
 
-    def register(self, app, options, *args, **kwargs):
-        sockets = options.get('sockets')
-        if sockets is None:
-            raise Exception(
-                'sockets must be passed to register_blueprint to register ControllerBlueprint')
-
-        # setup custom config
-        app.config['message_handlers'] = self.message_handlers
-        app.config['camera'] = self.camera
-
+    def register(self, app, options, **kwargs):
         # register child blueprints
-        sockets.register_blueprint(pubsub_blueprint)
-        app.register_blueprint(video_blueprint)
+        app.register_blueprint(self.base_blueprint, **options)
+        app.register_blueprint(self.video_blueprint, **options)
+        app.register_blueprint(self.pubsub_blueprint, **options)
 
         # register self
         Blueprint.register(self, app, options, **kwargs)
