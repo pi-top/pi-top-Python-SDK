@@ -31,6 +31,8 @@ from imutils import rotate, resize
 face_image_dir = 'assets/face_images'
 script_dir = os.path.dirname(os.path.realpath(__file__))
 abs_file_path = os.path.join(script_dir, face_image_dir)
+
+# emotion_data is [Expected Emotion, Minimum Confidence]
 emotion_data = [['Neutral', 0.4], ['Anger', 0.7], ['Disgust', 0.7], ['Happy', 0.9], ['Sad', 0.9], ['Surprise', 0.9]]
 face_filenames = ["neutral.jpg", "anger.jpg", "disgust.jpg", "happy.jpg", "sad.jpg", "surprise.jpg"]
 
