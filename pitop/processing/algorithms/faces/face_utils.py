@@ -59,11 +59,7 @@ def get_face_angle(face_features):
 
 
 def load_emotion_model():
-    def close_file_handle(file_handle):
-        file_handle.close()
-
     from joblib import load
-    import atexit
 
     model_dir = 'models'
     script_dir = path.dirname(path.realpath(__file__))
@@ -71,9 +67,10 @@ def load_emotion_model():
 
     model_filename = 'svc_emotion_model_scale_rotation_20-2.joblib'
     model_file_handle = open(path.join(abs_file_path, model_filename), "rb")
-    atexit.register(close_file_handle, model_file_handle)
 
     # supress DeprecationWarning thrown by a thread on joblib
     with suppress_output():
         model = load(model_file_handle)
+        model_file_handle.close()
+
     return model
