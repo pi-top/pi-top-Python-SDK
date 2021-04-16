@@ -10,7 +10,10 @@ from imutils import (
 from imutils.video import FPS
 from os import getenv
 import atexit
-from pitop.processing.core.vision_functions import import_opencv
+from pitop.processing.core.vision_functions import (
+    import_opencv,
+    tuple_for_color_by_name,
+)
 
 
 cv2 = import_opencv()
@@ -157,7 +160,7 @@ class FaceDetector:
         face.angle = get_face_angle(face.features)
 
         face.robot_view = ImageFunctions.convert(
-            self.__draw_on_frame(frame.copy(), face.rectangle, face_center, face.features),
+            self.__draw_on_frame(frame=frame.copy(), face=face),
             format=self._format
         )
 
@@ -190,14 +193,11 @@ class FaceDetector:
         return face_rectangle, face_center, face_features
 
     @staticmethod
-    def __draw_on_frame(frame, face_rectangle, face_center, face_features):
-        x, y, w, h = face_rectangle
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    def __draw_on_frame(frame, face):
+        x, y, w, h = face.rectangle
+        cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
 
-        cv2.drawMarker(frame, face_center, (100, 60, 240), markerType=cv2.MARKER_CROSS, markerSize=10,
-                       thickness=3, line_type=cv2.FILLED)
-
-        for (x, y) in face_features:
-            cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
+        cv2.drawMarker(frame, face.center, tuple_for_color_by_name("orangered", bgr=True),
+                       markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
 
         return frame
