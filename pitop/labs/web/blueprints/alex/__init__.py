@@ -9,7 +9,7 @@ class AlexControllerBlueprint(Blueprint):
         self,
         drive=None,
         pan_tilt=None,
-        camera=None,
+        get_frame=None,
         message_handlers={},
         **kwargs
     ):
@@ -24,7 +24,7 @@ class AlexControllerBlueprint(Blueprint):
         self.drive = drive
         self.pan_tilt = pan_tilt
         self.controller_blueprint = ControllerBlueprint(
-            camera=camera, message_handlers=message_handlers)
+            get_frame=get_frame, message_handlers=message_handlers)
 
     def register(self, app, options, *args, **kwargs):
         app.register_blueprint(self.controller_blueprint, **options)

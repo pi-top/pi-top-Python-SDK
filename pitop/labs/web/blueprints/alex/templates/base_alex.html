@@ -15,7 +15,14 @@
 {% block main %}
   <img src="video.mjpg" class="background-video"></img>
   <div class="joysticks">
-    <joystick-component type="left_joystick"></joystick-component>
-    <joystick-component type="right_joystick"></joystick-component>
+    <joystick-component
+      onmove="publish({ type: 'left_joystick', data })"
+      onend="publish({ type: 'left_joystick', data })"
+    > </joystick-component>
+
+    <joystick-component
+      onmove="publish({ type: 'right_joystick', data })"
+      onend="publish({ type: 'right_joystick', data })"
+    ></joystick-component>
   </div>
 {% endblock %}

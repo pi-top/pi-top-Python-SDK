@@ -36,21 +36,39 @@ class Joystick extends HTMLElement {
     };
   }
 
+  onMove(_, _data) {
+    eval(`
+      const data = ${JSON.stringify(sanitiseJoystickData(_data))};
+      ${this.getAttribute("onmove")}
+    `);
+  }
+
+  onEnd(_, _data) {
+    this.joystick.frontPosition.x = 0;
+    this.joystick.frontPosition.y = 0;
+    eval(`
+      const data = ${JSON.stringify(sanitiseJoystickData(_data))};
+      ${this.getAttribute("onend")}
+    `);
+  }
+
   connectedCallback() {
     if (!this.connected) {
       this.connected = true;
 
-      const type = this.getAttribute("type") || "joystick";
+      // get simple attributes
       const mode = this.getAttribute("mode") || "static";
       const position = this.getAttribute("position") || "relative";
       const size = parseInt(this.getAttribute("size"), 10) || 200;
-
       const style = this.getAttribute("style");
+
+      // set required style attributes
       this.setAttribute(
         "style",
         `${style}; position: ${position}; width: ${size}px; height: ${size}px`
       );
 
+      // setup joystick
       this.joystick = nipplejs
         .create({
           zone: this,
@@ -60,15 +78,9 @@ class Joystick extends HTMLElement {
         })
         .get();
 
-      this.joystick.on("move", (_, data) => {
-        publish({ type, data: sanitiseJoystickData(data) });
-      });
-
-      this.joystick.on("end", (_, data) => {
-        this.joystick.frontPosition.x = 0;
-        this.joystick.frontPosition.y = 0;
-        publish({ type, data: sanitiseJoystickData(data) });
-      });
+      // register event callbacks
+      this.joystick.on("move", this.onMove.bind(this));
+      this.joystick.on("end", this.onEnd.bind(this));
     }
   }
 

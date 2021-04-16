@@ -1,34 +1,15 @@
-<html>
-  <head>
-    {% block head %}
-      <title>{% block title %}Web Controller{% endblock %}</title>
+{% extends "base.html" %}
 
-      {% block scripts %}
-        <script type="text/javascript" src="/static/vendor/nipplejs.min.js"></script>
-        <script type="text/javascript" src="/static/js/pubsub.js"></script>
-        <script type="text/javascript" src="/static/js/joystick.js"></script>
-        {% block custom_scripts %}{% endblock %}
-      {% endblock %}
+{% block title %}
+  Web Controller
+{% endblock %}
 
-      {% block styles %}
-        <link rel="stylesheet" href="/static/css/index.css"></link>
-        <link rel="stylesheet" href="/static/css/video.css"></link>
-        {% block custom_styles %}{% endblock %}
-      {% endblock %}
-    {% endblock %}
-  </head>
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/video/styles.css"></script>
+{% endblock %}
 
-  <body>
-    {% block body %}
-      <header>
-        {% block header %}{% endblock %}
-      </header>
-      <main>
-        {% block main %}{% endblock %}
-      </main>
-      <footer>
-        {% block footer %}{% endblock %}
-      </footer>
-    {% endblock %}
-  </body>
-</html>
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript" src="/pubsub/setup.js"></script>
+{% endblock %}

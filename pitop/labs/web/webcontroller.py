@@ -5,14 +5,16 @@ from .blueprints import ControllerBlueprint, AlexControllerBlueprint
 class WebController(WebServer):
     def __init__(
         self,
-        camera=None,
+        get_frame=None,
         message_handlers={},
         **kwargs
     ):
         WebServer.__init__(
             self,
-            blueprint=ControllerBlueprint(
-                camera=camera, message_handlers=message_handlers),
+            blueprints=[ControllerBlueprint(
+                get_frame=get_frame,
+                message_handlers=message_handlers
+            )],
             **kwargs
         )
 
@@ -20,7 +22,7 @@ class WebController(WebServer):
 class AlexWebController(WebServer):
     def __init__(
         self,
-        camera=None,
+        get_frame=None,
         drive=None,
         pan_tilt=None,
         message_handlers={},
@@ -28,10 +30,11 @@ class AlexWebController(WebServer):
     ):
         WebServer.__init__(
             self,
-            blueprint=AlexControllerBlueprint(
-                camera=camera,
+            blueprints=[AlexControllerBlueprint(
+                get_frame=get_frame,
                 drive=drive,
                 pan_tilt=pan_tilt,
-                message_handlers=message_handlers),
+                message_handlers=message_handlers
+            )],
             **kwargs
         )
