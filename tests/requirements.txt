@@ -1,8 +1,9 @@
+dlib
 gpiozero
 imutils
+joblib
 matplotlib
 numpy
 opencv-python
 pitopcommon
 Pillow
-dlib
