@@ -14,7 +14,7 @@ def find_faces(frame):
     if face.found:
         print(f"Face angle: {face.angle} \n"
               f"Face center: {face.center} \n"
-              f"Face dimensions: {face.dimensions} \n")
+              f"Face rectangle: {face.rectangle} \n")
     else:
         print("Cannot find face!")
 
