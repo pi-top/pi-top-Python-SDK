@@ -1,5 +1,6 @@
 import os
 import dlib
+import Union
 from pitop.processing.core.vision_functions import center_reposition
 from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
@@ -97,7 +98,7 @@ class Face:
 
 
 class FaceDetector:
-    def __init__(self, image_processing_width: int = 320, format: str = "OpenCV"):
+    def __init__(self, image_processing_width: Union(int, None) = 320, format: str = "OpenCV"):
         """
         :param image_processing_width: image width to scale to for image processing
         :param format: desired output image format
@@ -126,7 +127,7 @@ class FaceDetector:
 
         if self._frame_scaler is None:
             _, width = frame.shape[0:2]
-            self._frame_scaler = width / self._image_processing_width
+            self._frame_scaler = width / self._image_processing_width if self._image_processing_width is not None else 1
 
         self.face = self.__find_largest_face(face=self.face, frame=frame)
 
