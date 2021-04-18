@@ -1,5 +1,5 @@
 import dlib
-import Union
+from typing import Union
 from pitop.processing.core.vision_functions import center_reposition
 from .face_utils import get_face_angle
 from pitop.core import ImageFunctions
@@ -100,7 +100,7 @@ class Face:
 
 
 class FaceDetector:
-    def __init__(self, image_processing_width: Union(int, None) = 320, format: str = "OpenCV"):
+    def __init__(self, image_processing_width: Union[int, None] = 320, format: str = "OpenCV"):
         """
         :param image_processing_width: image width to scale to for image processing
         :param format: desired output image format
