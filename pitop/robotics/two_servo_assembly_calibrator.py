@@ -17,10 +17,11 @@ class TwoServoAssemblyCalibrator:
         self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.calibration_file_name)
 
     def calibrate(self, save=True, reset=False):
-        """Calibrates the assembly to work in optimal conditions.
-        Based on the provided arguments, it will either load the calibration
-        values stored in the pi-top, or it will run the calibration process,
-        requesting the user input in an interactive fashion.
+        """Calibrates the assembly to work in optimal conditions. Based on the
+        provided arguments, it will either load the calibration values stored
+        in the pi-top, or it will run the calibration process, requesting the
+        user input in an interactive fashion.
+
         :param bool reset:
             If `true`, the existing calibration values will be reset, and the calibration process will be started.
             If set to `false`, the calibration values will be retrieved from the calibration file.
