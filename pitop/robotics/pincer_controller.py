@@ -1,5 +1,5 @@
 from pitop.pma import ServoMotor, ServoMotorSetting
-from pitop.core.exceptions import UninitializedComponent
+from pitop.robotics.two_servo_assembly_calibrator import TwoServoAssemblyCalibrator
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -9,7 +9,9 @@ from pitop.core.mixins import (
 class PincerController(Stateful, Recreatable):
     """Represents a pincer that uses two servo motors connected parallel to
     each other."""
-    _initialized = False
+    CALIBRATION_FILE_NAME = "pincers.conf"
+    _right_pincer = None
+    _left_pincer = None
 
     def __init__(self, right_pincer_port="S0", left_pincer_port="S3", name="pincers"):
         self.name = name
@@ -17,21 +19,12 @@ class PincerController(Stateful, Recreatable):
         self._left_pincer = ServoMotor(left_pincer_port)
         self.__right_pincer_setting = ServoMotorSetting()
         self.__left_pincer_setting = ServoMotorSetting()
-        self._initialized = True
 
-        Stateful.__init__(self, children=['left_pincer', 'right_pincer'])
+        Stateful.__init__(self, children=['_left_pincer', '_right_pincer'])
         Recreatable.__init__(self,
                              config_dict={"left_pincer_port": left_pincer_port, "right_pincer_port": right_pincer_port,
                                           "name": self.name})
 
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("PincerController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
-
-    @is_initialized
     def close(self, speed: int = 100, angle: int = 0):
         self.__right_pincer_setting.speed = speed
         self.__right_pincer_setting.angle = -angle
@@ -41,7 +34,6 @@ class PincerController(Stateful, Recreatable):
 
         self.pincer_move(right_servo_setting=self.__right_pincer_setting, left_servo_setting=self.__left_pincer_setting)
 
-    @is_initialized
     def open(self, speed: int = 50, angle: int = 45):
         self.__right_pincer_setting.speed = speed
         self.__right_pincer_setting.angle = angle
@@ -54,3 +46,24 @@ class PincerController(Stateful, Recreatable):
     def pincer_move(self, right_servo_setting, left_servo_setting):
         self._right_pincer.setting = right_servo_setting
         self._left_pincer.setting = left_servo_setting
+
+    def calibrate(self, save=True, reset=False):
+        """Calibrates the assembly to work in optimal conditions.
+        Based on the provided arguments, it will either load the calibration
+        values stored in the pi-top, or it will run the calibration process,
+        requesting the user input in an interactive fashion.
+        :param bool reset:
+            If `true`, the existing calibration values will be reset, and the calibration process will be started.
+            If set to `false`, the calibration values will be retrieved from the calibration file.
+        :param bool save:
+            If `reset` is `true`, this parameter will cause the calibration values to be stored to the calibration file if set to `true`.
+            If `save=False`, the calibration values will only be used for the current session.
+        """
+        calibration_object = TwoServoAssemblyCalibrator(
+            filename=self.CALIBRATION_FILE_NAME,
+            section_name="PINCERS",
+            servo_lookup_dict={"right_pincer_zero_point": self._right_pincer,
+                               "left_pincer_zero_point": self._left_pincer
+                               }
+        )
+        calibration_object.calibrate(save, reset)
