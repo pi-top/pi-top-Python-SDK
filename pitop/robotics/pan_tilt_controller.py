@@ -4,6 +4,44 @@ from pitop.core.mixins import (
 )
 from pitop.robotics.two_servo_assembly_calibrator import TwoServoAssemblyCalibrator
 from pitop.pma import ServoMotor
+from pitop.pma.servo_controller import ServoHardwareSpecs
+from simple_pid import PID
+
+
+class PanTiltObjectTracker:
+    _kp = 1.5
+    _ki = 0.0
+    _kd = 0.0
+
+    def __init__(self, pan_servo, tilt_servo):
+        self.__pan_servo = pan_servo
+        self.__tilt_servo = tilt_servo
+        self.pan_pid = PID(Kp=self._kp,
+                           Ki=self._ki,
+                           Kd=self._kd,
+                           setpoint=0,
+                           output_limits=(-ServoHardwareSpecs.SPEED_RANGE, ServoHardwareSpecs.SPEED_RANGE))
+        self.tilt_pid = PID(Kp=self._kp,
+                            Ki=self._ki,
+                            Kd=self._kd,
+                            setpoint=0,
+                            output_limits=(-ServoHardwareSpecs.SPEED_RANGE, ServoHardwareSpecs.SPEED_RANGE))
+
+    def __call__(self, center):
+        x, y = center
+        pan_speed = self.pan_pid(x)
+        tilt_speed = self.tilt_pid(y)
+        self.__pan_servo.sweep(pan_speed)
+        self.__tilt_servo.sweep(tilt_speed)
+
+    def reset(self):
+        self.pan_pid.reset()
+        self.tilt_pid.reset()
+
+    def stop(self):
+        self.__pan_servo.sweep(0)
+        self.__tilt_servo.sweep(0)
+        self.reset()
 
 
 class PanTiltController(Stateful, Recreatable):
@@ -16,8 +54,11 @@ class PanTiltController(Stateful, Recreatable):
         self._pan_servo = ServoMotor(servo_pan_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
 
+        self._object_tracker = PanTiltObjectTracker(pan_servo=self._pan_servo, tilt_servo=self._tilt_servo)
+
         Stateful.__init__(self, children=['_pan_servo', '_tilt_servo'])
-        Recreatable.__init__(self, config_dict={'servo_pan_port': servo_pan_port, 'servo_tilt_port': servo_tilt_port, 'name': name})
+        Recreatable.__init__(self, config_dict={'servo_pan_port': servo_pan_port, 'servo_tilt_port': servo_tilt_port,
+                                                'name': name})
 
     @property
     def pan_servo(self):
@@ -26,6 +67,10 @@ class PanTiltController(Stateful, Recreatable):
     @property
     def tilt_servo(self):
         return self._tilt_servo
+
+    @property
+    def track_object(self) -> PanTiltObjectTracker:
+        return self._object_tracker
 
     def calibrate(self, save=True, reset=False):
         """Calibrates the assembly to work in optimal conditions.
