@@ -34,17 +34,23 @@ class PincerController(Stateful, Recreatable):
     @is_initialized
     def close(self, speed: int = 100, angle: int = 0):
         self.__right_pincer_setting.speed = speed
-        self.__right_pincer_setting.angle = angle
+        self.__right_pincer_setting.angle = -angle
+
         self.__left_pincer_setting.speed = speed
         self.__left_pincer_setting.angle = angle
-        self._right_pincer.setting = self.__right_pincer_setting
-        self._left_pincer.setting = self.__left_pincer_setting
+
+        self.pincer_move(right_servo_setting=self.__right_pincer_setting, left_servo_setting=self.__left_pincer_setting)
 
     @is_initialized
     def open(self, speed: int = 50, angle: int = 45):
         self.__right_pincer_setting.speed = speed
         self.__right_pincer_setting.angle = angle
+
         self.__left_pincer_setting.speed = speed
         self.__left_pincer_setting.angle = -angle
-        self._right_pincer.setting = self.__right_pincer_setting
-        self._left_pincer.setting = self.__left_pincer_setting
+
+        self.pincer_move(right_servo_setting=self.__right_pincer_setting, left_servo_setting=self.__left_pincer_setting)
+
+    def pincer_move(self, right_servo_setting, left_servo_setting):
+        self._right_pincer.setting = right_servo_setting
+        self._left_pincer.setting = left_servo_setting
