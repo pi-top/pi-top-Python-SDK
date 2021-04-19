@@ -17,6 +17,7 @@ class PincerController(Stateful, Recreatable):
         self._left_pincer = ServoMotor(left_pincer_port)
         self.__right_pincer_setting = ServoMotorSetting()
         self.__left_pincer_setting = ServoMotorSetting()
+        self._initialized = True
 
         Stateful.__init__(self, children=['left_pincer', 'right_pincer'])
         Recreatable.__init__(self,
