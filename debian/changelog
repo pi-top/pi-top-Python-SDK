@@ -1,41 +1,12 @@
 py-pitop-sdk (0.18.2) buster; urgency=medium
 
-  [ Mike Roberts ]
-  * Suppress unreleased-changelog-distribution Lintian tag on snapshot builds
-  * Add smooth acceleration mode to servos (#304)
-  * Migrate to pre-commit.ci (#307)
-  * Always build on push
-  * python-test-coverage -> test-coverage
-  * Remove IMU property-setting recursion (#305)
-
-  [ duwudi ]
-  * Fix bug in getting control angle (#309)
-
-  [ pre-commit-ci[bot] ]
-  * [pre-commit.ci] pre-commit autoupdate (#312)
-
-  [ Mike Roberts ]
-  * Initial Preview: Robot controller via web input (#256)
-
-  [ Jorge Capona ]
-  * LGTM fixes (#319)
-
-  [ Mike Roberts ]
-  * Rework CI workflow files (#318)
-  * Don't 'pip install' in debian/rules (#311)
-  * Add man page (#310)
-  * Update README badges (#317)
-  * Attempt to fix 'Modification of parameter with default' (#321)
-  * Check for setup.py before building (#322)
-  * Only download Python artifact if it's available (#323)
-  * Look for setup.py in workspace
-
-  [ duwudi ]
-  * Coloured Ball Detect and Pincers (Bobbie) (#263)
-  * Bobbie - Pincer Controller Updates (#329)
-
-  [ pre-commit-ci[bot] ]
-  * [pre-commit.ci] pre-commit autoupdate (#330)
+  * Add algorithms for coloured ball detection
+  * Add PincerController class to support Bobbie configuration
+  * Add manual page to CLI
+  * ServoMotor supports smooth acceleration mode
+  * Fix bug when detecting angle in line detection algorithm
+  * Fix IMU calibration bug
+  * Initial Preview: robot controller via web application
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 19 Apr 2021 16:59:24 +0000
 
