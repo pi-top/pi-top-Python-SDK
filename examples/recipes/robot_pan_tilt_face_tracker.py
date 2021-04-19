@@ -15,6 +15,7 @@ def track_face(frame):
     if face.found:
         face_center = face.center
         pan_tilt.track_object(face_center)
+        print(f"Face center: {face_center}")
     else:
         pan_tilt.track_object.stop()
         print("Cannot find face!")
