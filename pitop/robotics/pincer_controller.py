@@ -22,8 +22,10 @@ class PincerController(Stateful, Recreatable):
 
         Stateful.__init__(self, children=['_left_pincer', '_right_pincer'])
         Recreatable.__init__(self,
-                             config_dict={"left_pincer_port": left_pincer_port, "right_pincer_port": right_pincer_port,
-                                          "name": self.name})
+                             config_dict={"left_pincer_port": left_pincer_port,
+                                          "right_pincer_port": right_pincer_port,
+                                          "name": self.name}
+                             )
 
     def close(self, speed: int = 100, angle: int = 0):
         self.__right_pincer_setting.speed = speed
