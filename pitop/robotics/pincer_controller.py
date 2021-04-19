@@ -10,15 +10,15 @@ class PincerController(Stateful, Recreatable):
     """Represents a pincer that uses two servo motors connected parallel to
     each other."""
     CALIBRATION_FILE_NAME = "pincers.conf"
-    _right_pincer = None
     _left_pincer = None
+    _right_pincer = None
 
-    def __init__(self, right_pincer_port="S0", left_pincer_port="S3", name="pincers"):
+    def __init__(self, left_pincer_port="S3", right_pincer_port="S0", name="pincers"):
         self.name = name
-        self._right_pincer = ServoMotor(right_pincer_port)
         self._left_pincer = ServoMotor(left_pincer_port)
-        self.__right_pincer_setting = ServoMotorSetting()
+        self._right_pincer = ServoMotor(right_pincer_port)
         self.__left_pincer_setting = ServoMotorSetting()
+        self.__right_pincer_setting = ServoMotorSetting()
 
         Stateful.__init__(self, children=['_left_pincer', '_right_pincer'])
         Recreatable.__init__(self,
@@ -28,26 +28,26 @@ class PincerController(Stateful, Recreatable):
                              )
 
     def close(self, speed: int = 100, angle: int = 0):
-        self.__right_pincer_setting.speed = speed
-        self.__right_pincer_setting.angle = -angle
-
         self.__left_pincer_setting.speed = speed
         self.__left_pincer_setting.angle = angle
 
-        self.pincer_move(right_servo_setting=self.__right_pincer_setting, left_servo_setting=self.__left_pincer_setting)
+        self.__right_pincer_setting.speed = speed
+        self.__right_pincer_setting.angle = -angle
+
+        self.pincer_move(left_servo_setting=self.__left_pincer_setting, right_servo_setting=self.__right_pincer_setting)
 
     def open(self, speed: int = 50, angle: int = 45):
-        self.__right_pincer_setting.speed = speed
-        self.__right_pincer_setting.angle = angle
-
         self.__left_pincer_setting.speed = speed
         self.__left_pincer_setting.angle = -angle
 
-        self.pincer_move(right_servo_setting=self.__right_pincer_setting, left_servo_setting=self.__left_pincer_setting)
+        self.__right_pincer_setting.speed = speed
+        self.__right_pincer_setting.angle = angle
 
-    def pincer_move(self, right_servo_setting, left_servo_setting):
-        self._right_pincer.setting = right_servo_setting
+        self.pincer_move(left_servo_setting=self.__left_pincer_setting, right_servo_setting=self.__right_pincer_setting,)
+
+    def pincer_move(self, left_servo_setting, right_servo_setting):
         self._left_pincer.setting = left_servo_setting
+        self._right_pincer.setting = right_servo_setting
 
     def calibrate(self, save=True, reset=False):
         """Calibrates the assembly to work in optimal conditions. Based on the
@@ -65,8 +65,8 @@ class PincerController(Stateful, Recreatable):
         calibration_object = TwoServoAssemblyCalibrator(
             filename=self.CALIBRATION_FILE_NAME,
             section_name="PINCERS",
-            servo_lookup_dict={"right_pincer_zero_point": self._right_pincer,
-                               "left_pincer_zero_point": self._left_pincer
+            servo_lookup_dict={"left_pincer_zero_point": self._left_pincer,
+                               "right_pincer_zero_point": self._right_pincer
                                }
         )
         calibration_object.calibrate(save, reset)
