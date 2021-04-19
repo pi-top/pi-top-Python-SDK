@@ -68,9 +68,6 @@ class UsbCamera:
             'RGB'
         ).rotate(angle=self._rotate_angle, expand=True)
 
-        if self._rotate_angle != 0:
-            pil_image = pil_image.rotate(angle=self._rotate_angle, expand=True)
-
         if self._flip_top_bottom:
             pil_image = pil_image.transpose(method=Image.FLIP_TOP_BOTTOM)
 
