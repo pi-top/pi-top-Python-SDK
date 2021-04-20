@@ -9,8 +9,8 @@ from simple_pid import PID
 
 
 class PanTiltObjectTracker:
-    _kp = 1.5
-    _ki = 0.0
+    _kp = 0.25
+    _ki = 0.01
     _kd = 0.0
 
     def __init__(self, pan_servo, tilt_servo):
