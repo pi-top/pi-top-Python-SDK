@@ -62,6 +62,7 @@ class EmotionDetector:
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
+        self._input_name = self._emotion_model.get_inputs()[0].name
         self.emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
         self.emotion = Emotion()
         self.font = cv2.FONT_HERSHEY_PLAIN
@@ -108,7 +109,12 @@ class EmotionDetector:
 
         X = get_svc_feature_vector(face.features, face.angle)
 
-        probabilities = self._emotion_model.predict_proba(X)[0]
+        probabilities = np.asarray(
+            list(
+                self._emotion_model.run(None, {self._input_name: X.astype(np.float32)})[1][0].values()
+            )
+        )
+
         if self._apply_mean_filter:
             self._probability_mean_array, probabilities = running_mean(self._probability_mean_array, probabilities)
 

@@ -22,5 +22,4 @@ flask-sockets python3-flask-sockets
 gevent python3-gevent
 gevent-websocket python3-gevent-websocket
 dlib python3-dlib
-scikit-learn python3-sklearn
 imutils python3-imutils

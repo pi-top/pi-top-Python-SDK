@@ -7,4 +7,3 @@ numpy
 opencv-python
 pitopcommon
 Pillow
-scikit-learn==0.20.2
