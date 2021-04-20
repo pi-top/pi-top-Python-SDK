@@ -1,7 +1,6 @@
 py-pitop-sdk (0.18.3) buster; urgency=medium
 
-  [ duwudi ]
-  * Change .detect to direct call of class instance (#332)
+  * Update coloured ball detection algorithm usage
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 20 Apr 2021 13:09:20 +0000
 
