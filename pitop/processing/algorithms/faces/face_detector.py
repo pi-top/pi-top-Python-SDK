@@ -96,7 +96,7 @@ class Face:
     @property
     def found(self) -> bool:
         """
-        :return: Boolean to determine if a valid ball was found in the frame.
+        :return: Boolean to determine if a face was found in the frame.
         :rtype: bool
         """
         return self.center is not None
@@ -146,7 +146,7 @@ class FaceDetector:
             face_rectangle, face_center, face_features = self.__track_face(frame=frame_to_process)
             if face_center is None:
                 self.__stop_tracker()
-                # attempt to detect face again
+                # attempt to detect face since tracker has failed
                 face_rectangle, face_center, face_features = self.__detect_largest_face(frame=frame_to_process)
 
         self.face = self.__prepare_face_data(frame=frame,
