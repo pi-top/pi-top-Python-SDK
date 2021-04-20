@@ -53,7 +53,7 @@ def get_face_angle(face_features):
 
     angle = -math.degrees(math.atan(y_diff/x_diff))
 
-    return angle
+    return round(angle, 1)
 
 
 def load_emotion_model():
