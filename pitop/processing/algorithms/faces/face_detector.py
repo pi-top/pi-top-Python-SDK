@@ -44,11 +44,15 @@ class Face:
 
     @property
     def center(self):
-        return center_reposition(self._center, self.original_detection_frame)
+        return center_reposition(self._center, self.original_detection_frame) if self._center is not None else None
 
     @center.setter
     def center(self, value):
         self._center = value
+
+    @property
+    def center_top_left_zero(self):
+        return self._center
 
     @property
     def angle(self):
@@ -200,7 +204,7 @@ class FaceDetector:
         x, y, w, h = face.rectangle
         cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
 
-        cv2.drawMarker(frame, face.center, tuple_for_color_by_name("orangered", bgr=True),
+        cv2.drawMarker(frame, face.center_top_left_zero, tuple_for_color_by_name("orangered", bgr=True),
                        markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
 
         return frame
