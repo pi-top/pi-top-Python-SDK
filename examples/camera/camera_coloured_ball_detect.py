@@ -5,7 +5,7 @@ import cv2
 
 
 def process_frame(frame):
-    detected_balls = ball_detector.detect(frame, color=["red", "green", "blue"])
+    detected_balls = ball_detector(frame, color=["red", "green", "blue"])
 
     red_ball = detected_balls.red
     if red_ball.found:
