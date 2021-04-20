@@ -10,8 +10,9 @@ from simple_pid import PID
 
 class PanTiltObjectTracker:
     _kp = 0.25
-    _ki = 0.01
-    _kd = 0.0
+    _ki = 0.005
+    _kd = 0.1
+    _target_lock_range = 15
 
     def __init__(self, pan_servo, tilt_servo):
         self.__pan_servo = pan_servo
@@ -29,10 +30,22 @@ class PanTiltObjectTracker:
 
     def __call__(self, center):
         x, y = center
-        pan_speed = self.pan_pid(x)
-        tilt_speed = self.tilt_pid(y)
-        self.__pan_servo.sweep(pan_speed)
-        self.__tilt_servo.sweep(tilt_speed)
+
+        # TODO: ideally would wait until servo speed changed direction before turning off PID.
+        #  If object moves across center point during tracking the tracker will pause and reset before continuing
+        if abs(x) < self._target_lock_range:
+            self.__pan_servo.sweep(0)
+            self.pan_pid.reset()
+        else:
+            pan_speed = self.pan_pid(x)
+            self.__pan_servo.sweep(pan_speed)
+
+        if abs(y) < self._target_lock_range:
+            self.__tilt_servo.sweep(0)
+            self.tilt_pid.reset()
+        else:
+            tilt_speed = self.tilt_pid(y)
+            self.__tilt_servo.sweep(tilt_speed)
 
     def reset(self):
         self.pan_pid.reset()
