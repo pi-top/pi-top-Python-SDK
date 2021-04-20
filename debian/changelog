@@ -1,3 +1,15 @@
+py-pitop-sdk (0.18.2) buster; urgency=medium
+
+  * Add algorithms for coloured ball detection
+  * Add PincerController class to support Bobbie configuration
+  * Add manual page to CLI
+  * ServoMotor supports smooth acceleration mode
+  * Fix bug when detecting angle in line detection algorithm
+  * Fix IMU calibration bug
+  * Initial Preview: robot controller via web application
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 19 Apr 2021 16:59:24 +0000
+
 py-pitop-sdk (0.18.1) buster; urgency=medium
 
   * Remove unused global from example
