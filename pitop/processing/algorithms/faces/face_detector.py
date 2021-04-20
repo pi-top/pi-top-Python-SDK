@@ -103,6 +103,8 @@ class Face:
 
 
 class FaceDetector:
+    _FACE_DETECTOR_PYRAMID_LAYERS = 1  # set higher to detect smaller faces. Cost: large reduction in detection FPS
+
     def __init__(self, image_processing_width: Union[int, None] = 320, format: str = "OpenCV"):
         """
         :param image_processing_width: image width to scale to for image processing
@@ -169,7 +171,7 @@ class FaceDetector:
     def __detect_largest_face(self, frame):
         face_rectangle, face_center, face_features = self.__process_detected_rectangles(
             frame,
-            self._face_rectangle_detector(frame, 0)
+            self._face_rectangle_detector(frame, self._FACE_DETECTOR_PYRAMID_LAYERS)
         )
 
         return face_rectangle, face_center, face_features
