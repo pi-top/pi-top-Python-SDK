@@ -79,11 +79,15 @@ class TestFaceAndEmotionDetector(TestCase):
         self.detections(self._face_images_ccw_rotate_data, rotation="ccw")
 
     def test_no_face(self):
-        face_detector = FaceDetector()
+        face_detector = FaceDetector(enable_tracking=False)
+
+        # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
+        face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
+
         emotion_detector = EmotionDetector(apply_mean_filter=False)
         frame = self._blank_cv_frame.copy()
 
-        face = face_detector.detect(frame)
+        face = face_detector(frame)
 
         self.assertFalse(face.found)
         self.assertIsNone(face.center)
@@ -97,7 +101,7 @@ class TestFaceAndEmotionDetector(TestCase):
         comparison = face.robot_view == frame
         self.assertTrue(comparison.all())
 
-        emotion = emotion_detector.detect(face)
+        emotion = emotion_detector(face)
 
         self.assertIsNone(emotion.type)
         self.assertEqual(emotion.confidence, 0.0)
@@ -108,7 +112,11 @@ class TestFaceAndEmotionDetector(TestCase):
         self.assertTrue(comparison.all())
 
     def detections(self, face_data, rotation=None):
-        face_detector = FaceDetector()
+        face_detector = FaceDetector(enable_tracking=False)
+
+        # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
+        face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
+
         emotion_detector = EmotionDetector(apply_mean_filter=False)
 
         if rotation == "cw":
@@ -119,9 +127,9 @@ class TestFaceAndEmotionDetector(TestCase):
             expected_rotation_angle = 0
 
         for i, (frame, width) in enumerate(face_data):
-            face = face_detector.detect(frame)
+            face = face_detector(frame)
             self.face_assertions(face=face, expected_rotation_angle=expected_rotation_angle, width=width)
-            emotion = emotion_detector.detect(face)
+            emotion = emotion_detector(face)
             self.emotion_assertions(emotion=emotion, expected_emotion_data=emotion_data[i], frame=frame)
 
     def face_assertions(self, face, expected_rotation_angle, width):
