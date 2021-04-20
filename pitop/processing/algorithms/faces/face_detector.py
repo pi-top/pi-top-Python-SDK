@@ -213,12 +213,12 @@ class FaceDetector:
         return face_rectangle, face_center, face_features
 
     def __prepare_face_data(self, frame, face, rectangle, center, features):
+        face.original_detection_frame = frame
+
         if center is None:
             face.clear()
             face.robot_view = ImageFunctions.convert(frame, format=self._format)
             return face
-
-        face.original_detection_frame = frame
 
         # resize back to original frame resolution
         face.rectangle = tuple((int(item * self._frame_scaler) for item in rectangle))
