@@ -103,8 +103,8 @@ def looking_for_face_display(canvas):
 
 
 def frame_callback(frame):
-    face = face_detector.detect(frame)
-    emotion = emotion_detector.detect(face)
+    face = face_detector(frame)
+    emotion = emotion_detector(face)
 
     canvas = ImageDraw.Draw(image)
     canvas.rectangle(robot.miniscreen.bounding_box, fill=0)

@@ -5,7 +5,7 @@ import cv2
 
 
 def find_faces(frame):
-    face = face_detector.detect(frame)
+    face = face_detector(frame)
     robot_view = face.robot_view
 
     cv2.imshow("Faces", robot_view)

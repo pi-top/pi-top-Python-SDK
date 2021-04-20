@@ -105,7 +105,10 @@ class Face:
 class FaceDetector:
     _FACE_DETECTOR_PYRAMID_LAYERS = 1  # set higher to detect smaller faces. Cost: large reduction in detection FPS
 
-    def __init__(self, image_processing_width: Union[int, None] = 320, format: str = "OpenCV"):
+    def __init__(self,
+                 image_processing_width: Union[int, None] = 320,
+                 format: str = "OpenCV",
+                 enable_tracking: bool = True):
         """
         :param image_processing_width: image width to scale to for image processing
         :param format: desired output image format
@@ -117,6 +120,7 @@ class FaceDetector:
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
+        self._enable_tracking = enable_tracking
         self._face_tracker = None
 
         # Enable FPS if environment variable is set
@@ -125,12 +129,7 @@ class FaceDetector:
             self._fps = FPS().start()
             atexit.register(self.__print_fps)
 
-    def __print_fps(self):
-        self._fps.stop()
-        print(f"[INFO] Elapsed time: {self._fps.elapsed():.2f}")
-        print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
-
-    def detect(self, frame):
+    def __call__(self, frame):
         frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if self._frame_scaler is None:
@@ -141,7 +140,7 @@ class FaceDetector:
 
         if self._face_tracker is None:
             face_rectangle, face_center, face_features = self.__detect_largest_face(frame=frame_to_process)
-            if face_center is not None:
+            if face_center is not None and self._enable_tracking:
                 self.__start_tracker(frame=frame_to_process, rectangle=face_rectangle)
         else:
             face_rectangle, face_center, face_features = self.__track_face(frame=frame_to_process)
@@ -269,3 +268,8 @@ class FaceDetector:
                        markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
 
         return frame
+
+    def __print_fps(self):
+        self._fps.stop()
+        print(f"[INFO] Elapsed time: {self._fps.elapsed():.2f}")
+        print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")

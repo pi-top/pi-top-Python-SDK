@@ -11,8 +11,8 @@ count = 0
 while count < 5:
     test_image = cv2.imread(f"images/image_{count}.jpg")
 
-    face = face_detector.detect(test_image)
-    emotion = emotion_detector.detect(face)
+    face = face_detector(test_image)
+    emotion = emotion_detector(face)
     if face.found:
         print(emotion.type, emotion.confidence)
         cv2.imshow("face", face.robot_view)

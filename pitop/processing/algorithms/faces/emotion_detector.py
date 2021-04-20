@@ -71,7 +71,7 @@ class EmotionDetector:
         if self._apply_mean_filter:
             self._probability_mean_array = np.zeros((self.__MEAN_N, len(self.emotion_types)), dtype=float)
 
-    def detect(self, face):
+    def __call__(self, face):
         frame = ImageFunctions.convert(face.original_detection_frame.copy(), format='OpenCV')
 
         if not face.found:

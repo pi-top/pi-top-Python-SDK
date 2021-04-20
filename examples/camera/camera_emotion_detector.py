@@ -8,8 +8,8 @@ import cv2
 
 
 def detect_emotion(frame):
-    face = face_detector.detect(frame)
-    emotion = emotion_detector.detect(face)
+    face = face_detector(frame)
+    emotion = emotion_detector(face)
 
     if emotion.found:
         print(f"{emotion_lookup[emotion.type]}")
