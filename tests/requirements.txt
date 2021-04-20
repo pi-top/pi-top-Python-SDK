@@ -1,7 +1,6 @@
 dlib
 gpiozero
 imutils
-joblib
 matplotlib
 numpy
 opencv-python
