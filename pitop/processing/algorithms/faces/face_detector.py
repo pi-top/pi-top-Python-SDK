@@ -18,7 +18,6 @@ from pitop.processing.core.vision_functions import (
     tuple_for_color_by_name,
 )
 
-
 cv2 = import_opencv()
 
 predictor_dir = 'predictors'
@@ -116,6 +115,7 @@ class FaceDetector:
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
+        self._face_tracker = None
 
         # Enable FPS if environment variable is set
         self._print_fps = getenv("PT_ENABLE_FPS", "0") == "1"
@@ -135,45 +135,104 @@ class FaceDetector:
             _, width = frame.shape[0:2]
             self._frame_scaler = width / self._image_processing_width if self._image_processing_width is not None else 1
 
-        self.face = self.__find_largest_face(face=self.face, frame=frame)
+        frame_to_process = self.__get_frame_to_process(frame=frame)
 
+        if self._face_tracker is None:
+            face_rectangle, face_center, face_features = self.__detect_largest_face(frame=frame_to_process)
+            if face_center is not None:
+                self.__start_tracker(frame=frame_to_process, rectangle=face_rectangle)
+        else:
+            face_rectangle, face_center, face_features = self.__track_face(frame=frame_to_process)
+            if face_center is None:
+                self.__stop_tracker()
+                # attempt to detect face again
+                face_rectangle, face_center, face_features = self.__detect_largest_face(frame=frame_to_process)
+
+        self.face = self.__prepare_face_data(frame=frame,
+                                             face=self.face,
+                                             rectangle=face_rectangle,
+                                             center=face_center,
+                                             features=face_features)
         if self._print_fps:
             self._fps.update()
 
         return self.face
 
-    def __find_largest_face(self, face, frame):
-        face.original_detection_frame = frame
-
-        gray = self._clahe_filter.apply(
+    def __get_frame_to_process(self, frame):
+        return self._clahe_filter.apply(
             cv2.cvtColor(
                 resize(frame, width=self._image_processing_width),
                 cv2.COLOR_BGR2GRAY
             )
         )
 
-        face_rectangle, face_center, face_features = self.__process_rectangles(gray,
-                                                                               self._face_rectangle_detector(gray, 0)
-                                                                               )
-        if face_rectangle is None:
+    def __detect_largest_face(self, frame):
+        face_rectangle, face_center, face_features = self.__process_detected_rectangles(
+            frame,
+            self._face_rectangle_detector(frame, 0)
+        )
+
+        return face_rectangle, face_center, face_features
+
+    def __start_tracker(self, frame, rectangle):
+        self._face_tracker = dlib.correlation_tracker()
+        self._face_tracker.start_track(frame,
+                                       dlib.rectangle(
+                                           rectangle[0],
+                                           rectangle[1],
+                                           rectangle[0] + rectangle[2],
+                                           rectangle[1] + rectangle[3]
+                                       )
+                                       )
+
+    def __stop_tracker(self):
+        self._face_tracker = None
+
+    def __track_face(self, frame):
+        def convert_dlib_rect_to_int_type(rectangle):
+            x_start = int(round(rectangle.left()))
+            y_start = int(round(rectangle.top()))
+            x_end = int(round(rectangle.right()))
+            y_end = int(round(rectangle.bottom()))
+            return dlib.rectangle(x_start, y_start, x_end, y_end)
+
+        peak_to_side_lobe_ratio = self._face_tracker.update(frame)
+
+        if peak_to_side_lobe_ratio < 7.0:
+            # Object occluded or lost when PSR found to be below a certain threshold (7.0 according to Bolme et al)
+            return None, None, None
+
+        rectangle_dlib = convert_dlib_rect_to_int_type(self._face_tracker.get_position())
+        face_features_dlib = self._predictor(frame, rectangle_dlib)
+        face_features = face_utils.shape_to_np(face_features_dlib)
+
+        face_rectangle = face_utils.rect_to_bb(rectangle_dlib)
+        face_center = (face_rectangle[0] + int(round(face_rectangle[2] / 2)),
+                       face_rectangle[1] + int(round(face_rectangle[3] / 2)))
+
+        return face_rectangle, face_center, face_features
+
+    def __prepare_face_data(self, frame, face, rectangle, center, features):
+        if center is None:
             face.clear()
             face.robot_view = ImageFunctions.convert(frame, format=self._format)
             return face
 
+        face.original_detection_frame = frame
+
         # resize back to original frame resolution
-        face.rectangle = tuple((int(item * self._frame_scaler) for item in face_rectangle))
-        face.center = tuple((int(item * self._frame_scaler) for item in face_center))
-        face.features = (face_features * self._frame_scaler).astype("int")
+        face.rectangle = tuple((int(item * self._frame_scaler) for item in rectangle))
+        face.center = tuple((int(item * self._frame_scaler) for item in center))
+        face.features = (features * self._frame_scaler).astype("int")
         face.angle = get_face_angle(face.features)
 
         face.robot_view = ImageFunctions.convert(
             self.__draw_on_frame(frame=frame.copy(), face=face),
             format=self._format
         )
-
         return face
 
-    def __process_rectangles(self, gray, rectangles_dlib):
+    def __process_detected_rectangles(self, gray, rectangles_dlib):
         if len(rectangles_dlib) == 0:
             return None, None, None
 
