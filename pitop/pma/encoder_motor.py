@@ -53,7 +53,7 @@ class EncoderMotor(Stateful, Recreatable):
                  port_name,
                  forward_direction,
                  braking_type=BrakingType.COAST,
-                 wheel_diameter=0.075,
+                 wheel_diameter=0.0718,
                  name=None
                  ):
         self.name = name

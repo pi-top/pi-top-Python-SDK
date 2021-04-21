@@ -28,8 +28,8 @@ class DriveController(Stateful, Recreatable):
         self.right_motor_port = right_motor_port
         self.left_motor_port = left_motor_port
 
-        self._wheel_separation = 0.1675
-        self._wheel_diameter = 0.074
+        self._wheel_separation = 0.163
+        self._wheel_diameter = 0.0718
         self._wheel_circumference = self._wheel_diameter * pi
         self._linear_speed_x_hold = 0
 
@@ -37,9 +37,12 @@ class DriveController(Stateful, Recreatable):
         self._right_motor_port = right_motor_port
 
         self.left_motor = EncoderMotor(port_name=left_motor_port,
-                                       forward_direction=ForwardDirection.CLOCKWISE)
+                                       forward_direction=ForwardDirection.CLOCKWISE,
+                                       wheel_diameter=self._wheel_diameter)
+
         self.right_motor = EncoderMotor(port_name=right_motor_port,
-                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
+                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE,
+                                        wheel_diameter=self._wheel_diameter)
 
         self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
 
