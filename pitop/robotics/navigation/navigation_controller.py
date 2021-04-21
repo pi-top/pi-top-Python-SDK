@@ -16,140 +16,143 @@ class RobotState:
     v: float = 0.0
     w: float = 0.0
 
+    @property
+    def pose(self):
+        return self.x, self.y, self.theta
+
+    def reset_pose(self):
+        self.x, self.y, self.theta = (0.0, 0.0, 0.0)
+
     def calc_distance(self, point_x, point_y):
         dx = self.x - point_x
         dy = self.y - point_y
         return math.hypot(dx, dy)
 
 
-k = 0.1  # look forward gain
-Lfc = 2.0  # [m] look-ahead distance
-Kp = 1.0  # speed proportional gain
-dt = 0.1  # [s] time tick
-WB = 2.9  # [m] wheel base of vehicle
-
-
-class TargetCourse:
-
-    def __init__(self, cx, cy):
-        self.cx = cx
-        self.cy = cy
-        self.old_nearest_point_index = None
-
-    def search_target_index(self, state):
-
-        # To speed up nearest point search, doing it at only first time.
-        if self.old_nearest_point_index is None:
-            # search nearest point index
-            dx = [state.rear_x - icx for icx in self.cx]
-            dy = [state.rear_y - icy for icy in self.cy]
-            d = np.hypot(dx, dy)
-            ind = np.argmin(d)
-            self.old_nearest_point_index = ind
-        else:
-            ind = self.old_nearest_point_index
-            distance_this_index = state.calc_distance(self.cx[ind],
-                                                      self.cy[ind])
-            while True:
-                distance_next_index = state.calc_distance(self.cx[ind + 1],
-                                                          self.cy[ind + 1])
-                if distance_this_index < distance_next_index:
-                    break
-                ind = ind + 1 if (ind + 1) < len(self.cx) else ind
-                distance_this_index = distance_next_index
-            self.old_nearest_point_index = ind
-
-        Lf = k * state.v + Lfc  # update look ahead distance
-
-        # search look ahead target point index
-        while Lf > state.calc_distance(self.cx[ind], self.cy[ind]):
-            if (ind + 1) >= len(self.cx):
-                break  # not exceed goal
-            ind += 1
-
-        return ind, Lf
-
-
 class NavigationController:
-    def __init__(self, drive_controller=None):
-        # self._drive_controller = drive_controller
-        # self._left_motor = drive_controller.left_motor
-        # self._right_motor = drive_controller.right_motor
-        self._current_position = (0.0, 0.0)
+    _DECELERATION_DISTANCE = 0.2
+    _DECELERATION_ANGLE = math.radians(30.0)
+
+    def __init__(self, drive_controller=None,
+                 linear_speed_factor: float = 0.5,
+                 angular_speed_factor: float = 0.25,
+                 sim=False):
+
+        self._sim = sim
+        if not self._sim:
+            self._drive_controller = drive_controller
+            self._max_motor_speed = self._drive_controller.max_motor_speed
+            self._max_robot_angular_speed = self._drive_controller.max_robot_angular_speed
+            self._linear_speed_factor = linear_speed_factor
+            self._angular_speed_factor = angular_speed_factor
+            self._max_linear_speed = self._linear_speed_factor * self._max_motor_speed
+            self._max_angular_speed = self._angular_speed_factor * self._max_robot_angular_speed
+
         self._odom_update_frequency = 10.0
         self._position_update_event = Event()
         self._odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
         self._odometry_tracker.start()
         self._robot_state = RobotState()
-        self._heading_pid = PID(Kp=0.5,
-                                Ki=0.001,
-                                Kd=0.001,
+
+        self._heading_pid = PID(Kp=1.0 / self._DECELERATION_ANGLE,
+                                Ki=0.1,
+                                Kd=0.1,
                                 setpoint=0.0,
-                                output_limits=(-2.0, 2.0)
+                                output_limits=(-1.0, 1.0)
                                 )
-        self._position_pid = PID(Kp=0.1,
-                                 Ki=0.001,
-                                 Kd=0.001,
+        self._position_pid = PID(Kp=1.0 / self._DECELERATION_DISTANCE,
+                                 Ki=0.1,
+                                 Kd=0.1,
                                  setpoint=0.0,
-                                 output_limits=(-0.45, 0.45)
+                                 output_limits=(-1.0, 1.0)
                                  )
 
-    def go_to(self, x_goal, y_goal, theta_goal):
-        self.__set_course_heading(x_goal, y_goal)
-        self.__drive_to_goal(x_goal, y_goal)
-        # self.__rotation_to_angle_goal()
+    def go_to(self, x_goal: float, y_goal: float, theta_goal=None):
+
+        if x_goal is not None and y_goal is not None:
+            self.__set_course_heading(x_goal=x_goal, y_goal=y_goal)
+            self.__drive_to_goal(x_goal=x_goal, y_goal=y_goal)
+        if theta_goal is not None:
+            self.__rotate_to_theta_goal(theta_goal=theta_goal)
 
     def __set_course_heading(self, x_goal, y_goal):
-
         while True:
             self._position_update_event.wait()
             self._position_update_event.clear()
-
-            x = self._robot_state.x
-            y = self._robot_state.y
-            theta = self._robot_state.theta
+            x, y, theta = self._robot_state.pose
 
             x_diff = x_goal - x
             y_diff = y_goal - y
-            heading_error = theta - math.atan2(y_diff, x_diff)
-            angular_speed = self._heading_pid(heading_error)
-            print(heading_error)
-            if abs(heading_error) < np.radians(1.0) and abs(angular_speed < 0.1):
+
+            heading_error = self.__normalize_angle(theta - math.atan2(y_diff, x_diff))
+            angular_speed = self.__get_angular_speed(heading_error=heading_error)
+
+            if abs(heading_error) < np.radians(1.0):  # and abs(angular_speed < 0.1):
                 print("Heading goal reached")
-                self._robot_state.w = 0
-                self._heading_pid.reset()
+                self.__goal_reached()
                 break
 
-            self._robot_state.w = angular_speed
+            self.robot_move(linear_speed=0, angular_speed=angular_speed)
 
     def __drive_to_goal(self, x_goal, y_goal):
 
         while True:
             self._position_update_event.wait()
             self._position_update_event.clear()
-
-            x = self._robot_state.x
-            y = self._robot_state.y
-            theta = self._robot_state.theta
+            x, y, theta = self._robot_state.pose
 
             x_diff = x_goal - x
             y_diff = y_goal - y
-            heading_error = theta - math.atan2(y_diff, x_diff)
-            angular_speed = self._heading_pid(heading_error)
-            self._robot_state.w = angular_speed
+
+            heading_error = self.__normalize_angle(theta - math.atan2(y_diff, x_diff))
+            angular_speed = self.__get_angular_speed(heading_error=heading_error)
 
             distance_error = -np.hypot(x_diff, y_diff)
-            print(distance_error)
-            linear_speed = self._position_pid(distance_error)
-            print(linear_speed)
-            if distance_error < 0.1 and linear_speed < 0.05:
+            linear_speed = self.__get_linear_speed(distance_error=distance_error)
+
+            if abs(distance_error) < 0.01:
                 print("Position goal reached")
-                self._robot_state.v = 0
-                self._robot_state.w = 0
-                self._heading_pid.reset()
+                self.__goal_reached()
                 break
 
-            self._robot_state.v = linear_speed
+            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
+
+    def __rotate_to_theta_goal(self, theta_goal):
+        while True:
+            self._position_update_event.wait()
+            self._position_update_event.clear()
+
+            theta = self._robot_state.theta
+            heading_error = self.__normalize_angle(theta - theta_goal)
+            angular_speed = self.__get_angular_speed(heading_error=heading_error)
+
+            if abs(heading_error) < np.radians(1.0):  # and abs(angular_speed < 0.1):
+                print("Theta goal reached")
+                self.__goal_reached()
+                break
+
+            self.robot_move(linear_speed=0, angular_speed=angular_speed)
+
+    def __goal_reached(self):
+        self.robot_stop()
+        self._heading_pid.reset()
+        self._position_update_event.wait()
+        self._position_update_event.clear()
+
+    @staticmethod
+    def __normalize_angle(angle):
+        """
+        Converts to range -pi to +pi to prevent unstable behaviour when going from 0 to 2*pi with slight turn
+        :param angle:
+        :return: angle normalized to range -pi to +pi
+        """
+        return (angle + math.pi) % (2 * math.pi) - math.pi
+
+    def __get_angular_speed(self, heading_error):
+        return self._max_angular_speed * self._heading_pid(heading_error)
+
+    def __get_linear_speed(self, distance_error):
+        return self._max_linear_speed * self._position_pid(distance_error)
 
     def __track_odometry(self):
 
@@ -160,61 +163,51 @@ class NavigationController:
             if dt < 1.0 / self._odom_update_frequency:
                 continue
             prev_time = current_time
-            self._robot_state.x += self._robot_state.v * np.cos(self._robot_state.theta) * dt
-            self._robot_state.y += self._robot_state.v * np.sin(self._robot_state.theta) * dt
-            self._robot_state.theta += self._robot_state.w * dt
-            # print(self._robot_state)
+            self.__update_state(dt)
             self._position_update_event.set()
 
+    def __update_state(self, dt):
+        if not self._sim:
+            left_wheel_speed = self._drive_controller.left_motor.current_speed
+            right_wheel_speed = self._drive_controller.right_motor.current_speed
+
+            self._robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
+            self._robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
+
+        self._robot_state.x = self._robot_state.x + self._robot_state.v * np.cos(self._robot_state.theta) * dt
+        self._robot_state.y = self._robot_state.y + self._robot_state.v * np.sin(self._robot_state.theta) * dt
+        self._robot_state.theta = self.__normalize_angle(self._robot_state.theta + self._robot_state.w * dt)
+
     def reset_position(self):
-        self._current_position = (0.0, 0.0)
+        self._robot_state.reset_pose()
 
+    def robot_stop(self):
+        if self._sim:
+            self._robot_state.v = 0.0
+            self._robot_state.w = 0.0
+        else:
+            self._drive_controller.stop()
 
-def transformation_matrix(x, y, theta):
-    return np.array([
-        [np.cos(theta), -np.sin(theta), x],
-        [np.sin(theta), np.cos(theta), y],
-        [0, 0, 1]
-    ])
-
-
-def plot_vehicle(x, y, theta, x_traj, y_traj):  # pragma: no cover
-    # Corners of triangular vehicle when pointing to the right (0 radians)
-    p1_i = np.array([0.5, 0, 1]).T
-    p2_i = np.array([-0.5, 0.25, 1]).T
-    p3_i = np.array([-0.5, -0.25, 1]).T
-
-    T = transformation_matrix(x, y, theta)
-    p1 = np.matmul(T, p1_i)
-    p2 = np.matmul(T, p2_i)
-    p3 = np.matmul(T, p3_i)
-
-    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'k-')
-    plt.plot([p2[0], p3[0]], [p2[1], p3[1]], 'k-')
-    plt.plot([p3[0], p1[0]], [p3[1], p1[1]], 'k-')
-
-    plt.plot(x_traj, y_traj, 'b--')
-
-    # for stopping simulation with the esc key.
-    plt.gcf().canvas.mpl_connect('key_release_event',
-                                 lambda event: [exit(0) if event.key == 'escape' else None])
-
-    plt.xlim(0, 20)
-    plt.ylim(0, 20)
+    def robot_move(self, linear_speed, angular_speed):
+        if self._sim:
+            self._robot_state.v = linear_speed
+            self._robot_state.w = angular_speed
+        else:
+            self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
 
 if __name__ == "__main__":
-    nav_controller = NavigationController()
+    nav_controller = NavigationController(sim=True)
     x_start = 20 * random()
     y_start = 20 * random()
-    theta_start = 0  # 2 * np.pi * random() - np.pi
+    theta_start = 0  # 2 * math.pi * random() - math.pi
     nav_controller._robot_state.x = x_start
     nav_controller._robot_state.y = y_start
     nav_controller._robot_state.theta = theta_start
 
-    x_goal = 5  # 20 * random()
-    y_goal = 10  # 20 * random()
-    theta_goal = 2 * np.pi * random() - np.pi
+    x_target = 5  # 20 * random()
+    y_target = 10  # 20 * random()
+    theta_target = 2 * math.pi * random() - math.pi
 
-    nav_controller.go_to(x_goal, y_goal, theta_goal)
+    nav_controller.go_to(x_target, y_target, theta_target)
     print("finished")
