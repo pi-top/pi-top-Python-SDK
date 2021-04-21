@@ -46,15 +46,15 @@ class DriveController(Stateful, Recreatable):
 
         self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
 
-        self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
-        self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
+        self.max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
+        self.max_robot_angular_speed = self.max_motor_speed / (self._wheel_separation / 2)
 
         self.__target_lock_pid_controller = PID(Kp=0.045,
                                                 Ki=0.002,
                                                 Kd=0.0035,
                                                 setpoint=0,
-                                                output_limits=(-self._max_robot_angular_speed,
-                                                               self._max_robot_angular_speed)
+                                                output_limits=(-self.max_robot_angular_speed,
+                                                               self.max_robot_angular_speed)
                                                 )
 
         self._initialized = True
@@ -103,7 +103,7 @@ class DriveController(Stateful, Recreatable):
         :param bool hold:
             Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
         """
-        linear_speed_x = self._max_motor_speed * speed_factor
+        linear_speed_x = self.max_motor_speed * speed_factor
         if hold:
             self._linear_speed_x_hold = linear_speed_x
         else:
@@ -133,7 +133,7 @@ class DriveController(Stateful, Recreatable):
             Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
         """
 
-        self.robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
+        self.robot_move(self._linear_speed_x_hold, self.max_robot_angular_speed * speed_factor, turn_radius)
 
     @is_initialized
     def right(self, speed_factor, turn_radius=0):
