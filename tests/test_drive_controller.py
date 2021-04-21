@@ -39,7 +39,7 @@ class DriveControllerTestCase(TestCase):
         """'forward' method calls 'robot_move'."""
         d = DriveController()
         speed_factor = 1
-        expected_linear_speed = speed_factor * d._max_motor_speed
+        expected_linear_speed = speed_factor * d.max_motor_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
             d.forward(speed_factor, hold=False)
@@ -49,7 +49,7 @@ class DriveControllerTestCase(TestCase):
         """'forward' hold parameter stores linear speed in object."""
         d = DriveController()
         speed_factor = 1
-        expected_linear_speed = speed_factor * d._max_motor_speed
+        expected_linear_speed = speed_factor * d.max_motor_speed
 
         d.forward(speed_factor, hold=True)
         self.assertEquals(d._linear_speed_x_hold, expected_linear_speed)
@@ -59,8 +59,8 @@ class DriveControllerTestCase(TestCase):
         d = DriveController()
         speed_factor = 1
         turn_radius = 0.1
-        expected_linear_speed = speed_factor * d._max_motor_speed
-        expected_angular_speed = d._max_robot_angular_speed * speed_factor
+        expected_linear_speed = speed_factor * d.max_motor_speed
+        expected_angular_speed = d.max_robot_angular_speed * speed_factor
         d._linear_speed_x_hold = expected_linear_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
