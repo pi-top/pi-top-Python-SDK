@@ -81,9 +81,7 @@ class GoalCriteria:
         self._MAX_GOAL_REACHED_ANGLE_ERROR = angular_speed_factor * math.radians(4.0)  # 4deg at full speed
 
     def angle(self, angle_error):
-        if abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR:
-            return True
-        return False
+        return abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR:
 
     def distance(self, distance_error, heading_error):
         if abs(distance_error) < self._MAX_GOAL_REACHED_DISTANCE_ERROR:
