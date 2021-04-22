@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import numpy as np
 from random import random
 import math
+from typing import Union
 from simple_pid import PID
 
 
@@ -29,33 +30,71 @@ class RobotState:
 
 
 class GoalCriteria:
-    def __init__(self):
-        self._MAX_GOAL_REACHED_DISTANCE_ERROR = 0.0
-        self._MAX_GOAL_REACHED_ANGLE_ERROR = 0.0
-
-    def set(self, linear_speed_factor, angular_speed_factor):
+    def __init__(self, linear_speed_factor, angular_speed_factor):
         self._MAX_GOAL_REACHED_DISTANCE_ERROR = linear_speed_factor * 0.02  # 2 mm at full speed
         self._MAX_GOAL_REACHED_ANGLE_ERROR = angular_speed_factor * math.radians(4.0)  # 4deg at full speed
-        return self
 
     def angle(self, angle_error):
         if abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR:
             return True
         return False
 
-    def distance(self, distance_error):
+    def distance(self, distance_error, heading_error):
         if abs(distance_error) < self._MAX_GOAL_REACHED_DISTANCE_ERROR:
+            return True
+        if abs(heading_error) > math.pi / 2:
+            # Overshot goal, error will be small so consider goal to be reached.
+            # Otherwise robot would have to reverse a tiny amount which would be poor UX.
+            # Robot will correct itself on subsequent navigation calls anyway.
             return True
         return False
 
 
+class RobotDrivingParameters:
+    def __init__(self, linear_speed_factor, angular_speed_factor, max_motor_speed, max_angular_speed):
+        self.linear_speed_factor = linear_speed_factor
+        self.angular_speed_factor = angular_speed_factor
+        self._max_motor_speed = max_motor_speed
+        self._max_angular_speed = max_angular_speed
+
+        self.max_v = 0.0
+        self.max_w = 0.0
+        self.deceleration_distance = 0.0
+        self.deceleration_angle = 0.0
+
+        self.update_linear_speed(speed_factor=linear_speed_factor)
+        self.update_angular_speed(speed_factor=angular_speed_factor)
+
+    def update_linear_speed(self, speed_factor):
+        self.max_v = speed_factor * self._max_motor_speed
+        self.deceleration_distance = speed_factor * 0.4  # 0.4m at full speed
+
+    def update_angular_speed(self, speed_factor):
+        self.max_w = speed_factor * self._max_angular_speed
+        self.deceleration_angle = speed_factor * math.radians(120.0)  # 120deg at full speed
+
+
+class PIDManger:
+    def __init__(self, deceleration_angle, deceleration_distance):
+        self.heading = PID(Kp=1.0 / deceleration_angle,
+                           Ki=0.1,
+                           Kd=0.1,
+                           setpoint=0.0,
+                           output_limits=(-1.0, 1.0)
+                           )
+        self.distance = PID(Kp=1.0 / deceleration_distance,
+                            Ki=0.1,
+                            Kd=0.1,
+                            setpoint=0.0,
+                            output_limits=(-1.0, 1.0)
+                            )
+
+    def reset(self):
+        self.heading.reset()
+        self.distance.reset()
+
+
 class NavigationController:
-    _DECELERATION_DISTANCE = 0.2  # m
-    _DECELERATION_ANGLE = math.radians(30.0)
-
-    _MAX_GOAL_REACHED_ANGLE_ERROR = math.radians(1.0)
-    _MAX_GOAL_REACHED_DISTANCE_ERROR = 0.01  # m
-
     def __init__(self,
                  drive_controller=None,
                  linear_speed_factor: float = 0.75,
@@ -71,43 +110,45 @@ class NavigationController:
         self._sim = sim
         if not self._sim:
             self._drive_controller = drive_controller
-            self._max_motor_speed = self._drive_controller.max_motor_speed
-            self._max_robot_angular_speed = self._drive_controller.max_robot_angular_speed
-            self._linear_speed_factor = linear_speed_factor
-            self._angular_speed_factor = angular_speed_factor
+            self._drive_params = RobotDrivingParameters(
+                linear_speed_factor=linear_speed_factor,
+                angular_speed_factor=angular_speed_factor,
+                max_motor_speed=self._drive_controller.max_motor_speed,
+                max_angular_speed=self._drive_controller.max_robot_angular_speed
+            )
+            self._goal_criteria = GoalCriteria(linear_speed_factor=linear_speed_factor,
+                                               angular_speed_factor=angular_speed_factor
+                                               )
 
-            self._max_linear_speed = self._linear_speed_factor * self._max_motor_speed
-            self._max_angular_speed = self._angular_speed_factor * self._max_robot_angular_speed
-            self._DECELERATION_DISTANCE = self._linear_speed_factor * 0.4  # 0.4m at full speed
-            self._DECELERATION_ANGLE = self._angular_speed_factor * math.radians(120.0)  # 120deg at full speed
+        self._pid = PIDManger(deceleration_angle=self._drive_params.deceleration_angle,
+                              deceleration_distance=self._drive_params.deceleration_distance
+                              )
 
-            self._goal_criteria = GoalCriteria().set(linear_speed_factor=linear_speed_factor,
-                                                     angular_speed_factor=angular_speed_factor
-                                                     )
+    def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None):
 
-            # self._MAX_GOAL_REACHED_DISTANCE_ERROR = self._linear_speed_factor * 0.02  # 2 mm at full speed
-            # self._MAX_GOAL_REACHED_ANGLE_ERROR = self._angular_speed_factor * math.radians(4.0)  # 4deg at full speed
-
-        self._heading_pid = PID(Kp=1.0 / self._DECELERATION_ANGLE,
-                                Ki=0.1,
-                                Kd=0.1,
-                                setpoint=0.0,
-                                output_limits=(-1.0, 1.0)
-                                )
-        self._position_pid = PID(Kp=1.0 / self._DECELERATION_DISTANCE,
-                                 Ki=0.1,
-                                 Kd=0.1,
-                                 setpoint=0.0,
-                                 output_limits=(-1.0, 1.0)
-                                 )
-
-    def go_to(self, x: float, y: float, theta=None):
-
-        if x is not None and y is not None:
+        if position is not None:
+            x, y = position
             self.__set_course_heading(x_goal=x, y_goal=y)
             self.__drive_to_goal(x_goal=x, y_goal=y)
-        if theta is not None:
-            self.__rotate_to_theta_goal(theta_goal=theta)
+
+        if angle is not None:
+            self.__rotate_to_theta_goal(theta_goal=math.radians(angle))
+
+    @property
+    def linear_speed_factor(self):
+        return self._drive_params.linear_speed_factor
+
+    @linear_speed_factor.setter
+    def linear_speed_factor(self, speed_factor):
+        self._drive_params.update_linear_speed(speed_factor)
+
+    @property
+    def angular_speed_factor(self):
+        return self._drive_params.angular_speed_factor
+
+    @angular_speed_factor.setter
+    def angular_speed_factor(self, speed_factor):
+        self._drive_params.update_angular_speed(speed_factor)
 
     def __set_course_heading(self, x_goal, y_goal):
         while True:
@@ -134,19 +175,12 @@ class NavigationController:
 
             heading_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
             distance_error = -np.hypot(x_diff, y_diff)
-            print(f"heading_error: {math.degrees(heading_error)}")
-
-            if abs(heading_error) > math.pi / 2:
-                # Overshot goal, reverse. Heading error set to zero as angle variance is huge when x and y are small
-                distance_error = -distance_error * 1.5  # slow to correct from overshoot, give it a boost
-                heading_error = 0
+            if self._goal_criteria.distance(distance_error=distance_error, heading_error=heading_error):
+                self.__goal_reached()
+                break
 
             angular_speed = self.__get_angular_speed(heading_error=heading_error)
             linear_speed = self.__get_linear_speed(distance_error=distance_error)
-
-            if self._goal_criteria.distance(distance_error):
-                self.__goal_reached()
-                break
 
             self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
@@ -164,8 +198,8 @@ class NavigationController:
             self.robot_move(linear_speed=0, angular_speed=angular_speed)
 
     def __goal_reached(self):
-        self.robot_stop()
-        self._heading_pid.reset()
+        self.stop()
+        self._pid.reset()
         # wait for one more pose update before returning to ensure subsequent code has latest (could be user code)
         self._position_update_event.wait()
         self._position_update_event.clear()
@@ -188,10 +222,10 @@ class NavigationController:
         return (angle + math.pi) % (2 * math.pi) - math.pi
 
     def __get_angular_speed(self, heading_error):
-        return self._max_angular_speed * self._heading_pid(heading_error)
+        return self._drive_params.max_w * self._pid.heading(heading_error)
 
     def __get_linear_speed(self, distance_error):
-        return self._max_linear_speed * self._position_pid(distance_error)
+        return self._drive_params.max_v * self._pid.distance(distance_error)
 
     def __track_odometry(self):
         prev_time = time()
@@ -219,7 +253,7 @@ class NavigationController:
     def reset_position(self):
         self._robot_state.reset_pose()
 
-    def robot_stop(self):
+    def stop(self):
         if self._sim:
             self._robot_state.v = 0.0
             self._robot_state.w = 0.0
