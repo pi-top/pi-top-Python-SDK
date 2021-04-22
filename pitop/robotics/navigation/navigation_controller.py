@@ -168,9 +168,8 @@ class NavigationController:
         self.__navigation_finished()
 
     def wait(self):
-        """
-        Call this to pause your program execution until the navigation request is complete.
-        """
+        """Call this to pause your program execution until the navigation
+        request is complete."""
         self._nav_goal_finish_event.wait()
 
     @property
@@ -287,8 +286,9 @@ class NavigationController:
 
     @staticmethod
     def __normalize_angle(angle):
-        """
-        Converts to range -pi to +pi to prevent unstable behaviour when going from 0 to 2*pi with slight turn
+        """Converts to range -pi to +pi to prevent unstable behaviour when
+        going from 0 to 2*pi with slight turn.
+
         :param angle: angle in radians
         :return: angle in radians normalized to range -pi to +pi
         """
