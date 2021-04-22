@@ -101,6 +101,7 @@ class NavigationController:
                  linear_speed_factor: float = 0.75,
                  angular_speed_factor: float = 0.5
                  ):
+
         # Navigation flow control
         self._navigation_in_progress = False
         self._stop_triggered = False
@@ -116,7 +117,7 @@ class NavigationController:
         self._odometry_tracker.start()
 
         # Robot state and control
-        self._robot_state = RobotState()
+        self.robot_state = RobotState()
         self._drive_controller = drive_controller
         self._drive_params = RobotDrivingParameters(max_motor_speed=self._drive_controller.max_motor_speed,
                                                     max_angular_speed=self._drive_controller.max_robot_angular_speed
@@ -157,12 +158,15 @@ class NavigationController:
             self.__sub_goal_flow_control()
 
         if angle is not None:
-            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_theta_goal, args=(angle,), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_angle_goal, args=(angle,), daemon=True)
             self.__sub_goal_flow_control()
 
         self.__navigation_finished()
 
     def wait(self):
+        """
+        Call this to pause your program execution until the navigation request is complete.
+        """
         self._nav_goal_finish_event.wait()
 
     @property
@@ -182,7 +186,7 @@ class NavigationController:
         self._drive_params.update_angular_speed(speed_factor)
 
     def reset_position(self):
-        self._robot_state.reset_pose()
+        self.robot_state.reset_pose()
 
     def stop(self):
         self._stop_triggered = True
@@ -231,7 +235,7 @@ class NavigationController:
 
             self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
-    def __rotate_to_theta_goal(self, theta_goal):
+    def __rotate_to_angle_goal(self, theta_goal):
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
@@ -267,7 +271,7 @@ class NavigationController:
     def __get_new_pose_update(self):
         self._position_update_event.wait()
         self._position_update_event.clear()
-        return self._robot_state.pose
+        return self.robot_state.pose
 
     def __get_angle_error(self, current_angle, target_angle):
         return self.__normalize_angle(current_angle - target_angle)
@@ -276,8 +280,8 @@ class NavigationController:
     def __normalize_angle(angle):
         """
         Converts to range -pi to +pi to prevent unstable behaviour when going from 0 to 2*pi with slight turn
-        :param angle:
-        :return: angle normalized to range -pi to +pi
+        :param angle: angle in radians
+        :return: angle in radians normalized to range -pi to +pi
         """
         return (angle + math.pi) % (2 * math.pi) - math.pi
 
@@ -302,9 +306,9 @@ class NavigationController:
         left_wheel_speed = self._drive_controller.left_motor.current_speed
         right_wheel_speed = self._drive_controller.right_motor.current_speed
 
-        self._robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
-        self._robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
+        self.robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
+        self.robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
 
-        self._robot_state.x = self._robot_state.x + self._robot_state.v * np.cos(self._robot_state.theta) * dt
-        self._robot_state.y = self._robot_state.y + self._robot_state.v * np.sin(self._robot_state.theta) * dt
-        self._robot_state.theta = self.__normalize_angle(self._robot_state.theta + self._robot_state.w * dt)
+        self.robot_state.x = self.robot_state.x + self.robot_state.v * np.cos(self.robot_state.theta) * dt
+        self.robot_state.y = self.robot_state.y + self.robot_state.v * np.sin(self.robot_state.theta) * dt
+        self.robot_state.theta = self.__normalize_angle(self.robot_state.theta + self.robot_state.w * dt)
