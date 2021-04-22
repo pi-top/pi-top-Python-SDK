@@ -113,7 +113,6 @@ class NavigationController:
         self._sub_goal_nav_thread = None
 
         # Odometry tracking
-        self._previous_time = 0
         self._odom_update_frequency = 10.0  # Hz
         self._odom_update_schedule = 1.0 / self._odom_update_frequency
         self._position_update_event = Event()
@@ -301,13 +300,12 @@ class NavigationController:
     def __track_odometry(self):
         s = sched.scheduler(time.time, time.sleep)
         current_time = time.time()
-        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s,))
+        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s, current_time))
         s.run()
 
-    def __update_state(self, s):
+    def __update_state(self, s, previous_time):
         current_time = time.time()
-        dt = current_time - self._previous_time
-        self._previous_time = current_time
+        dt = current_time - previous_time
 
         left_wheel_speed = self._drive_controller.left_motor.current_speed
         right_wheel_speed = self._drive_controller.right_motor.current_speed
@@ -322,4 +320,4 @@ class NavigationController:
         self._position_update_event.set()
         self._position_update_event.clear()
 
-        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s,))
+        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s, current_time))
