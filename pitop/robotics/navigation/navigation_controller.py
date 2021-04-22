@@ -51,7 +51,6 @@ class GoalCriteria:
 
 class RobotDrivingParameters:
     def __init__(self, max_motor_speed, max_angular_speed):
-
         self._max_motor_speed = max_motor_speed
         self._max_angular_speed = max_angular_speed
 
@@ -102,6 +101,9 @@ class NavigationController:
                  angular_speed_factor: float = 0.5
                  ):
 
+        # callback to call once navigation complete
+        self._on_finish = None
+
         # Navigation flow control
         self._navigation_in_progress = False
         self._stop_triggered = False
@@ -131,7 +133,9 @@ class NavigationController:
                               deceleration_distance=self._drive_params.deceleration_distance
                               )
 
-    def go_to(self, position: Union[list, None] = None, angle: Union[float, None] = None):
+    def go_to(self, position: Union[list, None] = None, angle: Union[float, None] = None, on_finish=None):
+        self._on_finish = on_finish
+
         if self._navigation_in_progress:
             raise RuntimeError("Cannot call function before previous navigation is complete, use .wait() or call "
                                ".stop() to cancel the previous navigation request.")
@@ -154,7 +158,7 @@ class NavigationController:
             x, y = position
             self._sub_goal_nav_thread = Thread(target=self.__set_course_heading, args=(x, y,), daemon=True)
             self.__sub_goal_flow_control()
-            self._sub_goal_nav_thread = Thread(target=self.__drive_to_goal, args=(x, y,), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__drive_to_position_goal, args=(x, y,), daemon=True)
             self.__sub_goal_flow_control()
 
         if angle is not None:
@@ -189,6 +193,9 @@ class NavigationController:
         self.robot_state.reset_pose()
 
     def stop(self):
+        # don't call callback if user has terminated navigation manually
+        self._on_finish = None
+
         self._stop_triggered = True
         try:
             self._sub_goal_nav_thread.join()
@@ -217,7 +224,7 @@ class NavigationController:
 
             self._drive_controller.robot_move(linear_speed=0, angular_speed=angular_speed)
 
-    def __drive_to_goal(self, x_goal, y_goal):
+    def __drive_to_position_goal(self, x_goal, y_goal):
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
@@ -261,6 +268,8 @@ class NavigationController:
         self._nav_goal_finish_event.set()
         self._nav_goal_finish_event.clear()
         self._navigation_in_progress = False
+        if callable(self._on_finish):
+            self._on_finish()
 
     def __sub_goal_reached(self):
         self._drive_controller.stop()
