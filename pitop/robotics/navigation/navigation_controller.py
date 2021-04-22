@@ -108,7 +108,6 @@ class NavigationController:
         self._navigation_in_progress = False
         self._stop_triggered = False
         self._nav_goal_finish_event = Event()
-        self._nav_sub_goal_finish_event = Event()
         self._nav_thread = None
         self._sub_goal_nav_thread = None
 
@@ -256,7 +255,6 @@ class NavigationController:
 
     def __sub_goal_flow_control(self):
         self._sub_goal_nav_thread.start()
-        self._nav_sub_goal_finish_event.wait()
         self._sub_goal_nav_thread.join()
 
     def __navigation_started(self):
@@ -273,8 +271,6 @@ class NavigationController:
     def __sub_goal_reached(self):
         self._drive_controller.stop()
         self._pid.reset()
-        self._nav_sub_goal_finish_event.set()
-        self._nav_sub_goal_finish_event.clear()
 
     def __get_new_pose_update(self):
         self._position_update_event.wait()
