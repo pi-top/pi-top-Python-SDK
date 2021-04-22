@@ -1,10 +1,11 @@
 from threading import Thread, Event
-from time import time
+import time
 from dataclasses import dataclass
 import numpy as np
 import math
 from typing import Union
 from simple_pid import PID
+import sched
 
 
 @dataclass
@@ -112,7 +113,9 @@ class NavigationController:
         self._sub_goal_nav_thread = None
 
         # Odometry tracking
-        self._odom_update_frequency = 10.0
+        self._previous_time = 0
+        self._odom_update_frequency = 10.0  # Hz
+        self._odom_update_schedule = 1.0 / self._odom_update_frequency
         self._position_update_event = Event()
         self._odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
         self._odometry_tracker.start()
@@ -274,7 +277,6 @@ class NavigationController:
 
     def __get_new_pose_update(self):
         self._position_update_event.wait()
-        self._position_update_event.clear()
         return self.robot_state.pose
 
     def __get_angle_error(self, current_angle, target_angle):
@@ -297,19 +299,16 @@ class NavigationController:
         return self._drive_params.max_v * self._pid.distance(distance_error)
 
     def __track_odometry(self):
-        # TODO: look into putting this into another process
-        prev_time = time()
-        while True:
-            current_time = time()
-            dt = current_time - prev_time
-            if dt < 1.0 / self._odom_update_frequency:
-                # TODO: add a pause here
-                continue
-            prev_time = current_time
-            self.__update_state(dt)
-            self._position_update_event.set()
+        s = sched.scheduler(time.time, time.sleep)
+        current_time = time.time()
+        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s,))
+        s.run()
 
-    def __update_state(self, dt):
+    def __update_state(self, s):
+        current_time = time.time()
+        dt = current_time - self._previous_time
+        self._previous_time = current_time
+
         left_wheel_speed = self._drive_controller.left_motor.current_speed
         right_wheel_speed = self._drive_controller.right_motor.current_speed
 
@@ -319,3 +318,8 @@ class NavigationController:
         self.robot_state.x = self.robot_state.x + self.robot_state.v * np.cos(self.robot_state.theta) * dt
         self.robot_state.y = self.robot_state.y + self.robot_state.v * np.sin(self.robot_state.theta) * dt
         self.robot_state.theta = self.__normalize_angle(self.robot_state.theta + self.robot_state.w * dt)
+
+        self._position_update_event.set()
+        self._position_update_event.clear()
+
+        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s,))
