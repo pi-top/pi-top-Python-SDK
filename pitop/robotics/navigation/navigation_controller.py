@@ -118,7 +118,7 @@ class RobotDrivingParameters:
         self.deceleration_angle = self.angular_speed_factor * math.radians(120.0)  # 120deg at full speed
 
 
-class PIDManger:
+class PIDManager:
     def __init__(self, deceleration_angle, deceleration_distance):
         self.heading = PID(Kp=1.0 / deceleration_angle,
                            Ki=0.1,
@@ -175,9 +175,9 @@ class NavigationController:
         self._goal_criteria = GoalCriteria(linear_speed_factor=linear_speed_factor,
                                            angular_speed_factor=angular_speed_factor
                                            )
-        self._pid = PIDManger(deceleration_angle=self._drive_params.deceleration_angle,
-                              deceleration_distance=self._drive_params.deceleration_distance
-                              )
+        self._pid = PIDManager(deceleration_angle=self._drive_params.deceleration_angle,
+                               deceleration_distance=self._drive_params.deceleration_distance
+                               )
 
     def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None, on_finish=None):
         self._on_finish = on_finish
