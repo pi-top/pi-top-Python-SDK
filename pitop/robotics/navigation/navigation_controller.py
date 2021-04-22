@@ -25,6 +25,7 @@ class RobotState:
                f"Velocity = {self.v:.3f} m/s\n" \
                f"Angular velocity = {math.degrees(self.w):.3f} {degree_symbol}/s\n" \
 
+
     @property
     def x(self):
         return self._x
@@ -80,9 +81,7 @@ class GoalCriteria:
         self._MAX_GOAL_REACHED_ANGLE_ERROR = angular_speed_factor * math.radians(4.0)  # 4deg at full speed
 
     def angle(self, angle_error):
-        if abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR:
-            return True
-        return False
+        return abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR:
 
     def distance(self, distance_error, heading_error):
         if abs(distance_error) < self._MAX_GOAL_REACHED_DISTANCE_ERROR:
