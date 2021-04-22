@@ -8,17 +8,62 @@ from simple_pid import PID
 import sched
 
 
-@dataclass
 class RobotState:
-    x: float = 0.0
-    y: float = 0.0
-    theta: float = 0.0
-    v: float = 0.0
-    w: float = 0.0
+    def __init__(self):
+        self._x = 0.0      # m
+        self._y = 0.0      # m
+        self._angle = 0.0  # degrees
+        self._theta = 0.0  # radians
+        self.v = 0.0       # m/s
+        self.w = 0.0       # rad/s
+
+    def __str__(self):
+        degree_symbol = u'\N{DEGREE SIGN}'
+        return f"x = {self.x:.3f} m\n" \
+               f"y = {self.y:.3f} m\n" \
+               f"Angle = {self.angle:.3f}{degree_symbol}'\n" \
+               f"Velocity = {self.v:.3f} m/s\n" \
+               f"Angular velocity = {math.degrees(self.w):.3f} {degree_symbol}/s\n" \
 
     @property
-    def pose(self):
-        return self.x, self.y, self.theta
+    def x(self):
+        return self._x
+
+    @x.setter
+    def x(self, value):
+        self._x = value
+
+    @property
+    def y(self):
+        return self._y
+
+    @y.setter
+    def y(self, value):
+        self._y = value
+
+    @property
+    def angle(self):
+        return math.degrees(self._theta)
+
+    @angle.setter
+    def angle(self, value):
+        self._theta = math.radians(value)
+
+    @property
+    def theta(self):
+        return self._theta
+
+    @theta.setter
+    def theta(self, value):
+        self._theta = value
+
+    @property
+    def position(self):
+        return self.x, self.y
+
+    @position.setter
+    def position(self, value: tuple):
+        self.x, self.y = value
 
     def reset_pose(self):
         self.x, self.y, self.theta = (0.0, 0.0, 0.0)
@@ -134,7 +179,7 @@ class NavigationController:
                               deceleration_distance=self._drive_params.deceleration_distance
                               )
 
-    def go_to(self, position: Union[list, None] = None, angle: Union[float, None] = None, on_finish=None):
+    def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None, on_finish=None):
         self._on_finish = on_finish
 
         if self._navigation_in_progress:
@@ -142,14 +187,16 @@ class NavigationController:
                                ".stop() to cancel the previous navigation request.")
 
         if position is not None:
-            if len(position) != 2 or type(position) is not list:
+            if len(position) != 2 or type(position) is not tuple:
                 raise ValueError("Position should be a list of size two in the form [x, y].")
 
         if angle is not None:
             if not (-self.__VALID_ANGLE_RANGE <= angle <= self.__VALID_ANGLE_RANGE):
                 raise ValueError(f"Angle must from {-self.__VALID_ANGLE_RANGE} to {self.__VALID_ANGLE_RANGE}.")
 
-        self._nav_thread = Thread(target=self.__navigate, args=(position, angle,), daemon=True).start()
+        self._nav_thread = Thread(target=self.__navigate, args=(position, angle,), daemon=True)
+        self._nav_thread.start()
+
         return self
 
     def __navigate(self, position, angle):
@@ -168,10 +215,10 @@ class NavigationController:
 
         self.__navigation_finished()
 
-    def wait(self):
+    def wait(self, timeout: Union[float, None] = None):
         """Call this to pause your program execution until the navigation
         request is complete."""
-        self._nav_goal_finish_event.wait()
+        self._nav_goal_finish_event.wait(timeout)
 
     @property
     def linear_speed_factor(self):
@@ -199,11 +246,11 @@ class NavigationController:
         self._stop_triggered = True
         try:
             self._sub_goal_nav_thread.join()
-        except AttributeError:
+        except RuntimeError:
             pass
         try:
             self._nav_thread.join()
-        except AttributeError:
+        except RuntimeError:
             pass
         self.__navigation_finished()
         self._drive_controller.stop()
@@ -276,7 +323,7 @@ class NavigationController:
 
     def __get_new_pose_update(self):
         self._position_update_event.wait()
-        return self.robot_state.pose
+        return self.robot_state.x, self.robot_state.y, self.robot_state.theta
 
     def __get_angle_error(self, current_angle, target_angle):
         return self.__normalize_angle(current_angle - target_angle)
