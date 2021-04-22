@@ -102,19 +102,19 @@ class RobotDrivingParameters:
 
         self.linear_speed_factor = 0.0
         self.angular_speed_factor = 0.0
-        self.max_v = 0.0
-        self.max_w = 0.0
+        self.max_velocity = 0.0
+        self.max_angular_velocity = 0.0
         self.deceleration_distance = 0.0
         self.deceleration_angle = 0.0
 
     def update_linear_speed(self, speed_factor):
         self.linear_speed_factor = speed_factor
-        self.max_v = self.linear_speed_factor * self._max_motor_speed
+        self.max_velocity = self.linear_speed_factor * self._max_motor_speed
         self.deceleration_distance = self.linear_speed_factor * 0.4  # 0.4m at full speed
 
     def update_angular_speed(self, speed_factor):
         self.angular_speed_factor = speed_factor
-        self.max_w = self.angular_speed_factor * self._max_angular_speed
+        self.max_angular_velocity = self.angular_speed_factor * self._max_angular_speed
         self.deceleration_angle = self.angular_speed_factor * math.radians(120.0)  # 120deg at full speed
 
 
@@ -339,10 +339,10 @@ class NavigationController:
         return (angle + math.pi) % (2 * math.pi) - math.pi
 
     def __get_angular_speed(self, heading_error):
-        return self._drive_params.max_w * self._pid.heading(heading_error)
+        return self._drive_params.max_angular_velocity * self._pid.heading(heading_error)
 
     def __get_linear_speed(self, distance_error):
-        return self._drive_params.max_v * self._pid.distance(distance_error)
+        return self._drive_params.max_velocity * self._pid.distance(distance_error)
 
     def __track_odometry(self):
         s = sched.scheduler(time.time, time.sleep)
