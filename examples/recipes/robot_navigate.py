@@ -1,22 +1,23 @@
 from pitop import DriveController, NavigationController
-from signal import pause
 
 drive_controller = DriveController(left_motor_port="M3", right_motor_port="M0")
 
+# navigation_controller = NavigationController(linear_speed_factor=1.0,
+#                                              angular_speed_factor=1.0,
+#                                              drive_controller=drive_controller
+#                                              )
+
 navigation_controller = NavigationController(drive_controller=drive_controller)
 
-while True:
-    navigation_controller.go_to(x_goal=1, y_goal=0)
+for _ in range(0, 2):
+    navigation_controller.go_to(position=(1, 0))
     print(f"finished with state: {navigation_controller._robot_state}")
 
-    navigation_controller.go_to(x_goal=1, y_goal=1)
+    navigation_controller.go_to(position=(1, 1))
     print(f"finished with state: {navigation_controller._robot_state}")
 
-    navigation_controller.go_to(x_goal=0, y_goal=1)
+    navigation_controller.go_to(position=(0, 1))
     print(f"finished with state: {navigation_controller._robot_state}")
 
-    navigation_controller.go_to(x_goal=0, y_goal=0, theta_goal=0)
+    navigation_controller.go_to(position=(0, 0), angle=0)
     print(f"finished with state: {navigation_controller._robot_state}")
-
-# drive_controller.robot_move(linear_speed=0, angular_speed=1)
-# pause()
