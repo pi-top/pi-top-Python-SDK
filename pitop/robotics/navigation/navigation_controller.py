@@ -301,11 +301,13 @@ class NavigationController:
         return self._drive_params.max_v * self._pid.distance(distance_error)
 
     def __track_odometry(self):
+        # TODO: look into putting this into another process
         prev_time = time()
         while True:
             current_time = time()
             dt = current_time - prev_time
             if dt < 1.0 / self._odom_update_frequency:
+                # TODO: add a pause here
                 continue
             prev_time = current_time
             self.__update_state(dt)
