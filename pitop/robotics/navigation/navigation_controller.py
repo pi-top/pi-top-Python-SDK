@@ -94,46 +94,54 @@ class PIDManger:
 
 
 class NavigationController:
+    __VALID_ANGLE_RANGE = 180
+
     def __init__(self,
                  drive_controller=None,
                  linear_speed_factor: float = 0.75,
-                 angular_speed_factor: float = 0.5,
-                 sim=False):
-
+                 angular_speed_factor: float = 0.5
+                 ):
+        # Navigation flow control
         self._navigation_in_progress = False
         self._stop_triggered = False
-        self._robot_state = RobotState()
-        self._odom_update_frequency = 10.0
-        self._position_update_event = Event()
-        self._odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
-        self._odometry_tracker.start()
-
         self._nav_goal_finish_event = Event()
         self._nav_sub_goal_finish_event = Event()
         self._nav_thread = None
         self._sub_goal_nav_thread = None
 
-        self._sim = sim
-        if not self._sim:
-            self._drive_controller = drive_controller
-            self._drive_params = RobotDrivingParameters(
-                max_motor_speed=self._drive_controller.max_motor_speed,
-                max_angular_speed=self._drive_controller.max_robot_angular_speed
-            )
-            self.linear_speed_factor = linear_speed_factor
-            self.angular_speed_factor = angular_speed_factor
-            self._goal_criteria = GoalCriteria(linear_speed_factor=linear_speed_factor,
-                                               angular_speed_factor=angular_speed_factor
-                                               )
+        # Odometry tracking
+        self._odom_update_frequency = 10.0
+        self._position_update_event = Event()
+        self._odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
+        self._odometry_tracker.start()
 
+        # Robot state and control
+        self._robot_state = RobotState()
+        self._drive_controller = drive_controller
+        self._drive_params = RobotDrivingParameters(max_motor_speed=self._drive_controller.max_motor_speed,
+                                                    max_angular_speed=self._drive_controller.max_robot_angular_speed
+                                                    )
+        self.linear_speed_factor = linear_speed_factor
+        self.angular_speed_factor = angular_speed_factor
+        self._goal_criteria = GoalCriteria(linear_speed_factor=linear_speed_factor,
+                                           angular_speed_factor=angular_speed_factor
+                                           )
         self._pid = PIDManger(deceleration_angle=self._drive_params.deceleration_angle,
                               deceleration_distance=self._drive_params.deceleration_distance
                               )
 
-    def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None):
+    def go_to(self, position: Union[list, None] = None, angle: Union[float, None] = None):
         if self._navigation_in_progress:
             raise RuntimeError("Cannot call function before previous navigation is complete, use .wait() or call "
                                ".stop() to cancel the previous navigation request.")
+
+        if position is not None:
+            if len(position) != 2 or type(position) is not list:
+                raise ValueError("Position should be a list of size two in the form [x, y].")
+
+        if angle is not None:
+            if not (-self.__VALID_ANGLE_RANGE <= angle <= self.__VALID_ANGLE_RANGE):
+                raise ValueError(f"Angle must from {-self.__VALID_ANGLE_RANGE} to {self.__VALID_ANGLE_RANGE}.")
 
         self._nav_thread = Thread(target=self.__navigate, args=(position, angle,), daemon=True).start()
         return self
