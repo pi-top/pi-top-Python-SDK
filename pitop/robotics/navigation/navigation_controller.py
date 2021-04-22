@@ -2,7 +2,6 @@ from threading import Thread, Event
 from time import time
 from dataclasses import dataclass
 import numpy as np
-from random import random
 import math
 from typing import Union
 from simple_pid import PID
@@ -101,11 +100,18 @@ class NavigationController:
                  angular_speed_factor: float = 0.5,
                  sim=False):
 
+        self._navigation_in_progress = False
+        self._stop_triggered = False
         self._robot_state = RobotState()
         self._odom_update_frequency = 10.0
         self._position_update_event = Event()
         self._odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
         self._odometry_tracker.start()
+
+        self._nav_goal_finish_event = Event()
+        self._nav_sub_goal_finish_event = Event()
+        self._nav_thread = None
+        self._sub_goal_nav_thread = None
 
         self._sim = sim
         if not self._sim:
@@ -125,14 +131,31 @@ class NavigationController:
                               )
 
     def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None):
+        if self._navigation_in_progress:
+            raise RuntimeError("Cannot call function before previous navigation is complete, use .wait() or call "
+                               ".stop() to cancel the previous navigation request.")
+
+        self._nav_thread = Thread(target=self.__navigate, args=(position, angle,), daemon=True).start()
+        return self
+
+    def __navigate(self, position, angle):
+        self.__navigation_started()
 
         if position is not None:
             x, y = position
-            self.__set_course_heading(x_goal=x, y_goal=y)
-            self.__drive_to_goal(x_goal=x, y_goal=y)
+            self._sub_goal_nav_thread = Thread(target=self.__set_course_heading, args=(x, y,), daemon=True)
+            self.__sub_goal_flow_control()
+            self._sub_goal_nav_thread = Thread(target=self.__drive_to_goal, args=(x, y,), daemon=True)
+            self.__sub_goal_flow_control()
 
         if angle is not None:
-            self.__rotate_to_theta_goal(theta_goal=math.radians(angle))
+            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_theta_goal, args=(angle,), daemon=True)
+            self.__sub_goal_flow_control()
+
+        self.__navigation_finished()
+
+    def wait(self):
+        self._nav_goal_finish_event.wait()
 
     @property
     def linear_speed_factor(self):
@@ -150,8 +173,24 @@ class NavigationController:
     def angular_speed_factor(self, speed_factor):
         self._drive_params.update_angular_speed(speed_factor)
 
+    def reset_position(self):
+        self._robot_state.reset_pose()
+
+    def stop(self):
+        self._stop_triggered = True
+        try:
+            self._sub_goal_nav_thread.join()
+        except AttributeError:
+            pass
+        try:
+            self._nav_thread.join()
+        except AttributeError:
+            pass
+        self.__navigation_finished()
+        self._drive_controller.stop()
+
     def __set_course_heading(self, x_goal, y_goal):
-        while True:
+        while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
             x_diff = x_goal - x
@@ -161,13 +200,13 @@ class NavigationController:
             angular_speed = self.__get_angular_speed(heading_error=heading_error)
 
             if self._goal_criteria.angle(heading_error):
-                self.__goal_reached()
+                self.__sub_goal_reached()
                 break
 
-            self.robot_move(linear_speed=0, angular_speed=angular_speed)
+            self._drive_controller.robot_move(linear_speed=0, angular_speed=angular_speed)
 
     def __drive_to_goal(self, x_goal, y_goal):
-        while True:
+        while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
             x_diff = x_goal - x
@@ -176,33 +215,46 @@ class NavigationController:
             heading_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
             distance_error = -np.hypot(x_diff, y_diff)
             if self._goal_criteria.distance(distance_error=distance_error, heading_error=heading_error):
-                self.__goal_reached()
+                self.__sub_goal_reached()
                 break
 
             angular_speed = self.__get_angular_speed(heading_error=heading_error)
             linear_speed = self.__get_linear_speed(distance_error=distance_error)
 
-            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
+            self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     def __rotate_to_theta_goal(self, theta_goal):
-        while True:
+        while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
             heading_error = self.__get_angle_error(current_angle=theta, target_angle=theta_goal)
             angular_speed = self.__get_angular_speed(heading_error=heading_error)
 
             if self._goal_criteria.angle(heading_error):
-                self.__goal_reached()
+                self.__sub_goal_reached()
                 break
 
-            self.robot_move(linear_speed=0, angular_speed=angular_speed)
+            self._drive_controller.robot_move(linear_speed=0, angular_speed=angular_speed)
 
-    def __goal_reached(self):
-        self.stop()
+    def __sub_goal_flow_control(self):
+        self._sub_goal_nav_thread.start()
+        self._nav_sub_goal_finish_event.wait()
+        self._sub_goal_nav_thread.join()
+
+    def __navigation_started(self):
+        self._navigation_in_progress = True
+        self._stop_triggered = False
+
+    def __navigation_finished(self):
+        self._nav_goal_finish_event.set()
+        self._nav_goal_finish_event.clear()
+        self._navigation_in_progress = False
+
+    def __sub_goal_reached(self):
+        self._drive_controller.stop()
         self._pid.reset()
-        # wait for one more pose update before returning to ensure subsequent code has latest (could be user code)
-        self._position_update_event.wait()
-        self._position_update_event.clear()
+        self._nav_sub_goal_finish_event.set()
+        self._nav_sub_goal_finish_event.clear()
 
     def __get_new_pose_update(self):
         self._position_update_event.wait()
@@ -239,47 +291,12 @@ class NavigationController:
             self._position_update_event.set()
 
     def __update_state(self, dt):
-        if not self._sim:
-            left_wheel_speed = self._drive_controller.left_motor.current_speed
-            right_wheel_speed = self._drive_controller.right_motor.current_speed
+        left_wheel_speed = self._drive_controller.left_motor.current_speed
+        right_wheel_speed = self._drive_controller.right_motor.current_speed
 
-            self._robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
-            self._robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
+        self._robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
+        self._robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
 
         self._robot_state.x = self._robot_state.x + self._robot_state.v * np.cos(self._robot_state.theta) * dt
         self._robot_state.y = self._robot_state.y + self._robot_state.v * np.sin(self._robot_state.theta) * dt
         self._robot_state.theta = self.__normalize_angle(self._robot_state.theta + self._robot_state.w * dt)
-
-    def reset_position(self):
-        self._robot_state.reset_pose()
-
-    def stop(self):
-        if self._sim:
-            self._robot_state.v = 0.0
-            self._robot_state.w = 0.0
-        else:
-            self._drive_controller.stop()
-
-    def robot_move(self, linear_speed, angular_speed):
-        if self._sim:
-            self._robot_state.v = linear_speed
-            self._robot_state.w = angular_speed
-        else:
-            self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
-
-
-if __name__ == "__main__":
-    nav_controller = NavigationController(sim=True)
-    x_start = 20 * random()
-    y_start = 20 * random()
-    theta_start = 0  # 2 * math.pi * random() - math.pi
-    nav_controller._robot_state.x = x_start
-    nav_controller._robot_state.y = y_start
-    nav_controller._robot_state.theta = theta_start
-
-    x_target = 5  # 20 * random()
-    y_target = 10  # 20 * random()
-    theta_target = 2 * math.pi * random() - math.pi
-
-    nav_controller.go_to(x_target, y_target, theta_target)
-    print("finished")
