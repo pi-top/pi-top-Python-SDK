@@ -4,13 +4,13 @@ from flask import Response, abort, Blueprint
 
 
 class VideoResponse(Response):
-    def __init__(self, get_frame=None, *args, **kwargs):
-        if get_frame is None:
+    def __init__(self, video_feed=None, *args, **kwargs):
+        if video_feed is None:
             abort(500, 'Unable to get frames')
 
-        def _get_frame():
+        def _video_feed():
             try:
-                frame = get_frame()
+                frame = video_feed()
                 buffered = BytesIO()
                 frame.save(buffered, format="JPEG")
                 return buffered.getvalue()
@@ -20,8 +20,8 @@ class VideoResponse(Response):
         def generate_frames():
             pool = gevent.get_hub().threadpool
             while True:
-                # get_frame in thread so it won't block handler greenlets
-                frame_bytes = pool.spawn(_get_frame).get()
+                # video_feed in thread so it won't block handler greenlets
+                frame_bytes = pool.spawn(_video_feed).get()
                 yield (
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n'+frame_bytes+b'\r\n'
@@ -36,7 +36,7 @@ class VideoResponse(Response):
 
 
 class VideoBlueprint(Blueprint):
-    def __init__(self, name="video", get_frame=None, **kwargs):
+    def __init__(self, name="video", video_feed=None, **kwargs):
         Blueprint.__init__(
             self,
             name,
@@ -47,4 +47,4 @@ class VideoBlueprint(Blueprint):
 
         @self.route(f"/{name}.mjpg")
         def video():
-            return VideoResponse(get_frame=get_frame)
+            return VideoResponse(video_feed=video_feed)

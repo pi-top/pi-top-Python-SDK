@@ -9,7 +9,7 @@ def save_photo(data):
 
 
 controller = WebController(
-    get_frame=camera.get_frame,
+    video_feed=camera.get_frame,
     message_handlers={'save_photo': save_photo})
 
 controller.serve_forever()

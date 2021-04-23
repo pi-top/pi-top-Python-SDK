@@ -1,4 +1,4 @@
-from .alex import AlexControllerBlueprint
+from .alex import RobotDriveControllerBlueprint
 from .base import BaseBlueprint
 from .controller import ControllerBlueprint
 from .messaging import MessagingBlueprint
