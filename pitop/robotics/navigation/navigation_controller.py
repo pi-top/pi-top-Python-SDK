@@ -76,9 +76,12 @@ class RobotState:
 
 
 class GoalCriteria:
-    def __init__(self, linear_speed_factor, angular_speed_factor):
-        self._MAX_GOAL_REACHED_DISTANCE_ERROR = linear_speed_factor * 0.02  # 2 mm at full speed
-        self._MAX_GOAL_REACHED_ANGLE_ERROR = angular_speed_factor * math.radians(4.0)  # 4deg at full speed
+    def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=4.0):
+        self._full_speed_distance_error = full_speed_distance_error
+        self._full_speed_angle_error = full_speed_angle_error
+
+        self._MAX_GOAL_REACHED_DISTANCE_ERROR = None
+        self._MAX_GOAL_REACHED_ANGLE_ERROR = None
 
     def angle(self, angle_error):
         return abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR
@@ -93,28 +96,36 @@ class GoalCriteria:
             return True
         return False
 
+    def update_linear_speed(self, speed_factor):
+        self._MAX_GOAL_REACHED_DISTANCE_ERROR = speed_factor * self._full_speed_distance_error
+
+    def update_angular_speed(self, speed_factor):
+        self._MAX_GOAL_REACHED_DISTANCE_ERROR = speed_factor * self._full_speed_angle_error
+
 
 class RobotDrivingParameters:
-    def __init__(self, max_motor_speed, max_angular_speed):
-        self._max_motor_speed = max_motor_speed
-        self._max_angular_speed = max_angular_speed
+    def __init__(self, max_motor_speed, max_angular_speed, max_deceleration_distance=0.4, max_deceleration_angle=120):
+        self._max_motor_speed = max_motor_speed                      # m/s
+        self._max_angular_speed = max_angular_speed                  # rad/s
+        self._max_deceleration_distance = max_deceleration_distance  # m
+        self._max_deceleration_angle = max_deceleration_angle        # degrees
 
-        self.linear_speed_factor = 0.0
-        self.angular_speed_factor = 0.0
-        self.max_velocity = 0.0
-        self.max_angular_velocity = 0.0
-        self.deceleration_distance = 0.0
-        self.deceleration_angle = 0.0
+        self.linear_speed_factor = None
+        self.angular_speed_factor = None
+        self.max_velocity = None
+        self.max_angular_velocity = None
+        self.deceleration_distance = None
+        self.deceleration_angle = None
 
     def update_linear_speed(self, speed_factor):
         self.linear_speed_factor = speed_factor
         self.max_velocity = self.linear_speed_factor * self._max_motor_speed
-        self.deceleration_distance = self.linear_speed_factor * 0.4  # 0.4m at full speed
+        self.deceleration_distance = self.linear_speed_factor * self._max_deceleration_distance
 
     def update_angular_speed(self, speed_factor):
         self.angular_speed_factor = speed_factor
         self.max_angular_velocity = self.angular_speed_factor * self._max_angular_speed
-        self.deceleration_angle = self.angular_speed_factor * math.radians(120.0)  # 120deg at full speed
+        self.deceleration_angle = self.angular_speed_factor * math.radians(self._max_deceleration_angle)
 
 
 class PIDManager:
@@ -169,11 +180,9 @@ class NavigationController:
         self._drive_params = RobotDrivingParameters(max_motor_speed=self._drive_controller.max_motor_speed,
                                                     max_angular_speed=self._drive_controller.max_robot_angular_speed
                                                     )
+        self._goal_criteria = GoalCriteria()
         self.linear_speed_factor = linear_speed_factor
         self.angular_speed_factor = angular_speed_factor
-        self._goal_criteria = GoalCriteria(linear_speed_factor=linear_speed_factor,
-                                           angular_speed_factor=angular_speed_factor
-                                           )
         self._pid = PIDManager(deceleration_angle=self._drive_params.deceleration_angle,
                                deceleration_distance=self._drive_params.deceleration_distance
                                )
@@ -227,6 +236,7 @@ class NavigationController:
     @linear_speed_factor.setter
     def linear_speed_factor(self, speed_factor):
         self._drive_params.update_linear_speed(speed_factor)
+        self._goal_criteria.update_linear_speed(speed_factor)
 
     @property
     def angular_speed_factor(self):
@@ -235,6 +245,7 @@ class NavigationController:
     @angular_speed_factor.setter
     def angular_speed_factor(self, speed_factor):
         self._drive_params.update_angular_speed(speed_factor)
+        self._goal_criteria.update_angular_speed(speed_factor)
 
     def reset_position(self):
         self.robot_state.reset_pose()
