@@ -45,8 +45,9 @@ def main():
 
 
 goal_reached = False
-drive_controller = DriveController(left_motor_port="M3", right_motor_port="M0")
-navigation_controller = NavigationController(drive_controller=drive_controller)
+navigation_controller = NavigationController(
+    drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")
+)
 ultrasonic = UltrasonicSensor("D3")
 
 main()
