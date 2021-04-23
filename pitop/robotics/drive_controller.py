@@ -25,30 +25,27 @@ class DriveController(Stateful, Recreatable):
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
         self.name = name
-        self.right_motor_port = right_motor_port
+
+        # motor and wheel setup
         self.left_motor_port = left_motor_port
-
-        self._wheel_separation = 0.163
-        self._wheel_diameter = 0.0718
-        self._wheel_circumference = self._wheel_diameter * pi
-        self._linear_speed_x_hold = 0
-
-        self._left_motor_port = left_motor_port
-        self._right_motor_port = right_motor_port
-
-        self.left_motor = EncoderMotor(port_name=left_motor_port,
-                                       forward_direction=ForwardDirection.CLOCKWISE,
-                                       wheel_diameter=self._wheel_diameter)
-
-        self.right_motor = EncoderMotor(port_name=right_motor_port,
-                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE,
-                                        wheel_diameter=self._wheel_diameter)
-
+        self.right_motor_port = right_motor_port
+        self.left_motor = EncoderMotor(port_name=self.left_motor_port,
+                                       forward_direction=ForwardDirection.CLOCKWISE
+                                       )
+        self.right_motor = EncoderMotor(port_name=self.right_motor_port,
+                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE
+                                        )
         self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
-
         self.max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
+        self._wheel_diameter = self.left_motor.wheel_diameter
+        self._wheel_circumference = self._wheel_diameter * pi
+
+        # chassis setup
+        self._wheel_separation = 0.163
         self.max_robot_angular_speed = self.max_motor_speed / (self._wheel_separation / 2)
 
+        # Target lock drive angle
+        self._linear_speed_x_hold = 0
         self.__target_lock_pid_controller = PID(Kp=0.045,
                                                 Ki=0.002,
                                                 Kd=0.0035,
