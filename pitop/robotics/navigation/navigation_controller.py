@@ -25,7 +25,6 @@ class RobotState:
                f"        Velocity = {self.v:.3} m/s\n" \
                f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s\n" \
 
-
     @property
     def x(self):
         return self._x
@@ -76,7 +75,7 @@ class RobotState:
 
 
 class GoalCriteria:
-    def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=4.0):
+    def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=2.0):
         self._full_speed_distance_error = full_speed_distance_error
         self._full_speed_angle_error = math.radians(full_speed_angle_error)
 
@@ -200,7 +199,6 @@ class NavigationController:
         self.angular_speed_factor = angular_speed_factor
 
     def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None, on_finish=None):
-
         self._on_finish = self.__check_callback(on_finish)
 
         if self._navigation_in_progress:
