@@ -35,10 +35,10 @@ class DriveController(Stateful, Recreatable):
         self.right_motor = EncoderMotor(port_name=self.right_motor_port,
                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE
                                         )
-        self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
-        self.max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
         self._wheel_diameter = self.left_motor.wheel_diameter
         self._wheel_circumference = self._wheel_diameter * pi
+        self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
+        self.max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
 
         # chassis setup
         self._wheel_separation = 0.163
