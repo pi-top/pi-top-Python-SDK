@@ -19,11 +19,11 @@ class RobotState:
 
     def __str__(self):
         degree_symbol = u'\N{DEGREE SIGN}'
-        return f"x = {self.x:.3f} m\n" \
-               f"y = {self.y:.3f} m\n" \
-               f"Angle = {self.angle:.3f}{degree_symbol}'\n" \
-               f"Velocity = {self.v:.3f} m/s\n" \
-               f"Angular velocity = {math.degrees(self.w):.3f} {degree_symbol}/s\n" \
+        return f"               x = {self.x:.3} m\n" \
+               f"               y = {self.y:.3} m\n" \
+               f"           Angle = {self.angle:.3}{degree_symbol}\n" \
+               f"        Velocity = {self.v:.3} m/s\n" \
+               f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s\n" \
 
 
     @property
@@ -78,16 +78,16 @@ class RobotState:
 class GoalCriteria:
     def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=4.0):
         self._full_speed_distance_error = full_speed_distance_error
-        self._full_speed_angle_error = full_speed_angle_error
+        self._full_speed_angle_error = math.radians(full_speed_angle_error)
 
-        self._MAX_GOAL_REACHED_DISTANCE_ERROR = None
-        self._MAX_GOAL_REACHED_ANGLE_ERROR = None
+        self._max_distance_error = None
+        self._max_angle_error = None
 
     def angle(self, angle_error):
-        return abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR
+        return abs(angle_error) < self._max_angle_error
 
     def distance(self, distance_error, heading_error):
-        if abs(distance_error) < self._MAX_GOAL_REACHED_DISTANCE_ERROR:
+        if abs(distance_error) < self._max_distance_error:
             return True
         if abs(heading_error) > math.pi / 2:
             # Overshot goal, error will be small so consider goal to be reached.
@@ -97,18 +97,23 @@ class GoalCriteria:
         return False
 
     def update_linear_speed(self, speed_factor):
-        self._MAX_GOAL_REACHED_DISTANCE_ERROR = speed_factor * self._full_speed_distance_error
+        self._max_distance_error = speed_factor * self._full_speed_distance_error
 
     def update_angular_speed(self, speed_factor):
-        self._MAX_GOAL_REACHED_DISTANCE_ERROR = speed_factor * self._full_speed_angle_error
+        self._max_angle_error = speed_factor * self._full_speed_angle_error
 
 
 class RobotDrivingParameters:
-    def __init__(self, max_motor_speed, max_angular_speed, max_deceleration_distance=0.4, max_deceleration_angle=120):
-        self._max_motor_speed = max_motor_speed                      # m/s
-        self._max_angular_speed = max_angular_speed                  # rad/s
-        self._max_deceleration_distance = max_deceleration_distance  # m
-        self._max_deceleration_angle = max_deceleration_angle        # degrees
+    def __init__(self,
+                 max_motor_speed,
+                 max_angular_speed,
+                 full_speed_deceleration_distance=0.4,
+                 full_speed_deceleration_angle=120.0
+                 ):
+        self._max_motor_speed = max_motor_speed                             # m/s
+        self._max_angular_speed = max_angular_speed                         # rad/s
+        self._max_deceleration_distance = full_speed_deceleration_distance  # m
+        self._max_deceleration_angle = full_speed_deceleration_angle        # degrees
 
         self.linear_speed_factor = None
         self.angular_speed_factor = None
