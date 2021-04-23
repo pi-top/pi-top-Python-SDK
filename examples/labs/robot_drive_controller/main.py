@@ -4,7 +4,7 @@ from pitop import (
     DriveController,
     PanTiltController
 )
-from pitop.labs import RobotDriveWebController
+from pitop.labs import WebController
 from pitop.processing.algorithms.line_detect import process_frame_for_line
 
 # Assemble a robot
@@ -41,12 +41,11 @@ MAX_SERVO_ANGLE = 90
 # TODO: find a home for this; rename!
 
 
-def get_joystick_angle_scalers(data):
+def get_joystick_angle_scalers(nipplejs_message_data):
     import math
 
-    angle = data.get('angle', {})
-    degree = angle.get('degree', 0)
-    distance = data.get('distance', 0)
+    degree = nipplejs_message_data.get('angle', {}).get('degree', 0)
+    distance = nipplejs_message_data.get('distance', 0)
 
     direction = degree - 90
 
@@ -60,8 +59,8 @@ def get_joystick_angle_scalers(data):
     )
 
 
-def left_joystick(data):
-    linear_speed_scale, angular_speed_scale = get_joystick_angle_scalers(data)
+def move_from_joystick(nipplejs_message_data):
+    linear_speed_scale, angular_speed_scale = get_joystick_angle_scalers(nipplejs_message_data)
 
     robot.drive.robot_move(
         linear_speed_scale * MAX_LINEAR_SPEED,
@@ -69,19 +68,22 @@ def left_joystick(data):
     )
 
 
-def right_joystick(data):
-    tilt_angle_scale, pan_angle_scale = get_joystick_angle_scalers(data)
+def pan_tilt_from_joystick(nipplejs_message_data):
+    tilt_angle_scale, pan_angle_scale = get_joystick_angle_scalers(nipplejs_message_data)
 
     robot.pan_tilt.pan_servo.target_angle = pan_angle_scale * MAX_SERVO_ANGLE
     robot.pan_tilt.tilt_servo.target_angle = tilt_angle_scale * MAX_SERVO_ANGLE
 
 
-RobotDriveWebController(
-    video_feed=lambda: process_frame_for_line(
-        robot.camera.get_frame()
-    ).robot_view,
-    message_handlers={
-        'left_joystick': left_joystick,
-        'right_joystick': right_joystick
+WebController(
+    inputs={
+        'video_processed': lambda: process_frame_for_line(
+            robot.camera.get_frame()
+        ).robot_view,
+        'video_raw': lambda: robot.camera.get_frame(),
+    },
+    outputs={
+        'left_joystick': move_from_joystick,
+        'right_joystick': pan_tilt_from_joystick
     }
 ).serve_forever()

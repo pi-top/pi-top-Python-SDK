@@ -7,9 +7,19 @@
         <link rel="stylesheet" href="/base/css/index.css"></link>
       {% endblock %}
 
+      {% block styles %}
+        {{ super() }}
+        <link rel="stylesheet" href="/video/styles.css"></script>
+      {% endblock %}
+
       {% block scripts %}
         <script type="text/javascript" src="/base/vendor/nipplejs.min.js"></script>
         <script type="text/javascript" src="/base/js/joystick-component.js"></script>
+      {% endblock %}
+
+      {% block scripts %}
+        {{ super() }}
+        <script type="text/javascript" src="/messaging/setup.js"></script>
       {% endblock %}
     {% endblock %}
   </head>

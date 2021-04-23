@@ -6,10 +6,16 @@ from pitop.labs.web.blueprints.video import VideoBlueprint
 
 
 class ControllerBlueprint(Blueprint):
-    def __init__(self, video_feed=None, message_handlers={}, **kwargs):
+    def __init__(
+        self,
+        blueprint_id="controller",
+        inputs={},
+        outputs={},
+        **kwargs
+    ):
         Blueprint.__init__(
             self,
-            "controller",
+            blueprint_id,
             __name__,
             template_folder="templates",
             static_folder="static",
@@ -17,14 +23,26 @@ class ControllerBlueprint(Blueprint):
         )
 
         self.base_blueprint = BaseBlueprint()
-        self.video_blueprint = VideoBlueprint(video_feed=video_feed)
+
+        self.video_blueprints = list()
+        for k, v in inputs.items():
+            if k.startswith("video"):
+                self.video_blueprints.append(
+                    VideoBlueprint(
+                        name=k, video_input=v
+                    )
+                )
+
         self.messaging_blueprint = MessagingBlueprint(
-            message_handlers=message_handlers)
+            outputs=outputs)
 
     def register(self, app, options, *args, **kwargs):
         # register child blueprints
         app.register_blueprint(self.base_blueprint, **options)
-        app.register_blueprint(self.video_blueprint, **options)
+
+        for video_blueprint in self.video_blueprints:
+            app.register_blueprint(video_blueprint, **options)
+
         app.register_blueprint(self.messaging_blueprint, **options)
 
         # register self
