@@ -38,15 +38,40 @@ MAX_SERVO_ANGLE = 90
 
 # Note: constants like this appear to be a bit of a mess...
 
+# TODO: find a home for this; rename!
 
-def left_joystick(linear_speed_scale, angular_speed_scale):
+
+def get_joystick_angle_scalers(data):
+    import math
+
+    angle = data.get('angle', {})
+    degree = angle.get('degree', 0)
+    distance = data.get('distance', 0)
+
+    direction = degree - 90
+
+    # 0:360 --> -180:180
+    if direction > 180:
+        direction = direction - 360
+
+    return (
+        -math.cos(direction / 57.29) * distance / 100.0,
+        math.sin(direction / 57.29) * distance / 100.0,
+    )
+
+
+def left_joystick(data):
+    linear_speed_scale, angular_speed_scale = get_joystick_angle_scalers(data)
+
     robot.drive.robot_move(
         linear_speed_scale * MAX_LINEAR_SPEED,
         angular_speed_scale * MAX_ANGULAR_SPEED
     )
 
 
-def right_joystick(tilt_angle_scale, pan_angle_scale):
+def right_joystick(data):
+    tilt_angle_scale, pan_angle_scale = get_joystick_angle_scalers(data)
+
     robot.pan_tilt.pan_servo.target_angle = pan_angle_scale * MAX_SERVO_ANGLE
     robot.pan_tilt.tilt_servo.target_angle = tilt_angle_scale * MAX_SERVO_ANGLE
 
@@ -55,6 +80,8 @@ RobotDriveWebController(
     video_feed=lambda: process_frame_for_line(
         robot.camera.get_frame()
     ).robot_view,
-    left_joystick=left_joystick,
-    right_joystick=robot.pan_tilt.robot_move,
+    message_handlers={
+        'left_joystick': left_joystick,
+        'right_joystick': right_joystick
+    }
 ).serve_forever()
