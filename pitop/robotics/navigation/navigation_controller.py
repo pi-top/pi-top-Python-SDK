@@ -5,6 +5,7 @@ import math
 from typing import Union
 from simple_pid import PID
 import sched
+from inspect import getfullargspec
 
 
 class RobotState:
@@ -80,7 +81,7 @@ class GoalCriteria:
         self._MAX_GOAL_REACHED_ANGLE_ERROR = angular_speed_factor * math.radians(4.0)  # 4deg at full speed
 
     def angle(self, angle_error):
-        return abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR:
+        return abs(angle_error) < self._MAX_GOAL_REACHED_ANGLE_ERROR
 
     def distance(self, distance_error, heading_error):
         if abs(distance_error) < self._MAX_GOAL_REACHED_DISTANCE_ERROR:
@@ -178,7 +179,8 @@ class NavigationController:
                                )
 
     def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None, on_finish=None):
-        self._on_finish = on_finish
+
+        self._on_finish = self.__check_callback(on_finish)
 
         if self._navigation_in_progress:
             raise RuntimeError("Cannot call function before previous navigation is complete, use .wait() or call "
@@ -299,6 +301,20 @@ class NavigationController:
                 break
 
             self._drive_controller.robot_move(linear_speed=0, angular_speed=angular_speed)
+
+    @staticmethod
+    def __check_callback(on_finish):
+        if on_finish is None:
+            return None
+        if callable(on_finish):
+            arg_spec = getfullargspec(on_finish)
+            number_of_arguments = len(arg_spec.args)
+            if number_of_arguments != 0 and len(arg_spec.defaults) != number_of_arguments:
+                raise ValueError("on_finish should have no non-default keyword arguments.")
+        else:
+            raise ValueError("on_finish should be a callable function.")
+
+        return on_finish
 
     def __sub_goal_flow_control(self):
         self._sub_goal_nav_thread.start()
