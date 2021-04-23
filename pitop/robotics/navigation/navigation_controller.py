@@ -25,6 +25,7 @@ class RobotState:
                f"        Velocity = {self.v:.3} m/s\n" \
                f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s\n" \
 
+
     @property
     def x(self):
         return self._x
