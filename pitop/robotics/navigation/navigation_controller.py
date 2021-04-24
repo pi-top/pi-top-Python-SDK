@@ -209,12 +209,14 @@ class NavigationController:
         if position is not None:
             if len(position) != 2 or type(position) is not tuple:
                 raise ValueError("Position should be a list of size two in the form [x, y].")
+            if not all(isinstance(coordinate, (int, float)) for coordinate in position):
+                raise ValueError("x and y coordinates must be of type int or float.")
 
         if angle is not None:
             if not (-self.__VALID_ANGLE_RANGE <= angle <= self.__VALID_ANGLE_RANGE):
                 raise ValueError(f"Angle must from {-self.__VALID_ANGLE_RANGE} to {self.__VALID_ANGLE_RANGE}.")
 
-        self._nav_thread = Thread(target=self.__navigate, args=(position, angle,), daemon=True)
+        self._nav_thread = Thread(target=self.__navigate, args=(position, angle, ), daemon=True)
         self._nav_thread.start()
 
         return self
@@ -224,13 +226,13 @@ class NavigationController:
 
         if position is not None:
             x, y = position
-            self._sub_goal_nav_thread = Thread(target=self.__set_course_heading, args=(x, y,), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__set_course_heading, args=(x, y, ), daemon=True)
             self.__sub_goal_flow_control()
-            self._sub_goal_nav_thread = Thread(target=self.__drive_to_position_goal, args=(x, y,), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__drive_to_position_goal, args=(x, y, ), daemon=True)
             self.__sub_goal_flow_control()
 
         if angle is not None:
-            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_angle_goal, args=(angle,), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_angle_goal, args=(math.radians(angle), ), daemon=True)
             self.__sub_goal_flow_control()
 
         self.__navigation_finished()
