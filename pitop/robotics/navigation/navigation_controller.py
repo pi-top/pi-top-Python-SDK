@@ -333,7 +333,8 @@ class NavigationController:
         if callable(on_finish):
             arg_spec = getfullargspec(on_finish)
             number_of_arguments = len(arg_spec.args)
-            if number_of_arguments != 0 and len(arg_spec.defaults) != number_of_arguments:
+            number_of_default_arguments = len(arg_spec.defaults) if arg_spec.defaults is not None else 0
+            if number_of_arguments != number_of_default_arguments:
                 raise ValueError("on_finish should have no non-default keyword arguments.")
         else:
             raise ValueError("on_finish should be a callable function.")
@@ -349,9 +350,10 @@ class NavigationController:
         self._stop_triggered = False
 
     def __navigation_finished(self):
+        self._position_update_event.wait()  # wait for another position update before returning to user program
+        self._navigation_in_progress = False
         self._nav_goal_finish_event.set()
         self._nav_goal_finish_event.clear()
-        self._navigation_in_progress = False
         if callable(self._on_finish):
             self._on_finish()
 
