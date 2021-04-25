@@ -76,7 +76,7 @@ class RobotState:
 
 
 class GoalCriteria:
-    def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=2.0):
+    def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=4.0):
         self._full_speed_distance_error = full_speed_distance_error
         self._full_speed_angle_error = math.radians(full_speed_angle_error)
 
