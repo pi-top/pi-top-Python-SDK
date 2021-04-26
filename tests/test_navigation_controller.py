@@ -1,5 +1,5 @@
 from sys import modules
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from unittest import TestCase
 
 modules_to_patch = [
@@ -25,7 +25,7 @@ import math
 class EncoderMotorSim:
     _SPEED_NOISE_SIGMA_RATIO = 0.05
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.max_rpm = 114
         self.wheel_diameter = 0.0718
         self._target_speed = 0.0
@@ -98,13 +98,9 @@ class TestNavigationController(TestCase):
                           )
 
     @staticmethod
+    @patch("pitop.robotics.drive_controller.EncoderMotor", EncoderMotorSim)
     def get_navigation_controller():
-        # TODO: mock/patch encoder motor before drive controller is instantiated
-        drive = DriveController()
-        # over-ride motors
-        drive.left_motor = EncoderMotorSim()
-        drive.right_motor = EncoderMotorSim()
-        return NavigationController(drive_controller=drive)
+        return NavigationController(drive_controller=DriveController())
 
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
         self.assertAlmostEqual(navigation_controller.robot_state.x, x_expected, places=1)

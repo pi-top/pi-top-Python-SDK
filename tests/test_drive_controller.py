@@ -1,4 +1,3 @@
-from pitop import DriveController, EncoderMotor
 from sys import modules
 from unittest.mock import Mock, patch
 from unittest import TestCase
@@ -20,6 +19,7 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
+from pitop import DriveController, EncoderMotor
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
@@ -119,10 +119,10 @@ class DriveControllerTestCase(TestCase):
 
         test_values = [
             [0, 0, 0, 0, 0],
-            [96.39, 114.00, 1, 1, 0],
-            [104.84, 114.00, 1, 1, 1],
-            [70.90, 83.90, 0.3, 0.3, 0],
-            [103.84, 114.0, 0.3, 0.3, 0.8],
+            [96.8, 114.00, 1, 1, 0],
+            [105.06, 114.00, 1, 1, 1],
+            [73.3, 86.3, 0.3, 0.3, 0],
+            [104.13, 114.0, 0.3, 0.3, 0.8],
         ]
         for exp_rpm_left, exp_rpm_right, linear_speed, angular_speed, turn_radius in test_values:
             rpm_left, rpm_right = d._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)

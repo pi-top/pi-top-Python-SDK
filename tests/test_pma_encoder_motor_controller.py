@@ -1,15 +1,3 @@
-from pitop.pma.parameters import BrakingType
-from pitop.pma.common.encoder_motor_registers import (
-    MotorControlRegisters,
-    MotorRegisterTypes,
-    MotorControlModes,
-    EncoderMotorM1
-)
-from pitop.pma.encoder_motor_controller import EncoderMotorController
-from pitopcommon.bitwise_ops import (
-    join_bytes,
-    split_into_bytes,
-)
 from sys import modules
 from unittest import TestCase
 from unittest.mock import Mock, patch
@@ -30,6 +18,18 @@ modules_to_patch = [
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
+from pitop.pma.parameters import BrakingType
+from pitop.pma.common.encoder_motor_registers import (
+    MotorControlRegisters,
+    MotorRegisterTypes,
+    MotorControlModes,
+    EncoderMotorM1
+)
+from pitop.pma.encoder_motor_controller import EncoderMotorController
+from pitopcommon.bitwise_ops import (
+    join_bytes,
+    split_into_bytes,
+)
 
 
 # Avoid getting the mocked modules in other tests
