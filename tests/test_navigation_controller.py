@@ -1,5 +1,5 @@
 from sys import modules
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock
 from unittest import TestCase
 
 modules_to_patch = [
