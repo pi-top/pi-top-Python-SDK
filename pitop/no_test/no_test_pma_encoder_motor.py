@@ -1,3 +1,9 @@
+from pitop.pma.parameters import (
+    BrakingType,
+    ForwardDirection,
+    Direction
+)
+from pitop.pma.encoder_motor import EncoderMotor
 from math import pi
 from sys import modules
 from unittest.mock import Mock, patch
@@ -21,12 +27,6 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
-from pitop.pma.encoder_motor import EncoderMotor
-from pitop.pma.parameters import (
-    BrakingType,
-    ForwardDirection,
-    Direction
-)
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:

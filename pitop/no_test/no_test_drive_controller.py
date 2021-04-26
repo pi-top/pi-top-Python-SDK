@@ -1,3 +1,4 @@
+from pitop import DriveController, EncoderMotor
 from sys import modules
 from unittest.mock import Mock, patch
 from unittest import TestCase
@@ -20,7 +21,6 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
-from pitop import DriveController, EncoderMotor
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
