@@ -1,6 +1,6 @@
 from sys import modules
 from unittest.mock import Mock
-from unittest import TestCase
+from unittest import TestCase, skip
 
 modules_to_patch = [
     "atexit",
@@ -86,6 +86,7 @@ class DriveControllerSim(DriveController):
 
 class TestNavigationController(TestCase):
 
+    @skip
     def test_navigate_to_x_y_position(self):
         navigation_controller = self.get_navigation_controller()
         x_goal = 0.25
@@ -111,6 +112,7 @@ class TestNavigationController(TestCase):
                                     angle_expected=angle_goal
                                     )
 
+    @skip
     def test_navigate_to_position_and_angle(self):
         navigation_controller = self.get_navigation_controller()
         x_goal = 0.1
