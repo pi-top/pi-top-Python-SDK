@@ -37,6 +37,7 @@ import math
 
 class EncoderMotorSim(EncoderMotor):
     _SPEED_NOISE_SIGMA_RATIO = 0.05
+
     def __init__(self, port_name, forward_direction):
         super().__init__(port_name=port_name, forward_direction=forward_direction)
 
