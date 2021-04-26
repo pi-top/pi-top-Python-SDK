@@ -14,7 +14,6 @@ modules_to_patch = [
     "pyinotify",
     "pitop.camera",
     "numpy",
-    "simple_pid",
     "pitopcommon.smbus_device",
     "pitopcommon.logger",
     "pitopcommon.singleton",

@@ -17,7 +17,6 @@ from unittest.mock import Mock, patch
 modules_to_patch = [
     "pitop.camera",
     "numpy",
-    "simple_pid",
     "pitopcommon.smbus_device",
     "pitopcommon.logger",
     "pitopcommon.singleton",
