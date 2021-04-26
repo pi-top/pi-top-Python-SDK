@@ -44,12 +44,12 @@ class EncoderMotorSim(EncoderMotor):
         self._target_speed = 0.0
         self._current_speed = 0.0
         self._motor_speed_update_schedule = 1.0 / 20.0
-        self._motor_thread = Thread(target=self.__motor_speed_update_scheduler, daemon=True)
-        self._motor_thread.start()
+        # self._motor_thread = Thread(target=self.__motor_speed_update_scheduler, daemon=True)
+        # self._motor_thread.start()
 
     @property
     def current_speed(self):
-        return self._current_speed
+        return self._target_speed
 
     def set_target_rpm(self, target_rpm, direction=Direction.FORWARD, total_rotations=0.0):
         self._target_speed = self._rpm_to_speed(target_rpm)
@@ -58,17 +58,17 @@ class EncoderMotorSim(EncoderMotor):
         speed = round(rpm * self.wheel_circumference / 60.0, 3)
         return speed
 
-    def __motor_speed_update_scheduler(self):
-        s = sched.scheduler(time.time, time.sleep)
-        s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
-        s.run()
-
-    def __update_motor_speed(self, s):
-        self._current_speed = gauss(
-            mu=self._target_speed, sigma=self._target_speed * self._SPEED_NOISE_SIGMA_RATIO
-        ) if self._target_speed is not 0 else 0
-
-        s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
+    # def __motor_speed_update_scheduler(self):
+    #     s = sched.scheduler(time.time, time.sleep)
+    #     s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
+    #     s.run()
+    #
+    # def __update_motor_speed(self, s):
+    #     self._current_speed = gauss(
+    #         mu=self._target_speed, sigma=self._target_speed * self._SPEED_NOISE_SIGMA_RATIO
+    #     ) if self._target_speed is not 0 else 0
+    #
+    #     s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
 
 
 class DriveControllerSim(DriveController):
