@@ -99,6 +99,7 @@ class TestNavigationController(TestCase):
 
     @staticmethod
     def get_navigation_controller():
+        # TODO: mock/patch encoder motor before drive controller is instantiated
         drive = DriveController()
         # over-ride motors
         drive.left_motor = EncoderMotorSim()
