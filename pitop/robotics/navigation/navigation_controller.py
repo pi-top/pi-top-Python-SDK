@@ -190,6 +190,7 @@ class NavigationController:
         self._odometry_tracker.start()
 
         # Robot state and control
+        self._backwards = False
         self.robot_state = RobotState()
         self._drive_controller = drive_controller
         self._drive_manager = RobotDrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
@@ -199,7 +200,13 @@ class NavigationController:
         self.linear_speed_factor = linear_speed_factor
         self.angular_speed_factor = angular_speed_factor
 
-    def go_to(self, position: Union[tuple, None] = None, angle: Union[float, None] = None, on_finish=None):
+    def go_to(self,
+              position: Union[tuple, None] = None,
+              angle: Union[float, None] = None,
+              on_finish=None,
+              backwards: bool = False
+              ):
+
         self._on_finish = self.__check_callback(on_finish)
 
         if self._navigation_in_progress:
@@ -216,6 +223,7 @@ class NavigationController:
             if not (-self.__VALID_ANGLE_RANGE <= angle <= self.__VALID_ANGLE_RANGE):
                 raise ValueError(f"Angle must from {-self.__VALID_ANGLE_RANGE} to {self.__VALID_ANGLE_RANGE}.")
 
+        self._backwards = backwards
         self._nav_thread = Thread(target=self.__navigate, args=(position, angle, ), daemon=True)
         self._nav_thread.start()
 
@@ -232,7 +240,10 @@ class NavigationController:
             self.__sub_goal_flow_control()
 
         if angle is not None:
-            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_angle_goal, args=(math.radians(angle), ), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__rotate_to_angle_goal,
+                                               args=(math.radians(angle), ),
+                                               daemon=True
+                                               )
             self.__sub_goal_flow_control()
 
         self.__navigation_finished()
@@ -283,8 +294,8 @@ class NavigationController:
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
-            x_diff = x_goal - x
-            y_diff = y_goal - y
+            x_diff = x_goal - x if not self._backwards else x - x_goal
+            y_diff = y_goal - y if not self._backwards else y - y_goal
 
             heading_error = self.__normalize_angle(theta - math.atan2(y_diff, x_diff))
             angular_speed = self.__get_angular_speed(heading_error=heading_error)
@@ -299,11 +310,12 @@ class NavigationController:
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose_update()
 
-            x_diff = x_goal - x
-            y_diff = y_goal - y
+            x_diff = x_goal - x if not self._backwards else x - x_goal
+            y_diff = y_goal - y if not self._backwards else y - y_goal
 
             heading_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
-            distance_error = -np.hypot(x_diff, y_diff)
+            distance_error = -np.hypot(x_diff, y_diff) if not self._backwards else np.hypot(x_diff, y_diff)
+
             if self._goal_criteria.distance(distance_error=distance_error, heading_error=heading_error):
                 self.__sub_goal_reached()
                 break
