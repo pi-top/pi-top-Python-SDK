@@ -22,17 +22,17 @@ from pitop.pma.parameters import (
     ForwardDirection,
     Direction
 )
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
-
 from pitop import DriveController, NavigationController
 from random import random, gauss, choice
 from threading import Thread
 import time
 import sched
 import math
+
+
+# Avoid getting the mocked modules in other tests
+for patched_module in modules_to_patch:
+    del modules[patched_module]
 
 
 class EncoderMotorSim(EncoderMotor):
@@ -144,6 +144,6 @@ class TestNavigationController(TestCase):
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
         self.assertAlmostEqual(navigation_controller.robot_state.x, x_expected, places=1)
         self.assertAlmostEqual(navigation_controller.robot_state.y, y_expected, places=1)
-        self.assertAlmostEqual(navigation_controller.robot_state.angle, angle_expected, delta=2)
+        self.assertAlmostEqual(navigation_controller.robot_state.angle, angle_expected, delta=4)
         self.assertAlmostEqual(navigation_controller.robot_state.v, 0, places=1)
         self.assertAlmostEqual(navigation_controller.robot_state.w, 0, places=1)
