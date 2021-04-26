@@ -56,7 +56,7 @@ class TestBallDetector(TestCase):
         red_ball_center = center_reposition(red_ball_center, cv_frame)
         red_ball_angle = get_object_target_lock_control_angle(red_ball_center, cv_frame)
 
-        balls = ball_detector.detect(cv_frame, color="red")
+        balls = ball_detector(cv_frame, color="red")
 
         red_ball = balls.red
 
@@ -111,7 +111,7 @@ class TestBallDetector(TestCase):
 
         pil_frame = convert(cv_frame, "PIL")
 
-        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
+        balls = ball_detector(pil_frame, color=["red", "green", "blue"])
 
         red_ball = balls.red
         green_ball = balls.green
@@ -151,7 +151,7 @@ class TestBallDetector(TestCase):
         # Check that a second false detection attempt still returns a longer deque
         cv_frame = self._blank_cv_frame.copy()
         pil_frame = convert(cv_frame, "PIL")
-        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
+        balls = ball_detector(pil_frame, color=["red", "green", "blue"])
 
         red_ball = balls.red
         green_ball = balls.green
@@ -166,7 +166,7 @@ class TestBallDetector(TestCase):
         ball_detector = BallDetector()
         cv_frame = self._blank_cv_frame.copy()
         pil_frame = convert(cv_frame, "PIL")
-        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
+        balls = ball_detector(pil_frame, color=["red", "green", "blue"])
 
         red_ball = balls.red
         green_ball = balls.green
@@ -202,7 +202,7 @@ class TestBallDetector(TestCase):
         self.assertIsInstance(balls.robot_view, np.ndarray)
 
         # Check that another detection attempt returns a longer deque
-        balls = ball_detector.detect(pil_frame, color=["red", "green", "blue"])
+        balls = ball_detector(pil_frame, color=["red", "green", "blue"])
 
         red_ball = balls.red
         green_ball = balls.green
@@ -222,7 +222,7 @@ class TestBallDetector(TestCase):
         red_ball_center = (self._width // 2, self._height)
         cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
 
-        balls = ball_detector.detect(cv_frame, color="red")
+        balls = ball_detector(cv_frame, color="red")
         red_ball = balls.red
 
         # Check found boolean
@@ -237,7 +237,7 @@ class TestBallDetector(TestCase):
         red_ball_center = (self._width // 2, self._height // 2)
         cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
 
-        balls = ball_detector.detect(cv_frame, color="red")
+        balls = ball_detector(cv_frame, color="red")
         red_ball = balls.red
 
         self.assertFalse(red_ball.found)
@@ -249,9 +249,9 @@ class TestBallDetector(TestCase):
         ball_detector = BallDetector()
         cv_frame = self._blank_cv_frame.copy()
         pil_frame = convert(cv_frame, "PIL")
-        self.assertRaises(ValueError, ball_detector.detect, pil_frame, color="rainbow")
-        self.assertRaises(ValueError, ball_detector.detect, pil_frame, color=["rainbow", "red"])
-        self.assertRaises(ValueError, ball_detector.detect, pil_frame, color=[0, 1])
+        self.assertRaises(ValueError, ball_detector, pil_frame, color="rainbow")
+        self.assertRaises(ValueError, ball_detector, pil_frame, color=["rainbow", "red"])
+        self.assertRaises(ValueError, ball_detector, pil_frame, color=[0, 1])
 
 
 if __name__ == "__main__":
