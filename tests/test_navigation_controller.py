@@ -27,8 +27,6 @@ from pitop.pma.parameters import (
 for patched_module in modules_to_patch:
     del modules[patched_module]
 
-# drive_controller used: stop(), max_motor_speed(), robot_move(), motor_current_speeds
-
 from pitop import DriveController, NavigationController
 from random import random, gauss, choice
 from threading import Thread
@@ -38,6 +36,7 @@ import math
 
 
 class EncoderMotorSim(EncoderMotor):
+    _SPEED_NOISE_SIGMA_RATIO = 0.05
     def __init__(self, port_name, forward_direction):
         super().__init__(port_name=port_name, forward_direction=forward_direction)
 
@@ -64,7 +63,10 @@ class EncoderMotorSim(EncoderMotor):
         s.run()
 
     def __update_motor_speed(self, s):
-        self._current_speed = gauss(mu=self._target_speed, sigma=self._target_speed * 0.01)
+        self._current_speed = gauss(
+            mu=self._target_speed, sigma=self._target_speed * self._SPEED_NOISE_SIGMA_RATIO
+        ) if self._target_speed is not 0 else 0
+
         s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
 
 
