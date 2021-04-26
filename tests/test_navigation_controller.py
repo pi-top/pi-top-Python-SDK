@@ -49,19 +49,6 @@ class EncoderMotorSim(EncoderMotor):
         return speed
 
 
-class DriveControllerSim(DriveController):
-    def __init__(self, left_motor_port="M3", right_motor_port="M0"):
-        super().__init__(left_motor_port=left_motor_port, right_motor_port=right_motor_port)
-
-        # over-ride motors
-        self.left_motor = EncoderMotorSim(port_name=self.left_motor_port,
-                                          forward_direction=ForwardDirection.CLOCKWISE
-                                          )
-        self.right_motor = EncoderMotorSim(port_name=self.right_motor_port,
-                                           forward_direction=ForwardDirection.COUNTER_CLOCKWISE
-                                           )
-
-
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
     del modules[patched_module]
@@ -122,7 +109,15 @@ class TestNavigationController(TestCase):
 
     @staticmethod
     def get_navigation_controller():
-        return NavigationController(drive_controller=DriveControllerSim(left_motor_port="M3", right_motor_port="M0"))
+        drive = DriveController()
+        # over-ride motors
+        drive.left_motor = EncoderMotorSim(port_name="M0",
+                                           forward_direction=ForwardDirection.CLOCKWISE
+                                           )
+        drive.right_motor = EncoderMotorSim(port_name="M3",
+                                            forward_direction=ForwardDirection.COUNTER_CLOCKWISE
+                                            )
+        return NavigationController(drive_controller=drive)
 
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
         self.assertAlmostEqual(navigation_controller.robot_state.x, x_expected, places=1)
