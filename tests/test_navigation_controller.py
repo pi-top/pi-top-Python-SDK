@@ -27,14 +27,15 @@ from pitop.robotics.navigation.navigation_controller import NavigationController
 import math
 
 
-class EncoderMotorSim(EncoderMotor):
+class EncoderMotorSim():
     _SPEED_NOISE_SIGMA_RATIO = 0.05
 
     def __init__(self, port_name, forward_direction):
-        super().__init__(port_name=port_name, forward_direction=forward_direction)
+        # super().__init__(port_name=port_name, forward_direction=forward_direction)
 
+        self.max_rpm = 114
+        self.wheel_diameter = 0.0718
         self._target_speed = 0.0
-        self._current_speed = 0.0
         self._motor_speed_update_schedule = 1.0 / 20.0
 
     @property
@@ -42,11 +43,7 @@ class EncoderMotorSim(EncoderMotor):
         return self._target_speed
 
     def set_target_rpm(self, target_rpm, direction=Direction.FORWARD, total_rotations=0.0):
-        self._target_speed = self._rpm_to_speed(target_rpm)
-
-    def _rpm_to_speed(self, rpm):
-        speed = round(rpm * self.wheel_circumference / 60.0, 3)
-        return speed
+        self._target_speed = round(target_rpm * self.wheel_diameter * math.pi / 60.0, 3)
 
 
 # Avoid getting the mocked modules in other tests
