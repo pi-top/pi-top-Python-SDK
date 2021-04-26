@@ -1,6 +1,6 @@
 from sys import modules
 from unittest.mock import Mock
-from unittest import TestCase, skip
+from unittest import TestCase
 
 modules_to_patch = [
     "atexit",
@@ -22,17 +22,9 @@ from pitop.pma.parameters import (
     ForwardDirection,
     Direction
 )
-from pitop import DriveController, NavigationController
-from random import random, gauss, choice
-from threading import Thread
-import time
-import sched
+from pitop.robotics.drive_controller import DriveController
+from pitop.robotics.navigation.navigation_controller import NavigationController
 import math
-
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
 
 
 class EncoderMotorSim(EncoderMotor):
@@ -44,8 +36,6 @@ class EncoderMotorSim(EncoderMotor):
         self._target_speed = 0.0
         self._current_speed = 0.0
         self._motor_speed_update_schedule = 1.0 / 20.0
-        # self._motor_thread = Thread(target=self.__motor_speed_update_scheduler, daemon=True)
-        # self._motor_thread.start()
 
     @property
     def current_speed(self):
@@ -57,18 +47,6 @@ class EncoderMotorSim(EncoderMotor):
     def _rpm_to_speed(self, rpm):
         speed = round(rpm * self.wheel_circumference / 60.0, 3)
         return speed
-
-    # def __motor_speed_update_scheduler(self):
-    #     s = sched.scheduler(time.time, time.sleep)
-    #     s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
-    #     s.run()
-    #
-    # def __update_motor_speed(self, s):
-    #     self._current_speed = gauss(
-    #         mu=self._target_speed, sigma=self._target_speed * self._SPEED_NOISE_SIGMA_RATIO
-    #     ) if self._target_speed is not 0 else 0
-    #
-    #     s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
 
 
 class DriveControllerSim(DriveController):
@@ -84,9 +62,13 @@ class DriveControllerSim(DriveController):
                                            )
 
 
+# Avoid getting the mocked modules in other tests
+for patched_module in modules_to_patch:
+    del modules[patched_module]
+
+
 class TestNavigationController(TestCase):
 
-    @skip
     def test_navigate_to_x_y_position(self):
         navigation_controller = self.get_navigation_controller()
         x_goal = 0.25
@@ -101,7 +83,6 @@ class TestNavigationController(TestCase):
                                     angle_expected=resulting_angle
                                     )
 
-    @skip
     def test_navigate_to_angle(self):
         navigation_controller = self.get_navigation_controller()
         angle_goal = 87
@@ -113,7 +94,6 @@ class TestNavigationController(TestCase):
                                     angle_expected=angle_goal
                                     )
 
-    @skip
     def test_navigate_to_position_and_angle(self):
         navigation_controller = self.get_navigation_controller()
         x_goal = 0.1
