@@ -17,10 +17,6 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
-from pitop.pma.parameters import (
-    ForwardDirection,
-    Direction
-)
 from pitop.robotics.drive_controller import DriveController
 from pitop.robotics.navigation.navigation_controller import NavigationController
 import math
@@ -39,7 +35,7 @@ class EncoderMotorSim:
     def current_speed(self):
         return self._target_speed
 
-    def set_target_rpm(self, target_rpm, direction=Direction.FORWARD, total_rotations=0.0):
+    def set_target_rpm(self, target_rpm, direction=None, total_rotations=None):
         self._target_speed = round(target_rpm * self.wheel_diameter * math.pi / 60.0, 3)
 
 
