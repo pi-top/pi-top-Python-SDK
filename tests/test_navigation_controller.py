@@ -27,12 +27,10 @@ from pitop.robotics.navigation.navigation_controller import NavigationController
 import math
 
 
-class EncoderMotorSim():
+class EncoderMotorSim:
     _SPEED_NOISE_SIGMA_RATIO = 0.05
 
     def __init__(self, port_name, forward_direction):
-        # super().__init__(port_name=port_name, forward_direction=forward_direction)
-
         self.max_rpm = 114
         self.wheel_diameter = 0.0718
         self._target_speed = 0.0
