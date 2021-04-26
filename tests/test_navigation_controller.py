@@ -101,6 +101,7 @@ class TestNavigationController(TestCase):
                                     angle_expected=resulting_angle
                                     )
 
+    @skip
     def test_navigate_to_angle(self):
         navigation_controller = self.get_navigation_controller()
         angle_goal = 87
