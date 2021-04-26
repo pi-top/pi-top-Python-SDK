@@ -88,8 +88,8 @@ class TestNavigationController(TestCase):
 
     def test_navigate_to_x_y_position(self):
         navigation_controller = self.get_navigation_controller()
-        x_goal = random() * choice([-1, 1]) * 0.5
-        y_goal = random() * choice([-1, 1]) * 0.5
+        x_goal = 0.25
+        y_goal = -0.25
         resulting_angle = math.degrees(math.atan2(y_goal, x_goal))
 
         navigation_controller.go_to(position=(x_goal, y_goal), angle=None).wait()
@@ -102,7 +102,7 @@ class TestNavigationController(TestCase):
 
     def test_navigate_to_angle(self):
         navigation_controller = self.get_navigation_controller()
-        angle_goal = 180 * random() * choice([-1, 1])
+        angle_goal = 87
         navigation_controller.go_to(position=None, angle=angle_goal).wait()
 
         self.robot_state_assertions(navigation_controller=navigation_controller,
@@ -113,9 +113,9 @@ class TestNavigationController(TestCase):
 
     def test_navigate_to_position_and_angle(self):
         navigation_controller = self.get_navigation_controller()
-        x_goal = random() * choice([-1, 1]) * 0.5
-        y_goal = random() * choice([-1, 1]) * 0.5
-        angle_goal = 180 * random() * choice([-1, 1])
+        x_goal = 0.1
+        y_goal = -0.2
+        angle_goal = -97
         navigation_controller.go_to(position=(x_goal, y_goal), angle=angle_goal).wait()
 
         self.robot_state_assertions(navigation_controller=navigation_controller,
