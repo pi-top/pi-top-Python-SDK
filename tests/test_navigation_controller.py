@@ -17,7 +17,6 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
-from pitop.pma.encoder_motor import EncoderMotor
 from pitop.pma.parameters import (
     ForwardDirection,
     Direction
@@ -30,7 +29,7 @@ import math
 class EncoderMotorSim:
     _SPEED_NOISE_SIGMA_RATIO = 0.05
 
-    def __init__(self, port_name, forward_direction):
+    def __init__(self):
         self.max_rpm = 114
         self.wheel_diameter = 0.0718
         self._target_speed = 0.0
@@ -106,12 +105,8 @@ class TestNavigationController(TestCase):
     def get_navigation_controller():
         drive = DriveController()
         # over-ride motors
-        drive.left_motor = EncoderMotorSim(port_name="M0",
-                                           forward_direction=ForwardDirection.CLOCKWISE
-                                           )
-        drive.right_motor = EncoderMotorSim(port_name="M3",
-                                            forward_direction=ForwardDirection.COUNTER_CLOCKWISE
-                                            )
+        drive.left_motor = EncoderMotorSim()
+        drive.right_motor = EncoderMotorSim()
         return NavigationController(drive_controller=drive)
 
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
