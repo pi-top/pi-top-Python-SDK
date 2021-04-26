@@ -44,7 +44,7 @@ class EncoderMotorSim(EncoderMotor):
         self._target_speed = 0.0
         self._current_speed = 0.0
         self._motor_speed_update_schedule = 1.0 / 20.0
-        self._motor_thread = Thread(target=self.__motor_speed_thread_scheduler, daemon=True)
+        self._motor_thread = Thread(target=self.__motor_speed_update_scheduler, daemon=True)
         self._motor_thread.start()
 
     @property
@@ -58,7 +58,7 @@ class EncoderMotorSim(EncoderMotor):
         speed = round(rpm * self.wheel_circumference / 60.0, 3)
         return speed
 
-    def __motor_speed_thread_scheduler(self):
+    def __motor_speed_update_scheduler(self):
         s = sched.scheduler(time.time, time.sleep)
         s.enter(self._motor_speed_update_schedule, 1, self.__update_motor_speed, (s, ))
         s.run()
