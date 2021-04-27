@@ -6,25 +6,64 @@ from typing import Union
 from simple_pid import PID
 import sched
 from inspect import getfullargspec
+from filterpy.kalman import KalmanFilter
+
+
+def normalize_angle(angle):
+    """Converts to range -pi to +pi to prevent unstable behaviour when
+    going from 0 to 2*pi with slight turn.
+
+    :param angle: angle in radians
+    :return: angle in radians normalized to range -pi to +pi
+    """
+    return (angle + math.pi) % (2 * math.pi) - math.pi
 
 
 class RobotState:
     def __init__(self):
-        self._x = 0.0      # m
-        self._y = 0.0      # m
-        self._angle = 0.0  # degrees
-        self._theta = 0.0  # radians
-        self.v = 0.0       # m/s
-        self.w = 0.0       # rad/s
+        self._x = 0.0          # m
+        self._y = 0.0          # m
+        self._angle = 0.0      # degrees
+        self._angle_rad = 0.0  # radians
+        self.v = 0.0           # m/s
+        self.w = 0.0           # rad/s
+        self._kalman_filter = KalmanFilter(dim_x=3, dim_z=3, dim_u=2)
+
+        # Starting covariance is small since we know with high confidence we are starting at 0, 0
+        # (because it is pure dead reckoning with no measurements so we know no better)
+        self._kalman_filter.P = np.array([[0.001, 0.0, 0.0],
+                                          [0.0, 0.001, 0.0],
+                                          [0.0, 0.0, math.radians(0.1)]]
+                                         )
+        # the Q matrix is the covariance of the expected state change over the time interval dt
+        # meaning it needs to be related to dt ideally
+        self._kalman_filter.Q = np.array([[1e-6, 0.0, 0.0],
+                                          [0.0, 1e-6, 0.0],
+                                          [0.0, 0.0, math.radians(1e-6)]]
+                                         )
 
     def __str__(self):
         degree_symbol = u'\N{DEGREE SIGN}'
-        return f"               x = {self.x:.3} m\n" \
-               f"               y = {self.y:.3} m\n" \
-               f"           Angle = {self.angle:.3}{degree_symbol}\n" \
+        return f"               x = {self.x:.3} m (+/- {2 * np.sqrt(self._kalman_filter.P[0, 0]):.3})\n" \
+               f"               y = {self.y:.3} m (+/- {2 * np.sqrt(self._kalman_filter.P[1, 1]):.3})\n" \
+               f"           Angle = {self.angle:.3}{degree_symbol} (+/- {math.degrees(2 * np.sqrt(self._kalman_filter.P[2, 2])):.3})\n" \
                f"        Velocity = {self.v:.3} m/s\n" \
                f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s\n" \
 
+
+    def kalman_predict(self, u, dt):
+        self.v = u[0, 0]
+        self.w = u[1, 0]
+        B = np.array([[dt * math.cos(self.angle_rad), 0],
+                      [dt * math.sin(self.angle_rad), 0],
+                      [0, dt]])
+        self._kalman_filter.predict(u=u, B=B)
+        self._kalman_filter.update(z=None)
+        updated_pose = self._kalman_filter.x
+        self.x = updated_pose[0, 0]
+        self.y = updated_pose[1, 0]
+        self.angle_rad = normalize_angle(updated_pose[2, 0])
+        state_covariance_matrix = self._kalman_filter.P
 
     @property
     def x(self):
@@ -44,19 +83,19 @@ class RobotState:
 
     @property
     def angle(self):
-        return math.degrees(self._theta)
+        return math.degrees(self._angle_rad)
 
     @angle.setter
     def angle(self, value):
-        self._theta = math.radians(value)
+        self._angle_rad = math.radians(value)
 
     @property
-    def theta(self):
-        return self._theta
+    def angle_rad(self):
+        return self._angle_rad
 
-    @theta.setter
-    def theta(self, value):
-        self._theta = value
+    @angle_rad.setter
+    def angle_rad(self, value):
+        self._angle_rad = value
 
     @property
     def position(self):
@@ -67,7 +106,7 @@ class RobotState:
         self.x, self.y = value
 
     def reset_pose(self):
-        self.x, self.y, self.theta = (0.0, 0.0, 0.0)
+        self.x, self.y, self.angle_rad = (0.0, 0.0, 0.0)
 
     def calc_distance(self, point_x, point_y):
         dx = self.x - point_x
@@ -297,7 +336,7 @@ class NavigationController:
             x_diff = x_goal - x if not self._backwards else x - x_goal
             y_diff = y_goal - y if not self._backwards else y - y_goal
 
-            heading_error = self.__normalize_angle(theta - math.atan2(y_diff, x_diff))
+            heading_error = normalize_angle(theta - math.atan2(y_diff, x_diff))
             angular_speed = self.__get_angular_speed(heading_error=heading_error)
 
             if self._goal_criteria.angle(heading_error):
@@ -375,20 +414,10 @@ class NavigationController:
 
     def __get_new_pose_update(self):
         self._position_update_event.wait()
-        return self.robot_state.x, self.robot_state.y, self.robot_state.theta
+        return self.robot_state.x, self.robot_state.y, self.robot_state.angle_rad
 
     def __get_angle_error(self, current_angle, target_angle):
-        return self.__normalize_angle(current_angle - target_angle)
-
-    @staticmethod
-    def __normalize_angle(angle):
-        """Converts to range -pi to +pi to prevent unstable behaviour when
-        going from 0 to 2*pi with slight turn.
-
-        :param angle: angle in radians
-        :return: angle in radians normalized to range -pi to +pi
-        """
-        return (angle + math.pi) % (2 * math.pi) - math.pi
+        return normalize_angle(current_angle - target_angle)
 
     def __get_angular_speed(self, heading_error):
         return self._drive_manager.max_angular_velocity * self._drive_manager.pid.heading(heading_error)
@@ -409,12 +438,21 @@ class NavigationController:
         left_wheel_speed = self._drive_controller.left_motor.current_speed
         right_wheel_speed = self._drive_controller.right_motor.current_speed
 
-        self.robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
-        self.robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
+        # self.robot_state.v = (right_wheel_speed + left_wheel_speed) / 2.0
+        # self.robot_state.w = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
 
-        self.robot_state.x = self.robot_state.x + self.robot_state.v * np.cos(self.robot_state.theta) * dt
-        self.robot_state.y = self.robot_state.y + self.robot_state.v * np.sin(self.robot_state.theta) * dt
-        self.robot_state.theta = self.__normalize_angle(self.robot_state.theta + self.robot_state.w * dt)
+        linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
+        angular_velocity = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
+
+        self.robot_state.kalman_predict(u=np.array([[linear_velocity],
+                                                    [angular_velocity]]
+                                                   ),
+                                        dt=dt
+                                        )
+
+        # self.robot_state.x = self.robot_state.x + self.robot_state.v * np.cos(self.robot_state.theta) * dt
+        # self.robot_state.y = self.robot_state.y + self.robot_state.v * np.sin(self.robot_state.theta) * dt
+        # self.robot_state.theta = normalize_angle(self.robot_state.theta + self.robot_state.w * dt)
 
         self._position_update_event.set()
         self._position_update_event.clear()
