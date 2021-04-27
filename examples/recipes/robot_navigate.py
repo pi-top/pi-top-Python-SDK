@@ -40,8 +40,7 @@ def main():
         set_goal_with_obstacle_detection(position=square_bottom_right)
 
     # go back to start_position
-    navigation_controller.go_to(position=(0, 0), angle=0).wait()
-    print("Finished!")
+    navigation_controller.go_to(position=(0, 0), angle=0, on_finish=navigation_finished).wait()
 
 
 goal_reached = False

@@ -121,3 +121,4 @@ class TestNavigationController(TestCase):
         self.assertAlmostEqual(navigation_controller.robot_state.angle, angle_expected, delta=4)
         self.assertAlmostEqual(navigation_controller.robot_state.v, 0, places=1)
         self.assertAlmostEqual(navigation_controller.robot_state.w, 0, places=1)
+        # TODO: add tests for ensuring Kalman filter covariance matrix grows larger each time
