@@ -1,5 +1,5 @@
 from sys import modules
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 from unittest import TestCase
 
 modules_to_patch = [
@@ -20,6 +20,7 @@ for module in modules_to_patch:
 from pitop.robotics.drive_controller import DriveController
 from pitop.robotics.navigation.navigation_controller import NavigationController
 import math
+from time import sleep
 
 
 class EncoderMotorSim:
@@ -135,6 +136,58 @@ class TestNavigationController(TestCase):
         self.assertGreater(y_tolerance_end, y_tolerance_start)
         self.assertGreater(angle_tolerance_end, angle_tolerance_start)
 
+    def test_callback_function_is_called(self):
+        navigation_controller = self.get_navigation_controller()
+
+        x_goal = 0.143
+        y_goal = -0.189
+        angle_goal = 8
+
+        mock = Mock()
+        navigation_controller.go_to(position=(x_goal, y_goal), angle=angle_goal, on_finish=mock.method).wait()
+
+        mock.method.assert_called_once()
+
+    def test_stop_function(self):
+        navigation_controller = self.get_navigation_controller()
+
+        x_goal = -0.143
+        y_goal = 0.189
+        angle_goal = -14.32
+
+        mock = Mock()
+        navigation_controller.go_to(position=(x_goal, y_goal), angle=angle_goal, on_finish=mock.method)
+        navigation_controller.stop()
+        mock.method.assert_not_called()
+        sleep(0.25)
+        self.assertAlmostEqual(navigation_controller.robot_state.v, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.robot_state.w, 0, places=1)
+
+    def test_update_speed_factors(self):
+        navigation_controller = self.get_navigation_controller()
+
+        linear_speed_factor = 0.1
+        angular_speed_factor = 0.1
+        navigation_controller.linear_speed_factor = linear_speed_factor
+        navigation_controller.angular_speed_factor = angular_speed_factor
+
+        self.assertEqual(navigation_controller.linear_speed_factor, linear_speed_factor)
+        self.assertEqual(navigation_controller.angular_speed_factor, angular_speed_factor)
+
+        self.assertEqual(navigation_controller._goal_criteria._max_distance_error,
+                         navigation_controller._goal_criteria._full_speed_distance_error * linear_speed_factor
+                         )
+        self.assertEqual(navigation_controller._goal_criteria._max_angle_error,
+                         navigation_controller._goal_criteria._full_speed_angle_error * angular_speed_factor
+                         )
+
+        self.assertEqual(navigation_controller._drive_manager.pid.distance.Kp,
+                         1 / (navigation_controller._drive_manager._max_deceleration_distance * linear_speed_factor))
+
+        self.assertEqual(navigation_controller._drive_manager.pid.heading.Kp,
+                         1 / (math.radians(navigation_controller._drive_manager._max_deceleration_angle) * angular_speed_factor)
+                         )
+
     @staticmethod
     @patch("pitop.robotics.drive_controller.EncoderMotor", EncoderMotorSim)
     def get_navigation_controller():
@@ -146,4 +199,3 @@ class TestNavigationController(TestCase):
         self.assertAlmostEqual(navigation_controller.robot_state.angle, angle_expected, delta=4)
         self.assertAlmostEqual(navigation_controller.robot_state.v, 0, places=1)
         self.assertAlmostEqual(navigation_controller.robot_state.w, 0, places=1)
-        # TODO: add tests for ensuring Kalman filter covariance matrix grows larger each time

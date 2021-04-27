@@ -11,7 +11,7 @@ from .robot_state import RobotState
 
 
 class GoalCriteria:
-    def __init__(self, full_speed_distance_error=0.02, full_speed_angle_error=4.0):
+    def __init__(self, full_speed_distance_error: float = 0.02, full_speed_angle_error: float = 4.0):
         self._full_speed_distance_error = full_speed_distance_error
         self._full_speed_angle_error = math.radians(full_speed_angle_error)
 
@@ -329,6 +329,8 @@ class NavigationController:
             arg_spec = getfullargspec(on_finish)
             number_of_arguments = len(arg_spec.args)
             number_of_default_arguments = len(arg_spec.defaults) if arg_spec.defaults is not None else 0
+            if arg_spec.args[0] in ("self", "_mock_self") and (number_of_arguments - number_of_default_arguments) == 1:
+                return on_finish
             if number_of_arguments != number_of_default_arguments:
                 raise ValueError("on_finish should have no non-default keyword arguments.")
         else:
