@@ -6,3 +6,4 @@ opencv-python
 pitopcommon
 Pillow
 simple_pid
+filterpy
