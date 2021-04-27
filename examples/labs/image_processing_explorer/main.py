@@ -20,7 +20,7 @@ def get_processed_frame():
 
         if selected_image_processor == 'ball_detect':
             return ball_detector(camera.current_frame()).robot_view
-    except:
+    except Exception:
         return b''
 
 
