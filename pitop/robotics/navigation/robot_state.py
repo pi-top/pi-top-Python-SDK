@@ -18,21 +18,22 @@ class VelocityIndex(IntEnum):
 
 class RobotState:
     def __init__(self):
-        self._pose_estimate = np.zeros((len(PoseIndex), 1), dtype=float)    # [x, y theta].T
-        self._velocities = np.zeros((len(VelocityIndex), 1), dtype=float)   # [v, w].
         self._kalman_filter = KalmanFilter(dim_x=len(PoseIndex), dim_z=3, dim_u=len(VelocityIndex))
+
+        self._pose_estimate = np.zeros((len(PoseIndex), 1), dtype=float)  # [x, y theta].
+        self._velocities = np.zeros((len(VelocityIndex), 1), dtype=float)  # [v, w].
 
         # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0]
         # (because it is pure dead reckoning with no measurements so we know no better)
-        self._kalman_filter.P = np.array([[0.001, 0.0, 0.0],
-                                          [0.0, 0.001, 0.0],
-                                          [0.0, 0.0, math.radians(0.1)]])
+        self._sigma = 0.001
+        self._kalman_filter.P = np.array([[self._sigma ** 2, 0.0, 0.0],
+                                          [0.0, self._sigma ** 2, 0.0],
+                                          [0.0, 0.0, math.radians(self._sigma)]])
 
         # the Q matrix is the covariance of the expected state change over the time interval dt
-        self._sigma = 0.001
         self._kalman_filter.Q = np.array([[self._sigma ** 2, 0.0, 0.0],
                                           [0.0, self._sigma ** 2, 0.0],
-                                          [0.0, 0.0, math.radians(self._sigma ** 2)]])  # For 10 Hz (dt=0.1)
+                                          [0.0, 0.0, math.radians(self._sigma)]])  # For 10 Hz (dt=0.1)
 
     def __str__(self):
         degree_symbol = u'\N{DEGREE SIGN}'
@@ -50,9 +51,9 @@ class RobotState:
                       [0, dt]])
         self._kalman_filter.predict(u=u, B=B)
         updated_pose = self._kalman_filter.x
-        self.x = updated_pose[0, 0]
-        self.y = updated_pose[1, 0]
-        self.angle_rad = normalize_angle(updated_pose[2, 0])
+        self.x = updated_pose[PoseIndex.x, 0]
+        self.y = updated_pose[PoseIndex.y, 0]
+        self.angle_rad = normalize_angle(updated_pose[PoseIndex.theta, 0])
 
     def kalman_update(self, z):
         self._kalman_filter.update(z=z)

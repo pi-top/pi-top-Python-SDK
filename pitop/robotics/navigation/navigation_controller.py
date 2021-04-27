@@ -206,7 +206,7 @@ class NavigationController:
         self._drive_manager.update_angular_speed(speed_factor)
         self._goal_criteria.update_angular_speed(speed_factor)
 
-    def reset_position(self):
+    def reset_position_and_angle(self):
         self.robot_state.reset_pose()
 
     def stop(self):
