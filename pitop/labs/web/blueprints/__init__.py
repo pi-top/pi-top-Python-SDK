@@ -1,4 +1,4 @@
-from .alex import AlexControllerBlueprint
+from .rover import RoverControllerBlueprint
 from .base import BaseBlueprint
 from .controller import ControllerBlueprint
 from .messaging import MessagingBlueprint

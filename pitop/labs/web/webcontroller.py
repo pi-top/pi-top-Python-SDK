@@ -1,5 +1,5 @@
 from .webserver import WebServer
-from .blueprints import ControllerBlueprint, AlexControllerBlueprint
+from .blueprints import ControllerBlueprint, RoverControllerBlueprint
 
 
 class WebController(WebServer):
@@ -19,7 +19,7 @@ class WebController(WebServer):
         )
 
 
-class AlexWebController(WebServer):
+class RoverWebController(WebServer):
     def __init__(
         self,
         get_frame=None,
@@ -30,7 +30,7 @@ class AlexWebController(WebServer):
     ):
         WebServer.__init__(
             self,
-            blueprints=[AlexControllerBlueprint(
+            blueprints=[RoverControllerBlueprint(
                 get_frame=get_frame,
                 drive=drive,
                 pan_tilt=pan_tilt,
