@@ -110,6 +110,26 @@ class TestNavigationController(TestCase):
                           on_finish=invalid_callback
                           )
 
+    def test_kalman_filter_covariance_increases(self):
+        navigation_controller = self.get_navigation_controller()
+        x_goal = -0.2
+        y_goal = -0.05
+        angle_goal = -10
+
+        x_tolerance_start = navigation_controller.robot_state.x_tolerance
+        y_tolerance_start = navigation_controller.robot_state.y_tolerance
+        angle_tolerance_start = navigation_controller.robot_state.angle_tolerance
+
+        navigation_controller.go_to(position=(x_goal, y_goal), angle=angle_goal, backwards=True).wait()
+
+        x_tolerance_end = navigation_controller.robot_state.x_tolerance
+        y_tolerance_end = navigation_controller.robot_state.y_tolerance
+        angle_tolerance_end = navigation_controller.robot_state.angle_tolerance
+
+        self.assertGreater(x_tolerance_end, x_tolerance_start)
+        self.assertGreater(y_tolerance_end, y_tolerance_start)
+        self.assertGreater(angle_tolerance_end, angle_tolerance_start)
+
     @staticmethod
     @patch("pitop.robotics.drive_controller.EncoderMotor", EncoderMotorSim)
     def get_navigation_controller():
