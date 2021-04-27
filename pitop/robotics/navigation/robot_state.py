@@ -68,8 +68,9 @@ class RobotState:
 
     @property
     def x_tolerance(self):
-        """
-        Returns the 2-sigma value for the variance in x. About 95% of the possible values for the true value of x lie
+        """Returns the 2-sigma value for the variance in x.
+
+        About 95% of the possible values for the true value of x lie
         within two standard deviations of the mean.
         :return: 2-sigma value of the x position
         """
@@ -85,8 +86,9 @@ class RobotState:
 
     @property
     def y_tolerance(self):
-        """
-        Returns the 2-sigma value for the variance in y. About 95% of the possible values for the true value of y lie
+        """Returns the 2-sigma value for the variance in y.
+
+        About 95% of the possible values for the true value of y lie
         within two standard deviations of the mean.
         :return: 2-sigma value of the y position
         """
@@ -102,8 +104,9 @@ class RobotState:
 
     @property
     def angle_tolerance(self):
-        """
-        Returns the 2-sigma value for the variance in the angle. About 95% of the possible values for the true value of
+        """Returns the 2-sigma value for the variance in the angle.
+
+        About 95% of the possible values for the true value of
         the angle lie within two standard deviations of the mean.
         :return: 2-sigma value of the angle position in degrees
         """
@@ -119,8 +122,9 @@ class RobotState:
 
     @property
     def angle_rad_tolerance(self):
-        """
-        Returns the 2-sigma value for the variance in the angle. About 95% of the possible values for the true value of
+        """Returns the 2-sigma value for the variance in the angle.
+
+        About 95% of the possible values for the true value of
         the angle lie within two standard deviations of the mean.
         :return: 2-sigma value of the angle position in radians
         """
