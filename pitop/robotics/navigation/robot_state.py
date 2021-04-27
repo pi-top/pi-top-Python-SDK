@@ -6,18 +6,16 @@ from .utils import normalize_angle
 
 
 class PoseIndex(IntEnum):
-    """
-    Helper class to ensure x, y and theta values are accessed at the correct position in various vectors and matrices.
-    """
+    """Helper class to ensure x, y and theta values are accessed at the correct
+    position in various vectors and matrices."""
     x = 0
     y = 1
     theta = 2
 
 
 class VelocityIndex(IntEnum):
-    """
-    Helper class to ensure v and w values are accessed at the correct position in various vectors and matrices.
-    """
+    """Helper class to ensure v and w values are accessed at the correct
+    position in various vectors and matrices."""
     v = 0
     w = 1
 
