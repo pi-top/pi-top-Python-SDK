@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="/index.css">
+    <script src="messaging/setup.js"></script>
+  </head>
+  <body>
+    <header>
+      <label for="image-processor-select">Choose an image processor:</label>
+      <select
+        id="image-processor-select"
+        name="image-processors"
+        onchange="publish({ 'type': 'change_processor', data: this.value })"
+      >
+        <option value="line_detect">Line Detect</option>
+        <option value="ball_detect">Ball Detect</option>
+      </select>
+    </header>
+
+    <div class="videos-container">
+      <div class="video-container">
+        <label>Raw Video</label>
+        <img src="raw_video.mjpg"></img>
+      </div>
+
+      <div class="video-container">
+        <label>Processed Video</label>
+        <img src="processed_video.mjpg"> </img>
+      </div>
+    </div>
+  </body>
+</html>
