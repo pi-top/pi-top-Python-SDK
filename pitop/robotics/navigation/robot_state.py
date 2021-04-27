@@ -6,26 +6,34 @@ from .utils import normalize_angle
 
 
 class PoseIndex(IntEnum):
+    """
+    Helper class to ensure x, y and theta values are accessed at the correct position in various vectors and matrices.
+    """
     x = 0
     y = 1
     theta = 2
 
 
 class VelocityIndex(IntEnum):
+    """
+    Helper class to ensure v and w values are accessed at the correct position in various vectors and matrices.
+    """
     v = 0
     w = 1
 
 
 class RobotState:
-    def __init__(self):
+    _sigma_default_dt = 0.1
+
+    def __init__(self, predict_frequency):
         self._kalman_filter = KalmanFilter(dim_x=len(PoseIndex), dim_z=3, dim_u=len(VelocityIndex))
 
         self._pose_estimate = np.zeros((len(PoseIndex), 1), dtype=float)  # [x, y theta].
         self._velocities = np.zeros((len(VelocityIndex), 1), dtype=float)  # [v, w].
 
-        # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0]
-        # (because it is pure dead reckoning with no measurements so we know no better)
-        self._sigma = 0.001
+        # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0] (in a world of
+        # pure dead-reckoning)
+        self._sigma = 0.001 / (self._sigma_default_dt * predict_frequency)
         self._kalman_filter.P = np.array([[self._sigma ** 2, 0.0, 0.0],
                                           [0.0, self._sigma ** 2, 0.0],
                                           [0.0, 0.0, math.radians(self._sigma)]])
@@ -33,7 +41,7 @@ class RobotState:
         # the Q matrix is the covariance of the expected state change over the time interval dt
         self._kalman_filter.Q = np.array([[self._sigma ** 2, 0.0, 0.0],
                                           [0.0, self._sigma ** 2, 0.0],
-                                          [0.0, 0.0, math.radians(self._sigma)]])  # For 10 Hz (dt=0.1)
+                                          [0.0, 0.0, math.radians(self._sigma)]])
 
     def __str__(self):
         degree_symbol = u'\N{DEGREE SIGN}'
@@ -48,7 +56,8 @@ class RobotState:
         self._velocities = u
         B = np.array([[dt * math.cos(self.angle_rad), 0],
                       [dt * math.sin(self.angle_rad), 0],
-                      [0, dt]])
+                      [0, dt]]
+                     )
         self._kalman_filter.predict(u=u, B=B)
         updated_pose = self._kalman_filter.x
         self.x = updated_pose[PoseIndex.x, 0]
@@ -60,6 +69,9 @@ class RobotState:
 
     @property
     def x(self):
+        """
+        :return float: Estimated x position of the robot in meters.
+        """
         return self._pose_estimate[PoseIndex.x, 0]
 
     @x.setter
@@ -77,6 +89,9 @@ class RobotState:
 
     @property
     def y(self):
+        """
+        :return float: Estimated y position of the robot in meters.
+        """
         return self._pose_estimate[PoseIndex.y, 0]
 
     @y.setter
@@ -94,6 +109,9 @@ class RobotState:
 
     @property
     def angle(self):
+        """
+        :return float: Estimated angle of the robot in degrees.
+        """
         return math.degrees(self._pose_estimate[PoseIndex.theta, 0])
 
     @angle.setter
@@ -128,14 +146,23 @@ class RobotState:
 
     @property
     def v(self):
+        """
+        :return float: Estimated linear velocity of the robot in meters/second.
+        """
         return self._velocities[VelocityIndex.v, 0]
 
     @property
     def w(self):
+        """
+        :return float: Estimated angular velocity of the robot in radians/second.
+        """
         return self._velocities[VelocityIndex.w, 0]
 
     @property
     def position(self):
+        """
+        :return: Estimated position of the robot as a tuple in the form (x, y) where x and y are in meters.
+        """
         return self.x, self.y
 
     @position.setter

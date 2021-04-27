@@ -72,10 +72,10 @@ class RobotDrivingManager:
                  full_speed_deceleration_distance=0.4,
                  full_speed_deceleration_angle=120.0
                  ):
-        self._max_motor_speed = max_motor_speed                             # m/s
-        self._max_angular_speed = max_angular_speed                         # rad/s
+        self._max_motor_speed = max_motor_speed  # m/s
+        self._max_angular_speed = max_angular_speed  # rad/s
         self._max_deceleration_distance = full_speed_deceleration_distance  # m
-        self._max_deceleration_angle = full_speed_deceleration_angle        # degrees
+        self._max_deceleration_angle = full_speed_deceleration_angle  # degrees
 
         self.linear_speed_factor = None
         self.angular_speed_factor = None
@@ -110,23 +110,23 @@ class NavigationController:
         # callback to call once navigation complete
         self._on_finish = None
 
-        # Navigation flow control
+        # Navigation algorithm flow control
         self._navigation_in_progress = False
         self._stop_triggered = False
         self._nav_goal_finish_event = Event()
         self._nav_thread = None
         self._sub_goal_nav_thread = None
 
-        # Odometry tracking
+        # Odometry updates
         self._odom_update_frequency = 10.0  # Hz
-        self._odom_update_schedule = 1.0 / self._odom_update_frequency
+        self._odom_update_dt = 1.0 / self._odom_update_frequency
         self._position_update_event = Event()
         self._odometry_tracker = Thread(target=self.__track_odometry, daemon=True)
         self._odometry_tracker.start()
 
-        # Robot state and control
+        # Robot state tracking and driving control
         self._backwards = False
-        self.robot_state = RobotState()
+        self.robot_state = RobotState(predict_frequency=self._odom_update_frequency)
         self._drive_controller = drive_controller
         self._drive_manager = RobotDrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
                                                   max_angular_speed=self._drive_controller.max_robot_angular_speed
@@ -137,11 +137,25 @@ class NavigationController:
 
     def go_to(self,
               position: Union[tuple, None] = None,
-              angle: Union[float, None] = None,
+              angle: Union[float, int, None] = None,
               on_finish=None,
               backwards: bool = False
               ):
+        """
+        Navigates the robot to a position (x, y) and/or angle where the starting position is assumed to be (0, 0) and
+        the starting angle is assumed to be 0 degrees. Call function with .wait() appended to block program execution
+        until the navigation goal has been achieved.
 
+        Calling this function whilst another navigation goal is in progress will raise an error. Use the .wait()
+        function to wait until navigation is completed or call .stop() if you wish to set a new navigation goal.
+
+        :param Union[tuple, None] position: Position goal tuple in the form (x, y) where x and y are in meters (int or
+                                            float).
+        :param Union[float, int, None] angle: Desired angle of the robot in degrees.
+        :param on_finish: A callable function or class to be called when the navigation goal has been reached.
+        :param bool backwards: Go to navigation goal in reverse by setting to True
+        :return NavigationController: self
+        """
         self._on_finish = self.__check_callback(on_finish)
 
         if self._navigation_in_progress:
@@ -159,7 +173,7 @@ class NavigationController:
                 raise ValueError(f"Angle must from {-self.__VALID_ANGLE_RANGE} to {self.__VALID_ANGLE_RANGE}.")
 
         self._backwards = backwards
-        self._nav_thread = Thread(target=self.__navigate, args=(position, angle, ), daemon=True)
+        self._nav_thread = Thread(target=self.__navigate, args=(position, angle,), daemon=True)
         self._nav_thread.start()
 
         return self
@@ -169,14 +183,14 @@ class NavigationController:
 
         if position is not None:
             x, y = position
-            self._sub_goal_nav_thread = Thread(target=self.__set_course_heading, args=(x, y, ), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__set_course_heading, args=(x, y,), daemon=True)
             self.__sub_goal_flow_control()
-            self._sub_goal_nav_thread = Thread(target=self.__drive_to_position_goal, args=(x, y, ), daemon=True)
+            self._sub_goal_nav_thread = Thread(target=self.__drive_to_position_goal, args=(x, y,), daemon=True)
             self.__sub_goal_flow_control()
 
         if angle is not None:
             self._sub_goal_nav_thread = Thread(target=self.__rotate_to_angle_goal,
-                                               args=(math.radians(angle), ),
+                                               args=(math.radians(angle),),
                                                daemon=True
                                                )
             self.__sub_goal_flow_control()
@@ -190,26 +204,58 @@ class NavigationController:
 
     @property
     def linear_speed_factor(self):
+        """
+        :return: current linear speed factor
+        """
         return self._drive_manager.linear_speed_factor
 
     @linear_speed_factor.setter
-    def linear_speed_factor(self, speed_factor):
+    def linear_speed_factor(self, speed_factor: float):
+        """
+        Update the linear speed factor to change the speed that the robot will try to reach the goal position.
+        Increasing this value will increase the uncertainty in the final navigation position. Setting to zero is not
+        permitted.
+        :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum linear
+        speed of the robot (which is based on maximum motor RPM and wheel circumference).
+        """
+        if not 0.0 < speed_factor <= 1.0:
+            raise ValueError("Value must be in the range 0.0 < speed_factor <= 1.0")
         self._drive_manager.update_linear_speed(speed_factor)
         self._goal_criteria.update_linear_speed(speed_factor)
 
     @property
     def angular_speed_factor(self):
+        """
+        :return: current angular speed factor
+        """
         return self._drive_manager.angular_speed_factor
 
     @angular_speed_factor.setter
     def angular_speed_factor(self, speed_factor):
+        """
+        Update the angular speed factor to change the speed that the robot will try to reach any angle goals.
+        Increasing this value will increase the uncertainty in the final navigation position and angle. Setting to zero
+        is not permitted.
+        :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum angular
+        speed of the robot (which is based on maximum motor RPM, wheel circumference and wheel-to-wheel spacing).
+        """
+        if not 0.0 < speed_factor <= 1.0:
+            raise ValueError("Value must be in the range 0.0 < speed_factor <= 1.0")
         self._drive_manager.update_angular_speed(speed_factor)
         self._goal_criteria.update_angular_speed(speed_factor)
 
     def reset_position_and_angle(self):
+        """
+        Reset the robot's position and angle (pose) to zeros.
+        """
         self.robot_state.reset_pose()
 
     def stop(self):
+        """
+        Terminate the navigation goal that is currently in progress and stop the robot's movement. Any on_finish
+        callback function passed to the go_to() method will not be called if this function is called before the
+        navigation goal has been reached.
+        """
         # don't call callback if user has terminated navigation manually
         self._on_finish = None
 
@@ -324,7 +370,7 @@ class NavigationController:
     def __track_odometry(self):
         s = sched.scheduler(time.time, time.sleep)
         current_time = time.time()
-        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s, current_time))
+        s.enterabs(current_time + self._odom_update_dt, 1, self.__update_state, (s, current_time))
         s.run()
 
     def __update_state(self, s, previous_time):
@@ -337,12 +383,9 @@ class NavigationController:
         linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
         angular_velocity = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
 
-        self.robot_state.kalman_predict(u=np.array([[linear_velocity],
-                                                    [angular_velocity]]),
-                                        dt=dt
-                                        )
+        self.robot_state.kalman_predict(u=np.array([[linear_velocity], [angular_velocity]]), dt=dt)
 
         self._position_update_event.set()
         self._position_update_event.clear()
 
-        s.enterabs(current_time + self._odom_update_schedule, 1, self.__update_state, (s, current_time))
+        s.enterabs(current_time + self._odom_update_dt, 1, self.__update_state, (s, current_time))
