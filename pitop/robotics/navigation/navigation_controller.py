@@ -329,6 +329,8 @@ class NavigationController:
             arg_spec = getfullargspec(on_finish)
             number_of_arguments = len(arg_spec.args)
             number_of_default_arguments = len(arg_spec.defaults) if arg_spec.defaults is not None else 0
+            if number_of_arguments == 0:
+                return on_finish
             if arg_spec.args[0] in ("self", "_mock_self") and (number_of_arguments - number_of_default_arguments) == 1:
                 return on_finish
             if number_of_arguments != number_of_default_arguments:
