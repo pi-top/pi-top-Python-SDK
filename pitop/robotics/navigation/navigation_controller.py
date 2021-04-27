@@ -141,10 +141,10 @@ class NavigationController:
               on_finish=None,
               backwards: bool = False
               ):
-        """
-        Navigates the robot to a position (x, y) and/or angle where the starting position is assumed to be (0, 0) and
-        the starting angle is assumed to be 0 degrees. Call function with .wait() appended to block program execution
-        until the navigation goal has been achieved.
+        """Navigates the robot to a position (x, y) and/or angle where the
+        starting position is assumed to be (0, 0) and the starting angle is
+        assumed to be 0 degrees. Call function with .wait() appended to block
+        program execution until the navigation goal has been achieved.
 
         Calling this function whilst another navigation goal is in progress will raise an error. Use the .wait()
         function to wait until navigation is completed or call .stop() if you wish to set a new navigation goal.
@@ -211,10 +211,11 @@ class NavigationController:
 
     @linear_speed_factor.setter
     def linear_speed_factor(self, speed_factor: float):
-        """
-        Update the linear speed factor to change the speed that the robot will try to reach the goal position.
-        Increasing this value will increase the uncertainty in the final navigation position. Setting to zero is not
-        permitted.
+        """Update the linear speed factor to change the speed that the robot
+        will try to reach the goal position. Increasing this value will
+        increase the uncertainty in the final navigation position. Setting to
+        zero is not permitted.
+
         :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum linear
         speed of the robot (which is based on maximum motor RPM and wheel circumference).
         """
@@ -232,10 +233,11 @@ class NavigationController:
 
     @angular_speed_factor.setter
     def angular_speed_factor(self, speed_factor):
-        """
-        Update the angular speed factor to change the speed that the robot will try to reach any angle goals.
-        Increasing this value will increase the uncertainty in the final navigation position and angle. Setting to zero
-        is not permitted.
+        """Update the angular speed factor to change the speed that the robot
+        will try to reach any angle goals. Increasing this value will increase
+        the uncertainty in the final navigation position and angle. Setting to
+        zero is not permitted.
+
         :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum angular
         speed of the robot (which is based on maximum motor RPM, wheel circumference and wheel-to-wheel spacing).
         """
@@ -245,15 +247,15 @@ class NavigationController:
         self._goal_criteria.update_angular_speed(speed_factor)
 
     def reset_position_and_angle(self):
-        """
-        Reset the robot's position and angle (pose) to zeros.
-        """
+        """Reset the robot's position and angle (pose) to zeros."""
         self.robot_state.reset_pose()
 
     def stop(self):
-        """
-        Terminate the navigation goal that is currently in progress and stop the robot's movement. Any on_finish
-        callback function passed to the go_to() method will not be called if this function is called before the
+        """Terminate the navigation goal that is currently in progress and stop
+        the robot's movement.
+
+        Any on_finish callback function passed to the go_to() method
+        will not be called if this function is called before the
         navigation goal has been reached.
         """
         # don't call callback if user has terminated navigation manually
