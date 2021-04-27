@@ -84,6 +84,19 @@ class TestNavigationController(TestCase):
                                     angle_expected=angle_goal
                                     )
 
+    def test_navigate_to_position_and_angle_backwards(self):
+        navigation_controller = self.get_navigation_controller()
+        x_goal = 0.2
+        y_goal = -0.2
+        angle_goal = 32
+        navigation_controller.go_to(position=(x_goal, y_goal), angle=angle_goal, backwards=True).wait()
+
+        self.robot_state_assertions(navigation_controller=navigation_controller,
+                                    x_expected=x_goal,
+                                    y_expected=y_goal,
+                                    angle_expected=angle_goal
+                                    )
+
     def test_invalid_callback(self):
         def invalid_callback(parameter):
             pass
