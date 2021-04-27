@@ -1,14 +1,12 @@
-from pitop import DriveController, PanTiltController, Camera
+from pitop import Pitop, alex_config
 from pitop.labs import RoverWebController
 
-drive = DriveController()
-pan_tilt = PanTiltController()
-camera = Camera()
+alex = Pitop.from_config(alex_config)
 
 alex_controller = RoverWebController(
-    get_frame=camera.get_frame,
-    drive=drive,
-    pan_tilt=pan_tilt
+    get_frame=alex.camera.get_frame,
+    drive=alex.drive,
+    pan_tilt=alex.pan_tilt
 )
 
 alex_controller.serve_forever()

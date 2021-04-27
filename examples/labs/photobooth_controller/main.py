@@ -1,15 +1,16 @@
-from pitop import Camera
+from pitop import Pitop, Camera
 from pitop.labs import WebController
 
-camera = Camera()
+photobooth = Pitop()
+photobooth.add_component(Camera())
 
 
 def save_photo(data):
-    camera.current_frame().save(f'{data["name"]}.jpg')
+    photobooth.camera.current_frame().save(f'{data["name"]}.jpg')
 
 
 controller = WebController(
-    get_frame=camera.get_frame,
+    get_frame=photobooth.camera.get_frame,
     message_handlers={'save_photo': save_photo})
 
 controller.serve_forever()
