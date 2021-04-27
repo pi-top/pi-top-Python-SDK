@@ -126,6 +126,11 @@ class TestNavigationController(TestCase):
         y_tolerance_end = navigation_controller.robot_state.y_tolerance
         angle_tolerance_end = navigation_controller.robot_state.angle_tolerance
 
+        self.robot_state_assertions(navigation_controller=navigation_controller,
+                                    x_expected=x_goal,
+                                    y_expected=y_goal,
+                                    angle_expected=angle_goal
+                                    )
         self.assertGreater(x_tolerance_end, x_tolerance_start)
         self.assertGreater(y_tolerance_end, y_tolerance_start)
         self.assertGreater(angle_tolerance_end, angle_tolerance_start)
