@@ -33,7 +33,6 @@ class RoverControllerBlueprint(Blueprint):
         # set has_pan_tilt in every request context for use in base_rover.html
         @self.before_app_request
         def set_has_pan_tilt():
-            print(self.pan_tilt is not None)
             g.has_pan_tilt = self.pan_tilt is not None
 
         self.controller_blueprint = ControllerBlueprint(
