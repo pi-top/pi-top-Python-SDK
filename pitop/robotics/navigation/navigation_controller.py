@@ -414,4 +414,3 @@ class NavigationController:
         gyro_data = self._imu.gyroscope
 
         return None, None
-

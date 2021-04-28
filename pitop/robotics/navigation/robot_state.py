@@ -80,6 +80,7 @@ class RobotStateFilter:
                f"        Velocity = {self.v:.3} m/s (+/- {self.v_tolerance:.3})\n" \
                f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s (+/- {math.degrees(self.w_tolerance):.3})\n" \
 
+
     def kalman_evolution(self, odom_measurements, dt, imu_measurements=None):
         self._velocities.append(odom_measurements)
         self.__kalman_predict(u=self._velocities[VelocityMeasurements.previous], dt=dt)
