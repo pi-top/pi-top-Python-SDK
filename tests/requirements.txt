@@ -3,7 +3,7 @@ gpiozero
 imutils
 matplotlib
 numpy
+onnxruntime
 opencv-python
 pitopcommon
 Pillow
-onnxruntime
