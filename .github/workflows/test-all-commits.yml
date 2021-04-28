@@ -23,6 +23,7 @@ jobs:
             -e PYTHON_TESTS_DIR=./tests \
             -e PYTHON_TARGET_DIR=. \
             -e PYTHON_COVERAGE_DIR=pitop \
+            -e DEBUG=1 \
             pitop/test-run
 
       - name: Upload test coverage report to Codecov

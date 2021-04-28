@@ -156,7 +156,7 @@ class BallDetector:
             self._fps = FPS().start()
             atexit.register(self.__print_fps)
 
-    def detect(self, frame, color: Union[str, list] = "red"):
+    def __call__(self, frame, color: Union[str, list] = "red"):
         def parse_colors(color_arg):
             colors = []
             if type(color_arg) == str:
