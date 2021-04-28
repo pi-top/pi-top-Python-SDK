@@ -10,6 +10,15 @@ def import_opencv():
             "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
 
 
+def import_dlib():
+    try:
+        import dlib
+        return dlib
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "dlib Python library is not installed. You can install it by running 'sudo apt install python3-dlib'.") from None
+
+
 def color_mask(frame, hsv_lower, hsv_upper):
     cv2 = import_opencv()
     # apply gaussian blur to smooth out the frame

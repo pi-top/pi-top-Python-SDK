@@ -1,4 +1,3 @@
-import dlib
 from typing import Union
 from pitop.processing.core.vision_functions import center_reposition
 from .face_utils import get_face_angle
@@ -14,11 +13,13 @@ from os import (
 )
 import atexit
 from pitop.processing.core.vision_functions import (
+    import_dlib,
     import_opencv,
     tuple_for_color_by_name,
 )
 
 cv2 = import_opencv()
+dlib = import_dlib()
 
 predictor_dir = 'predictors'
 script_dir = path.dirname(path.realpath(__file__))
