@@ -47,14 +47,14 @@ class RobotStateFilter:
         sigma = 0.001 / (self._sigma_default_dt * predict_frequency)
         acceleration_dt = 0.001 / (self._sigma_default_dt * predict_frequency)
         # the Q matrix is the covariance of the expected state change over the time interval dt
-        self._kalman_filter.Q = np.array([[sigma ** 2, 0., 0., 0., 0.],
-                                          [0., sigma ** 2, 0., 0., 0.],
-                                          [0., 0., math.radians(sigma), 0., 0.],
-                                          [0., 0., 0., acceleration_dt ** 2, 0.],
-                                          [0., 0., 0., 0., acceleration_dt ** 2]
-                                          ])
+        self._kalman_filter.Q = np.diag([sigma ** 2,
+                                         sigma ** 2,
+                                         math.radians(sigma),
+                                         acceleration_dt ** 2,
+                                         acceleration_dt ** 2]
+                                        )
 
-        # State transition matrix
+        # State transition function
         self._kalman_filter.F = np.array([[1., 0., 0., 0., 0.],
                                           [0., 1., 0., 0., 0.],
                                           [0., 0., 1., 0., 0.],
@@ -62,7 +62,7 @@ class RobotStateFilter:
                                           [0., 0., 0., 0., 0.]
                                           ])
 
-        # Measurement matrix
+        # Measurement function
         self._kalman_filter.H = np.array([[0, 0, 0, 1, 0],
                                           [0, 0, 0, 0, 1]
                                           ])
