@@ -364,7 +364,8 @@ class NavigationController:
         self._position_update_event.wait()
         return self.robot_state.x, self.robot_state.y, self.robot_state.angle_rad
 
-    def __get_angle_error(self, current_angle, target_angle):
+    @staticmethod
+    def __get_angle_error(current_angle, target_angle):
         return normalize_angle(current_angle - target_angle)
 
     def __get_angular_speed(self, heading_error):
