@@ -4,6 +4,8 @@ from filterpy.kalman import KalmanFilter
 from enum import IntEnum
 from .utils import normalize_angle
 from collections import deque
+from filterpy.common import Q_discrete_white_noise, Saver
+import matplotlib.pyplot as plt
 
 
 class State(IntEnum):
@@ -30,23 +32,21 @@ class RobotStateFilter:
     _sigma_default_dt = 0.1
 
     def __init__(self, predict_frequency):
-        self._kalman_filter = KalmanFilter(dim_x=len(State), dim_z=2, dim_u=len(VelocityType))
-
-        self._pose_estimate = np.zeros((len(State), 1), dtype=float)  # [x, y theta].
+        self._kalman_filter = KalmanFilter(dim_x=len(State), dim_z=2, dim_u=2)
+        self._saver = Saver(self._kalman_filter)
+        self.u = None
         self._velocities = deque(maxlen=2)
         self._velocities.append(np.zeros((len(VelocityType), 1), dtype=float))  # [v, w].
 
         # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0] with 0 velocity
-        self._kalman_filter.P = np.array([[1e-6, 0., 0., 0., 0.],
-                                          [0., 1e-6, 0., 0., 0.],
-                                          [0., 0., 1e-6, 0., 0.],
-                                          [0., 0., 0., 1e-6, 0.],
-                                          [0., 0., 0., 0., 1e-6]
-                                          ])
+        self._kalman_filter.P = np.eye(5) * 1e-6
 
         sigma = 0.001 / (self._sigma_default_dt * predict_frequency)
         acceleration_dt = 0.001 / (self._sigma_default_dt * predict_frequency)
         # the Q matrix is the covariance of the expected state change over the time interval dt
+        # A rule of thumb for Q is to set it between  0.5Δ𝑎  to  Δ𝑎 , where  Δ𝑎  is the maximum amount that the
+        # acceleration will change between sample periods.
+        # If Q is large, we don't trust the Kalman predictions
         self._kalman_filter.Q = np.diag([sigma ** 2,
                                          sigma ** 2,
                                          math.radians(sigma),
@@ -54,20 +54,16 @@ class RobotStateFilter:
                                          acceleration_dt ** 2]
                                         )
 
-        # State transition function
-        self._kalman_filter.F = np.array([[1., 0., 0., 0., 0.],
-                                          [0., 1., 0., 0., 0.],
-                                          [0., 0., 1., 0., 0.],
-                                          [0., 0., 0., 0., 0.],
-                                          [0., 0., 0., 0., 0.]
-                                          ])
+        # State transition function is the identity matrix
+        self._kalman_filter.F = np.diag([1, 1, 1, 0, 0])
 
-        # Measurement function
+        # Measurement function H where z = Hx
         self._kalman_filter.H = np.array([[0, 0, 0, 1, 0],
                                           [0, 0, 0, 0, 1]
                                           ])
 
         # Velocity measurement uncertainty
+        # If R is large, we don't trust the measurements (z)
         self._kalman_filter.R = np.array([[0.01 ** 2, 0.0],
                                           [0.0, 0.01 ** 2]
                                           ])
@@ -78,40 +74,52 @@ class RobotStateFilter:
                f"               y = {self.y:.3} m (+/- {self.y_tolerance:.3})\n" \
                f"           Angle = {self.angle:.3}{degree_symbol} (+/- {self.angle_tolerance:.3})\n" \
                f"        Velocity = {self.v:.3} m/s (+/- {self.v_tolerance:.3})\n" \
-               f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s (+/- {math.degrees(self.w_tolerance):.3})\n" \
+               f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s " \
+               f"(+/- {math.degrees(self.w_tolerance):.3})\n"
 
-
-    def kalman_evolution(self, odom_measurements, dt, imu_measurements=None):
+    def add_measurements(self, odom_measurements, dt, imu_measurements=None):
         self._velocities.append(odom_measurements)
         self.__kalman_predict(u=self._velocities[VelocityMeasurements.previous], dt=dt)
         self.__kalman_update(z=self._velocities[VelocityMeasurements.current], dt=dt)
 
     def __kalman_predict(self, u, dt):
-        B = np.array([[dt * math.cos(self.angle_rad), 0],
-                      [dt * math.sin(self.angle_rad), 0],
+        """
+        Full predict equation is x1 = Fx0 + Bu0 where F is constant and defined in __init__
+        B is the control transition matrix which is multiplied by u0 (control vector)
+        B is derived from basic newtonian mechanics to predict new state from previous state information.
+
+        Predict equations:
+        x1 = x0 + dt * v0 * cos(theta + 0.5 * dt * w0)
+        y1 = y0 + dt * v0 * sin(theta + 0.5 * dt * w0)
+            (the 0.5 is a first order approximation to a curved path resulting from angular velocity w0)
+        theta1 = dt * w0
+        v1 = v0  # zero acceleration model, process noise Q allows for perturbations in velocity
+        w1 = w0  # zero acceleration model, process noise Q allows for perturbations in velocity
+
+        :param u: Control input vector
+        :param dt: difference in time between measurements
+        """
+        B = np.array([[dt * math.cos(self.angle_rad + 0.5 * dt * self.w), 0],
+                      [dt * math.sin(self.angle_rad + 0.5 * dt * self.w), 0],
                       [0., dt],
                       [1., 0.],
                       [0., 1.]]
                      )
         self._kalman_filter.predict(u=u, B=B)
 
-    def __kalman_update(self, z, dt):
+    def __kalman_update(self, z):
         self._kalman_filter.update(z=z)
-        updated_state = self._kalman_filter.x
-        self.x = updated_state[State.x, 0]
-        self.y = updated_state[State.y, 0]
-        self.angle_rad = normalize_angle(updated_state[State.theta, 0])
 
     @property
     def x(self):
         """
         :return float: Estimated x position of the robot in meters.
         """
-        return self._pose_estimate[State.x, 0]
+        return self._kalman_filter.x[State.x, 0]
 
     @x.setter
     def x(self, value):
-        self._pose_estimate[State.x, 0] = value
+        self._kalman_filter.x[State.x, 0] = value
 
     @property
     def x_tolerance(self):
@@ -128,11 +136,11 @@ class RobotStateFilter:
         """
         :return float: Estimated y position of the robot in meters.
         """
-        return self._pose_estimate[State.y, 0]
+        return self._kalman_filter.x[State.y, 0]
 
     @y.setter
     def y(self, value):
-        self._pose_estimate[State.y, 0] = value
+        self._kalman_filter.x[State.y, 0] = value
 
     @property
     def y_tolerance(self):
@@ -149,11 +157,11 @@ class RobotStateFilter:
         """
         :return float: Estimated angle of the robot in degrees.
         """
-        return math.degrees(self._pose_estimate[State.theta, 0])
+        return math.degrees(self.angle_rad)
 
     @angle.setter
     def angle(self, value):
-        self._pose_estimate[State.theta, 0] = math.radians(value)
+        self.angle_rad = math.radians(value)
 
     @property
     def angle_tolerance(self):
@@ -167,11 +175,11 @@ class RobotStateFilter:
 
     @property
     def angle_rad(self):
-        return self._pose_estimate[State.theta, 0]
+        return self._kalman_filter.x[State.theta, 0]
 
     @angle_rad.setter
     def angle_rad(self, value):
-        self._pose_estimate[State.theta, 0] = value
+        self._kalman_filter.x[State.theta, 0] = value
 
     @property
     def angle_rad_tolerance(self):
@@ -188,7 +196,7 @@ class RobotStateFilter:
         """
         :return float: Estimated linear velocity of the robot in meters/second.
         """
-        return self._velocities[VelocityMeasurements.current][VelocityType.v, 0]
+        return self._kalman_filter.x[State.v, 0]
 
     @property
     def v_tolerance(self):
@@ -199,7 +207,7 @@ class RobotStateFilter:
         """
         :return float: Estimated angular velocity of the robot in radians/second.
         """
-        return self._velocities[VelocityMeasurements.current][VelocityType.w, 0]
+        return self._kalman_filter.x[State.w, 0]
 
     @property
     def w_tolerance(self):
@@ -217,4 +225,4 @@ class RobotStateFilter:
         self.x, self.y = value
 
     def reset_pose(self):
-        self._pose_estimate = np.zeros((3, 1), dtype=float)
+        self.x, self.y, self.angle_rad = (0, 0, 0)

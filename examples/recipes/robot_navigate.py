@@ -22,8 +22,8 @@ def check_for_obstacles():
 def set_goal_with_obstacle_detection(position, angle=None):
     global goal_reached
     goal_reached = False
-    navigation_controller.go_to(position=position, angle=angle, on_finish=navigation_finished)
-    check_for_obstacles()
+    navigation_controller.go_to(position=position, angle=angle, on_finish=navigation_finished).wait()
+    # check_for_obstacles()
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
     square_bottom_left = (-square_side_length / 2, square_side_length / 2)
     square_bottom_right = (-square_side_length / 2, -square_side_length / 2)
 
-    for _ in range(0, 2):
+    for _ in range(0, 1):
         set_goal_with_obstacle_detection(position=square_top_right)
         set_goal_with_obstacle_detection(position=square_top_left)
         set_goal_with_obstacle_detection(position=square_bottom_left)

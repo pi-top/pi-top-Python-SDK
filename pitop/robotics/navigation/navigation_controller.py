@@ -279,6 +279,7 @@ class NavigationController:
         self._drive_controller.stop()
 
     def __set_course_heading(self, x_goal, y_goal):
+        linear_speed = 0
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose()
 
@@ -292,7 +293,7 @@ class NavigationController:
                 self.__sub_goal_reached()
                 break
 
-            self._drive_controller.robot_move(linear_speed=0, angular_speed=angular_speed)
+            self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     def __drive_to_position_goal(self, x_goal, y_goal):
         while not self._stop_triggered:
@@ -314,6 +315,7 @@ class NavigationController:
             self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     def __rotate_to_angle_goal(self, theta_goal):
+        linear_speed = 0
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose()
 
@@ -324,7 +326,7 @@ class NavigationController:
                 self.__sub_goal_reached()
                 break
 
-            self._drive_controller.robot_move(linear_speed=0, angular_speed=angular_speed)
+            self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     @staticmethod
     def __check_callback(on_finish):
@@ -389,19 +391,19 @@ class NavigationController:
         current_time = time.time()
         dt = current_time - previous_time
 
-        odom_linear_velocity, odom_angular_velocity = self.__get_odometry_velocity_measurements()
+        odom_linear_velocity, odom_angular_velocity = self.__get_odometry_measurements()
 
         if self._imu is not None:
-            imu_linear_velocity, imu_angular_velocity = self.__get_imu_velocity_measurements()
+            pass
 
-        self.robot_state.kalman_evolution(odom_measurements=np.array([[odom_linear_velocity], [odom_angular_velocity]]), dt=dt)
+        self.robot_state.add_measurements(odom_measurements=np.array([[odom_linear_velocity], [odom_angular_velocity]]), dt=dt)
 
         self._new_pose_event.set()
         self._new_pose_event.clear()
 
         s.enterabs(current_time + self._pose_prediction_dt, 1, self.__predict_pose, (s, current_time))
 
-    def __get_odometry_velocity_measurements(self):
+    def __get_odometry_measurements(self):
         left_wheel_speed = self._drive_controller.left_motor.current_speed
         right_wheel_speed = self._drive_controller.right_motor.current_speed
         linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
@@ -409,8 +411,6 @@ class NavigationController:
 
         return linear_velocity, angular_velocity
 
-    def __get_imu_velocity_measurements(self):
+    def __get_imu_measurements(self):
         acc_data = self._imu.accelerometer
         gyro_data = self._imu.gyroscope
-
-        return None, None
