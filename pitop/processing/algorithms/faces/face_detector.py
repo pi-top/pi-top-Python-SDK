@@ -109,7 +109,8 @@ class FaceDetector:
                  image_processing_width: Union[int, None] = 320,
                  format: str = "OpenCV",
                  enable_tracking: bool = True,
-                 dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat"):
+                 dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat"
+                 ):
         """
         :param Union[int, None] image_processing_width: image width to scale to for image processing, set to None for
         no scaling.
