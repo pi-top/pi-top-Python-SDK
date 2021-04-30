@@ -102,6 +102,7 @@ autodoc_mock_imports = [
     'flask_sockets',
     'numpy',
     'imageio',
+    'imutils',
     'luma',
     'luma.oled',
     'luma.core',
