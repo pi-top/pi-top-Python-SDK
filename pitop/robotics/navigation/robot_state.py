@@ -31,9 +31,9 @@ class VelocityMeasurements(IntEnum):
 class RobotStateFilter:
     _sigma_default_dt = 0.1
 
-    def __init__(self, predict_frequency):
+    def __init__(self, measurement_frequency):
         self._kalman_filter = KalmanFilter(dim_x=len(State), dim_z=2, dim_u=2)
-        self._saver = Saver(self._kalman_filter)
+        self._saver = Saver(self._kalman_filter, )
         self.u = None
         self._velocities = deque(maxlen=2)
         self._velocities.append(np.zeros((len(VelocityType), 1), dtype=float))  # [v, w].
@@ -41,8 +41,8 @@ class RobotStateFilter:
         # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0] with 0 velocity
         self._kalman_filter.P = np.eye(5) * 1e-6
 
-        sigma = 0.001 / (self._sigma_default_dt * predict_frequency)
-        acceleration_dt = 0.001 / (self._sigma_default_dt * predict_frequency)
+        sigma = 0.005 / (self._sigma_default_dt * measurement_frequency)
+        acceleration_dt = 0.001 / (self._sigma_default_dt * measurement_frequency)
         # the Q matrix is the covariance of the expected state change over the time interval dt
         # A rule of thumb for Q is to set it between  0.5Δ𝑎  to  Δ𝑎 , where  Δ𝑎  is the maximum amount that the
         # acceleration will change between sample periods.
@@ -54,7 +54,7 @@ class RobotStateFilter:
                                          acceleration_dt ** 2]
                                         )
 
-        # State transition function is the identity matrix
+        # State transition function for x1 = Fx0 + Bu0
         self._kalman_filter.F = np.diag([1, 1, 1, 0, 0])
 
         # Measurement function H where z = Hx
@@ -62,11 +62,26 @@ class RobotStateFilter:
                                           [0, 0, 0, 0, 1]
                                           ])
 
-        # Velocity measurement uncertainty
-        # If R is large, we don't trust the measurements (z)
-        self._kalman_filter.R = np.array([[0.01 ** 2, 0.0],
-                                          [0.0, 0.01 ** 2]
-                                          ])
+        # 64 pulses per rotation on motor encoder gives 115 RPM resolution
+        # This is 115 / 41.8 = 2.75 RPM resolution on wheel RPM
+        # Converting to m/s this is 0.01 m/s resolution (from wheel diameter of 0.0718)
+        # Divide by two to give a max error of +/- 0.005 m/s
+        # This would usually be taken as the 3*sigma value but given all the other errors in the system (wheel diameter,
+        # slippage etc) we'll use this value directly for sigma and say that 68% of values will lie within this value
+        linear_velocity_sigma = 0.005
+        self._linear_velocity_measurement_variance = linear_velocity_sigma ** 2
+        # angular velocity is calculated from motor velocities, maximum error is 0.005 * 2 across both wheel speeds
+        # divide by wheel separation to get resulting standard deviation for angular velocity
+        self._angular_velocity_measurement_variance = (linear_velocity_sigma * 2 / 0.163) ** 2
+
+        # Gyroscope resolution from datasheet is 1/131 = 0.0076 degrees/second +/- 1.5%
+        # Measure variance from stationary IMU is sigma**2 = 0.0018 over approx 200 samples
+        self._angular_velocity_imu_measurement_variance = np.radians(0.5 ** 2)
+
+        # Measurement uncertainty: if R is large, we don't trust the measurements (z)
+        self._kalman_filter.R = np.diag([self._linear_velocity_measurement_variance,
+                                         self._angular_velocity_measurement_variance
+                                         ])
 
     def __str__(self):
         degree_symbol = u'\N{DEGREE SIGN}'
@@ -80,7 +95,7 @@ class RobotStateFilter:
     def add_measurements(self, odom_measurements, dt, imu_measurements=None):
         self._velocities.append(odom_measurements)
         self.__kalman_predict(u=self._velocities[VelocityMeasurements.previous], dt=dt)
-        self.__kalman_update(z=self._velocities[VelocityMeasurements.current], dt=dt)
+        self.__kalman_update(z_odom=self._velocities[VelocityMeasurements.current], z_imu=imu_measurements)
 
     def __kalman_predict(self, u, dt):
         """
@@ -96,7 +111,8 @@ class RobotStateFilter:
         v1 = v0  # zero acceleration model, process noise Q allows for perturbations in velocity
         w1 = w0  # zero acceleration model, process noise Q allows for perturbations in velocity
 
-        :param u: Control input vector
+        :param u: Control input vector - we take the previous velocity measurements for this since they are a better
+        predictor than the actual control command sent to the Expansion Plate MCU.
         :param dt: difference in time between measurements
         """
         B = np.array([[dt * math.cos(self.angle_rad + 0.5 * dt * self.w), 0],
@@ -107,8 +123,30 @@ class RobotStateFilter:
                      )
         self._kalman_filter.predict(u=u, B=B)
 
-    def __kalman_update(self, z):
+    def __kalman_update(self, z_odom, z_imu=None):
+        z = z_odom
+        if z_imu is not None:
+            z = np.vstack((z, z_imu))
+            self._kalman_filter.dim_z = 3
+            self._kalman_filter.H = np.array([[0, 0, 0, 1, 0],
+                                              [0, 0, 0, 0, 1],
+                                              [0, 0, 0, 0, 1]
+                                              ])
+            self._kalman_filter.R = np.diag([self._linear_velocity_measurement_variance,
+                                             self._angular_velocity_measurement_variance,
+                                             self._angular_velocity_imu_measurement_variance
+                                             ])
+        else:
+            self._kalman_filter.dim_z = 2
+            self._kalman_filter.H = np.array([[0, 0, 0, 1, 0],
+                                              [0, 0, 0, 0, 1]
+                                              ])
+            self._kalman_filter.R = np.diag([self._linear_velocity_measurement_variance,
+                                             self._angular_velocity_measurement_variance
+                                             ])
+
         self._kalman_filter.update(z=z)
+        self._saver.save()
 
     @property
     def x(self):

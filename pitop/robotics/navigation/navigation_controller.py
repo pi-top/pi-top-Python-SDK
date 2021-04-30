@@ -130,7 +130,7 @@ class NavigationController:
         self._pose_prediction_scheduler.start()
 
         # Robot state tracking and driving management
-        self.robot_state = RobotStateFilter(predict_frequency=self._pose_prediction_frequency)
+        self.robot_state = RobotStateFilter(measurement_frequency=self._pose_prediction_frequency)
 
         self._drive_manager = RobotDrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
                                                   max_angular_speed=self._drive_controller.max_robot_angular_speed
@@ -391,12 +391,15 @@ class NavigationController:
         current_time = time.time()
         dt = current_time - previous_time
 
-        odom_linear_velocity, odom_angular_velocity = self.__get_odometry_measurements()
+        odom_measurements = self.__get_odometry_measurements()
 
+        imu_measurements = None
         if self._imu is not None:
-            pass
+            imu_measurements = self.__get_imu_measurements()
 
-        self.robot_state.add_measurements(odom_measurements=np.array([[odom_linear_velocity], [odom_angular_velocity]]), dt=dt)
+        self.robot_state.add_measurements(odom_measurements=odom_measurements,
+                                          imu_measurements=imu_measurements,
+                                          dt=dt)
 
         self._new_pose_event.set()
         self._new_pose_event.clear()
@@ -409,8 +412,8 @@ class NavigationController:
         linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
         angular_velocity = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
 
-        return linear_velocity, angular_velocity
+        return np.array([[linear_velocity], [angular_velocity]])
 
     def __get_imu_measurements(self):
-        acc_data = self._imu.accelerometer
-        gyro_data = self._imu.gyroscope
+        # TODO: perform calibration on gyroscope on startup to offset any measurement bias
+        return np.array([[math.radians(self._imu.gyroscope.z - 0.48)]])
