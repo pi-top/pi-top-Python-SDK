@@ -2,7 +2,7 @@ from pitop import Pitop, Camera
 from PIL import Image, ImageFont, ImageDraw
 from pitop.processing.algorithms.faces import (
     FaceDetector,
-    EmotionDetector
+    EmotionClassifier
 )
 from signal import pause
 
@@ -104,7 +104,7 @@ def looking_for_face_display(canvas):
 
 def frame_callback(frame):
     face = face_detector(frame)
-    emotion = emotion_detector(face)
+    emotion = emotion_classifier(face)
 
     canvas = ImageDraw.Draw(image)
     canvas.rectangle(robot.miniscreen.bounding_box, fill=0)
@@ -136,7 +136,7 @@ right_bounding_box = (w_ms // 2, top_section_height, w_ms // 2, h_ms - top_secti
 wide_bounding_box = (0, top_section_height, w_ms, h_ms - top_section_height)
 
 face_detector = FaceDetector()
-emotion_detector = EmotionDetector()
+emotion_classifier = EmotionClassifier()
 
 robot.camera.on_frame = frame_callback
 

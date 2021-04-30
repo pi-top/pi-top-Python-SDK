@@ -1,7 +1,7 @@
 from pitop import Camera
 from pitop.processing.algorithms.faces import (
     FaceDetector,
-    EmotionDetector
+    EmotionClassifier
 )
 from signal import pause
 import cv2
@@ -9,7 +9,7 @@ import cv2
 
 def detect_emotion(frame):
     face = face_detector(frame)
-    emotion = emotion_detector(face)
+    emotion = emotion_classifier(face)
 
     if emotion.found:
         print(f"{emotion_lookup[emotion.type]}")
@@ -23,8 +23,8 @@ def detect_emotion(frame):
 camera = Camera(resolution=(640, 480), flip_top_bottom=True)
 
 face_detector = FaceDetector()
-emotion_detector = EmotionDetector()
-emotion_types = emotion_detector.emotion_types
+emotion_classifier = EmotionClassifier()
+emotion_types = emotion_classifier.emotion_types
 ascii_emotions = [":|", ":c", "D:<", ":)", ":(", ":O"]
 emotion_lookup = {emotion_types[i]: ascii_emotions[i] for i in range(len(emotion_types))}
 

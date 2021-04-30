@@ -23,7 +23,7 @@ import numpy as np
 import cv2
 from pitop.processing.algorithms.faces import (
     FaceDetector,
-    EmotionDetector,
+    EmotionClassifier,
 )
 from imutils import rotate, resize
 
@@ -84,7 +84,7 @@ class TestFaceAndEmotionDetector(TestCase):
         # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
         face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
 
-        emotion_detector = EmotionDetector(apply_mean_filter=False)
+        emotion_classifier = EmotionClassifier(apply_mean_filter=False)
         frame = self._blank_cv_frame.copy()
 
         face = face_detector(frame)
@@ -101,7 +101,7 @@ class TestFaceAndEmotionDetector(TestCase):
         comparison = face.robot_view == frame
         self.assertTrue(comparison.all())
 
-        emotion = emotion_detector(face)
+        emotion = emotion_classifier(face)
 
         self.assertIsNone(emotion.type)
         self.assertEqual(emotion.confidence, 0.0)
@@ -117,7 +117,7 @@ class TestFaceAndEmotionDetector(TestCase):
         # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
         face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
 
-        emotion_detector = EmotionDetector(apply_mean_filter=False)
+        emotion_classifier = EmotionClassifier(apply_mean_filter=False)
 
         if rotation == "cw":
             expected_rotation_angle = -self._face_rotate_angle
@@ -129,7 +129,7 @@ class TestFaceAndEmotionDetector(TestCase):
         for i, (frame, width) in enumerate(face_data):
             face = face_detector(frame)
             self.face_assertions(face=face, expected_rotation_angle=expected_rotation_angle, width=width)
-            emotion = emotion_detector(face)
+            emotion = emotion_classifier(face)
             self.emotion_assertions(emotion=emotion, expected_emotion_data=emotion_data[i], frame=frame)
 
     def face_assertions(self, face, expected_rotation_angle, width):

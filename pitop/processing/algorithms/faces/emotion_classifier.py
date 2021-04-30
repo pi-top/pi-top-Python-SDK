@@ -55,7 +55,7 @@ left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
 right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
 
 
-class EmotionDetector:
+class EmotionClassifier:
     __MEAN_N = 5
 
     def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
