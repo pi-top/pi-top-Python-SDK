@@ -62,7 +62,7 @@ class EmotionDetector:
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
-        self._input_name = self._emotion_model.get_inputs()[0].name
+        self._onnx_input_node_name = self._emotion_model.get_inputs()[0].name
         self.emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
         self.emotion = Emotion()
         self.font = cv2.FONT_HERSHEY_PLAIN
@@ -84,7 +84,51 @@ class EmotionDetector:
         return self.emotion
 
     def __get_emotion(self, frame, face, emotion):
+        """
+        Emotion detection is carried out by taking the 68 face feature landmark positions found using the dlib landmark
+        detector and putting them through a trained SVC model (in onnx format) that predicts the
+        most likely emotion. The prediction outputs probabilities for each emotion type which are then put through a
+        moving average filter to smooth the output. If being used for non-realtime applications (on static images) then
+        the apply_mean_filter class attribute should be set to False.
+
+        :param frame: Original camera frame used to detect the face (in OpenCV format), used for drawing robot_view.
+        :param face: Face object obtained from FaceDetector
+        :param emotion: Emotion object to store the resulting prediction data
+
+        :return: Emotion object that was passed into this function.
+        """
         def get_svc_feature_vector(features, face_angle):
+            """
+            The 68 face feature landmark positions need to be put into the same format as was used to train the SVC
+            model. The basic process is as follows:
+
+                1. Use the face angle to apply a rotation matrix to orient the face features so that the eyes lie on a
+                horizontal line.
+
+                2. Find the mean (x, y) coordinate of the resulting face features so we can transform the (x, y)
+                face feature coordinates to be zero-centered.
+
+                3. Find the interpupillary distance from the left and right eye center to normalize the (x, y)
+                coordinates so that the resulting face features are independent of face scale.
+
+                Note: this will not normalize the face features to lie between 0 and 1 as is typically done when
+                pre-processing data to go into a machine learning algorithm. Previously, the diagonal of the face
+                rectangle was used to accomplish this but because the face rectangle from face detection comes in
+                discreet sizes (based on the pyramid layers), this had poor performance because a continuous scaling
+                factor is desired. Interpupillary distance is a good metric since the variance across humans is quite
+                small, and the data used for training contains a wide selection of face types to accommodate for this.
+                Sklearn's StandardScaler() was added to the SVC pipeline to ensure the data lies between 0 and 1 before
+                the classification is carried out - this does not completely remove the need for scaling here as was
+                found during testing.
+
+                4. After rotation, transformation and scaling, the resulting (x, y) coordinates are flatted into a numpy
+                array in the form array([[x1, y1, x2, y2, ... x68, y68]]) with shape (1, 136). This is now in the format
+                 to send to the onnx SVC model for emotion classification.
+
+            :param features: 68 landmark face feature (x, y) coordinates in a 68x2 numpy array (found from FaceDetector)
+            :param face_angle: face angle from Face object (found from FaceDetector).
+            :return: 1x136 feature vector to put through the onnx SVC model.
+            """
             rotation_matrix = np.array([[np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
                                         [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))]])
 
@@ -105,21 +149,22 @@ class EmotionDetector:
             return np.asarray([feature_vector])
 
         if len(face.features) != 68:
-            raise ValueError("This function is only compatible with dlib's 68 landmark feature")
+            raise ValueError("This function is only compatible with dlib's 68 landmark feature predictor.")
 
         X = get_svc_feature_vector(face.features, face.angle)
 
+        # Run feature vector through onnx model and convert results to a numpy array
         probabilities = np.asarray(
             list(
-                self._emotion_model.run(None, {self._input_name: X.astype(np.float32)})[1][0].values()
+                self._emotion_model.run(None, {self._onnx_input_node_name: X.astype(np.float32)})[1][0].values()
             )
         )
 
         if self._apply_mean_filter:
             self._probability_mean_array, probabilities = running_mean(self._probability_mean_array, probabilities)
 
+        # Get the index of the most likely emotion type and associate to corresponding emotion string
         max_index = int(np.argmax(probabilities))
-
         emotion.type = self.emotion_types[max_index]
         emotion.confidence = round(probabilities[max_index], 2)
 
