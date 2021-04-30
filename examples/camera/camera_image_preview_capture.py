@@ -1,20 +1,13 @@
 from pitop import Pitop, Camera
 from time import sleep
-from os import environ
-from pitopcommon.current_session_info import get_first_display
-from pitop.processing.core.vision_functions import import_opencv
+import cv2
 
-
-cv2 = import_opencv()
-
-environ["DISPLAY"] = get_first_display()
 
 miniscreen = Pitop().miniscreen
 
 cam = Camera(format="OpenCV", flip_top_bottom=True)
 directory = "images/"
 button = miniscreen.select_button
-
 picture_count = 0
 
 
