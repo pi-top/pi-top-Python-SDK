@@ -1,4 +1,5 @@
 import json
+from time import time
 from inspect import getfullargspec, ismethod
 from flask import Blueprint
 
@@ -46,10 +47,14 @@ class MessagingBlueprint(Blueprint):
 
             handler()
 
+        self.sockets = {}
         self.socket_blueprint = Blueprint("messaging_socket", __name__)
 
         @self.socket_blueprint.route('/messaging')
         def pubsub(ws):
+            id = time()
+            self.sockets[id] = ws
+
             def send(response_message):
                 ws.send(json.dumps(response_message))
 
@@ -57,6 +62,8 @@ class MessagingBlueprint(Blueprint):
                 message = ws.receive()
                 if message:
                     handle_message(message, send)
+
+            del self.sockets[id]
 
     def register(self, app, options, *args):
         Blueprint.register(self, app, options, *args)
@@ -67,3 +74,7 @@ class MessagingBlueprint(Blueprint):
                 'Unable to register MessagingBlueprint without sockets')
 
         sockets.register_blueprint(self.socket_blueprint)
+
+    def broadcast(self, message):
+        for socket in self.sockets.values():
+            socket.send(json.dumps(message))

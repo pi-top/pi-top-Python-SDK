@@ -1,0 +1,78 @@
+{% extends "base_controller.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="styles.css"></link>
+{% endblock %}
+
+{% block body %}
+  <header>
+    <h1>
+      Pitop Dashboard
+    </h1>
+  </header>
+
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Button</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>is_pressed</td>
+          <td id="button_is_pressed">false</td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td id="button_value">0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">LED</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>is_lit</td>
+          <td id="led_is_lit">false</td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td id="led_value">0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Ultrasonic</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>distance</td>
+          <td id="ultrasonic_distance">0</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    subscribe((message) => {
+      const { button, ultrasonic, led } = message;
+      document.getElementById("button_is_pressed").innerHTML = button.is_pressed;
+      document.getElementById("button_value").innerHTML = button.value;
+      document.getElementById("led_is_lit").innerHTML = led.is_lit;
+      document.getElementById("led_value").innerHTML = led.value;
+      document.getElementById("ultrasonic_distance").innerHTML =
+        ultrasonic.distance;
+    });
+  </script>
+{% endblock %}

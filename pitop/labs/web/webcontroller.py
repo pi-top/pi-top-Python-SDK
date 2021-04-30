@@ -9,14 +9,19 @@ class WebController(WebServer):
         message_handlers={},
         **kwargs
     ):
+        self.controller_blueprint = ControllerBlueprint(
+            get_frame=get_frame,
+            message_handlers=message_handlers
+        )
+
         WebServer.__init__(
             self,
-            blueprints=[ControllerBlueprint(
-                get_frame=get_frame,
-                message_handlers=message_handlers
-            )],
+            blueprints=[self.controller_blueprint],
             **kwargs
         )
+
+    def broadcast(self, message):
+        self.controller_blueprint.broadcast(message)
 
 
 class RoverWebController(WebServer):
@@ -28,13 +33,18 @@ class RoverWebController(WebServer):
         message_handlers={},
         **kwargs
     ):
+        self.rover_blueprint = RoverControllerBlueprint(
+            get_frame=get_frame,
+            drive=drive,
+            pan_tilt=pan_tilt,
+            message_handlers=message_handlers
+        )
+
         WebServer.__init__(
             self,
-            blueprints=[RoverControllerBlueprint(
-                get_frame=get_frame,
-                drive=drive,
-                pan_tilt=pan_tilt,
-                message_handlers=message_handlers
-            )],
+            blueprints=[self.rover_blueprint],
             **kwargs
         )
+
+    def broadcast(self, message):
+        self.rover_blueprint.broadcast(message)

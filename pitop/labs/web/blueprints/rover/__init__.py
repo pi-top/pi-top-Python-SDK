@@ -54,3 +54,6 @@ class RoverControllerBlueprint(Blueprint):
 
         self.pan_tilt.pan_servo.target_angle = angle.get('z')
         self.pan_tilt.tilt_servo.target_angle = angle.get('y')
+
+    def broadcast(self, message):
+        self.controller_blueprint.broadcast(message)

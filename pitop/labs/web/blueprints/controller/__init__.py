@@ -29,3 +29,6 @@ class ControllerBlueprint(Blueprint):
 
         # register self
         Blueprint.register(self, app, options, *args, **kwargs)
+
+    def broadcast(self, message):
+        self.messaging_blueprint.broadcast(message)
