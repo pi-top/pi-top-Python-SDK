@@ -133,8 +133,8 @@ class FaceDetector:
             atexit.register(self.__print_fps)
 
     def __call__(self, frame):
-        """
-        Detect a face in an image frame
+        """Detect a face in an image frame.
+
         :param frame: Image frame in OpenCV or PIL format.
         :return: Face object containing data about the detected face.
         """
@@ -171,9 +171,10 @@ class FaceDetector:
         return self.face
 
     def __get_frame_to_process(self, frame):
-        """
-        Resize frame, convert to grayscale and use contrast limited adaptive histogram equalization (CLAHE) to improve
-        the contrast of the image so that face features are more pronounced.
+        """Resize frame, convert to grayscale and use contrast limited adaptive
+        histogram equalization (CLAHE) to improve the contrast of the image so
+        that face features are more pronounced.
+
         :param frame: original frame from the camera in OpenCV format
         :return: OpenCV image to send to face processing algorithms
         """
@@ -185,8 +186,9 @@ class FaceDetector:
         )
 
     def __detect_largest_face(self, frame):
-        """
-        Use dlib face rectangle detector on the frame and process the detected rectangles to get the face data.
+        """Use dlib face rectangle detector on the frame and process the
+        detected rectangles to get the face data.
+
         :param frame: Image frame to process for faces
         :return: Detected face data
         """
@@ -198,8 +200,9 @@ class FaceDetector:
         return face_rectangle, face_center, face_features
 
     def __process_detected_rectangles(self, frame, rectangles_dlib):
-        """
-        Find largest face rectangle and process it to get the required face data.
+        """Find largest face rectangle and process it to get the required face
+        data.
+
         :param frame: OpenCV frame to use for processing
         :param rectangles_dlib: Rectangles found using dlib's face detector in the dlib Rectangle format.
         :return: Detected face data
@@ -229,8 +232,9 @@ class FaceDetector:
         return face_rectangle, face_center, face_features
 
     def __get_dlib_face_features(self, frame, dlib_rectangle):
-        """
-        Find's dlib face features using the predictor and then convert them to numpy format.
+        """Find's dlib face features using the predictor and then convert them
+        to numpy format.
+
         :param frame: frame used to detect/track face rectangle.
         :param dlib_rectangle: Face rectangle in dlib Rectangle format.
         :return: 68x2 numpy array of x, y coordinates for facial features.
@@ -253,8 +257,9 @@ class FaceDetector:
         self._face_tracker = None
 
     def __track_face(self, frame):
-        """
-        Use dlib correlation tracker to track the face from the last frame in the current frame.
+        """Use dlib correlation tracker to track the face from the last frame
+        in the current frame.
+
         :param frame: OpenCV frame to use for processing
         :return: Face data
         """

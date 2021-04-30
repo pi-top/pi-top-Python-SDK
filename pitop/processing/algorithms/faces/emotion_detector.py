@@ -84,12 +84,14 @@ class EmotionDetector:
         return self.emotion
 
     def __get_emotion(self, frame, face, emotion):
-        """
-        Emotion detection is carried out by taking the 68 face feature landmark positions found using the dlib landmark
-        detector and putting them through a trained SVC model (in onnx format) that predicts the
-        most likely emotion. The prediction outputs probabilities for each emotion type which are then put through a
-        moving average filter to smooth the output. If being used for non-realtime applications (on static images) then
-        the apply_mean_filter class attribute should be set to False.
+        """Emotion detection is carried out by taking the 68 face feature
+        landmark positions found using the dlib landmark detector and putting
+        them through a trained SVC model (in onnx format) that predicts the
+        most likely emotion. The prediction outputs probabilities for each
+        emotion type which are then put through a moving average filter to
+        smooth the output. If being used for non-realtime applications (on
+        static images) then the apply_mean_filter class attribute should be set
+        to False.
 
         :param frame: Original camera frame used to detect the face (in OpenCV format), used for drawing robot_view.
         :param face: Face object obtained from FaceDetector
@@ -98,9 +100,9 @@ class EmotionDetector:
         :return: Emotion object that was passed into this function.
         """
         def get_svc_feature_vector(features, face_angle):
-            """
-            The 68 face feature landmark positions need to be put into the same format as was used to train the SVC
-            model. The basic process is as follows:
+            """The 68 face feature landmark positions need to be put into the
+            same format as was used to train the SVC model. The basic process
+            is as follows:
 
                 1. Use the face angle to apply a rotation matrix to orient the face features so that the eyes lie on a
                 horizontal line.
