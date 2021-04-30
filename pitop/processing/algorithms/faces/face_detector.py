@@ -24,8 +24,6 @@ dlib = import_dlib()
 predictor_dir = 'predictors'
 script_dir = path.dirname(path.realpath(__file__))
 abs_file_path = path.join(script_dir, predictor_dir)
-# from dlib: https://github.com/davisking/dlib-models
-predictor_file_name = "shape_predictor_68_face_landmarks.dat"
 
 
 class Face:
@@ -110,16 +108,21 @@ class FaceDetector:
     def __init__(self,
                  image_processing_width: Union[int, None] = 320,
                  format: str = "OpenCV",
-                 enable_tracking: bool = True):
+                 enable_tracking: bool = True,
+                 dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat"):
         """
-        :param Union[int, None] image_processing_width: image width to scale to for image processing, set to None for no scaling.
+        :param Union[int, None] image_processing_width: image width to scale to for image processing, set to None for
+        no scaling.
         :param str format: desired output image format.
         :param bool enable_tracking: enable dlib's correlaction tracker to track the detected face between frames.
+        :param str dlib_landmark_predictor_filename: Filename for facial features predictor. Use 5 landmark version for
+        slightly better performance whilst retaining ability to calculate face angle. May be incompatible with further
+         processing e.g. emotion detection requires the 68-landmark version.
         """
         self._image_processing_width = image_processing_width
         self._format = format
         self._face_rectangle_detector = dlib.get_frontal_face_detector()
-        self._predictor = dlib.shape_predictor(path.join(abs_file_path, predictor_file_name))
+        self._predictor = dlib.shape_predictor(path.join(abs_file_path, dlib_landmark_predictor_filename))
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
