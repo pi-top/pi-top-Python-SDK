@@ -7,6 +7,7 @@ class WebController(WebServer):
         self,
         get_frame=None,
         message_handlers={},
+        blueprints=[],
         **kwargs
     ):
         self.controller_blueprint = ControllerBlueprint(
@@ -16,7 +17,7 @@ class WebController(WebServer):
 
         WebServer.__init__(
             self,
-            blueprints=[self.controller_blueprint],
+            blueprints=[self.controller_blueprint] + blueprints,
             **kwargs
         )
 
@@ -31,6 +32,7 @@ class RoverWebController(WebServer):
         drive=None,
         pan_tilt=None,
         message_handlers={},
+        blueprints=[],
         **kwargs
     ):
         self.rover_blueprint = RoverControllerBlueprint(
@@ -42,7 +44,7 @@ class RoverWebController(WebServer):
 
         WebServer.__init__(
             self,
-            blueprints=[self.rover_blueprint],
+            blueprints=[self.rover_blueprint] + blueprints,
             **kwargs
         )
 
