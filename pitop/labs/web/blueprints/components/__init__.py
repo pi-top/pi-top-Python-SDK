@@ -8,5 +8,6 @@ class ComponentsBlueprint(Blueprint):
             "components",
             __name__,
             static_folder="components",
+            template_folder="templates",
             **kwargs
         )

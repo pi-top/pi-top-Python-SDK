@@ -42,6 +42,7 @@ class VideoBlueprint(Blueprint):
             name,
             __name__,
             static_folder="video",
+            template_folder="templates",
             **kwargs
         )
 

@@ -20,6 +20,7 @@ class MessagingBlueprint(Blueprint):
             "messaging",
             __name__,
             static_folder="messaging",
+            template_folder="templates",
             **kwargs
         )
 
