@@ -30,10 +30,13 @@ class RoverControllerBlueprint(Blueprint):
         if message_handlers.get('right_joystick') is None:
             message_handlers['right_joystick'] = self.right_joystick
 
-        # set has_pan_tilt in every request context for use in base_rover.html
+        # set show_left_joystick every request for use in base_rover.html
         @self.before_app_request
-        def set_has_pan_tilt():
-            g.has_pan_tilt = self.pan_tilt is not None
+        def set_show_left_joystick():
+            g.show_left_joystick = (
+                message_handlers.get('left_joystick') is not None
+                or self.pan_tilt is not None
+            )
 
         self.controller_blueprint = ControllerBlueprint(
             get_frame=get_frame, message_handlers=message_handlers)
