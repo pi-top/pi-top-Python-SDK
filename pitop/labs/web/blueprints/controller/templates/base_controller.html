@@ -4,13 +4,9 @@
   Web Controller
 {% endblock %}
 
-{% block styles %}
+{% block head %}
   {{ super() }}
   <link rel="stylesheet" href="/video/styles.css"></script>
-{% endblock %}
-
-{% block scripts %}
-  {{ super() }}
   <script type="text/javascript" src="/components/vendor/nipplejs.min.js"></script>
   <script type="text/javascript" src="/components/joystick-component.js"></script>
   <script type="text/javascript" src="/messaging/setup.js"></script>

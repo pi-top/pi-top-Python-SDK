@@ -1,14 +1,8 @@
 <html>
   <head>
+    {% block title %}{% endblock %}
     {% block head %}
-      <title>{% block title %}{% endblock %}</title>
-
-      {% block styles %}
-        <link rel="stylesheet" href="/base/index.css"></link>
-      {% endblock %}
-
-      {% block scripts %}
-      {% endblock %}
+      <link rel="stylesheet" href="/base/index.css"></link>
     {% endblock %}
   </head>
 
