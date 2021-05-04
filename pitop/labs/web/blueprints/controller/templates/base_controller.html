@@ -6,8 +6,7 @@
 
 {% block head %}
   {{ super() }}
-  <link rel="stylesheet" href="/video/styles.css"></script>
-  <script type="text/javascript" src="/components/vendor/nipplejs.min.js"></script>
-  <script type="text/javascript" src="/components/joystick-component.js"></script>
-  <script type="text/javascript" src="/messaging/setup.js"></script>
+  {% include "/video/setup.html" %}
+  {% include "/components/setup.html" %}
+  {% include "/messaging/setup.html" %}
 {% endblock %}
