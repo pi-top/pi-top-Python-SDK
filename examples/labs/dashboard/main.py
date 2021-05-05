@@ -4,9 +4,9 @@ from time import sleep
 import gevent
 
 robot = Pitop()
-robot.add_component(LED('D1'))
-robot.add_component(UltrasonicSensor('D2'))
-robot.add_component(Button('D3'))
+robot.add_component(Button('D1'))
+robot.add_component(LED('D2'))
+robot.add_component(UltrasonicSensor('D3'))
 
 dashboard_server = WebController()
 
