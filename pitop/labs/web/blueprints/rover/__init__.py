@@ -44,7 +44,7 @@ class RoverControllerBlueprint(Blueprint):
             def right_joystick(data): return pan_tilt_handler(pan_tilt, data)
             message_handlers['right_joystick'] = right_joystick
 
-        # set show_left_joystick every request for use in base_rover.html
+        # set show_left_joystick every request for use in base-rover.html
         @self.before_app_request
         def set_show_left_joystick():
             g.show_left_joystick = (
