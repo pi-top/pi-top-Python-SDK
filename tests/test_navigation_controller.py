@@ -1,5 +1,5 @@
 from sys import modules
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from unittest import TestCase
 
 modules_to_patch = [
@@ -185,7 +185,8 @@ class TestNavigationController(TestCase):
                          1 / (navigation_controller._drive_manager._max_deceleration_distance * linear_speed_factor))
 
         self.assertEqual(navigation_controller._drive_manager.pid.heading.Kp,
-                         1 / (math.radians(navigation_controller._drive_manager._max_deceleration_angle) * angular_speed_factor)
+                         1 / (math.radians(navigation_controller._drive_manager._max_deceleration_angle)
+                              * angular_speed_factor)
                          )
 
     @staticmethod
@@ -194,6 +195,7 @@ class TestNavigationController(TestCase):
         return NavigationController(drive_controller=DriveController())
 
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
+        sleep(0.25)  # give robot time to slow down
         self.assertAlmostEqual(navigation_controller.robot_state.x, x_expected, places=1)
         self.assertAlmostEqual(navigation_controller.robot_state.y, y_expected, places=1)
         self.assertAlmostEqual(navigation_controller.robot_state.angle, angle_expected, delta=4)
