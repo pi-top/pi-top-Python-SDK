@@ -17,14 +17,26 @@ class GoalCriteria:
 
         self._max_distance_error = None
         self._max_angle_error = None
+        self._starting_angle_error = None
 
     def angle(self, angle_error):
-        return abs(angle_error) < self._max_angle_error
+        if self._starting_angle_error is None:
+            self._starting_angle_error = angle_error
+        if abs(angle_error) < self._max_angle_error:
+            self._starting_angle_error = None
+            return True
+        if self._starting_angle_error / (angle_error + 1e-6) < 0:
+            # if the starting angle error is a different sign to the current angle error, then robot has overshot goal.
+            # Consider goal to be reached to avoid trying to adjust angle at low angular speeds where starting friction
+            # prevents precise movement
+            self._starting_angle_error = None
+            return True
+        return False
 
-    def distance(self, distance_error, heading_error):
+    def distance(self, distance_error, angle_error):
         if abs(distance_error) < self._max_distance_error:
             return True
-        if abs(heading_error) > math.pi / 2:
+        if abs(angle_error) > math.pi / 2:
             # Overshot goal, error will be small so consider goal to be reached.
             # Otherwise robot would have to reverse a tiny amount which would be poor UX.
             # Robot will correct itself on subsequent navigation calls anyway.
@@ -123,15 +135,14 @@ class NavigationController:
         self._sub_goal_nav_thread = None
 
         # Odometry updates
-        self._pose_prediction_frequency = 10.0  # Hz
-        self._pose_prediction_dt = 1.0 / self._pose_prediction_frequency
+        self._measurement_frequency = 10.0  # Hz
+        self._measurement_dt = 1.0 / self._measurement_frequency
         self._new_pose_event = Event()
-        self._pose_prediction_scheduler = Thread(target=self.__pose_prediction_scheduler, daemon=True)
+        self._pose_prediction_scheduler = Thread(target=self.__measurement_scheduler, daemon=True)
         self._pose_prediction_scheduler.start()
 
         # Robot state tracking and driving management
-        self.robot_state = RobotStateFilter(measurement_frequency=self._pose_prediction_frequency)
-
+        self.robot_state = RobotStateFilter(measurement_frequency=self._measurement_frequency)
         self._drive_manager = RobotDrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
                                                   max_angular_speed=self._drive_controller.max_robot_angular_speed
                                                   )
@@ -286,10 +297,10 @@ class NavigationController:
             x_diff = x_goal - x if not self._backwards else x - x_goal
             y_diff = y_goal - y if not self._backwards else y - y_goal
 
-            heading_error = normalize_angle(theta - math.atan2(y_diff, x_diff))
-            angular_speed = self.__get_angular_speed(heading_error=heading_error)
+            angle_error = normalize_angle(theta - math.atan2(y_diff, x_diff))
+            angular_speed = self.__get_angular_speed(angle_error=angle_error)
 
-            if self._goal_criteria.angle(heading_error):
+            if self._goal_criteria.angle(angle_error):
                 self.__sub_goal_reached()
                 break
 
@@ -302,14 +313,14 @@ class NavigationController:
             x_diff = x_goal - x if not self._backwards else x - x_goal
             y_diff = y_goal - y if not self._backwards else y - y_goal
 
-            heading_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
+            angle_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
             distance_error = -np.hypot(x_diff, y_diff) if not self._backwards else np.hypot(x_diff, y_diff)
 
-            if self._goal_criteria.distance(distance_error=distance_error, heading_error=heading_error):
+            if self._goal_criteria.distance(distance_error=distance_error, angle_error=angle_error):
                 self.__sub_goal_reached()
                 break
 
-            angular_speed = self.__get_angular_speed(heading_error=heading_error)
+            angular_speed = self.__get_angular_speed(angle_error=angle_error)
             linear_speed = self.__get_linear_speed(distance_error=distance_error)
 
             self._drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
@@ -320,7 +331,7 @@ class NavigationController:
             x, y, theta = self.__get_new_pose()
 
             heading_error = self.__get_angle_error(current_angle=theta, target_angle=theta_goal)
-            angular_speed = self.__get_angular_speed(heading_error=heading_error)
+            angular_speed = self.__get_angular_speed(angle_error=heading_error)
 
             if self._goal_criteria.angle(heading_error):
                 self.__sub_goal_reached()
@@ -375,28 +386,24 @@ class NavigationController:
     def __get_angle_error(current_angle, target_angle):
         return normalize_angle(current_angle - target_angle)
 
-    def __get_angular_speed(self, heading_error):
-        return self._drive_manager.max_angular_velocity * self._drive_manager.pid.heading(heading_error)
+    def __get_angular_speed(self, angle_error):
+        return self._drive_manager.max_angular_velocity * self._drive_manager.pid.heading(angle_error)
 
     def __get_linear_speed(self, distance_error):
         return self._drive_manager.max_velocity * self._drive_manager.pid.distance(distance_error)
 
-    def __pose_prediction_scheduler(self):
+    def __measurement_scheduler(self):
         s = sched.scheduler(time.time, time.sleep)
         current_time = time.time()
-        s.enterabs(current_time + self._pose_prediction_dt, 1, self.__predict_pose, (s, current_time))
+        s.enterabs(current_time + self._measurement_dt, 1, self.__measurement_loop, (s, current_time))
         s.run()
 
-    def __predict_pose(self, s, previous_time):
+    def __measurement_loop(self, s, previous_time):
         current_time = time.time()
         dt = current_time - previous_time
 
         odom_measurements = self.__get_odometry_measurements()
-
-        imu_measurements = None
-        if self._imu is not None:
-            imu_measurements = self.__get_imu_measurements()
-
+        imu_measurements = None if self._imu is None else self.__get_imu_measurements()
         self.robot_state.add_measurements(odom_measurements=odom_measurements,
                                           imu_measurements=imu_measurements,
                                           dt=dt)
@@ -404,7 +411,7 @@ class NavigationController:
         self._new_pose_event.set()
         self._new_pose_event.clear()
 
-        s.enterabs(current_time + self._pose_prediction_dt, 1, self.__predict_pose, (s, current_time))
+        s.enterabs(current_time + self._measurement_dt, 1, self.__measurement_loop, (s, current_time))
 
     def __get_odometry_measurements(self):
         left_wheel_speed = self._drive_controller.left_motor.current_speed
