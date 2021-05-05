@@ -37,11 +37,11 @@ class RoverControllerBlueprint(Blueprint):
         )
 
         if message_handlers.get('left_joystick') is None:
-            def left_joystick(data): return drive_handler(drive, data)
+            def left_joystick(data): return pan_tilt_handler(pan_tilt, data)
             message_handlers['left_joystick'] = left_joystick
 
         if message_handlers.get('right_joystick') is None:
-            def right_joystick(data): return pan_tilt_handler(pan_tilt, data)
+            def right_joystick(data): return drive_handler(drive, data)
             message_handlers['right_joystick'] = right_joystick
 
         # set show_left_joystick every request for use in base-rover.html
