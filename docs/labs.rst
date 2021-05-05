@@ -9,7 +9,11 @@ Labs is subject to change so use at your own risk.
 
 Web
 ====
-!!!!!!Overview of why things exist!!!!!!!
+
+The Web Labs have been created with the goal of giving users the power to create
+websites that run on the pi-top, and so can control the pi-top remotely. To
+achieve this we have added a number of classes which each serve a different
+purpose:
 
 - WebServer for simple websites
 - WebController for building websites that interact with your pi-top
@@ -157,7 +161,7 @@ are not required to build simple web controllers:
     camera = Camera()
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     server = WebController(
       get_frame=camera.get_frame,
@@ -234,7 +238,7 @@ Then you are able to extend the :code:`base.html` in your other html files:
     {% block title %}Custom Page{% endblock %}
 
     {% block head %}
-      <!-- call super() to add index.css --> 
+      <!-- call super() to add index.css -->
       {{ super() }}
       <link rel="styles" href="custom-styles.css"></link>
     {% endblock %}
@@ -374,7 +378,7 @@ argument.
     from pitop.labs import WebServer, MessagingBlueprint
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     messaging = MessagingBlueprint(message_handlers={
         'dinner_changed': on_dinner_change
@@ -389,7 +393,7 @@ can send a message back to the page:
 .. code-block:: python
 
     def on_dinner_change(data, send):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
         send({ 'type': 'dinner_received' })
 
 To receive messages sent from a message handler the MessagingBlueprint also adds
@@ -410,13 +414,13 @@ Another way of sending messages to the page is to use the MessagingBlueprint's
 
 .. code-block:: python
 
-    from pitop import Button    
+    from pitop import Button
     from pitop.labs import WebServer, MessagingBlueprint
 
     button = Button('D1')
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     messaging = MessagingBlueprint(message_handlers={
         'dinner_changed': on_dinner_change
@@ -431,7 +435,7 @@ Another way of sending messages to the page is to use the MessagingBlueprint's
     server.serve_forever()
 
 This is received by the same subscribe function as before:
-    
+
 .. code-block:: html
 
     <script>
@@ -484,7 +488,7 @@ This adds a set of classes that can be used to style your video:
 In order to render the video on the page you must use an :code:`img` tag with
 the :code:`src` attribute of :code:`video.mjpg`:
 
-.. code-block:: html 
+.. code-block:: html
 
     <body>
       <img src="video.mjpg" class="background-video"></img>
@@ -511,7 +515,7 @@ This makes it possible to to add multiple video feeds to the page, where the
 :code:`src` attribute uses the name of the VideoBlueprint with a :code:`.mjpg`
 extension:
 
-.. code-block:: html 
+.. code-block:: html
 
     <body>
       <img src="video-one.mjpg"></img>
@@ -543,7 +547,7 @@ that interact with your pi-top. The blueprints it combines are the
     camera = Camera()
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     server = WebServer(blueprints=[
         ControllerBlueprint(
@@ -570,7 +574,7 @@ blocks defined in :code:`base.html` when extending :code:`base-controller.html`:
     {% block title %}My WebController{% endblock %}
 
     {% block head %}
-      <!-- call super() to setup blueprints --> 
+      <!-- call super() to setup blueprints -->
       {{ super() }}
       <link rel="stylesheet" href="custom-styles.css"></link>
     {% endblock %}
@@ -626,7 +630,7 @@ template:
     {% block title %}My Rover Controller{% endblock %}
 
     {% block main %}
-      <!-- call super() to keep video and joysticks --> 
+      <!-- call super() to keep video and joysticks -->
       {{ super() }}
 
       <button onclick="publish({ type: 'clicked' })"></button>
