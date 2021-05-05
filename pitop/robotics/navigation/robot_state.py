@@ -42,7 +42,7 @@ class RobotStateFilter:
         self._kalman_filter.P = np.eye(5) * 1e-6
 
         sigma = 0.005 / (self._sigma_default_dt * measurement_frequency)
-        acceleration_dt = 0.001 / (self._sigma_default_dt * measurement_frequency)
+        acceleration_dt = 0.005 / (self._sigma_default_dt * measurement_frequency)
         # the Q matrix is the covariance of the expected state change over the time interval dt
         # A rule of thumb for Q is to set it between  0.5Δ𝑎  to  Δ𝑎 , where  Δ𝑎  is the maximum amount that the
         # acceleration will change between sample periods.
@@ -67,7 +67,8 @@ class RobotStateFilter:
         # Converting to m/s this is 0.01 m/s resolution (from wheel diameter of 0.0718)
         # Divide by two to give a max error of +/- 0.005 m/s
         # This would usually be taken as the 3*sigma value but given all the other errors in the system (wheel diameter,
-        # slippage etc) we'll use this value directly for sigma and say that 68% of values will lie within this value
+        # slippage etc) we'll use this value directly for sigma
+        # (i.e. that 68% of probable values will lie within this value)
         linear_velocity_sigma = 0.005
         self._linear_velocity_measurement_variance = linear_velocity_sigma ** 2
         # angular velocity is calculated from motor velocities, maximum error is 0.005 * 2 across both wheel speeds
@@ -101,7 +102,8 @@ class RobotStateFilter:
         """
         Full predict equation is x1 = Fx0 + Bu0 where F is constant and defined in __init__
         B is the control transition matrix which is multiplied by u0 (control vector)
-        B is derived from basic newtonian mechanics to predict new state from previous state information.
+        B is derived from basic newtonian mechanics to predict new state from the control input - in our case, we are
+        using the previously measured velocities as the control input
 
         Predict equations:
         x1 = x0 + dt * v0 * cos(theta + 0.5 * dt * w0)
