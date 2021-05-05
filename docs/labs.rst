@@ -234,7 +234,7 @@ Then you are able to extend the :code:`base.html` in your other html files:
     {% block title %}Custom Page{% endblock %}
 
     {% block head %}
-      <!-- call super() to add index.css --> 
+      <!-- call super() to add index.css -->
       {{ super() }}
       <link rel="styles" href="custom-styles.css"></link>
     {% endblock %}
@@ -410,7 +410,7 @@ Another way of sending messages to the page is to use the MessagingBlueprint's
 
 .. code-block:: python
 
-    from pitop import Button    
+    from pitop import Button
     from pitop.labs import WebServer, MessagingBlueprint
 
     button = Button('D1')
@@ -431,7 +431,7 @@ Another way of sending messages to the page is to use the MessagingBlueprint's
     server.serve_forever()
 
 This is received by the same subscribe function as before:
-    
+
 .. code-block:: html
 
     <script>
@@ -484,7 +484,7 @@ This adds a set of classes that can be used to style your video:
 In order to render the video on the page you must use an :code:`img` tag with
 the :code:`src` attribute of :code:`video.mjpg`:
 
-.. code-block:: html 
+.. code-block:: html
 
     <body>
       <img src="video.mjpg" class="background-video"></img>
@@ -511,7 +511,7 @@ This makes it possible to to add multiple video feeds to the page, where the
 :code:`src` attribute uses the name of the VideoBlueprint with a :code:`.mjpg`
 extension:
 
-.. code-block:: html 
+.. code-block:: html
 
     <body>
       <img src="video-one.mjpg"></img>
@@ -570,7 +570,7 @@ blocks defined in :code:`base.html` when extending :code:`base-controller.html`:
     {% block title %}My WebController{% endblock %}
 
     {% block head %}
-      <!-- call super() to setup blueprints --> 
+      <!-- call super() to setup blueprints -->
       {{ super() }}
       <link rel="stylesheet" href="custom-styles.css"></link>
     {% endblock %}
@@ -626,7 +626,7 @@ template:
     {% block title %}My Rover Controller{% endblock %}
 
     {% block main %}
-      <!-- call super() to keep video and joysticks --> 
+      <!-- call super() to keep video and joysticks -->
       {{ super() }}
 
       <button onclick="publish({ type: 'clicked' })"></button>
