@@ -161,7 +161,7 @@ are not required to build simple web controllers:
     camera = Camera()
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     server = WebController(
       get_frame=camera.get_frame,
@@ -378,7 +378,7 @@ argument.
     from pitop.labs import WebServer, MessagingBlueprint
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     messaging = MessagingBlueprint(message_handlers={
         'dinner_changed': on_dinner_change
@@ -393,7 +393,7 @@ can send a message back to the page:
 .. code-block:: python
 
     def on_dinner_change(data, send):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
         send({ 'type': 'dinner_received' })
 
 To receive messages sent from a message handler the MessagingBlueprint also adds
@@ -420,7 +420,7 @@ Another way of sending messages to the page is to use the MessagingBlueprint's
     button = Button('D1')
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     messaging = MessagingBlueprint(message_handlers={
         'dinner_changed': on_dinner_change
@@ -547,7 +547,7 @@ that interact with your pi-top. The blueprints it combines are the
     camera = Camera()
 
     def on_dinner_change(data):
-        print(f'dinner is now {}'.format(data))
+        print(f'dinner is now {data}')
 
     server = WebServer(blueprints=[
         ControllerBlueprint(
