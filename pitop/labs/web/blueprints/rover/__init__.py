@@ -36,6 +36,16 @@ class RoverControllerBlueprint(Blueprint):
             **kwargs
         )
 
+        passed_left_joystick_handler = message_handlers.get('left_joystick') is not None
+
+        # set show_left_joystick every request for use in base-rover.html
+        @self.before_app_request
+        def set_show_left_joystick():
+            g.show_left_joystick = (
+                passed_left_joystick_handler
+                or pan_tilt is not None
+            )
+
         if message_handlers.get('left_joystick') is None:
             def left_joystick(data): return pan_tilt_handler(pan_tilt, data)
             message_handlers['left_joystick'] = left_joystick
@@ -43,14 +53,6 @@ class RoverControllerBlueprint(Blueprint):
         if message_handlers.get('right_joystick') is None:
             def right_joystick(data): return drive_handler(drive, data)
             message_handlers['right_joystick'] = right_joystick
-
-        # set show_left_joystick every request for use in base-rover.html
-        @self.before_app_request
-        def set_show_left_joystick():
-            g.show_left_joystick = (
-                message_handlers.get('left_joystick') is not None
-                or pan_tilt is not None
-            )
 
         self.controller_blueprint = ControllerBlueprint(
             get_frame=get_frame, message_handlers=message_handlers)
