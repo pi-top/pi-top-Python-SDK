@@ -126,6 +126,7 @@ autodoc_mock_imports = [
     'serial',
     'simple_pid',
     'zmq',
+    'filterpy'
 ]
 
 # -- Options for manual page output ---------------------------------------
