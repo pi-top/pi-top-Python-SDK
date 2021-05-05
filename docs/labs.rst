@@ -9,7 +9,11 @@ Labs is subject to change so use at your own risk.
 
 Web
 ====
-!!!!!!Overview of why things exist!!!!!!!
+
+The Web Labs have been created with the goal of giving users the power to create
+websites that run on the pi-top, and so can control the pi-top remotely. To
+achieve this we have added a number of classes which each serve a different
+purpose:
 
 - WebServer for simple websites
 - WebController for building websites that interact with your pi-top
