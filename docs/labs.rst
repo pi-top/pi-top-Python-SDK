@@ -15,7 +15,7 @@ websites that run on the pi-top, and so can control the pi-top remotely. To
 achieve this we have added a number of classes which each serve a different
 purpose:
 
-- WebServer for simple websites
+- WebServer: for simple static websites or ground-up customisation
 - WebController for building websites that interact with your pi-top
 - RoverWebController for controlling rover projects
 - Prebuilt blueprints for quickly adding features to your custom WebServers
