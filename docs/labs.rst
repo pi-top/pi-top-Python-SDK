@@ -640,7 +640,7 @@ It is also possible to customise the message handlers used by the
 RoverControllerBlueprint, for example to swap the joysticks so the left drives
 the rover and the right controls pan tilt:
 
-.. literalinclude:: ../examples/labs/rover_controller/swap_joysticks.py
+.. literalinclude:: ../examples/labs/lefty_rover_controller/main.py
 
 .. _WSGIServer: http://www.gevent.org/api/gevent.pywsgi.html#gevent.pywsgi.WSGIServer
 .. _BaseServer: http://www.gevent.org/api/gevent.baseserver.html#gevent.baseserver.BaseServer
