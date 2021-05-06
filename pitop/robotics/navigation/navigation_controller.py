@@ -423,4 +423,4 @@ class NavigationController:
 
     def __get_imu_measurements(self):
         # TODO: perform calibration on gyroscope on startup to offset any measurement bias
-        return np.array([[math.radians(self._imu.gyroscope.z - 0.48)]])
+        return np.array([[math.radians(self._imu.gyroscope.z)]])
