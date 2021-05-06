@@ -649,6 +649,10 @@ the rover and the right controls pan tilt:
 
 .. literalinclude:: ../examples/labs/lefty_rover_controller/main.py
 
+Note that when :code:`left_joystick` or :code:`right_joystick` are in
+:code:`message_handlers` the :code:`pan_tilt` and :code:`drive` arguments become
+optional respectively.
+
 .. _WSGIServer: http://www.gevent.org/api/gevent.pywsgi.html#gevent.pywsgi.WSGIServer
 .. _BaseServer: http://www.gevent.org/api/gevent.baseserver.html#gevent.baseserver.BaseServer
 .. _Jinja templates: https://flask.palletsprojects.com/en/1.1.x/tutorial/templates/
