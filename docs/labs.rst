@@ -17,7 +17,7 @@ purpose:
 
 - WebServer: for simple static websites or ground-up customisation
 - WebController: 'batteries included' WebServer for building websites that interact with your pi-top
-- RoverWebController for controlling rover projects
+- RoverWebController: preconfigured but customisable WebController for rover-style robots
 - Prebuilt blueprints for quickly adding features to your custom WebServers
 
 WebServer
