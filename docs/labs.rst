@@ -140,7 +140,7 @@ the :code:`blueprints` keyword argument:
 We provide a number of premade blueprints:
 
 * :ref:`labs:BaseBlueprint`
-* :ref:`labs:ComponentsBlueprint`
+* :ref:`labs:WebComponentsBlueprint`
 * :ref:`labs:MessagingBlueprint`
 * :ref:`labs:VideoBlueprint`
 
@@ -269,32 +269,32 @@ If you want to use the static files provided without extending the
       </body>
     </html>
 
-ComponentsBlueprint
-====================
+WebComponentsBlueprint
+=======================
 
-ComponentsBlueprint provides a set of `Web Components`_ for adding complex
+WebComponentsBlueprint provides a set of `Web Components`_ for adding complex
 elements to the page.
 
-Adding the ComponentsBlueprint to a WebServer is done as follows:
+Adding the WebComponentsBlueprint to a WebServer is done as follows:
 
 .. code-block:: python
 
-    from pitop.labs import WebServer, ComponentsBlueprint
+    from pitop.labs import WebServer, WebComponentsBlueprint
 
     server = WebServer(blueprints=[
-        ComponentsBlueprint()
+        WebComponentsBlueprint()
     ])
 
     server.serve_forever()
 
-To add the components to the page ComponentsBlueprint provides a setup template
+To add the components to the page WebComponentsBlueprint provides a setup template
 :code:`setup-components.html` that can be included in the :code:`head` of your
 page
 
 .. code-block:: jinja
 
     <head>
-      {% include "setup-components.html" %}
+      {% include "setup-webcomponents.html" %}
     </head>
 
 Currently the only component included is the :code:`joystick-component`, which
@@ -321,8 +321,8 @@ to the page by adding the :code:`nipplejs.min.js` and
 .. code-block:: html
 
     <head>
-      <script type="text/javascript" src="/components/vendor/nipplejs.min.js"></script>
-      <script type="text/javascript" src="/components/joystick-component.js"></script>
+      <script type="text/javascript" src="/webcomponents/vendor/nipplejs.min.js"></script>
+      <script type="text/javascript" src="/webcomponents/joystick-component.js"></script>
     </head>
 
 MessagingBlueprint
@@ -536,7 +536,7 @@ ControllerBlueprint
 
 ControllerBlueprint combines blueprints that are useful in creating websites
 that interact with your pi-top. The blueprints it combines are the
-:ref:`labs:BaseBlueprint`, :ref:`labs:ComponentsBlueprint`,
+:ref:`labs:BaseBlueprint`, :ref:`labs:WebComponentsBlueprint`,
 :ref:`labs:MessagingBlueprint` and :ref:`labs:VideoBlueprint`.
 
 .. code-block:: python

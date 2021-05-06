@@ -3,7 +3,7 @@ from .web.webcontroller import WebController, RoverWebController
 from .web.blueprints import (
     RoverControllerBlueprint,
     BaseBlueprint,
-    ComponentsBlueprint,
+    WebComponentsBlueprint,
     ControllerBlueprint,
     MessagingBlueprint,
     VideoBlueprint
