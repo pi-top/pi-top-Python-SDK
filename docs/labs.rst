@@ -146,6 +146,13 @@ We provide a number of premade blueprints:
 
 By default WebServer uses the :ref:`labs:BaseBlueprint`
 
+.. warning::
+  When using WebServer in a multithreaded project you must use
+  `gevent threading`_. This is because using Python standard library threading
+  while using a gevent server can result in unexpected behaviour, or may not
+  work at all. See the `dashboard example`_ for a basic idea of how gevent
+  threading can be used.
+
 WebController
 ==============
 
@@ -649,6 +656,8 @@ the rover and the right controls pan tilt:
 .. _route decorator: https://flask.palletsprojects.com/en/1.1.x/api/#flask.Flask.route
 .. _Flask Sockets: https://github.com/heroku-python/flask-sockets
 .. _blueprints: https://flask.palletsprojects.com/en/1.1.x/blueprints/
+.. _gevent threading: http://www.gevent.org/api/gevent.threading.html
+.. _dashboard example: https://github.com/pi-top/pi-top-Python-SDK/tree/configurable-web-labs/examples/labs/dashboard/main.py
 .. _Web Components: https://developer.mozilla.org/en-US/docs/Web/Web_Components
 .. _JavaScript: https://developer.mozilla.org/en-US/docs/Web/JavaScript
 .. _JavaScript Objects: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types#object_literals
