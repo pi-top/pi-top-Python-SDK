@@ -30,7 +30,7 @@ class RoverControllerBlueprint(Blueprint):
     ):
         Blueprint.__init__(
             self,
-            "alex",
+            "rover",
             __name__,
             template_folder="templates",
             **kwargs
