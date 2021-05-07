@@ -1,1 +1,2 @@
 include pitop/robotics/json/*.json
+include pitop/miniscreen/images/*.gif

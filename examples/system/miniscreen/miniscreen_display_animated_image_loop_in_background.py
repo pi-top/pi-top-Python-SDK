@@ -5,9 +5,7 @@ from time import sleep
 pitop = Pitop()
 miniscreen = pitop.miniscreen
 
-# Set image to loop
-# Image provided by 'pt-project-files'
-image = Image.open("/usr/share/pt-project-files/images/rocket.gif")
+image = Image.open("/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif")
 
 # Run animation loop in background by setting `background` to True
 miniscreen.play_animated_image(image, background=True, loop=True)

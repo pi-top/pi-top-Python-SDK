@@ -28,8 +28,7 @@ keep_running = True
 
 
 def display_gif_and_exit():
-    # Load image
-    image = Image.open("/usr/share/pt-project-files/images/rocket.gif")
+    image = Image.open("/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif")
     pitop.miniscreen.play_animated_image(image)
     pitop.miniscreen.display_text("Bye!")
     sleep(2)
