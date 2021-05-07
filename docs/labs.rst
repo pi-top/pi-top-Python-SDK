@@ -1,29 +1,40 @@
-===============================
-Labs - Experimental APIs
-===============================
+==============================
+🧪 Labs - Experimental APIs ⚠️
+==============================
 
+.. note::
+   The pi-top Python SDK Labs are a set of classes which are being provided as
+   experiments in exciting new ways to interact with your device.
 
-The pi-top Python SDK Labs are a set of classes which are being provided as
-experiments in exciting new ways to interact with your device. Everything in
-Labs is subject to change so use at your own risk.
+.. warning::
+   Everything in Labs is subject to change - so use at your own risk!
 
 Web
-====
+===
 
-The Web Labs have been created with the goal of giving users the power to create
-websites that run on the pi-top, and so can control the pi-top remotely. To
-achieve this we have added a number of classes which each serve a different
-purpose:
+This Web API has been created with the goal of giving users the ability to
+easily create a web application that runs directly on the pi-top that can
+easily offer a dynamic, interactive interface for controlling the pi-top.
 
-- WebServer: for simple static websites or ground-up customisation
-- WebController: 'batteries included' WebServer for building websites that interact with your pi-top
-- RoverWebController: preconfigured but customisable WebController for rover-style robots
-- Blueprints: a selection of prebuilt features to drop into your custom WebServers
+The Web API provides a selection of :ref:`web server interfaces<labs:Servers>`,
+as well as a selection of prebuilt features known as :ref:`Blueprints<labs:Blueprints>`
+to be used with these servers.
+
+For examples of how to use this, check out the `labs examples directory on GitHub`_.
+
+Servers
+-------
+
+For simple static web apps or ground-up customisation, use :ref:`WebServer<labs:WebServer>`.
+
+If you would like a 'batteries included' WebServer that makes it easy to interact with your pi-top, use :ref:`WebController<labs:WebController>`.
+
+For a quick way to control your pi-top [4] Robotics Kit, use :ref:`RoverWebController<labs:RoverWebController>`, which offers a preconfigured but customisable WebController for rover-style robots.
 
 WebServer
-==========
+~~~~~~~~~
 
-The WebServer class is used to create a zero config server that can:
+The WebServer class is used to create a zero-config server that can:
 
 * serve static files and templates
 * handle requests
@@ -56,7 +67,7 @@ file :code:`layout.html` in the same directory as your WebServer:
 
     <html>
       <head>
-          <title>My Website</title>
+          <title>My Web App</title>
       </head>
       <body>
         {% block body %}
@@ -154,11 +165,11 @@ By default WebServer uses the :ref:`labs:BaseBlueprint`
   threading can be used.
 
 WebController
-==============
+~~~~~~~~~~~~~
 
 The WebController class is subclass of :ref:`labs:WebServer` that uses the
-:ref:`labs:ControllerBlueprint`. It exists as a convenience class so blueprints
-are not required to build simple web controllers:
+:ref:`labs:ControllerBlueprint`. It exists as a convenience class so that
+blueprints are not required to be able to build simple web controllers.
 
 .. code-block:: python
 
@@ -180,11 +191,11 @@ are not required to build simple web controllers:
 See the :ref:`labs:ControllerBlueprint` reference for more detail.
 
 RoverWebController
-==================
+~~~~~~~~~~~~~~~~~~
 
 The RoverWebController class is subclass of :ref:`labs:WebServer` that uses the
-:ref:`labs:RoverControllerBlueprint`. It exists as a convenience class so
-blueprints are not required to build simple rover web controllers:
+:ref:`labs:RoverControllerBlueprint`. It exists as a convenience class so that
+blueprints are not required to build simple rover web controllers.
 
 .. code-block:: python
 
@@ -206,8 +217,11 @@ blueprints are not required to build simple rover web controllers:
 
 See the :ref:`labs:RoverControllerBlueprint` reference for more detail.
 
+Blueprints
+----------
+
 BaseBlueprint
-===============
+~~~~~~~~~~~~~
 
 BaseBlueprint provides a layout and styles that are the base of the
 templates found in other blueprints. It adds a :code:`base.html` template which
@@ -277,7 +291,7 @@ If you want to use the static files provided without extending the
     </html>
 
 WebComponentsBlueprint
-=======================
+~~~~~~~~~~~~~~~~~~~~~~
 
 WebComponentsBlueprint provides a set of `Web Components`_ for adding complex
 elements to the page.
@@ -333,7 +347,7 @@ to the page by adding the :code:`nipplejs.min.js` and
     </head>
 
 MessagingBlueprint
-===================
+~~~~~~~~~~~~~~~~~~
 
 MessagingBlueprint is used to communicate between your python code and the page.
 
@@ -458,7 +472,7 @@ There is one difference between :code:`broadcast` and :code:`send`:
 responds to the client that sent the message being handled.
 
 VideoBlueprint
-===============
+~~~~~~~~~~~~~~
 
 VideoBlueprint adds the ability to add a video feed from your python code to the
 page.
@@ -539,9 +553,9 @@ do so by adding them to the page yourself:
     </head>
 
 ControllerBlueprint
-===================
+~~~~~~~~~~~~~~~~~~~
 
-ControllerBlueprint combines blueprints that are useful in creating websites
+ControllerBlueprint combines blueprints that are useful in creating web apps
 that interact with your pi-top. The blueprints it combines are the
 :ref:`labs:BaseBlueprint`, :ref:`labs:WebComponentsBlueprint`,
 :ref:`labs:MessagingBlueprint` and :ref:`labs:VideoBlueprint`.
@@ -592,7 +606,7 @@ blocks defined in :code:`base.html` when extending :code:`base-controller.html`:
     {% endblock %}
 
 RoverControllerBlueprint
-========================
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 RoverControllerBlueprint uses the :ref:`labs:ControllerBlueprint` to create a
 premade web controller specifically built for rover projects.
@@ -653,6 +667,8 @@ Note that when :code:`left_joystick` or :code:`right_joystick` are in
 :code:`message_handlers` the :code:`pan_tilt` and :code:`drive` arguments do not
 need to be passed respectively.
 
+
+.. _labs examples directory on GitHub: https://github.com/pi-top/pi-top-Python-SDK/tree/master/examples/labs
 .. _WSGIServer: http://www.gevent.org/api/gevent.pywsgi.html#gevent.pywsgi.WSGIServer
 .. _BaseServer: http://www.gevent.org/api/gevent.baseserver.html#gevent.baseserver.BaseServer
 .. _Jinja templates: https://flask.palletsprojects.com/en/1.1.x/tutorial/templates/
