@@ -68,27 +68,25 @@ class DriveController(Stateful, Recreatable):
             return fcn(self, *args, **kwargs)
         return check_initialization
 
-    def _calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
+    def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
         speed_left = linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
-        rpm_right = self._speed_to_rpm(speed_right)
-        rpm_left = self._speed_to_rpm(speed_left)
 
-        if abs(rpm_right) > self._max_motor_rpm or abs(rpm_left) > self._max_motor_rpm:
-            factor = self._max_motor_rpm / max(abs(rpm_left), abs(rpm_right))
-            rpm_right = rpm_right * factor
-            rpm_left = rpm_left * factor
+        if abs(speed_right) > self._max_motor_speed or abs(speed_left) > self._max_motor_speed:
+            factor = self._max_motor_speed / max(abs(speed_left), abs(speed_right))
+            speed_right = speed_right * factor
+            speed_left = speed_left * factor
 
-        return rpm_left, rpm_right
+        return speed_left, speed_right
 
     @is_initialized
     def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
-        rpm_left, rpm_right = self._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
-        self.left_motor.set_target_rpm(target_rpm=rpm_left)
-        self.right_motor.set_target_rpm(target_rpm=rpm_right)
+        speed_left, speed_right = self._calculate_motor_speeds(linear_speed, angular_speed, turn_radius)
+        self.left_motor.set_target_speed(target_speed=speed_left)
+        self.right_motor.set_target_speed(target_speed=speed_right)
 
     @is_initialized
     def forward(self, speed_factor, hold=False):
