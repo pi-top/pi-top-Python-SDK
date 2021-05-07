@@ -1,0 +1,20 @@
+{% extends "base-controller.html" %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="styles.css"></link>
+  <script type="text/javascript" src="photo.js"></script>
+{% endblock %}
+
+{% block header %}
+  <input id="name-input" type="text" placeholder="Photo Name"></input>
+
+  <button onclick="savePhoto()">
+    Save Photo
+  </button>
+{% endblock %}
+
+{% block main %}
+  <img src="video.mjpg" class="background-video"></img>
+  <div id="flash"></div>
+{% endblock %}

@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    {% block head %}
+      <link rel="stylesheet" href="/base/index.css"></link>
+    {% endblock %}
+  </head>
+
+  <body>
+    {% block body %}
+      <header> {% block header %}{% endblock %} </header>
+      <main> {% block main %}{% endblock %} </main>
+      <footer> {% block footer %}{% endblock %} </footer>
+    {% endblock %}
+  </body>
+</html>

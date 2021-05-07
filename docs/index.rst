@@ -84,4 +84,5 @@ Table of Contents
     api_pitop_peripheral_devices
     api_system_devices
     cli_tools
+    labs
     more
