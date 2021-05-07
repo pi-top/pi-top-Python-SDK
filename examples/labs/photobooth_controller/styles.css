@@ -1,0 +1,50 @@
+header {
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+input {
+  border-radius: 15px;
+  height: 30px;
+  width: 300px;
+  padding: 0 15px;
+}
+
+button {
+  border: 2px solid gainsboro;
+  border-radius: 15px;
+  color: white;
+  font-weight: bold;
+  height: 30px;
+  min-width: 100px;
+  padding: 0 10px;
+  text-align: center;
+  background-color: var(--background-color);
+  opacity: 1;
+  margin: 0 5px;
+}
+
+button:active {
+  opacity: 0.8;
+}
+
+#flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  background: white;
+  height: 100vh;
+  width: 100vw;
+}
+
+.visible {
+  visibility: visible !important;
+}
+
+.fadeout {
+  opacity: 0;
+  transition: opacity 0.75s ease-out;
+}

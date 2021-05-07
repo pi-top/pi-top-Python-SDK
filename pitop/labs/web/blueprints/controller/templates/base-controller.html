@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Web Controller
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  {% include "setup-video.html" %}
+  {% include "setup-messaging.html" %}
+  {% include "setup-webcomponents.html" %}
+{% endblock %}

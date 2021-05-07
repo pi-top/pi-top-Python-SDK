@@ -1,0 +1,43 @@
+{% extends "base-controller.html" %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="styles.css"></link>
+{% endblock %}
+
+{% block main %}
+  <img src="video.mjpg" class="background-video"></img>
+
+  <div class="speed-container">
+    <div id="speed-indicator" style="height: 100%"></div>
+  </div>
+
+  <script>
+    document.addEventListener("keydown", function (event) {
+      publish({
+        type: "key_down",
+        data: { key: event.key, code: event.code, keyCode: event.keyCode },
+      });
+    });
+
+    document.addEventListener("keyup", function (event) {
+      publish({
+        type: "key_up",
+        data: { key: event.key, code: event.code, keyCode: event.keyCode },
+      });
+    });
+
+    function showSpeed(speed = 0.2) {
+      const speedIndicator = document.getElementById("speed-indicator");
+      speedIndicator.style = `height:${100 - (speed * 100)}%`;
+    }
+
+    subscribe((message) => {
+      if (message.type === 'speed') {
+        showSpeed(message.data)
+      }
+    })
+
+    showSpeed()
+  </script>
+{% endblock %}
