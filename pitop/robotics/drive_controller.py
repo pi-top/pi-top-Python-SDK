@@ -41,9 +41,7 @@ class DriveController(Stateful, Recreatable):
         self.right_motor = EncoderMotor(port_name=right_motor_port,
                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
 
-        self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
-
-        self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
+        self._max_motor_speed = floor(min(self.left_motor.max_speed, self.right_motor.max_speed))
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
 
         self.__target_lock_pid_controller = PID(Kp=0.045,
@@ -183,14 +181,6 @@ class DriveController(Stateful, Recreatable):
         forward.
         """
         self.robot_move(self._linear_speed_x_hold, 0)
-
-    def _speed_to_rpm(self, speed):
-        rpm = round(60.0 * speed / self._wheel_circumference, 1)
-        return rpm
-
-    def _rpm_to_speed(self, rpm):
-        speed = round(rpm * self._wheel_circumference / 60.0, 3)
-        return speed
 
     @property
     def wheel_separation(self):
