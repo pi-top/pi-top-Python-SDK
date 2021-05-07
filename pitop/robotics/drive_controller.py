@@ -162,7 +162,6 @@ class DriveController(Stateful, Recreatable):
         angle_radians = radians(angle)
         angular_speed = angle_radians / time_to_take
 
-        angular_speed = angular_speed * angle / abs(angle)
         rpm_left, rpm_right = self._calculate_motor_rpms(0, angular_speed, turn_radius=0)
         rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
         self.left_motor.set_target_rpm(target_rpm=rpm_left,

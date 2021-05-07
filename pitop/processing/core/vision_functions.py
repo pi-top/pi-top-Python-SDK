@@ -1,4 +1,5 @@
 from matplotlib import colors
+from imutils import grab_contours
 
 
 def import_opencv():
@@ -27,7 +28,7 @@ def color_mask(frame, hsv_lower, hsv_upper):
 def find_largest_contour(frame):
     cv2 = import_opencv()
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
-    image, contours, hierarchy = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = grab_contours(cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
 
     # Find the biggest contour (if detected)
     if len(contours) > 0:
