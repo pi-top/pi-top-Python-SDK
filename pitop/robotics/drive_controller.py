@@ -160,12 +160,12 @@ class DriveController(Stateful, Recreatable):
         angle_radians = radians(angle)
         angular_speed = angle_radians / time_to_take
 
-        rpm_left, rpm_right = self._calculate_motor_rpms(0, angular_speed, turn_radius=0)
-        rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
-        self.left_motor.set_target_rpm(target_rpm=rpm_left,
-                                       total_rotations=rotations * rpm_left / abs(rpm_left))
-        self.right_motor.set_target_rpm(target_rpm=rpm_right,
-                                        total_rotations=rotations * rpm_right / abs(rpm_right))
+        speed_left, speed_right = self._calculate_motor_speeds(0, angular_speed, turn_radius=0)
+        distance = abs(angle_radians) * self._wheel_separation / 2
+        self.left_motor.set_target_speed(target_speed=speed_left,
+                                         distance=distance * speed_left / abs(speed_left))
+        self.right_motor.set_target_speed(target_speed=speed_right,
+                                          distance=distance * speed_right / abs(speed_right))
         sleep(time_to_take)
 
     def stop(self):
