@@ -52,8 +52,6 @@ Depends:
 Recommends:
 # Preferred OLED font
  fonts-fs-me-pro,
-# Required for OLED examples
- pt-project-files,
 Suggests:
 # OLED system menu is optional, but useful for [4] users
  pt-sys-oled,
