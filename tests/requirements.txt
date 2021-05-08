@@ -1,7 +1,9 @@
+dlib
 gpiozero
 imutils
 matplotlib
 numpy
+onnxruntime
 opencv-python
 pitopcommon
 flask

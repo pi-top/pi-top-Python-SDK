@@ -1,23 +1,76 @@
-import configparser
-from os.path import (
-    exists,
-    isdir,
-    join,
-)
-from pathlib import Path
-
-from pitop.core.exceptions import UninitializedComponent
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
 )
+from pitop.robotics.two_servo_assembly_calibrator import TwoServoAssemblyCalibrator
 from pitop.pma import ServoMotor
+from pitop.pma.servo_controller import ServoHardwareSpecs
+from simple_pid import PID
+from time import time
+
+
+class PanTiltObjectTracker:
+    _pid_tunings = {
+        'slow': {"kp": 0.075, "ki": 0.002, "kd": 0.04},
+        'normal': {"kp": 0.25, "ki": 0.005, "kd": 0.1}
+    }
+    _target_lock_range = 10
+    _slow_fps_limit = 5.0
+
+    def __init__(self, pan_servo, tilt_servo):
+        self.__pan_servo = pan_servo
+        self.__tilt_servo = tilt_servo
+        self._previous_time = time()
+        self.pan_pid = PID(setpoint=0,
+                           output_limits=(-ServoHardwareSpecs.SPEED_RANGE, ServoHardwareSpecs.SPEED_RANGE))
+        self.tilt_pid = PID(setpoint=0,
+                            output_limits=(-ServoHardwareSpecs.SPEED_RANGE, ServoHardwareSpecs.SPEED_RANGE))
+        self.__set_pid_tunings(pid_mode="normal")
+
+    def __call__(self, center):
+        current_time = time()
+        if current_time - self._previous_time > 1 / self._slow_fps_limit:
+            pid_mode = "slow"
+        else:
+            pid_mode = "normal"
+        self._previous_time = current_time
+        self.__set_pid_tunings(pid_mode=pid_mode)
+
+        x, y = center
+
+        # TODO: ideally would wait until servo speed changed direction before turning off PID.
+        #  Currently, if object moves across center point during tracking the tracker will pause and
+        #  reset before continuing
+        if abs(x) < self._target_lock_range:
+            self.__pan_servo.sweep(0)
+            self.pan_pid.reset()
+        else:
+            pan_speed = self.pan_pid(x)
+            self.__pan_servo.sweep(pan_speed)
+
+        if abs(y) < self._target_lock_range:
+            self.__tilt_servo.sweep(0)
+            self.tilt_pid.reset()
+        else:
+            tilt_speed = self.tilt_pid(y)
+            self.__tilt_servo.sweep(tilt_speed)
+
+    def __set_pid_tunings(self, pid_mode):
+        self.pan_pid.tunings = list(self._pid_tunings[pid_mode].values())
+        self.tilt_pid.tunings = list(self._pid_tunings[pid_mode].values())
+
+    def reset(self):
+        self.pan_pid.reset()
+        self.tilt_pid.reset()
+
+    def stop(self):
+        self.__pan_servo.sweep(0)
+        self.__tilt_servo.sweep(0)
+        self.reset()
 
 
 class PanTiltController(Stateful, Recreatable):
-    CALIBRATION_FILE_DIR = ".config/pi-top/sdk"
-    CALIBRATION_FILE_NAME = "alex.conf"
-    _initialized = False
+    CALIBRATION_FILE_NAME = "pan_tilt.conf"
     _pan_servo = None
     _tilt_servo = None
 
@@ -25,32 +78,27 @@ class PanTiltController(Stateful, Recreatable):
         self.name = name
         self._pan_servo = ServoMotor(servo_pan_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
-        self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.CALIBRATION_FILE_NAME)
-        self._initialized = True
+
+        self._object_tracker = PanTiltObjectTracker(pan_servo=self._pan_servo, tilt_servo=self._tilt_servo)
 
         Stateful.__init__(self, children=['_pan_servo', '_tilt_servo'])
-        Recreatable.__init__(self, config_dict={'servo_pan_port': servo_pan_port, 'servo_tilt_port': servo_tilt_port, 'name': name})
-
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("PanTiltController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
+        Recreatable.__init__(self, config_dict={'servo_pan_port': servo_pan_port, 'servo_tilt_port': servo_tilt_port,
+                                                'name': name})
 
     @property
-    @is_initialized
     def pan_servo(self):
         return self._pan_servo
 
     @property
-    @is_initialized
     def tilt_servo(self):
         return self._tilt_servo
 
-    @is_initialized
+    @property
+    def track_object(self) -> PanTiltObjectTracker:
+        return self._object_tracker
+
     def calibrate(self, save=True, reset=False):
-        """Calibrates the robot to work in optimal conditions.
+        """Calibrates the assembly to work in optimal conditions.
 
         Based on the provided arguments, it will either load the calibration
         values stored in the pi-top, or it will run the calibration process,
@@ -63,81 +111,9 @@ class PanTiltController(Stateful, Recreatable):
             If `reset` is `true`, this parameter will cause the calibration values to be stored to the calibration file if set to `true`.
             If `save=False`, the calibration values will only be used for the current session.
         """
-        if not reset and exists(self.__calibration_file_path):
-            return self.__load_calibration()
-
-        # PanTilt servo calibration
-        self.pan_servo.zero_point = 0
-        self.tilt_servo.zero_point = 0
-        servo_lookup = {
-            'pan_zero_point': self.pan_servo,
-            'tilt_zero_point': self.tilt_servo,
-        }
-        for servo_name, servo_obj in servo_lookup.items():
-            value = self.__calibrate_servo(servo_name, servo_obj)
-            if save and value is not None:
-                self.__save_calibration(section='PAN_TILT', values_dict={servo_name: value})
-
-        print("Calibration finished.")
-
-    def __calibrate_servo(self, servo_name, servo_obj):
-        print(f"Starting {servo_name} servo motor calibration.")
-
-        while True:
-            servo_obj.target_angle = 0
-            print("Enter a angle to use as zero point.")
-            user_zero_setting = input("Value: ")
-            try:
-                user_zero_setting = int(user_zero_setting)
-                if user_zero_setting < int(servo_obj.angle_range[0]) or user_zero_setting > int(servo_obj.angle_range[1]):
-                    print(f"Invalid angle value {user_zero_setting}. "
-                          f" Please enter a value in the range {servo_obj.angle_range}")
-                    continue
-            except ValueError:
-                print("Please, enter a valid value")
-                continue
-
-            servo_obj.target_angle = user_zero_setting
-
-            print("Is the servo horn aligned with the body?")
-            finished_calibration = str(input("'y' to accept, 'n' to try again, 'e' to exit: "))
-            if finished_calibration.upper() == 'Y':
-                servo_obj.zero_point = user_zero_setting
-                return user_zero_setting
-            elif finished_calibration.upper() == 'E':
-                return None
-
-    def __load_calibration(self):
-        if exists(self.__calibration_file_path):
-            config = configparser.ConfigParser()
-            config.read(self.__calibration_file_path)
-
-            if 'PAN_TILT' in config.sections():
-                section_config = config['PAN_TILT']
-                if section_config.get('pan_zero_point'):
-                    # print(f"PanTilt.pan_servo.zero = {int(section_config.get('pan_zero_point'))}")
-                    self.pan_servo.zero_point = int(section_config.get('pan_zero_point'))
-
-                if section_config.get('tilt_zero_point'):
-                    # print(f"PanTilt.tilt_servo.zero = {int(section_config.get('tilt_zero_point'))}")
-                    self.tilt_servo.zero_point = int(section_config.get('tilt_zero_point'))
-
-    def __save_calibration(self, section, values_dict):
-        def create_config_file():
-            conf_file_dir = join(str(Path.home()), self.CALIBRATION_FILE_DIR)
-            if not isdir(conf_file_dir):
-                Path(conf_file_dir).mkdir(parents=True, exist_ok=True)
-            if not exists(self.__calibration_file_path):
-                Path(self.__calibration_file_path).touch()
-
-        if not exists(self.__calibration_file_path):
-            create_config_file()
-
-        config = configparser.ConfigParser()
-        config.read(self.__calibration_file_path)
-        if section not in config:
-            config[section] = {}
-
-        config[section].update({k: str(v) for k, v in values_dict.items()})
-        with open(self.__calibration_file_path, 'w') as configfile:
-            config.write(configfile)
+        calibration_object = TwoServoAssemblyCalibrator(
+            filename=self.CALIBRATION_FILE_NAME,
+            section_name="PAN_TILT",
+            servo_lookup_dict={"pan_zero_point": self.pan_servo, "tilt_zero_point": self.tilt_servo}
+        )
+        calibration_object.calibrate(save, reset)
