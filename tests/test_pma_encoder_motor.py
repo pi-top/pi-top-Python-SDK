@@ -1,3 +1,9 @@
+from pitop.pma.parameters import (
+    BrakingType,
+    ForwardDirection,
+    Direction
+)
+from pitop.pma.encoder_motor import EncoderMotor
 from math import pi
 from sys import modules
 from unittest.mock import Mock, patch
@@ -7,7 +13,6 @@ modules_to_patch = [
     "pitop.camera.camera",
     "atexit",
     "numpy",
-    "simple_pid",
     "pitopcommon.common_ids",
     "pitopcommon.current_session_info",
     "pitopcommon.ptdm",
@@ -21,12 +26,6 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
-from pitop.pma.encoder_motor import EncoderMotor
-from pitop.pma.parameters import (
-    BrakingType,
-    ForwardDirection,
-    Direction
-)
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
@@ -42,8 +41,8 @@ class EncoderMotorTestCase(TestCase):
             forward_direction=ForwardDirection.CLOCKWISE,
             braking_type=BrakingType.COAST)
 
-        self.assertEquals(wheel.wheel_diameter, 0.075)
-        self.assertEquals(round(wheel.wheel_circumference, 3), 0.236)
+        self.assertEquals(wheel.wheel_diameter, 0.0718)
+        self.assertEquals(round(wheel.wheel_circumference, 3), 0.226)
         self.assertEquals(wheel.forward_direction, ForwardDirection.CLOCKWISE)
 
     @patch("pitop.pma.EncoderMotor.max_rpm", 142)

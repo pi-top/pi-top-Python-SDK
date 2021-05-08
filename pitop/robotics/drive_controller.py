@@ -25,33 +25,33 @@ class DriveController(Stateful, Recreatable):
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
         self.name = name
-        self.right_motor_port = right_motor_port
+
+        # motor and wheel setup
         self.left_motor_port = left_motor_port
-
-        self._wheel_separation = 0.1675
-        self._wheel_diameter = 0.074
+        self.right_motor_port = right_motor_port
+        self.left_motor = EncoderMotor(port_name=self.left_motor_port,
+                                       forward_direction=ForwardDirection.CLOCKWISE
+                                       )
+        self.right_motor = EncoderMotor(port_name=self.right_motor_port,
+                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE
+                                        )
+        self._wheel_diameter = self.left_motor.wheel_diameter
         self._wheel_circumference = self._wheel_diameter * pi
-        self._linear_speed_x_hold = 0
-
-        self._left_motor_port = left_motor_port
-        self._right_motor_port = right_motor_port
-
-        self.left_motor = EncoderMotor(port_name=left_motor_port,
-                                       forward_direction=ForwardDirection.CLOCKWISE)
-        self.right_motor = EncoderMotor(port_name=right_motor_port,
-                                        forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
-
         self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
+        self.max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
 
-        self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
-        self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
+        # chassis setup
+        self._wheel_separation = 0.163
+        self.max_robot_angular_speed = self.max_motor_speed / (self._wheel_separation / 2)
 
+        # Target lock drive angle
+        self._linear_speed_x_hold = 0
         self.__target_lock_pid_controller = PID(Kp=0.045,
                                                 Ki=0.002,
                                                 Kd=0.0035,
                                                 setpoint=0,
-                                                output_limits=(-self._max_robot_angular_speed,
-                                                               self._max_robot_angular_speed)
+                                                output_limits=(-self.max_robot_angular_speed,
+                                                               self.max_robot_angular_speed)
                                                 )
 
         self._initialized = True
@@ -100,7 +100,7 @@ class DriveController(Stateful, Recreatable):
         :param bool hold:
             Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
         """
-        linear_speed_x = self._max_motor_speed * speed_factor
+        linear_speed_x = self.max_motor_speed * speed_factor
         if hold:
             self._linear_speed_x_hold = linear_speed_x
         else:
@@ -130,7 +130,7 @@ class DriveController(Stateful, Recreatable):
             Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
         """
 
-        self.robot_move(self._linear_speed_x_hold, self._max_robot_angular_speed * speed_factor, turn_radius)
+        self.robot_move(self._linear_speed_x_hold, self.max_robot_angular_speed * speed_factor, turn_radius)
 
     @is_initialized
     def right(self, speed_factor, turn_radius=0):

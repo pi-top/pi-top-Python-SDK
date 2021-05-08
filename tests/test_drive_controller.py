@@ -6,7 +6,6 @@ modules_to_patch = [
     "pitop.camera.camera",
     "atexit",
     "numpy",
-    "simple_pid",
     "pitopcommon.common_ids",
     "pitopcommon.current_session_info",
     "pitopcommon.ptdm",
@@ -39,7 +38,7 @@ class DriveControllerTestCase(TestCase):
         """'forward' method calls 'robot_move'."""
         d = DriveController()
         speed_factor = 1
-        expected_linear_speed = speed_factor * d._max_motor_speed
+        expected_linear_speed = speed_factor * d.max_motor_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
             d.forward(speed_factor, hold=False)
@@ -49,7 +48,7 @@ class DriveControllerTestCase(TestCase):
         """'forward' hold parameter stores linear speed in object."""
         d = DriveController()
         speed_factor = 1
-        expected_linear_speed = speed_factor * d._max_motor_speed
+        expected_linear_speed = speed_factor * d.max_motor_speed
 
         d.forward(speed_factor, hold=True)
         self.assertEquals(d._linear_speed_x_hold, expected_linear_speed)
@@ -59,8 +58,8 @@ class DriveControllerTestCase(TestCase):
         d = DriveController()
         speed_factor = 1
         turn_radius = 0.1
-        expected_linear_speed = speed_factor * d._max_motor_speed
-        expected_angular_speed = d._max_robot_angular_speed * speed_factor
+        expected_linear_speed = speed_factor * d.max_motor_speed
+        expected_angular_speed = d.max_robot_angular_speed * speed_factor
         d._linear_speed_x_hold = expected_linear_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
@@ -120,10 +119,10 @@ class DriveControllerTestCase(TestCase):
 
         test_values = [
             [0, 0, 0, 0, 0],
-            [96.39, 114.00, 1, 1, 0],
-            [104.84, 114.00, 1, 1, 1],
-            [70.90, 83.90, 0.3, 0.3, 0],
-            [103.84, 114.0, 0.3, 0.3, 0.8],
+            [96.8, 114.00, 1, 1, 0],
+            [105.06, 114.00, 1, 1, 1],
+            [73.3, 86.3, 0.3, 0.3, 0],
+            [104.13, 114.0, 0.3, 0.3, 0.8],
         ]
         for exp_rpm_left, exp_rpm_right, linear_speed, angular_speed, turn_radius in test_values:
             rpm_left, rpm_right = d._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)

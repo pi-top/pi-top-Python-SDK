@@ -52,8 +52,8 @@ class EncoderMotor(Stateful, Recreatable):
     def __init__(self,
                  port_name,
                  forward_direction,
-                 braking_type=BrakingType.COAST,
-                 wheel_diameter=0.075,
+                 braking_type=BrakingType.BRAKE,
+                 wheel_diameter=0.0718,
                  name=None
                  ):
         self.name = name
