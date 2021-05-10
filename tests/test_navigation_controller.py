@@ -117,15 +117,15 @@ class TestNavigationController(TestCase):
         y_goal = -0.05
         angle_goal = -10
 
-        x_tolerance_start = navigation_controller.robot_state.x_tolerance
-        y_tolerance_start = navigation_controller.robot_state.y_tolerance
-        angle_tolerance_start = navigation_controller.robot_state.angle_tolerance
+        x_tolerance_start = navigation_controller.state.x_tolerance
+        y_tolerance_start = navigation_controller.state.y_tolerance
+        angle_tolerance_start = navigation_controller.state.angle_tolerance
 
         navigation_controller.go_to(position=(x_goal, y_goal), angle=angle_goal, backwards=True).wait()
 
-        x_tolerance_end = navigation_controller.robot_state.x_tolerance
-        y_tolerance_end = navigation_controller.robot_state.y_tolerance
-        angle_tolerance_end = navigation_controller.robot_state.angle_tolerance
+        x_tolerance_end = navigation_controller.state.x_tolerance
+        y_tolerance_end = navigation_controller.state.y_tolerance
+        angle_tolerance_end = navigation_controller.state.angle_tolerance
 
         self.robot_state_assertions(navigation_controller=navigation_controller,
                                     x_expected=x_goal,
@@ -160,8 +160,8 @@ class TestNavigationController(TestCase):
         navigation_controller.stop()
         mock.method.assert_not_called()
         sleep(0.25)
-        self.assertAlmostEqual(navigation_controller.robot_state.v, 0, places=1)
-        self.assertAlmostEqual(navigation_controller.robot_state.w, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.state.v, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.state.w, 0, places=1)
 
     def test_update_speed_factors(self):
         navigation_controller = self.get_navigation_controller()
@@ -196,8 +196,8 @@ class TestNavigationController(TestCase):
 
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
         sleep(0.25)  # give robot time to slow down
-        self.assertAlmostEqual(navigation_controller.robot_state.x, x_expected, places=1)
-        self.assertAlmostEqual(navigation_controller.robot_state.y, y_expected, places=1)
-        self.assertAlmostEqual(navigation_controller.robot_state.angle, angle_expected, delta=4)
-        self.assertAlmostEqual(navigation_controller.robot_state.v, 0, places=1)
-        self.assertAlmostEqual(navigation_controller.robot_state.w, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.state.x, x_expected, places=1)
+        self.assertAlmostEqual(navigation_controller.state.y, y_expected, places=1)
+        self.assertAlmostEqual(navigation_controller.state.angle, angle_expected, delta=4)
+        self.assertAlmostEqual(navigation_controller.state.v, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.state.w, 0, places=1)
