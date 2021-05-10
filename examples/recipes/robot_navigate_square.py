@@ -14,7 +14,7 @@ from time import sleep
 def navigation_finished():
     global goal_reached
     goal_reached = True
-    print(f"Goal reached with state: \n{navigate.robot_state}")
+    print(f"Goal reached with state: \n{navigate.state}")
 
 
 def check_for_obstacles():
@@ -49,7 +49,7 @@ def main():
 
     # go back to start_position
     navigate.go_to(position=(0, 0), angle=0, on_finish=navigation_finished, backwards=True).wait()
-    print(f"Goal reached with state: \n{navigate.robot_state}")
+    print(f"Goal reached with state: \n{navigate.state}")
 
 
 goal_reached = False
