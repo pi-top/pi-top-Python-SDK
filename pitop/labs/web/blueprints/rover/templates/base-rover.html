@@ -1,0 +1,20 @@
+{% extends "base-controller.html" %}
+
+{% block main %}
+  <img src="video.mjpg" class="background-video"></img>
+
+  <div style="box-sizing: border-box; padding: 40px; display: flex;">
+    {% if g.show_left_joystick %}
+      <joystick-component
+        onmove="publish({ type: 'left_joystick', data })"
+        onend="publish({ type: 'left_joystick', data })"
+      > </joystick-component>
+    {% endif %}
+
+    <joystick-component
+      onmove="publish({ type: 'right_joystick', data })"
+      onend="publish({ type: 'right_joystick', data })"
+      style="margin-left: auto"
+    ></joystick-component>
+  </div>
+{% endblock %}

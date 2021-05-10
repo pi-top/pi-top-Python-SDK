@@ -22,9 +22,8 @@ miniscreen.display_image(image)
 clear()
 
 print("Drawing an image")
-# Image provided by 'pt-project-files'
 # Note: this is an animated file, but this approach will only show the first frame
-demo_image = Image.open("/usr/share/pt-project-files/images/rocket.gif").convert("1")
+demo_image = Image.open("/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif").convert("1")
 canvas.bitmap((0, 0), demo_image, fill=1)
 miniscreen.display_image(image)
 
