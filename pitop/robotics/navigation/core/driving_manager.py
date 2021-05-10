@@ -38,8 +38,8 @@ class DrivingManager:
                  ):
         self._max_motor_speed = max_motor_speed  # m/s
         self._max_angular_speed = max_angular_speed  # rad/s
-        self._max_deceleration_distance = full_speed_deceleration_distance  # m
-        self._max_deceleration_angle = full_speed_deceleration_angle  # degrees
+        self._full_speed_deceleration_distance = full_speed_deceleration_distance  # m
+        self._full_speed_deceleration_angle = full_speed_deceleration_angle  # degrees
 
         self.linear_speed_factor = None
         self.angular_speed_factor = None
@@ -52,11 +52,11 @@ class DrivingManager:
     def update_linear_speed(self, speed_factor):
         self.linear_speed_factor = speed_factor
         self.max_velocity = self.linear_speed_factor * self._max_motor_speed
-        self.deceleration_distance = self.linear_speed_factor * self._max_deceleration_distance
+        self.deceleration_distance = self.linear_speed_factor * self._full_speed_deceleration_distance
         self.pid.distance_update(deceleration_distance=self.deceleration_distance)
 
     def update_angular_speed(self, speed_factor):
         self.angular_speed_factor = speed_factor
         self.max_angular_velocity = self.angular_speed_factor * self._max_angular_speed
-        self.deceleration_angle = self.angular_speed_factor * math.radians(self._max_deceleration_angle)
+        self.deceleration_angle = self.angular_speed_factor * math.radians(self._full_speed_deceleration_angle)
         self.pid.heading_update(deceleration_angle=self.deceleration_angle)
