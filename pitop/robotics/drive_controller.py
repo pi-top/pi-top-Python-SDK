@@ -181,7 +181,3 @@ class DriveController(Stateful, Recreatable):
         forward.
         """
         self.robot_move(self._linear_speed_x_hold, 0)
-
-    @property
-    def wheel_separation(self):
-        return self.wheel_separation
