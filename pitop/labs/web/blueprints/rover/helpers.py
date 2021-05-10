@@ -40,3 +40,21 @@ def calculate_velocity_twist(data):
         'linear': math.cos(direction * math.pi / 180) * linear_speed,
         'angular': math.sin(direction * math.pi / 180) * angular_speed,
     }
+
+
+MAX_LINEAR_SPEED_4WD = 0.596
+MAX_ANGULAR_SPEED_4WD = 3.24
+
+
+def calculate_linear_velocities_4wd(data):
+    angle = data.get('angle', {})
+    degree = angle.get('degree', 0)
+    distance = data.get('distance', 0)
+    direction = calculate_direction(degree)
+    linear_speed_x = (distance * MAX_LINEAR_SPEED / 100.0) * math.cos(direction * math.pi / 180)
+    linear_speed_y = (distance * MAX_LINEAR_SPEED / 100.0) * math.sin(direction * math.pi / 180)
+
+    return {
+        'linear_x': linear_speed_x,
+        'linear_y': linear_speed_y,
+    }
