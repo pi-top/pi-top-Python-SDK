@@ -27,7 +27,7 @@ class EncoderMotorSim:
     _SPEED_NOISE_SIGMA_RATIO = 0.05
 
     def __init__(self, *args, **kwargs):
-        self.max_rpm = 114
+        self.max_speed = 0.428
         self.wheel_diameter = 0.0718
         self._target_speed = 0.0
         self._motor_speed_update_schedule = 1.0 / 20.0
@@ -36,8 +36,8 @@ class EncoderMotorSim:
     def current_speed(self):
         return self._target_speed
 
-    def set_target_rpm(self, target_rpm, direction=None, total_rotations=None):
-        self._target_speed = round(target_rpm * self.wheel_diameter * math.pi / 60.0, 3)
+    def set_target_speed(self, target_speed, direction=None, distance=None):
+        self._target_speed = target_speed
 
 
 # Avoid getting the mocked modules in other tests
