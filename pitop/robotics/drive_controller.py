@@ -41,7 +41,8 @@ class DriveController(Stateful, Recreatable):
         self.right_motor = EncoderMotor(port_name=right_motor_port,
                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
 
-        self._max_motor_speed = floor(min(self.left_motor.max_speed, self.right_motor.max_speed))
+        # Round down to ensure no speed value ever goes above maximum due to rounding issues (resulting in error)
+        self._max_motor_speed = floor(min(self.left_motor.max_speed, self.right_motor.max_speed) * 1000) / 1000
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
 
         self.__target_lock_pid_controller = PID(Kp=0.045,
