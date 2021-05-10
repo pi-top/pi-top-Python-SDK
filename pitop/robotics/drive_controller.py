@@ -36,11 +36,11 @@ class DriveController(Stateful, Recreatable):
                                         )
 
         # chassis setup
-        self._wheel_separation = 0.163
+        self.wheel_separation = 0.163
 
         # Round down to ensure no speed value ever goes above maximum due to rounding issues (resulting in error)
         self.max_motor_speed = floor(min(self.left_motor.max_speed, self.right_motor.max_speed) * 1000) / 1000
-        self.max_robot_angular_speed = self.max_motor_speed / (self._wheel_separation / 2)
+        self.max_robot_angular_speed = self.max_motor_speed / (self.wheel_separation / 2)
 
         # Target lock drive angle
         self._linear_speed_x_hold = 0
@@ -68,8 +68,8 @@ class DriveController(Stateful, Recreatable):
 
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
-        speed_right = linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
-        speed_left = linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
+        speed_right = linear_speed + (turn_radius + self.wheel_separation / 2) * angular_speed
+        speed_left = linear_speed + (turn_radius - self.wheel_separation / 2) * angular_speed
 
         if abs(speed_right) > self.max_motor_speed or abs(speed_left) > self.max_motor_speed:
             factor = self.max_motor_speed / max(abs(speed_left), abs(speed_right))
@@ -159,7 +159,7 @@ class DriveController(Stateful, Recreatable):
         angular_speed = angle_radians / time_to_take
 
         speed_left, speed_right = self._calculate_motor_speeds(0, angular_speed, turn_radius=0)
-        distance = abs(angle_radians) * self._wheel_separation / 2
+        distance = abs(angle_radians) * self.wheel_separation / 2
         self.left_motor.set_target_speed(target_speed=speed_left,
                                          distance=distance * speed_left / abs(speed_left))
         self.right_motor.set_target_speed(target_speed=speed_right,
@@ -184,4 +184,4 @@ class DriveController(Stateful, Recreatable):
 
     @property
     def wheel_separation(self):
-        return self._wheel_separation
+        return self.wheel_separation
