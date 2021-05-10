@@ -3,111 +3,12 @@ import time
 import numpy as np
 import math
 from typing import Union
-from simple_pid import PID
 import sched
 from inspect import getfullargspec
-from .utils import normalize_angle
-from .robot_state import RobotStateFilter
-
-
-class GoalCriteria:
-    def __init__(self, full_speed_distance_error: float = 0.02, full_speed_angle_error: float = 3.0):
-        self._full_speed_distance_error = full_speed_distance_error
-        self._full_speed_angle_error = math.radians(full_speed_angle_error)
-
-        self._max_distance_error = None
-        self._max_angle_error = None
-        self._starting_angle_error = None
-
-    def angle(self, angle_error):
-        if self._starting_angle_error is None:
-            self._starting_angle_error = angle_error
-        if abs(angle_error) < self._max_angle_error:
-            self._starting_angle_error = None
-            return True
-        if self._starting_angle_error / (angle_error + 1e-6) < 0:
-            # if the starting angle error is a different sign to the current angle error, then robot has overshot goal.
-            # Consider goal to be reached to avoid trying to adjust angle at low angular speeds where starting friction
-            # prevents precise movement
-            self._starting_angle_error = None
-            return True
-        return False
-
-    def distance(self, distance_error, angle_error):
-        if abs(distance_error) < self._max_distance_error:
-            return True
-        if abs(angle_error) > math.pi / 2:
-            # Overshot goal, error will be small so consider goal to be reached.
-            # Otherwise robot would have to reverse a tiny amount which would be poor UX.
-            # Robot will correct itself on subsequent navigation calls anyway.
-            return True
-        return False
-
-    def update_linear_speed(self, speed_factor):
-        self._max_distance_error = speed_factor * self._full_speed_distance_error
-
-    def update_angular_speed(self, speed_factor):
-        self._max_angle_error = speed_factor * self._full_speed_angle_error
-
-
-class RobotDrivingManager:
-    class PIDManager:
-        def __init__(self):
-            self._Ki = 0.1
-            self._Kd = 0.1
-            self.distance = PID(Kp=0.0,
-                                Ki=self._Ki,
-                                Kd=self._Kd,
-                                setpoint=0.0,
-                                output_limits=(-1.0, 1.0)
-                                )
-            self.heading = PID(Kp=0.0,
-                               Ki=self._Ki,
-                               Kd=self._Kd,
-                               setpoint=0.0,
-                               output_limits=(-1.0, 1.0)
-                               )
-
-        def reset(self):
-            self.heading.reset()
-            self.distance.reset()
-
-        def distance_update(self, deceleration_distance):
-            self.distance.Kp = 1.0 / deceleration_distance
-
-        def heading_update(self, deceleration_angle):
-            self.heading.Kp = 1.0 / deceleration_angle
-
-    def __init__(self,
-                 max_motor_speed,
-                 max_angular_speed,
-                 full_speed_deceleration_distance=0.4,
-                 full_speed_deceleration_angle=120.0
-                 ):
-        self._max_motor_speed = max_motor_speed  # m/s
-        self._max_angular_speed = max_angular_speed  # rad/s
-        self._max_deceleration_distance = full_speed_deceleration_distance  # m
-        self._max_deceleration_angle = full_speed_deceleration_angle  # degrees
-
-        self.linear_speed_factor = None
-        self.angular_speed_factor = None
-        self.max_velocity = None
-        self.max_angular_velocity = None
-        self.deceleration_distance = None
-        self.deceleration_angle = None
-        self.pid = self.PIDManager()
-
-    def update_linear_speed(self, speed_factor):
-        self.linear_speed_factor = speed_factor
-        self.max_velocity = self.linear_speed_factor * self._max_motor_speed
-        self.deceleration_distance = self.linear_speed_factor * self._max_deceleration_distance
-        self.pid.distance_update(deceleration_distance=self.deceleration_distance)
-
-    def update_angular_speed(self, speed_factor):
-        self.angular_speed_factor = speed_factor
-        self.max_angular_velocity = self.angular_speed_factor * self._max_angular_speed
-        self.deceleration_angle = self.angular_speed_factor * math.radians(self._max_deceleration_angle)
-        self.pid.heading_update(deceleration_angle=self.deceleration_angle)
+from .core.utils import normalize_angle
+from .core.robot_state import StateFilter
+from .core.goal_criteria import GoalCriteria
+from .core.driving_manager import DrivingManager
 
 
 class NavigationController:
@@ -142,10 +43,10 @@ class NavigationController:
         self._pose_prediction_scheduler.start()
 
         # Robot state tracking and driving management
-        self.robot_state = RobotStateFilter(measurement_frequency=self._measurement_frequency)
-        self._drive_manager = RobotDrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
-                                                  max_angular_speed=self._drive_controller.max_robot_angular_speed
-                                                  )
+        self.state = StateFilter(measurement_frequency=self._measurement_frequency)
+        self._drive_manager = DrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
+                                             max_angular_speed=self._drive_controller.max_robot_angular_speed
+                                             )
         self._goal_criteria = GoalCriteria()
         self._backwards = False
         self.linear_speed_factor = linear_speed_factor
@@ -264,7 +165,7 @@ class NavigationController:
 
     def reset_position_and_angle(self):
         """Reset the robot's position and angle (pose) to zeros."""
-        self.robot_state.reset_pose()
+        self.state.reset_pose()
 
     def stop(self):
         """Terminate the navigation goal that is currently in progress and stop
@@ -380,7 +281,7 @@ class NavigationController:
 
     def __get_new_pose(self):
         self._new_pose_event.wait()
-        return self.robot_state.x, self.robot_state.y, self.robot_state.angle_rad
+        return self.state.x, self.state.y, self.state.angle_rad
 
     @staticmethod
     def __get_angle_error(current_angle, target_angle):
@@ -404,9 +305,9 @@ class NavigationController:
 
         odom_measurements = self.__get_odometry_measurements()
         imu_measurements = None if self._imu is None else self.__get_imu_measurements()
-        self.robot_state.add_measurements(odom_measurements=odom_measurements,
-                                          imu_measurements=imu_measurements,
-                                          dt=dt)
+        self.state.add_measurements(odom_measurements=odom_measurements,
+                                    imu_measurements=imu_measurements,
+                                    dt=dt)
 
         self._new_pose_event.set()
         self._new_pose_event.clear()
