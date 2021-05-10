@@ -115,17 +115,17 @@ class DriveControllerTestCase(TestCase):
                 d.rotate(0, time_to_take)
 
     def test_motor_rpm_calculations_based_on_speeds(self):
-        """motor RPM calculations based on linear/angular speeds."""
+        """motor speed calculations based on linear/angular speeds."""
         d = DriveController()
 
         test_values = [
             [0, 0, 0, 0, 0],
-            [96.39, 114.00, 1, 1, 0],
-            [104.84, 114.00, 1, 1, 1],
-            [70.90, 83.90, 0.3, 0.3, 0],
-            [103.84, 114.0, 0.3, 0.3, 0.8],
+            [0.378, 0.447, 1, 1, 0],
+            [0.411, 0.447, 1, 1, 1],
+            [0.275, 0.325, 0.3, 0.3, 0],
+            [0.407, 0.447, 0.3, 0.3, 0.8],
         ]
         for exp_rpm_left, exp_rpm_right, linear_speed, angular_speed, turn_radius in test_values:
-            rpm_left, rpm_right = d._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
-            self.assertEquals(round(rpm_left, 2), exp_rpm_left)
-            self.assertEquals(round(rpm_right, 2), exp_rpm_right)
+            speed_left, speed_right = d._calculate_motor_speeds(linear_speed, angular_speed, turn_radius)
+            self.assertEquals(round(speed_left, 3), exp_rpm_left)
+            self.assertEquals(round(speed_right, 3), exp_rpm_right)

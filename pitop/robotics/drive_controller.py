@@ -41,9 +41,8 @@ class DriveController(Stateful, Recreatable):
         self.right_motor = EncoderMotor(port_name=right_motor_port,
                                         forward_direction=ForwardDirection.COUNTER_CLOCKWISE)
 
-        self._max_motor_rpm = floor(min(self.left_motor.max_rpm, self.right_motor.max_rpm))
-
-        self._max_motor_speed = self._rpm_to_speed(self._max_motor_rpm)
+        # Round down to ensure no speed value ever goes above maximum due to rounding issues (resulting in error)
+        self._max_motor_speed = floor(min(self.left_motor.max_speed, self.right_motor.max_speed) * 1000) / 1000
         self._max_robot_angular_speed = self._max_motor_speed / (self._wheel_separation / 2)
 
         self.__target_lock_pid_controller = PID(Kp=0.045,
@@ -68,27 +67,25 @@ class DriveController(Stateful, Recreatable):
             return fcn(self, *args, **kwargs)
         return check_initialization
 
-    def _calculate_motor_rpms(self, linear_speed, angular_speed, turn_radius):
+    def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
         speed_left = linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
-        rpm_right = self._speed_to_rpm(speed_right)
-        rpm_left = self._speed_to_rpm(speed_left)
 
-        if abs(rpm_right) > self._max_motor_rpm or abs(rpm_left) > self._max_motor_rpm:
-            factor = self._max_motor_rpm / max(abs(rpm_left), abs(rpm_right))
-            rpm_right = rpm_right * factor
-            rpm_left = rpm_left * factor
+        if abs(speed_right) > self._max_motor_speed or abs(speed_left) > self._max_motor_speed:
+            factor = self._max_motor_speed / max(abs(speed_left), abs(speed_right))
+            speed_right = speed_right * factor
+            speed_left = speed_left * factor
 
-        return rpm_left, rpm_right
+        return speed_left, speed_right
 
     @is_initialized
     def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
-        rpm_left, rpm_right = self._calculate_motor_rpms(linear_speed, angular_speed, turn_radius)
-        self.left_motor.set_target_rpm(target_rpm=rpm_left)
-        self.right_motor.set_target_rpm(target_rpm=rpm_right)
+        speed_left, speed_right = self._calculate_motor_speeds(linear_speed, angular_speed, turn_radius)
+        self.left_motor.set_target_speed(target_speed=speed_left)
+        self.right_motor.set_target_speed(target_speed=speed_right)
 
     @is_initialized
     def forward(self, speed_factor, hold=False):
@@ -162,12 +159,12 @@ class DriveController(Stateful, Recreatable):
         angle_radians = radians(angle)
         angular_speed = angle_radians / time_to_take
 
-        rpm_left, rpm_right = self._calculate_motor_rpms(0, angular_speed, turn_radius=0)
-        rotations = abs(angle) * pi * self._wheel_separation / (360 * self._wheel_circumference)
-        self.left_motor.set_target_rpm(target_rpm=rpm_left,
-                                       total_rotations=rotations * rpm_left / abs(rpm_left))
-        self.right_motor.set_target_rpm(target_rpm=rpm_right,
-                                        total_rotations=rotations * rpm_right / abs(rpm_right))
+        speed_left, speed_right = self._calculate_motor_speeds(0, angular_speed, turn_radius=0)
+        distance = abs(angle_radians) * self._wheel_separation / 2
+        self.left_motor.set_target_speed(target_speed=speed_left,
+                                         distance=distance * speed_left / abs(speed_left))
+        self.right_motor.set_target_speed(target_speed=speed_right,
+                                          distance=distance * speed_right / abs(speed_right))
         sleep(time_to_take)
 
     def stop(self):
@@ -185,14 +182,6 @@ class DriveController(Stateful, Recreatable):
         forward.
         """
         self.robot_move(self._linear_speed_x_hold, 0)
-
-    def _speed_to_rpm(self, speed):
-        rpm = round(60.0 * speed / self._wheel_circumference, 1)
-        return rpm
-
-    def _rpm_to_speed(self, rpm):
-        speed = round(rpm * self._wheel_circumference / 60.0, 3)
-        return speed
 
     @property
     def wheel_separation(self):
