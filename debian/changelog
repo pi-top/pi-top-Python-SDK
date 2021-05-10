@@ -1,3 +1,29 @@
+py-pitop-sdk (0.18.4) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Fix DriveController's rotate function (#339)
+
+  [ duwudi ]
+  * Use imutils to ensure contour is grabbed regardless of cv version (#336)
+
+  [ pre-commit-ci[bot] ]
+  * [pre-commit.ci] pre-commit autoupdate (#340)
+
+  [ Olivier Wilkinson ]
+  * Configurable web interface API (#316)
+
+  [ Mike Roberts ]
+  *  Drop pt-project-files (#343)
+
+  [ duwudi ]
+  * Remove double Pitop __init__ (#344)
+  * Drive Controller to use speeds instead of RPMs (#342)
+
+  [ pre-commit-ci[bot] ]
+  * [pre-commit.ci] pre-commit autoupdate (#345)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 10 May 2021 20:02:21 +0000
+
 py-pitop-sdk (0.18.3) buster; urgency=medium
 
   * Update coloured ball detection algorithm usage
