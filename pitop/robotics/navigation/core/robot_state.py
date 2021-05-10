@@ -25,7 +25,7 @@ class VelocityMeasurements(IntEnum):
     current = 1
 
 
-class RobotStateFilter:
+class StateFilter:
     _sigma_default_dt = 0.1
 
     def __init__(self, measurement_frequency):
