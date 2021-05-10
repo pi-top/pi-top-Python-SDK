@@ -71,8 +71,8 @@ class DriveController(Stateful, Recreatable):
         speed_right = linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
         speed_left = linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
 
-        if abs(speed_right) > self._max_motor_speed or abs(speed_left) > self._max_motor_speed:
-            factor = self._max_motor_speed / max(abs(speed_left), abs(speed_right))
+        if abs(speed_right) > self.max_motor_speed or abs(speed_left) > self.max_motor_speed:
+            factor = self.max_motor_speed / max(abs(speed_left), abs(speed_right))
             speed_right = speed_right * factor
             speed_left = speed_left * factor
 
