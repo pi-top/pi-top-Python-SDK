@@ -1,9 +1,7 @@
 """Demo of how to use the Navigation Controller to control a robot. Place your
-robot (preferably the Alex or Bobbie.
-
-configuration) in the middle of a 1x1 meter square and run the code - the robot will drive around the square twice and
-then back to the middle. The Ultrasonic Sensor is also used to detect obstacles during navigation. If one is found,
-the robot will move onto the next navigation goal.
+robot (preferably the Alex or Bobbie configuration) in the middle of a 1x1 meter square and run the code - the robot
+will drive around the square twice and then back to the middle. The Ultrasonic Sensor is also used to detect obstacles
+during navigation. If one is found, the robot will move onto the next navigation goal.
 """
 
 from pitop import DriveController, NavigationController
