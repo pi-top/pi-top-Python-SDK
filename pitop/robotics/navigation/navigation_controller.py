@@ -43,7 +43,9 @@ class NavigationController:
         self._pose_prediction_scheduler.start()
 
         # Robot state tracking and driving management
-        self.state = StateFilter(measurement_frequency=self._measurement_frequency)
+        self.state = StateFilter(measurement_frequency=self._measurement_frequency,
+                                 wheel_separation=drive_controller.wheel_separation
+                                 )
         self._drive_manager = DrivingManager(max_motor_speed=self._drive_controller.max_motor_speed,
                                              max_angular_speed=self._drive_controller.max_robot_angular_speed
                                              )

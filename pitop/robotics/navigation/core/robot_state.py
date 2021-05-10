@@ -28,7 +28,7 @@ class VelocityMeasurements(IntEnum):
 class StateFilter:
     _sigma_default_dt = 0.1
 
-    def __init__(self, measurement_frequency):
+    def __init__(self, measurement_frequency, wheel_separation):
         self._kalman_filter = KalmanFilter(dim_x=len(State), dim_z=2, dim_u=2)
         self._velocities = deque(maxlen=2)
         self._velocities.append(np.zeros((len(VelocityType), 1), dtype=float))  # [v, w].
@@ -58,7 +58,7 @@ class StateFilter:
         self._odom_linear_velocity_variance = linear_velocity_sigma ** 2
         # angular velocity is calculated from motor velocities, maximum error is 0.005 * 2 across both wheel speeds
         # divide by wheel separation to get resulting standard deviation for angular velocity
-        self._odom_angular_velocity_variance = (linear_velocity_sigma * 2 / 0.163) ** 2
+        self._odom_angular_velocity_variance = (linear_velocity_sigma * 2 / wheel_separation) ** 2
 
         # Gyroscope resolution from datasheet is 1/131 = 0.0076 degrees/second +/- 1.5%
         # Measure variance from stationary IMU is sigma**2 = 0.0018 over approx 200 samples
