@@ -19,7 +19,6 @@ class NavigationController:
                  linear_speed_factor: float = 0.75,
                  angular_speed_factor: float = 0.5
                  ):
-
         """
         :param drive_controller: DriveController() object used to control motors
         :param linear_speed_factor: value between 0 and 1 for the linear speed
