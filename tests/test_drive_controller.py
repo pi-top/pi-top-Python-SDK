@@ -119,7 +119,7 @@ class DriveControllerTestCase(TestCase):
         d = DriveController()
 
         test_values = [
-            [0, 0, 0, 0, 0]
+            [0, 0, 0, 0, 0],
             [0.378, 0.447, 1, 1, 0],
             [0.411, 0.447, 1, 1, 1],
             [0.275, 0.325, 0.3, 0.3, 0],
