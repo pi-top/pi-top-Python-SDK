@@ -16,14 +16,18 @@ class NavigationController:
 
     def __init__(self,
                  drive_controller,
-                 imu=None,
                  linear_speed_factor: float = 0.75,
                  angular_speed_factor: float = 0.5
                  ):
 
+        """
+        :param drive_controller: DriveController() object used to control motors
+        :param linear_speed_factor: value between 0 and 1 for the linear speed
+        :param angular_speed_factor: value between 0 and 1 for the angular speed
+        """
+
         # User-passed objects
         self._drive_controller = drive_controller
-        self._imu = imu
 
         # callback to call once navigation complete
         self._on_finish = None
@@ -306,9 +310,8 @@ class NavigationController:
         dt = current_time - previous_time
 
         odom_measurements = self.__get_odometry_measurements()
-        imu_measurements = None if self._imu is None else self.__get_imu_measurements()
         self.state.add_measurements(odom_measurements=odom_measurements,
-                                    imu_measurements=imu_measurements,
+                                    imu_measurements=None,
                                     dt=dt)
 
         self._new_pose_event.set()
@@ -323,7 +326,3 @@ class NavigationController:
         angular_velocity = (right_wheel_speed - left_wheel_speed) / self._drive_controller.wheel_separation
 
         return np.array([[linear_velocity], [angular_velocity]])
-
-    def __get_imu_measurements(self):
-        # TODO: perform calibration on gyroscope on startup to offset any measurement bias
-        return np.array([[math.radians(self._imu.gyroscope.z)]])

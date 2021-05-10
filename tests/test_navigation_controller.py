@@ -182,10 +182,10 @@ class TestNavigationController(TestCase):
                          )
 
         self.assertEqual(navigation_controller._drive_manager.pid.distance.Kp,
-                         1 / (navigation_controller._drive_manager._max_deceleration_distance * linear_speed_factor))
+                         1 / (navigation_controller._drive_manager._full_speed_deceleration_distance * linear_speed_factor))
 
         self.assertEqual(navigation_controller._drive_manager.pid.heading.Kp,
-                         1 / (math.radians(navigation_controller._drive_manager._max_deceleration_angle)
+                         1 / (math.radians(navigation_controller._drive_manager._full_speed_deceleration_angle)
                               * angular_speed_factor)
                          )
 
