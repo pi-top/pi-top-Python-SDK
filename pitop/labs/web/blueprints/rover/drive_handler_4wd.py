@@ -3,67 +3,110 @@ from threading import Thread
 import time
 from .helpers import calculate_direction
 import math
+from enum import IntEnum
 
 MAX_LINEAR_SPEED = 0.596
 MAX_ANGULAR_SPEED = 3.24
+MAX_SERVO_ANGLE = 90.0
 
 
-def calculate_joystick_vector(data):
+def get_joystick_distances(data):
     angle = data.get('angle', {})
     degree = angle.get('degree', 0)
     distance = data.get('distance', 0)
     direction = math.radians(calculate_direction(degree))
 
-    return distance, direction
+    horizontal_distance = distance * math.sin(direction) / 100.0
+    vertical_distance = distance * math.cos(direction) / 100.0
+
+    return horizontal_distance, vertical_distance
 
 
-def calculate_linear_velocities(data):
-    distance, direction = calculate_joystick_vector(data)
-    linear_speed_x = (distance * MAX_LINEAR_SPEED / 100.0) * math.cos(direction)
-    linear_speed_y = (distance * MAX_LINEAR_SPEED / 100.0) * math.sin(direction)
-
-    return {
-        'linear_speed_x': linear_speed_x,
-        'linear_speed_y': linear_speed_y,
-    }
-
-
-def calculate_angular_velocity(data):
-    distance, direction = calculate_joystick_vector(data)
-    angular_speed_z = (distance * MAX_ANGULAR_SPEED / 100.0) * math.sin(direction)
-    return {
-        'angular_speed_z': angular_speed_z
-    }
+class DriveMode(IntEnum):
+    FREE = 0  # pan servo is not controlled by web controller
+    PAN_FOLLOW = 1  # pan servo is controlled by left joystick and chassis moves to follow it
 
 
 class DriveHandler4WD:
-    def __init__(self, drive):
+    # TODO: investigate adding a timeout so robot stops if no new commands are sent after specified duration
+
+    _MAX_PAN_ANGLE = 20
+    _MAX_TILT_SERVO_SPEED = 50.0
+    _JOYSTICK_DEADZONE = 0.05
+
+    def __init__(self, drive, pan_tilt, mode: DriveMode = DriveMode.FREE):
         self._drive = drive
-        self._v_x = 0.0
-        self._v_y = 0.0
-        self._w_z = 0.0
-        self._publish_dt = 1 / 10.0
-        self._publish_thread = Thread(target=self.__publish_sheduler, daemon=True)
-        self._publish_thread.start()
+        self._pan_tilt = pan_tilt
+        self._mode = mode
+        self._linear_speed_x = 0.0
+        self._linear_speed_y = 0.0
+        self._angular_speed = 0.0
+        self._pan_servo_angle = 0.0
+        self._tilt_servo_speed = 0.0
+        self._command_dt = 1 / 8.0
+        self._command_thread = Thread(target=self.__command_scheduler, daemon=True)
+        self._command_thread.start()
 
-    def update_linear(self, data):
-        linear_velocities = calculate_linear_velocities(data)
-        self._v_x = linear_velocities.get('linear_speed_x', 0)
-        self._v_y = linear_velocities.get('linear_speed_y', 0)
+    def right_joystick_update(self, data):
+        horiz_distance, vert_distance = get_joystick_distances(data)
+        shifted_horiz_distance, shifted_vert_distance = self.__get_shifted_joystick_distances(
+            horiz_distance, vert_distance)
 
-    def update_angular(self, data):
-        angular_velocity = calculate_angular_velocity(data)
-        self._w_z = angular_velocity.get('angular_speed_z', 0)
+        if abs(vert_distance) > self._JOYSTICK_DEADZONE:
+            self._linear_speed_x = shifted_vert_distance * MAX_LINEAR_SPEED
+        else:
+            self._linear_speed_x = 0.0
 
-    def __publish_sheduler(self):
+        if abs(horiz_distance) > self._JOYSTICK_DEADZONE:
+            self._linear_speed_y = shifted_horiz_distance * MAX_LINEAR_SPEED
+        else:
+            self._linear_speed_y = 0.0
+
+    def left_joystick_update(self, data):
+        horiz_distance, vert_distance = get_joystick_distances(data)
+        shifted_horiz_distance, shifted_vert_distance = self.__get_shifted_joystick_distances(
+            horiz_distance, vert_distance)
+
+        if abs(vert_distance) > self._JOYSTICK_DEADZONE:
+            self._tilt_servo_speed = -shifted_vert_distance * self._MAX_TILT_SERVO_SPEED
+        else:
+            self._tilt_servo_speed = 0.0
+
+        if abs(horiz_distance) > self._JOYSTICK_DEADZONE:
+            self._angular_speed = shifted_horiz_distance * MAX_ANGULAR_SPEED
+            if self._mode == DriveMode.PAN_FOLLOW:
+                self._pan_tilt.pan_servo.target_speed = 25.0  # set lower speed for turning angle
+                pan_angle = shifted_horiz_distance * MAX_SERVO_ANGLE
+                self._pan_servo_angle = max(-self._MAX_PAN_ANGLE, min(self._MAX_PAN_ANGLE, pan_angle))
+        else:
+            self._angular_speed = 0.0
+            if self._mode == DriveMode.PAN_FOLLOW:
+                self._pan_tilt.pan_servo.target_speed = 100.0  # set highest speed for reset back to zero
+                self._pan_servo_angle = 0.0
+
+    def __get_shifted_joystick_distances(self, horizontal_distance, vertical_distance):
+        shifted_horiz_distance = horizontal_distance \
+                                 - (self._JOYSTICK_DEADZONE * horizontal_distance / abs(horizontal_distance))
+        shifted_vert_distance = vertical_distance \
+                                - (self._JOYSTICK_DEADZONE * vertical_distance / abs(vertical_distance))
+
+        return shifted_horiz_distance, shifted_vert_distance
+
+    def __command_scheduler(self):
         s = scheduler(time.time, time.sleep)
         current_time = time.time()
-        s.enterabs(current_time + self._publish_dt, 1, self.__publish_velocity_commands, (s,))
+        s.enterabs(current_time + self._command_dt, 1, self.__command_loop, (s,))
         s.run()
 
-    def __publish_velocity_commands(self, s):
+    def __command_loop(self, s):
         current_time = time.time()
 
-        self._drive.robot_move(linear_x=self._v_x, linear_y=self._v_y, angular_z=self._w_z)
+        self._drive.robot_move(linear_x=self._linear_speed_x,
+                               linear_y=self._linear_speed_y,
+                               angular_z=self._angular_speed
+                               )
+        self._pan_tilt.tilt_servo.sweep(speed=self._tilt_servo_speed)
+        if self._mode == DriveMode.PAN_FOLLOW:
+            self._pan_tilt.pan_servo.target_angle = self._pan_servo_angle
 
-        s.enterabs(current_time + self._publish_dt, 1, self.__publish_velocity_commands, (s,))
+        s.enterabs(current_time + self._command_dt, 1, self.__command_loop, (s,))
