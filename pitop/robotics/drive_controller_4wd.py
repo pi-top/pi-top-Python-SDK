@@ -1,13 +1,4 @@
-from math import (
-    floor,
-    pi,
-    radians,
-)
-from time import sleep
-
-from simple_pid import PID
-
-from pitop.core.exceptions import UninitializedComponent
+from math import floor
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -20,10 +11,8 @@ from pitop.pma import (
 import numpy as np
 
 
-
 class DriveController4WD(Stateful, Recreatable):
-    """Represents a vehicle with two wheels connected by an axis, and an
-    optional support wheel or caster."""
+    """Represents a vehicle with four mecanum wheels."""
     _initialized = False
 
     def __init__(self,
@@ -146,14 +135,13 @@ class DriveController4WD(Stateful, Recreatable):
         """
         self.forward(-speed_factor, hold)
 
+    # TODO: decide whether to change the API (2WD vs 4WD) and call this "turn_left" so "left" is reserved for strafe
     def left(self, speed_factor):
-        """Make the robot move to the left, using a circular trajectory.
+        """Make the robot turn to the left.
 
         :param float speed_factor:
-            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+            Factor relative to the maximum motor speed, used to set the angular velocity, in the range -1.0 to 1.0.
             Using negative values will cause the robot to turn right.
-        :param float turn_radius:
-            Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
         """
 
         self.robot_move(linear_x=self._linear_speed_x_hold,
@@ -162,10 +150,10 @@ class DriveController4WD(Stateful, Recreatable):
                         )
 
     def right(self, speed_factor):
-        """Make the robot move to the right, using a circular trajectory.
+        """Make the robot turn to the right.
 
         :param float speed_factor:
-            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+            Factor relative to the maximum motor speed, used to set the angular velocity, in the range -1.0 to 1.0.
             Using negative values will cause the robot to turn left.
         """
 
