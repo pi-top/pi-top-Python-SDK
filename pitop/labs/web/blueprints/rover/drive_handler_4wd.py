@@ -10,7 +10,7 @@ MAX_ANGULAR_SPEED = 3.24
 MAX_SERVO_ANGLE = 90.0
 
 
-def get_joystick_distances(data):
+def get_joystick_coordinates(data):
     angle = data.get('angle', {})
     degree = angle.get('degree', 0)
     distance = data.get('distance', 0)
@@ -48,49 +48,41 @@ class DriveHandler4WD:
         self._command_thread.start()
 
     def right_joystick_update(self, data):
-        horiz_distance, vert_distance = get_joystick_distances(data)
-        shifted_horiz_distance, shifted_vert_distance = self.__get_shifted_joystick_distances(
-            horiz_distance, vert_distance)
+        x, y = get_joystick_coordinates(data)
 
-        if abs(vert_distance) > self._JOYSTICK_DEADZONE:
-            self._linear_speed_x = shifted_vert_distance * MAX_LINEAR_SPEED
+        if abs(y) > self._JOYSTICK_DEADZONE:
+            shifted_y = y - self._JOYSTICK_DEADZONE * y / abs(y)
+            self._linear_speed_x = shifted_y * MAX_LINEAR_SPEED
         else:
             self._linear_speed_x = 0.0
 
-        if abs(horiz_distance) > self._JOYSTICK_DEADZONE:
-            self._linear_speed_y = shifted_horiz_distance * MAX_LINEAR_SPEED
+        if abs(x) > self._JOYSTICK_DEADZONE:
+            shifted_x = x - self._JOYSTICK_DEADZONE * x / abs(x)
+            self._linear_speed_y = shifted_x * MAX_LINEAR_SPEED
         else:
             self._linear_speed_y = 0.0
 
     def left_joystick_update(self, data):
-        horiz_distance, vert_distance = get_joystick_distances(data)
-        shifted_horiz_distance, shifted_vert_distance = self.__get_shifted_joystick_distances(
-            horiz_distance, vert_distance)
+        x, y = get_joystick_coordinates(data)
 
-        if abs(vert_distance) > self._JOYSTICK_DEADZONE:
-            self._tilt_servo_speed = -shifted_vert_distance * self._MAX_TILT_SERVO_SPEED
+        if abs(y) > self._JOYSTICK_DEADZONE:
+            shifted_y = y - self._JOYSTICK_DEADZONE * y / abs(y)
+            self._tilt_servo_speed = -shifted_y * self._MAX_TILT_SERVO_SPEED
         else:
             self._tilt_servo_speed = 0.0
 
-        if abs(horiz_distance) > self._JOYSTICK_DEADZONE:
-            self._angular_speed = shifted_horiz_distance * MAX_ANGULAR_SPEED
+        if abs(x) > self._JOYSTICK_DEADZONE:
+            shifted_x = x - self._JOYSTICK_DEADZONE * x / abs(x)
+            self._angular_speed = shifted_x * MAX_ANGULAR_SPEED
             if self._mode == DriveMode.PAN_FOLLOW:
                 self._pan_tilt.pan_servo.target_speed = 25.0  # set lower speed for turning angle
-                pan_angle = shifted_horiz_distance * MAX_SERVO_ANGLE
+                pan_angle = shifted_x * MAX_SERVO_ANGLE
                 self._pan_servo_angle = max(-self._MAX_PAN_ANGLE, min(self._MAX_PAN_ANGLE, pan_angle))
         else:
             self._angular_speed = 0.0
             if self._mode == DriveMode.PAN_FOLLOW:
                 self._pan_tilt.pan_servo.target_speed = 100.0  # set highest speed for reset back to zero
                 self._pan_servo_angle = 0.0
-
-    def __get_shifted_joystick_distances(self, horizontal_distance, vertical_distance):
-        shifted_horiz_distance = horizontal_distance \
-                                 - (self._JOYSTICK_DEADZONE * horizontal_distance / (abs(horizontal_distance) + 1e-6))
-        shifted_vert_distance = vertical_distance \
-                                - (self._JOYSTICK_DEADZONE * vertical_distance / (abs(vertical_distance) + 1e-6))
-
-        return shifted_horiz_distance, shifted_vert_distance
 
     def __command_scheduler(self):
         s = scheduler(time.time, time.sleep)
