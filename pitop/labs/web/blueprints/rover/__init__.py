@@ -2,6 +2,7 @@ from flask import Blueprint, g
 from pitop.labs.web.blueprints.controller import ControllerBlueprint
 
 from .helpers import calculate_velocity_twist, calculate_pan_tilt_angle
+from .drive_handler_4wd import DriveHandler4WD
 
 
 def drive_handler(drive, data):
