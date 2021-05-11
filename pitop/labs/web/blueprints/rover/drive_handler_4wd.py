@@ -86,9 +86,9 @@ class DriveHandler4WD:
 
     def __get_shifted_joystick_distances(self, horizontal_distance, vertical_distance):
         shifted_horiz_distance = horizontal_distance \
-                                 - (self._JOYSTICK_DEADZONE * horizontal_distance / abs(horizontal_distance))
+                                 - (self._JOYSTICK_DEADZONE * horizontal_distance / (abs(horizontal_distance) + 1e-6))
         shifted_vert_distance = vertical_distance \
-                                - (self._JOYSTICK_DEADZONE * vertical_distance / abs(vertical_distance))
+                                - (self._JOYSTICK_DEADZONE * vertical_distance / (abs(vertical_distance) + 1e-6))
 
         return shifted_horiz_distance, shifted_vert_distance
 
