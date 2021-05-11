@@ -6,6 +6,7 @@ rover = Pitop()
 rover.add_component(DriveController4WD())
 rover.add_component(Camera(resolution=(320, 240)))
 rover.add_component(PanTiltController())
+rover.pan_tilt.calibrate()
 
 drive_handler_4wd = DriveHandler4WD(drive=rover.drive, pan_tilt=rover.pan_tilt, mode=DriveMode.PAN_FOLLOW)
 
