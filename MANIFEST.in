@@ -1,5 +1,8 @@
 include pitop/robotics/json/*.json
 include pitop/miniscreen/images/*.gif
+include pitop/labs/web/blueprints/**/**/*.css
+include pitop/labs/web/blueprints/**/**/*.html
+include pitop/labs/web/blueprints/**/**/*.js
 include pitop/labs/web/blueprints/**/**/**/*.css
 include pitop/labs/web/blueprints/**/**/**/*.html
 include pitop/labs/web/blueprints/**/**/**/*.js
