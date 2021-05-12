@@ -1,7 +1,6 @@
 py-pitop-sdk (0.18.5) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Update paths to include css/js/html from pitop.labs (#347)
+  * Update paths to include css/js/html from pitop.labs.web
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 12 May 2021 16:12:05 +0000
 
