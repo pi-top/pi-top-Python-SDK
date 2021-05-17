@@ -1,0 +1,40 @@
+header {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+
+main {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+table {
+  margin: 10px;
+  background: white;
+  color: slategrey;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+thead {
+  background: grey;
+  color: white;
+  border-bottom: hotpink;
+  width: 100%;
+}
+
+tr,
+td {
+  border: 1px solid grey;
+  min-width: 100px;
+}
+
+td {
+  padding: 5px;
+}

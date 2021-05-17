@@ -6,4 +6,7 @@ numpy
 onnxruntime
 opencv-python
 pitopcommon
+flask
+flask_sockets
+flask_cors
 Pillow

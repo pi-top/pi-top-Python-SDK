@@ -98,8 +98,11 @@ html_static_path = ['_static']
 # Custom stuff for project
 autodoc_mock_imports = [
     'cv2',
+    'flask',
+    'flask_sockets',
     'numpy',
     'imageio',
+    'imutils',
     'luma',
     'luma.oled',
     'luma.core',
