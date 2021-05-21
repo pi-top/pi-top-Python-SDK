@@ -9,10 +9,7 @@ from imutils import (
     resize,
 )
 from imutils.video import FPS
-from os import (
-    getenv,
-    path
-)
+from os import getenv
 import atexit
 from pitop.processing.core.vision_functions import (
     import_dlib,

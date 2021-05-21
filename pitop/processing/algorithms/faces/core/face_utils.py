@@ -85,9 +85,9 @@ def load_face_landmark_predictor(filename):
     def check_error(subprocess_object):
         import subprocess
         if subprocess_object.returncode != 0:
-            if path.exists(path.join(abs_predictor_dir, compressed_model_filename)):
+            if path.exists(path.join(abs_dlib_model_dir, compressed_model_filename)):
                 # delete downloaded file as it is likely corrupt
-                subprocess.run(["rm", "compressed_model_filename"], cwd=abs_predictor_dir)
+                subprocess.run(["rm", "compressed_model_filename"], cwd=abs_dlib_model_dir)
 
             print("Retrieving model failed, please try again. If issue persists, please report it here: "
                   "https://github.com/pi-top/pi-top-Python-SDK/issues")
@@ -98,7 +98,7 @@ def load_face_landmark_predictor(filename):
         print("Downloading model file...")
 
         download_link = f"https://github.com/davisking/dlib-models/raw/master/{compressed_model_filename}"
-        download_file = subprocess.Popen(["wget", "-P", abs_predictor_dir, download_link],
+        download_file = subprocess.Popen(["wget", "-P", abs_dlib_model_dir, download_link],
                                          stdout=subprocess.DEVNULL,
                                          stderr=subprocess.DEVNULL
                                          )
@@ -111,7 +111,7 @@ def load_face_landmark_predictor(filename):
         import subprocess
         print("Decompressing model file...")
         decompress_file = subprocess.Popen(["bzip2", "-d", f"{compressed_model_filename}"],
-                                           cwd=abs_predictor_dir,
+                                           cwd=abs_dlib_model_dir,
                                            stdout=subprocess.DEVNULL,
                                            stderr=subprocess.DEVNULL
                                            )
@@ -119,21 +119,21 @@ def load_face_landmark_predictor(filename):
         check_error(subprocess_object=decompress_file)
 
         print("Decompression Complete! Returning back to your program now...")
-        return dlib.shape_predictor(predictor_file_path)
+        return dlib.shape_predictor(dlib_model_file_path)
 
-    predictor_dir = path.join(".models", "predictors")
-    abs_predictor_dir = path.join(str(Path.home()), predictor_dir)
-    predictor_file_path = path.join(abs_predictor_dir, filename)
+    dlib_model_dir = path.join(".config", "pi-top", "sdk", "dlib_models")
+    abs_dlib_model_dir = path.join(str(Path.home()), dlib_model_dir)
+    dlib_model_file_path = path.join(abs_dlib_model_dir, filename)
 
-    if path.exists(predictor_file_path):
-        return dlib.shape_predictor(predictor_file_path)
+    if path.exists(dlib_model_file_path):
+        return dlib.shape_predictor(dlib_model_file_path)
 
     print("Required model file not found.")
 
-    Path(abs_predictor_dir).mkdir(parents=True, exist_ok=True)
+    Path(abs_dlib_model_dir).mkdir(parents=True, exist_ok=True)
 
     compressed_model_filename = f"{filename}.bz2"
-    if path.exists(path.join(abs_predictor_dir, compressed_model_filename)):
+    if path.exists(path.join(abs_dlib_model_dir, compressed_model_filename)):
         # File has already been downloaded
         return decompress()
 
