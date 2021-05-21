@@ -1,5 +1,8 @@
 from typing import Union
-from .core.face_utils import get_face_angle
+from .core.face_utils import (
+    get_face_angle,
+    load_face_landmark_predictor,
+)
 from pitop.core import ImageFunctions
 from imutils import (
     face_utils,
@@ -23,11 +26,6 @@ cv2 = import_opencv()
 dlib = import_dlib()
 
 
-predictor_dir = 'predictors'
-script_dir = path.dirname(path.realpath(__file__))
-abs_file_path = path.join(script_dir, predictor_dir)
-
-
 class FaceDetector:
     _FACE_DETECTOR_PYRAMID_LAYERS = 1  # set higher to detect smaller faces. Cost: large reduction in detection FPS.
 
@@ -49,7 +47,7 @@ class FaceDetector:
         self._image_processing_width = image_processing_width
         self._format = format
         self._face_rectangle_detector = dlib.get_frontal_face_detector()
-        self._predictor = dlib.shape_predictor(path.join(abs_file_path, dlib_landmark_predictor_filename))
+        self._predictor = load_face_landmark_predictor(filename=dlib_landmark_predictor_filename)
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
