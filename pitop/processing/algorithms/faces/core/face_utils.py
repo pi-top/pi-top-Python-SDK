@@ -62,6 +62,6 @@ def load_emotion_model():
     model_dir = 'models'
     script_dir = path.dirname(path.realpath(__file__))
     abs_file_path = path.join(script_dir, model_dir)
-    onnx_model_filename = "svc_emotion_model_scale_rotation.onnx"
+    onnx_model_filename = "emotion_classification_model_svc_v1.onnx"
 
     return rt.InferenceSession(path.join(abs_file_path, onnx_model_filename))

@@ -1,8 +1,9 @@
 from pitop.core import ImageFunctions
 import numpy as np
-from .face_utils import load_emotion_model
+from processing.algorithms.faces.core.face_utils import load_emotion_model
 from pitop.processing.core.math_functions import running_mean
 from imutils import face_utils
+from .core.emotion import Emotion
 from pitop.processing.core.vision_functions import (
     import_opencv,
     tuple_for_color_by_name,
@@ -10,45 +11,6 @@ from pitop.processing.core.vision_functions import (
 
 
 cv2 = import_opencv()
-
-
-class Emotion:
-    def __init__(self):
-        self._type = None
-        self._confidence = 0.0
-        self._robot_view = None
-
-    def clear(self):
-        self.type = None
-        self.confidence = 0.0
-
-    @property
-    def type(self):
-        return self._type
-
-    @type.setter
-    def type(self, value):
-        self._type = value
-
-    @property
-    def confidence(self):
-        return self._confidence
-
-    @confidence.setter
-    def confidence(self, value):
-        self._confidence = value
-
-    @property
-    def robot_view(self):
-        return self._robot_view
-
-    @robot_view.setter
-    def robot_view(self, value):
-        self._robot_view = value
-
-    @property
-    def found(self):
-        return self.type is not None
 
 
 left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
