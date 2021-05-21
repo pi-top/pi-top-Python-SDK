@@ -1,8 +1,6 @@
 from typing import Union
-from .core.face_utils import (
-    get_face_angle,
-    load_face_landmark_predictor,
-)
+from .core.face_utils import get_face_angle
+from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.core import ImageFunctions
 from imutils import (
     face_utils,

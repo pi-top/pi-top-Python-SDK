@@ -1,6 +1,6 @@
 from pitop.core import ImageFunctions
 import numpy as np
-from .core.face_utils import load_emotion_model
+from pitop.processing.core.load_models import load_emotion_model
 from pitop.processing.core.math_functions import running_mean
 from imutils import face_utils
 from .core.emotion import Emotion
