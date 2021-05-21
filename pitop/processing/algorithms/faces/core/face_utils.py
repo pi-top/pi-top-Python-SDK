@@ -54,88 +54,102 @@ def get_face_angle(face_features):
     return round(angle, 1)
 
 
-def load_emotion_model():
+def check_model_error(subprocess_object, file_dir, filename):
+    import subprocess
+    from os import path
+    if subprocess_object.returncode != 0:
+        if path.exists(path.join(file_dir, filename)):
+            # delete downloaded file as it is likely corrupt
+            subprocess.run(["rm", f"{filename}"], cwd=file_dir)
+
+        print("Retrieving model failed, please try again. If issue persists, please report it here: "
+              "https://github.com/pi-top/pi-top-Python-SDK/issues")
+        exit()
+
+
+def download_model_file(download_link, download_dir, filename):
+    import subprocess
+    print("Downloading model file...")
+    download_file = subprocess.Popen(["wget", "-P", download_dir, download_link],
+                                     stdout=subprocess.DEVNULL,
+                                     stderr=subprocess.DEVNULL
+                                     )
+    busy_animation(subprocess_object=download_file)
+    check_model_error(subprocess_object=download_file, file_dir=download_dir, filename=filename)
+    print("Download complete!")
+
+
+def decompress_model_file(file_dir, filename):
+    import subprocess
+    print("Decompressing model file...")
+    decompress_file = subprocess.Popen(["bzip2", "-d", f"{filename}"],
+                                       cwd=file_dir,
+                                       stdout=subprocess.DEVNULL,
+                                       stderr=subprocess.DEVNULL
+                                       )
+    busy_animation(subprocess_object=decompress_file)
+    check_model_error(subprocess_object=decompress_file, file_dir=file_dir, filename=filename)
+
+    print("Decompression Complete!")
+
+
+def busy_animation(subprocess_object):
+    from time import sleep
+    animation = "|/-\\"
+    idx = 0
+    while subprocess_object.poll() is None:
+        print(animation[idx % len(animation)], end="\r")
+        idx += 1
+        sleep(0.1)
+
+
+def retrieve_model(model_filename, base_download_link):
+    from pathlib import Path
+    from os import path
+    model_dir = path.join(".config", "pi-top", "sdk", "models")
+    abs_model_dir = path.join(str(Path.home()), model_dir)
+    model_file_path = path.join(abs_model_dir, model_filename)
+
+    if path.exists(model_file_path):
+        return model_file_path
+
+    print(f"Required model file (\"{model_filename}\") not found.")
+
+    Path(abs_model_dir).mkdir(parents=True, exist_ok=True)
+
+    compressed_model_filename = f"{model_filename}.bz2"
+    download_model_file(download_link=f"{base_download_link}{compressed_model_filename}",
+                        download_dir=abs_model_dir,
+                        filename=compressed_model_filename)
+
+    decompress_model_file(file_dir=abs_model_dir, filename=compressed_model_filename)
+
+    return model_file_path
+
+
+def load_emotion_model(model_filename="emotion_classification_model_svc_v1.onnx"):
     import onnxruntime as rt
     from os import path
 
-    model_dir = 'models'
-    script_dir = path.dirname(path.realpath(__file__))
-    abs_file_path = path.join(script_dir, model_dir)
-    onnx_model_filename = "emotion_classification_model_svc_v1.onnx"
+    model_file_path = retrieve_model(model_filename=model_filename,
+                                     base_download_link="https://github.com/pi-top/pi-top-SDK-models/raw/master/")
 
-    return rt.InferenceSession(path.join(abs_file_path, onnx_model_filename))
+    if path.exists(model_file_path):
+        return rt.InferenceSession(model_file_path)
+    else:
+        raise RuntimeError("Failed to get model,")
 
 
-def load_face_landmark_predictor(filename):
+def load_face_landmark_predictor(model_filename):
     from pitop.processing.core.vision_functions import import_dlib
-    from sys import exit
-    from pathlib import Path
     from os import path
     dlib = import_dlib()
 
-    def busy_animation(subprocess_object):
-        from time import sleep
-        animation = "|/-\\"
-        idx = 0
-        while subprocess_object.poll() is None:
-            print(animation[idx % len(animation)], end="\r")
-            idx += 1
-            sleep(0.1)
+    model_file_path = retrieve_model(model_filename=model_filename,
+                                     base_download_link="https://github.com/davisking/dlib-models/raw/master/")
 
-    def check_error(subprocess_object):
-        import subprocess
-        if subprocess_object.returncode != 0:
-            if path.exists(path.join(abs_dlib_model_dir, compressed_model_filename)):
-                # delete downloaded file as it is likely corrupt
-                subprocess.run(["rm", "compressed_model_filename"], cwd=abs_dlib_model_dir)
-
-            print("Retrieving model failed, please try again. If issue persists, please report it here: "
-                  "https://github.com/pi-top/pi-top-Python-SDK/issues")
-            exit()
-
-    def download():
-        import subprocess
-        print("Downloading model file...")
-
-        download_link = f"https://github.com/davisking/dlib-models/raw/master/{compressed_model_filename}"
-        download_file = subprocess.Popen(["wget", "-P", abs_dlib_model_dir, download_link],
-                                         stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL
-                                         )
-        busy_animation(subprocess_object=download_file)
-        check_error(subprocess_object=download_file)
-
-        print("Download complete!")
-
-    def decompress():
-        import subprocess
-        print("Decompressing model file...")
-        decompress_file = subprocess.Popen(["bzip2", "-d", f"{compressed_model_filename}"],
-                                           cwd=abs_dlib_model_dir,
-                                           stdout=subprocess.DEVNULL,
-                                           stderr=subprocess.DEVNULL
-                                           )
-        busy_animation(subprocess_object=decompress_file)
-        check_error(subprocess_object=decompress_file)
-
-        print("Decompression Complete! Returning back to your program now...")
-        return dlib.shape_predictor(dlib_model_file_path)
-
-    dlib_model_dir = path.join(".config", "pi-top", "sdk", "dlib_models")
-    abs_dlib_model_dir = path.join(str(Path.home()), dlib_model_dir)
-    dlib_model_file_path = path.join(abs_dlib_model_dir, filename)
-
-    if path.exists(dlib_model_file_path):
-        return dlib.shape_predictor(dlib_model_file_path)
-
-    print("Required model file not found.")
-
-    Path(abs_dlib_model_dir).mkdir(parents=True, exist_ok=True)
-
-    compressed_model_filename = f"{filename}.bz2"
-    if path.exists(path.join(abs_dlib_model_dir, compressed_model_filename)):
-        # File has already been downloaded
-        return decompress()
-
-    download()
-    return decompress()
+    if path.exists(model_file_path):
+        return dlib.shape_predictor(model_file_path)
+    else:
+        raise RuntimeError("Retrieving model failed, please try again. If issue persists, please report it here: "
+                           "https://github.com/pi-top/pi-top-Python-SDK/issues")
