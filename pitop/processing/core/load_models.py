@@ -79,6 +79,7 @@ def load_emotion_model(model_filename="emotion_classification_model_svc_v1.onnx"
                                      base_download_link="https://github.com/pi-top/pi-top-SDK-models/raw/master/")
 
     if path.exists(model_file_path):
+        print("Now returning to program...")
         return rt.InferenceSession(model_file_path)
     else:
         raise RuntimeError("Failed to get model,")
@@ -93,6 +94,7 @@ def load_face_landmark_predictor(model_filename):
                                      base_download_link="https://github.com/davisking/dlib-models/raw/master/")
 
     if path.exists(model_file_path):
+        print("Now returning to program...")
         return dlib.shape_predictor(model_file_path)
     else:
         raise RuntimeError("Retrieving model failed, please try again. If issue persists, please report it here: "
