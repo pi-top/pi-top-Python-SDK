@@ -1,5 +1,5 @@
 from typing import Union
-from processing.algorithms.faces.core.face_utils import get_face_angle
+from .core.face_utils import get_face_angle
 from pitop.core import ImageFunctions
 from imutils import (
     face_utils,
