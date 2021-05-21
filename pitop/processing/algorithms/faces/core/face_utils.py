@@ -52,5 +52,3 @@ def get_face_angle(face_features):
     angle = -math.degrees(math.atan(y_diff/x_diff))
 
     return round(angle, 1)
-
-
