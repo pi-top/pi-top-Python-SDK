@@ -12,7 +12,7 @@ def detect_emotion(frame):
     emotion = emotion_classifier(face)
 
     if emotion.found:
-        print(f"{emotion_lookup[emotion.type]}")
+        print(f"{emotion_lookup[emotion.type]}", end="\r", flush=True)
     else:
         print("Face not found!")
 
