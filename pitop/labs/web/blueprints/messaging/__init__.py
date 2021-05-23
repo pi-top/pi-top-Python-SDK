@@ -37,8 +37,7 @@ class MessagingBlueprint(Blueprint):
                 return
 
             spec = getfullargspec(handler)
-            if len(spec.args) == (3 if ismethod(
-                    handler) else 2) or spec.varargs:
+            if len(spec.args) == (3 if ismethod(handler) else 2) or spec.varargs:
                 handler(message_data, send)
                 return
 

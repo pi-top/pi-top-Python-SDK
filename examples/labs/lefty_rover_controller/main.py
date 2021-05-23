@@ -9,6 +9,7 @@ rover.add_component(Camera())
 
 rover_controller = RoverWebController(
     get_frame=rover.camera.get_frame,
+    battery=rover.battery,
     message_handlers={
         'left_joystick': lambda data: drive_handler(rover.drive, data),
         'right_joystick': lambda data: pan_tilt_handler(rover.pan_tilt, data)

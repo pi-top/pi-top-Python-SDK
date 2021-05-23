@@ -3,6 +3,15 @@
 {% block main %}
   <img src="video.mjpg" class="background-video"></img>
 
+  {% if g.show_battery %}
+    <div class="batteryContainer">
+      <div class="batteryOuter">
+        <div id="batteryLevel"></div>
+      </div>
+      <div class="batteryBump"></div>
+    </div>
+  {% endif %}
+
   <div style="box-sizing: border-box; padding: 40px; display: flex;">
     {% if g.show_left_joystick %}
       <joystick-component

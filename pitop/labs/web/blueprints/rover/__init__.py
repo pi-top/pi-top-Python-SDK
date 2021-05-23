@@ -25,6 +25,7 @@ class RoverControllerBlueprint(Blueprint):
         drive=None,
         pan_tilt=None,
         get_frame=None,
+        battery=None,
         message_handlers={},
         **kwargs
     ):
@@ -55,7 +56,7 @@ class RoverControllerBlueprint(Blueprint):
             message_handlers['right_joystick'] = right_joystick
 
         self.controller_blueprint = ControllerBlueprint(
-            get_frame=get_frame, message_handlers=message_handlers)
+            get_frame=get_frame, battery=battery, message_handlers=message_handlers)
 
     def register(self, app, options, *args, **kwargs):
         app.register_blueprint(self.controller_blueprint, **options)

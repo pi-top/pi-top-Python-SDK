@@ -31,6 +31,7 @@ class RoverWebController(WebServer):
         get_frame=None,
         drive=None,
         pan_tilt=None,
+        battery=None,
         message_handlers={},
         blueprints=[],
         **kwargs
@@ -39,6 +40,7 @@ class RoverWebController(WebServer):
             get_frame=get_frame,
             drive=drive,
             pan_tilt=pan_tilt,
+            battery=battery,
             message_handlers=message_handlers
         )
 

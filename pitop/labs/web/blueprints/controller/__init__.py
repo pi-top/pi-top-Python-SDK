@@ -4,10 +4,11 @@ from pitop.labs.web.blueprints.base import BaseBlueprint
 from pitop.labs.web.blueprints.webcomponents import WebComponentsBlueprint
 from pitop.labs.web.blueprints.messaging import MessagingBlueprint
 from pitop.labs.web.blueprints.video import VideoBlueprint
+from pitop.labs.web.blueprints.battery import BatteryBlueprint
 
 
 class ControllerBlueprint(Blueprint):
-    def __init__(self, get_frame=None, message_handlers={}, **kwargs):
+    def __init__(self, get_frame=None, battery=None, message_handlers={}, **kwargs):
         Blueprint.__init__(
             self,
             "controller",
@@ -22,6 +23,7 @@ class ControllerBlueprint(Blueprint):
         self.video_blueprint = VideoBlueprint(get_frame=get_frame)
         self.messaging_blueprint = MessagingBlueprint(
             message_handlers=message_handlers)
+        self.battery_blueprint = BatteryBlueprint(battery=battery, messaging_blueprint=self.messaging_blueprint)
 
     def register(self, app, options, *args, **kwargs):
         # register child blueprints
@@ -29,6 +31,7 @@ class ControllerBlueprint(Blueprint):
         app.register_blueprint(self.components_blueprint, **options)
         app.register_blueprint(self.video_blueprint, **options)
         app.register_blueprint(self.messaging_blueprint, **options)
+        app.register_blueprint(self.battery_blueprint, **options)
 
         # register self
         Blueprint.register(self, app, options, *args, **kwargs)
