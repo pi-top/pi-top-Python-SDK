@@ -82,7 +82,8 @@ def load_emotion_model(model_filename="emotion_classification_model_svc_v1.onnx"
         print("Now returning to program...")
         return rt.InferenceSession(model_file_path)
     else:
-        raise RuntimeError("Failed to get model,")
+        raise RuntimeError("Retrieving model failed, please try again. If issue persists, please report it here: "
+                           "https://github.com/pi-top/pi-top-Python-SDK/issues")
 
 
 def load_face_landmark_predictor(model_filename):
