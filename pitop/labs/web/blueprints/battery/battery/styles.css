@@ -4,6 +4,7 @@
   align-items: center;
   padding: 5px;
   background-color: #CCCA;
+  height: 30px;
 }
 
 .batteryOuter {
@@ -30,7 +31,6 @@
 }
 
 #batteryPercentage {
-  height: 100%;
   font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
   text-align: right;
   padding: 0 5px;
