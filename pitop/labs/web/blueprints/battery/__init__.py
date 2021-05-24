@@ -20,14 +20,14 @@ class BatteryBlueprint(Blueprint):
         self.battery = battery
         self.messaging_blueprint = messaging_blueprint
         if self.battery is not None:
-            broadcast_thread = gevent.spawn(self.battery_update)
+            gevent.spawn(self.battery_update)
 
     def battery_update(self):
         while True:
-            capacity = self.battery.capacity
+            battery_state = self.battery.get_full_state()
             message = {
-                'type': 'battery_capacity',
-                'data': capacity
+                'type': 'battery_state',
+                'data': battery_state
             }
             self.broadcast(message)
             gevent.sleep(1)

@@ -12,6 +12,7 @@
   padding: 1px;
   width: 50px;
   height: 20px;
+  position: relative;
 }
 
 .batteryBump {
@@ -24,7 +25,6 @@
 
 #batteryLevel {
   border-radius: 2px;
-  padding: 1px;
   height: 100%;
   box-sizing: border-box;
 }
@@ -35,4 +35,25 @@
   text-align: right;
   padding: 0 5px;
   color: #222;
+}
+
+#chargeIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 20px;
+  color: #444;
+  transform: translateY(-50%) translateX(-50%) rotate(90deg);
+  animation: fadeinout 2s infinite linear alternate;
+  opacity: 0;
+}
+
+@keyframes fadeinout {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@-webkit-keyframes fadeinout {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
