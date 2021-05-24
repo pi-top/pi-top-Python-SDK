@@ -1,32 +1,38 @@
 .batteryContainer {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
-  flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
+  padding: 5px;
+  background-color: #CCCA;
 }
 
 .batteryOuter {
-  border-radius: 3px;
-  border: 1px solid #444;
+  border-radius: 5px;
+  border: 2px solid #444;
   padding: 1px;
-  width: 25px;
-  height: 9px;
+  width: 50px;
+  height: 20px;
 }
 
 .batteryBump {
-  border-radius: 2px;
+  border-radius: 3px;
   background-color: #444;
-  margin: 2px;
-  width: 1px;
-  height: 3px;
+  margin: 1px;
+  width: 3px;
+  height: 8px;
 }
 
 #batteryLevel {
   border-radius: 2px;
-  background-color: #73AD21;
-  width: 18px;
-  height: 9px;
+  padding: 1px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#batteryPercentage {
+  height: 100%;
+  font-family: 'Consolas', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+  text-align: right;
+  padding: 0 5px;
+  color: #222;
 }

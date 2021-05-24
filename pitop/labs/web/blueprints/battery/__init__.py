@@ -25,7 +25,6 @@ class BatteryBlueprint(Blueprint):
     def battery_update(self):
         while True:
             capacity = self.battery.capacity
-            print(capacity)
             message = {
                 'type': 'battery_capacity',
                 'data': capacity

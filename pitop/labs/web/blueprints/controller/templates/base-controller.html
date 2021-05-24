@@ -11,3 +11,15 @@
   {% include "setup-battery.html" %}
   {% include "setup-webcomponents.html" %}
 {% endblock %}
+
+{% block header %}
+  {% if g.show_battery %}
+    <div class="batteryContainer">
+      <div id="batteryPercentage"></div>
+      <div class="batteryOuter">
+        <div id="batteryLevel"></div>
+      </div>
+      <div class="batteryBump"></div>
+    </div>
+  {% endif %}
+{% endblock %}
