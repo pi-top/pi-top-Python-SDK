@@ -3,11 +3,11 @@ from pathlib import Path
 
 
 def retrieve_model(model_filename, base_download_link):
-    def download_file(url, download_file_path):
+    def download_file(url, output_file_path):
         import wget
         print("Downloading model file...")
         try:
-            wget.download(url, download_file_path)
+            wget.download(url, output_file_path)
         except Exception as e:
             print(e)
             raise RuntimeError("Downloading model failed, please check the model_filename is correct. If issue "
@@ -37,10 +37,9 @@ def retrieve_model(model_filename, base_download_link):
 
     compressed_model_filename = f"{model_filename}.bz2"
     download_file_path = path.join(abs_model_dir, compressed_model_filename)
-    download_file(url=f"{base_download_link}{compressed_model_filename}",
-                  download_file_path=download_file_path)
 
-    extract_file(compressed_file_path=download_file_path, model_file_path=model_file_path)
+    download_file(url=f"{base_download_link}{compressed_model_filename}", output_file_path=download_file_path)
+    extract_file(compressed_file_path=download_file_path, output_file_path=model_file_path)
 
     return model_file_path
 
