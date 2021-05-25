@@ -14,7 +14,6 @@ def retrieve_model(model_filename, base_download_link):
                                "persists, please report it here: https://github.com/pi-top/pi-top-Python-SDK/issues")
         print()
         print("Download complete!")
-        print()
 
     def extract_file(compressed_file_path, output_file_path):
         import bz2
