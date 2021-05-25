@@ -139,6 +139,11 @@ __requires__ = [
     "dlib",
     "imutils",
     "scikit-learn",
+
+    ########################
+    # Download Model Files #
+    ########################
+    "wget",
 ]
 
 __extra_requires__ = {
