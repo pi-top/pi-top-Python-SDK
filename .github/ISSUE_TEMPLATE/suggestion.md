@@ -1,7 +1,7 @@
 ---
 name: Suggestion
 labels: 'Type: Enhancement'
-about: Suggest an idea for this project. Make sure you've read "Things To Know Before Submitting A Suggestion" in the Wiki first!
+about: Suggest an idea for this project. Make sure you've read "Contributing to pi-topOS" in the Knowledge Base first!
 
 ---
 
@@ -23,10 +23,10 @@ about: Suggest an idea for this project. Make sure you've read "Things To Know B
     - Ensure this suggestion or a similar one has not already been made. Check the
         existing GitHub issues as well as the [forum][1]. If there is a
         relevant post please add you contributions there instead.
-    - Read [Things To Know Before Submitting A Suggestion][2]
+    - Read [Contributing to pi-topOS][2]
 
 [1]: https://forum.pi-top.com/c/pi-top-software
-[2]: https://github.com/pi-top/pi-top-Python-SDK/wiki/Things-To-Know-Before-Submitting-A-Suggestion
+[2]: http://knowledgebase.pi-top.com/knowledge/contributing-to-pi-top-os
 -->
 
 ### Problem or Possibility
