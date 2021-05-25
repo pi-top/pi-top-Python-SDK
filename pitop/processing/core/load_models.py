@@ -11,12 +11,12 @@ def retrieve_model(model_filename, base_download_link):
         print("Download complete!")
         print()
 
-    def decompress_file(compressed_file_path, model_file_path):
+    def extract_file(compressed_file_path, model_file_path):
         import bz2
-        print("Decompressing model file...")
+        print("Extracting model file...")
         with open(compressed_file_path, 'rb') as source, open(model_file_path, 'wb') as dest:
             dest.write(bz2.decompress(source.read()))
-        print("Decompression Complete!")
+        print("Extraction complete!")
         print()
 
     model_dir = path.join(".config", "pi-top", "sdk", "models")
@@ -35,7 +35,7 @@ def retrieve_model(model_filename, base_download_link):
     download_file(url=f"{base_download_link}{compressed_model_filename}",
                   download_file_path=download_file_path)
 
-    decompress_file(compressed_file_path=download_file_path, model_file_path=model_file_path)
+    extract_file(compressed_file_path=download_file_path, model_file_path=model_file_path)
 
     return model_file_path
 
