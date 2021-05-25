@@ -4,9 +4,7 @@ from math import (
     radians,
 )
 from time import sleep
-
 from simple_pid import PID
-
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -51,19 +49,10 @@ class DriveController(Stateful, Recreatable):
                                                                self._max_robot_angular_speed)
                                                 )
 
-        self._initialized = True
-
         Stateful.__init__(self, children=['left_motor', 'right_motor'])
         Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port,
                                                 "right_motor_port": right_motor_port,
                                                 "name": self.name})
-
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("DriveController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
 
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
