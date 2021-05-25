@@ -6,15 +6,20 @@ def retrieve_model(model_filename, base_download_link):
     def download_file(url, download_file_path):
         import wget
         print("Downloading model file...")
-        wget.download(url, download_file_path)
+        try:
+            wget.download(url, download_file_path)
+        except Exception as e:
+            print(e)
+            raise RuntimeError("Downloading model failed, please check the model_filename is correct. If issue "
+                               "persists, please report it here: https://github.com/pi-top/pi-top-Python-SDK/issues")
         print()
         print("Download complete!")
         print()
 
-    def extract_file(compressed_file_path, model_file_path):
+    def extract_file(compressed_file_path, output_file_path):
         import bz2
         print("Extracting model file...")
-        with open(compressed_file_path, 'rb') as source, open(model_file_path, 'wb') as dest:
+        with open(compressed_file_path, 'rb') as source, open(output_file_path, 'wb') as dest:
             dest.write(bz2.decompress(source.read()))
         print("Extraction complete!")
         print()
