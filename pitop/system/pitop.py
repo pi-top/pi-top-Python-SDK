@@ -4,6 +4,8 @@ from pitop.core.mixins import (
     SupportsBattery,
     SupportsMiniscreen,
 )
+from typing import Optional
+from pitop import DriveController, Camera, PanTiltController
 
 
 class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):
@@ -19,7 +21,8 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
     class in 2 different files, they will share the internal state.
 
     *property* miniscreen
-        If using a pi-top [4], this property returns a :class:`pitop.miniscreen.Miniscreen` object, to interact with the device's Miniscreen.
+        If using a pi-top [4], this property returns a :class:`pitop.miniscreen.Miniscreen` object, to interact with
+        the device's Miniscreen.
 
 
     *property* oled
@@ -27,8 +30,30 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
 
 
     *property* battery
-        If using a pi-top with a battery, this property returns a :class:`pitop.battery.Battery` object, to interact with the device's battery.
+        If using a pi-top with a battery, this property returns a :class:`pitop.battery.Battery` object, to interact
+        with the device's battery.
+
+
+    *property* drive
+        Convenience property to provide autocomplete and introspection functionality in common IDEs.
+        If you have not used the `add_component` or `from_config` methods to add a `DriveController` object and you try
+        to run your program with this property, an exception will be raised.
+
+
+    *property* camera
+        Convenience property to provide autocomplete and introspection functionality in common IDEs.
+        If you have not used the `add_component` or `from_config` methods to add a `Camera` object and you try to run
+        your program with this property, an exception will be raised.
+
+
+    *property* pan_tilt
+        Convenience property to provide autocomplete and introspection functionality in common IDEs.
+        If you have not used the `add_component` or `from_config` methods to add a `PanTiltController` object and you
+        try to run your program with this property, an exception will be raised.
     """
+    drive: Optional[DriveController]
+    camera: Optional[Camera]
+    pan_tilt: Optional[PanTiltController]
 
     def __init__(self):
         SupportsMiniscreen.__init__(self)
