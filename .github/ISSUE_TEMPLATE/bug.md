@@ -55,10 +55,10 @@ about: Report a bug with this project. Make sure you've read "Contributing to pi
 
 ### Environment Information
 <!--
-  🖥️ This is valuable to identify the root of the problem. Read [How To Get
-  System Information][3] for assistance with this.
+  🖥️ This is valuable to identify the root of the problem. Read [Collecting
+  And Reviewing System Information][3] for assistance with this.
 
-[3]: (https://github.com/pi-top/pi-top-Python-SDK/wiki/How-To-Get-System-Information)
+[3]: (http://knowledgebase.pi-top.com/knowledge/collecting-and-reviewing-system-information)
 -->
 
 | OS version | `pitop` version | `pitopcommon` version | `pt-device-manager` version | Python version | Pi model | pi-top model |
