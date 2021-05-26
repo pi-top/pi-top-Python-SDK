@@ -206,10 +206,10 @@ class HealthCheck:
 
         if device_type() == DeviceName.pi_top_4.value:
             StdoutFormat.print_subsection('Raspberry Pi 4 Bootloader Configuration')
-            eeprom_info = run_command("sudo rpi-eeprom-config", timeout=5)
+            eeprom_info = run_command("sudo rpi-eeprom-config", timeout=5, check=False)
             print(f"{eeprom_info.strip()}")
             StdoutFormat.print_subsection('Raspberry Pi 4 EEPROM Information')
-            eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5)
+            eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5, check=False)
             print(f"{eeprom_info.strip()}")
             StdoutFormat.print_subsection('VideoCore GPU Detailed Configuration')
             self.print_vcgenmod_settings()

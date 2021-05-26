@@ -1,3 +1,20 @@
+py-pitop-sdk (0.18.5) buster; urgency=medium
+
+  * Update paths to include css/js/html from pitop.labs.web
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 12 May 2021 16:12:05 +0000
+
+py-pitop-sdk (0.18.4) buster; urgency=medium
+
+  * Configurable web interface API
+  * Fix DriveController's rotate function
+  * Drive Controller uses speeds instead of RPMs
+  * Drop pt-project-file
+  * Remove double Pitop __init__ in AlexRobot
+  * Use imutils to ensure contour is grabbed regardless of cv version
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 10 May 2021 20:02:21 +0000
+
 py-pitop-sdk (0.18.3) buster; urgency=medium
 
   * Update coloured ball detection algorithm usage

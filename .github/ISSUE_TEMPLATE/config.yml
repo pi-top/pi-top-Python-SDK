@@ -6,8 +6,8 @@ contact_links:
   - name: Need to go a little deeper? Try the Forum!
     url: https://forum.pi-top.com/c/pi-top-software
     about: Discuss and search through support topics.
-  - name: Committed to creating a GitHub Issue? Read the Wiki!
-    url: https://github.com/pi-top/pi-top-Python-SDK/wiki/
+  - name: Committed to creating a GitHub Issue? Read the 'Contributing to pi-topOS' Knowledge Base article!
+    url: http://knowledgebase.pi-top.com/knowledge/contributing-to-pi-top-os
     about: Get information about how to create effective GitHub Issues.
   - name: Looking to learn about programming? Check out Further!
     url: https://further.pi-top.com/explore/
