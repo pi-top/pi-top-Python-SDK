@@ -140,6 +140,11 @@ __requires__ = [
     "imutils",
     "scikit-learn",
 
+    ###################
+    # Use Model Files #
+    ###################
+    "onnxruntime",
+
     ########################
     # Download Model Files #
     ########################

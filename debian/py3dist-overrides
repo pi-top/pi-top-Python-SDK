@@ -24,3 +24,4 @@ gevent-websocket python3-gevent-websocket
 dlib python3-dlib
 imutils python3-imutils
 wget python3-wget
+onnxruntime python3-onnxruntime
