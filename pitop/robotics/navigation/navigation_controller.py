@@ -35,7 +35,7 @@ class NavigationController(Stateful):
         self._on_finish = None
 
         # Navigation algorithm flow control
-        self._navigation_in_progress = False
+        self.in_progress = False
         self._stop_triggered = False
         self._nav_goal_finish_event = Event()
         self._nav_thread = None
@@ -64,7 +64,7 @@ class NavigationController(Stateful):
 
     def own_state(self):
         return {
-            "in_progress": self._navigation_in_progress
+            "in_progress": self.in_progress
         }
 
     def go_to(self,
@@ -90,7 +90,7 @@ class NavigationController(Stateful):
         """
         self._on_finish = self.__check_callback(on_finish)
 
-        if self._navigation_in_progress:
+        if self.in_progress:
             raise RuntimeError("Cannot call function before previous navigation is complete, use .wait() or call "
                                ".stop() to cancel the previous navigation request.")
 
@@ -279,12 +279,11 @@ class NavigationController(Stateful):
         self._sub_goal_nav_thread.join()
 
     def __navigation_started(self):
-        self._navigation_in_progress = True
+        self.in_progress = True
         self._stop_triggered = False
 
     def __navigation_finished(self):
-        self._new_pose_event.wait()  # wait for another position update before returning to user program
-        self._navigation_in_progress = False
+        self.in_progress = False
         self._nav_goal_finish_event.set()
         self._nav_goal_finish_event.clear()
         if callable(self._on_finish):
