@@ -3,6 +3,7 @@ import math
 from filterpy.kalman import KalmanFilter
 from enum import IntEnum
 from collections import deque
+from pitop.core.mixins import Stateful
 
 
 class State(IntEnum):
@@ -25,7 +26,7 @@ class VelocityMeasurements(IntEnum):
     current = 1
 
 
-class StateFilter:
+class StateFilter(Stateful):
     _sigma_default_dt = 0.1
 
     def __init__(self, measurement_frequency, wheel_separation):
@@ -66,6 +67,8 @@ class StateFilter:
         # for now.
         self._imu_angular_velocity_variance = np.radians(0.5 ** 2)
 
+        Stateful.__init__(self, children=[])
+
     def __str__(self):
         degree_symbol = u'\N{DEGREE SIGN}'
         return f"               x = {self.x:.3} m (+/- {self.x_tolerance:.3})\n" \
@@ -74,6 +77,15 @@ class StateFilter:
                f"        Velocity = {self.v:.3} m/s (+/- {self.v_tolerance:.3})\n" \
                f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s " \
                f"(+/- {math.degrees(self.w_tolerance):.3})\n"
+
+    def own_state(self):
+        return {
+            "x_position": self.x,
+            "y_position": self.y,
+            "angle_position": self.angle,
+            "linear_velocity": self.v,
+            "angular_velocity": self.w
+        }
 
     def add_measurements(self, odom_measurements, dt, imu_measurements=None):
         self._velocities.append(odom_measurements)

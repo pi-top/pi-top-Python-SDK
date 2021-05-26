@@ -5,7 +5,7 @@ will drive around the square twice and then back to the middle. The Ultrasonic S
 during navigation. If one is found, the robot will move onto the next navigation goal.
 """
 
-from pitop import DriveController, NavigationController
+from pitop import Pitop, DriveController, NavigationController
 from pitop.pma import UltrasonicSensor
 from time import sleep
 
@@ -13,7 +13,7 @@ from time import sleep
 def navigation_finished():
     global goal_reached
     goal_reached = True
-    print(f"Goal reached with state: \n{navigate.state}")
+    print(f"Goal reached with state: \n{robot.navigate.state_tracker}")
 
 
 def check_for_obstacles():
@@ -21,7 +21,7 @@ def check_for_obstacles():
         sleep(0.15)
         if ultrasonic.distance < 0.2:
             print("Obstacle blocking navigation goal, changing to next goal!")
-            navigate.stop()
+            robot.navigate.stop()
             sleep(1)
             break
 
@@ -29,7 +29,7 @@ def check_for_obstacles():
 def set_goal_with_obstacle_detection(position, angle=None):
     global goal_reached
     goal_reached = False
-    navigate.go_to(position=position, angle=angle, on_finish=navigation_finished)
+    robot.navigate.go_to(position=position, angle=angle, on_finish=navigation_finished)
     check_for_obstacles()
 
 
@@ -47,14 +47,18 @@ def main():
         set_goal_with_obstacle_detection(position=square_bottom_right)
 
     # go back to start_position
-    navigate.go_to(position=(0, 0), angle=0, on_finish=navigation_finished, backwards=True).wait()
-    print(f"Goal reached with state: \n{navigate.state}")
+    robot.navigate.go_to(position=(0, 0), angle=0, on_finish=navigation_finished, backwards=True).wait()
+    print(f"Goal reached with state: \n{robot.navigate.state_tracker}")
 
 
 goal_reached = False
-navigate = NavigationController(
-    drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")
+robot = Pitop()
+robot.add_component(NavigationController(
+    drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")), name="navigate"
 )
+# navigate = NavigationController(
+#     drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")
+# )
 ultrasonic = UltrasonicSensor("D3")
 
 main()
