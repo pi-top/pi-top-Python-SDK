@@ -10,7 +10,6 @@ modules_to_patch = [
     "PyV4L2Camera.camera",
     "PyV4L2Camera.exceptions",
     "simple_pid",
-    "sys.stdout"
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
