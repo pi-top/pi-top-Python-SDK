@@ -3,7 +3,7 @@ gpiozero
 imutils
 matplotlib
 numpy
-onnxruntime
+# onnxruntime
 opencv-python
 pitopcommon
 flask

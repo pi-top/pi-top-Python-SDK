@@ -18,7 +18,7 @@ for module in modules_to_patch:
 for patched_module in modules_to_patch:
     del modules[patched_module]
 
-from unittest import TestCase
+from unittest import TestCase, skip
 import numpy as np
 import cv2
 from pitop.processing.algorithms.faces import (
@@ -37,6 +37,7 @@ emotion_data = [['Neutral', 0.4], ['Anger', 0.7], ['Disgust', 0.7], ['Happy', 0.
 face_filenames = ["neutral.jpg", "anger.jpg", "disgust.jpg", "happy.jpg", "sad.jpg", "surprise.jpg"]
 
 
+@skip("onnxruntime wheel is unavailable for platform armv7, used in CI test runner")
 class TestFaceAndEmotionDetector(TestCase):
 
     def setUp(self):
