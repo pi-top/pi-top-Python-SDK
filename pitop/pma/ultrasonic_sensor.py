@@ -1,4 +1,3 @@
-from gpiozero.pins.native import NativeFactory
 from gpiozero import SmoothedInputDevice
 from threading import Event, Lock
 
@@ -38,7 +37,6 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
                                      sample_wait=0.06,
                                      partial=partial,
                                      ignore=frozenset({None}),
-                                     pin_factory=NativeFactory(),
                                      )
 
         try:
@@ -114,22 +112,6 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
         try:
             super(UltrasonicSensor, self).close()
         except RuntimeError:
-            # Currently, if used with OLED, this will raise the following exception:
-            #
-            # Exception ignored in: <function GPIOBase.__del__ at 0xb5041660>
-            # Traceback (most recent call last):
-            #   File "/usr/lib/python3/dist-packages/gpiozero/devices.py", line 151, in __del__
-            #   File "/usr/lib/python3/dist-packages/pitop/pma/ultrasonic_sensor.py", line 98, in close
-            #   File "/usr/lib/python3/dist-packages/gpiozero/input_devices.py", line 299, in close
-            #   File "/usr/lib/python3/dist-packages/gpiozero/devices.py", line 540, in close
-            #   File "/usr/lib/python3/dist-packages/gpiozero/pins/native.py", line 397, in close
-            #   File "/usr/lib/python3/dist-packages/gpiozero/pins/__init__.py", line 420, in <lambda>
-            #   File "/usr/lib/python3/dist-packages/gpiozero/pins/native.py", line 468, in _set_edges
-            # RuntimeError: could not find io module state (interpreter shutdown?)
-
-            # This can be removed when no other part of the SDK is using RPi.GPIO
-            # TODO: evaluate removing Luma dependency, in favour of direct use of SPIDEV
-            # to ensure that RPi.GPIO and gpiozero are not used together
             PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
                            "there was an error in closing the port!")
 
