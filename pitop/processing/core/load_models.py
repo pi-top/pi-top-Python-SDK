@@ -6,12 +6,12 @@ def retrieve_model(model_filename, base_download_link):
     def download_file(url, output_file_path):
         import wget
         print("Downloading model file...")
-        try:
-            wget.download(url, output_file_path)
-        except Exception as e:
-            print(e)
-            raise RuntimeError("Downloading model failed, please check the model_filename is correct. If issue "
-                               "persists, please report it here: https://github.com/pi-top/pi-top-Python-SDK/issues")
+        # try:
+        wget.download(url, output_file_path)
+        # except Exception as e:
+        #     print(e)
+        #     raise RuntimeError("Downloading model failed, please check the model_filename is correct. If issue "
+        #                        "persists, please report it here: https://github.com/pi-top/pi-top-Python-SDK/issues")
         print()
         print("Download complete!")
 
