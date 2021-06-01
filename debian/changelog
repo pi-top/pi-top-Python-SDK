@@ -1,18 +1,9 @@
 py-pitop-sdk (0.18.6) buster; urgency=medium
 
-  [ pre-commit-ci[bot] ]
-  * [pre-commit.ci] pre-commit autoupdate (#350)
-
-  [ Jorge Capona ]
-  * Fix link to docs in README
+  * Drop references to deprecated GitHub wiki
+  * Remove NativeFactory usage from PMA components
+  * Add face detection and emotion tracking algorithms
   * Stop CLI from failing when rpi-eeprom-update fails
-
-  [ Mike Roberts ]
-  * Drop references to deprecated GitHub wiki (#353)
-
-  [ duwudi ]
-  * Remove NativeFactory usage (#354)
-  * Face detection/emotion tracking robot (Prax) (#293)
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 01 Jun 2021 20:48:12 +0000
 
