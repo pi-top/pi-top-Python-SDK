@@ -5,14 +5,11 @@ from pathlib import Path
 def retrieve_model(model_filename, base_download_link):
     def download_file(url, output_file_path):
         import wget
-        import os
         import sys
         print("Downloading model file...")
         bar = wget.bar_adaptive if hasattr(sys.stdout, "fileno") else None
         try:
             wget.download(url, output_file_path, bar=bar)
-        # except AttributeError:
-        #     wget.download(url, output_file_path, bar=None)
         except Exception as e:
             print(e)
             raise RuntimeError("Downloading model failed, please check the model_filename is correct. If issue "
