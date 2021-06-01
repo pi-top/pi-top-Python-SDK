@@ -5,8 +5,9 @@ from pathlib import Path
 def retrieve_model(model_filename, base_download_link):
     def download_file(url, output_file_path):
         import wget
+        import sys
         print("Downloading model file...")
-        bar = wget.bar_adaptive
+        bar = wget.bar_adaptive if hasattr(sys.stdout, "fileno") else None
         try:
             wget.download(url, output_file_path, bar=bar)
         except Exception as e:
