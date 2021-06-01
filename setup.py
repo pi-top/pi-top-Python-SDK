@@ -136,7 +136,19 @@ __requires__ = [
     #############################
     # Advanced image processing #
     #############################
+    "dlib",
     "imutils",
+    "scikit-learn",
+
+    ###################
+    # Use Model Files #
+    ###################
+    "onnxruntime",
+
+    ########################
+    # Download Model Files #
+    ########################
+    "wget",
 ]
 
 __extra_requires__ = {
