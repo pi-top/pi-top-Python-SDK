@@ -7,7 +7,7 @@ def retrieve_model(model_filename, base_download_link):
         import wget
         print("Downloading model file...")
         # try:
-        wget.download(url, output_file_path)
+        wget.download(url, output_file_path, bar=None)
         # except Exception as e:
         #     print(e)
         #     raise RuntimeError("Downloading model failed, please check the model_filename is correct. If issue "
