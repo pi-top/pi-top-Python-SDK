@@ -146,10 +146,6 @@ class FaceDetector:
                 face_rectangle = (x, y, w, h)
                 face_center = (int(x + w / 2), int(y + h / 2))
 
-        if rectangles_dlib is None:
-            # this should never trigger. Discuss.
-            return None, None, None
-
         face_features = self.__get_dlib_face_features(frame, largest_rectangle_dlib)
 
         return face_rectangle, face_center, face_features
