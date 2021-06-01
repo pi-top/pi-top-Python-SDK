@@ -12,6 +12,7 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm \
+            -t \
             --volume ${{ github.workspace }}:/src \
             -e RUN_PYTHON_TESTS=1 \
             -e PYTHON_TESTS_DIR=./tests \
