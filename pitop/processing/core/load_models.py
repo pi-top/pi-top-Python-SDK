@@ -48,7 +48,7 @@ def load_emotion_model(model_filename="emotion_classification_model_svc_v1.onnx"
     import onnxruntime as rt
 
     model_file_path = retrieve_model(model_filename=model_filename,
-                                     base_download_link="https://github.com/pi-top/pi-top-SDK-models/raw/master/")
+                                     base_download_link="https://github.com/pi-top/Machine-Learning-Models/raw/master/")
 
     if path.exists(model_file_path):
         return rt.InferenceSession(model_file_path)
