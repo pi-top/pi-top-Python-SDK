@@ -1,3 +1,10 @@
+py-pitop-sdk (0.18.7) buster; urgency=medium
+
+  [ Jorge Capona ]
+  * Update repository from where to fetch ML models
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 02 Jun 2021 02:27:57 +0000
+
 py-pitop-sdk (0.18.6) buster; urgency=medium
 
   * Drop references to deprecated GitHub wiki
