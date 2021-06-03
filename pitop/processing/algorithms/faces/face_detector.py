@@ -215,7 +215,7 @@ class FaceDetector:
 
         # resize back to original frame resolution
         face.rectangle = tuple((int(item * self._frame_scaler) for item in rectangle))
-        face.center = tuple((int(item * self._frame_scaler) for item in center))
+        face.center_default = tuple((int(item * self._frame_scaler) for item in center))
         face.features = (features * self._frame_scaler).astype("int")
 
         face.robot_view = ImageFunctions.convert(
@@ -229,7 +229,7 @@ class FaceDetector:
         x, y, w, h = face.rectangle
         cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
 
-        cv2.drawMarker(frame, face.center_top_left_zero, tuple_for_color_by_name("orangered", bgr=True),
+        cv2.drawMarker(frame, face.center_default, tuple_for_color_by_name("orangered", bgr=True),
                        markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
 
         return frame

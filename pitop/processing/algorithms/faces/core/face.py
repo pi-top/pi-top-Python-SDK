@@ -16,21 +16,33 @@ class Face:
         self._original_frame = None
 
     def clear(self):
-        self.center = None
+        self.center_default = None
         self.features = None
         self.rectangle = None
 
     @property
     def center(self):
-        return center_reposition(self._center, self.original_detection_frame) if self._center is not None else None
-
-    @center.setter
-    def center(self, value):
-        self._center = value
+        """
+        :return: Face center with the coordinate system in the middle of the frame.
+                 Positive x points right, positive y points up.
+        :type: list
+        """
+        return center_reposition(self.center_default, self.original_detection_frame) \
+            if self.center_default is not None else None
 
     @property
-    def center_top_left_zero(self):
+    def center_default(self):
+        """
+        :return: Face center with the coordinate system in the top left of the frame.
+                 Positive x points right, positive y points down. This is the same coordinate system used by OpenCV
+                 and PIL.
+        :type: list
+        """
         return self._center
+
+    @center_default.setter
+    def center_default(self, value):
+        self._center = value
 
     @property
     def angle(self):
@@ -86,4 +98,4 @@ class Face:
         :return: Boolean to determine if a face was found in the frame.
         :rtype: bool
         """
-        return self.center is not None
+        return self.center_default is not None
