@@ -25,7 +25,7 @@ class Face:
         """
         :return: Face center with the coordinate system in the middle of the frame.
                  Positive x points right, positive y points up.
-        :type: list
+        :type: tuple
         """
         return center_reposition(self.center_default, self.original_detection_frame) \
             if self.center_default is not None else None
@@ -36,7 +36,7 @@ class Face:
         :return: Face center with the coordinate system in the top left of the frame.
                  Positive x points right, positive y points down. This is the same coordinate system used by OpenCV
                  and PIL.
-        :type: list
+        :type: tuple
         """
         return self._center
 

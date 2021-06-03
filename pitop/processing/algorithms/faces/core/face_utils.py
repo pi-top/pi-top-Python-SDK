@@ -61,12 +61,12 @@ def pupil_distance(face_features):
 
 def left_eye_center(face_features):
     left_eye_start, left_eye_end = get_landmarks_dict(face_features)["left_eye"]
-    return list(np.mean(face_features[left_eye_start:left_eye_end], axis=0))
+    return list(np.mean(face_features[left_eye_start:left_eye_end], axis=0).astype(int))
 
 
 def right_eye_center(face_features):
     right_eye_start, right_eye_end = get_landmarks_dict(face_features)["right_eye"]
-    return list(np.mean(face_features[right_eye_start:right_eye_end], axis=0))
+    return list(np.mean(face_features[right_eye_start:right_eye_end], axis=0).astype(int))
 
 
 def get_landmarks_dict(face_features):
