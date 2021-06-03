@@ -1,13 +1,14 @@
+from imutils import face_utils
+import numpy as np
+import math
+
+
 def get_face_angle(face_features):
     """Returns angle in degrees of face from dlib face features.
 
     :param face_features: dlib face features (either 5 landmark or 68 landmark version)
     :return: angle of face in degrees
     """
-    from imutils import face_utils
-    import numpy as np
-    import math
-
     if len(face_features) == 68:
         # https://pyimagesearch.com/wp-content/uploads/2017/04/facial_landmarks_68markup.jpg
         # note: array is 0-indexed, image annotations are 1-indexed
@@ -52,3 +53,28 @@ def get_face_angle(face_features):
     angle = -math.degrees(math.atan(y_diff/x_diff))
 
     return round(angle, 1)
+
+
+def pupil_distance(face_features):
+    return np.linalg.norm(np.asarray(left_eye_center(face_features)) - np.asarray(right_eye_center(face_features)))
+
+
+def left_eye_center(face_features):
+    left_eye_start, left_eye_end = get_landmarks_dict(face_features)["left_eye"]
+    return list(np.mean(face_features[left_eye_start:left_eye_end], axis=0))
+
+
+def right_eye_center(face_features):
+    right_eye_start, right_eye_end = get_landmarks_dict(face_features)["right_eye"]
+    return list(np.mean(face_features[right_eye_start:right_eye_end], axis=0))
+
+
+def get_landmarks_dict(face_features):
+    if len(face_features) == 68:
+        landmarks = face_utils.FACIAL_LANDMARKS_68_IDXS
+    elif len(face_features) == 5:
+        landmarks = face_utils.FACIAL_LANDMARKS_5_IDXS
+    else:
+        raise ValueError("dlib face features not recognised, please try again")
+
+    return landmarks

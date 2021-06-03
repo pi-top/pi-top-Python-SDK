@@ -1,11 +1,16 @@
 from pitop.processing.core.vision_functions import center_reposition
+from .face_utils import (
+    pupil_distance,
+    get_face_angle,
+    left_eye_center,
+    right_eye_center,
+)
 
 
 class Face:
     def __init__(self):
         self._center = None
         self._features = None
-        self._angle = None
         self._rectangle = None
         self._robot_view = None
         self._original_frame = None
@@ -13,7 +18,6 @@ class Face:
     def clear(self):
         self.center = None
         self.features = None
-        self.angle = None
         self.rectangle = None
 
     @property
@@ -30,11 +34,19 @@ class Face:
 
     @property
     def angle(self):
-        return self._angle
+        return get_face_angle(self.features) if self.found else None
 
-    @angle.setter
-    def angle(self, value):
-        self._angle = value
+    @property
+    def pupil_distance(self):
+        return pupil_distance(self.features) if self.found else None
+
+    @property
+    def left_eye_center(self):
+        return left_eye_center(self.features) if self.found else None
+
+    @property
+    def right_eye_center(self):
+        return right_eye_center(self.features) if self.found else None
 
     @property
     def features(self):

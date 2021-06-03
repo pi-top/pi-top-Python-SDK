@@ -217,7 +217,6 @@ class FaceDetector:
         face.rectangle = tuple((int(item * self._frame_scaler) for item in rectangle))
         face.center = tuple((int(item * self._frame_scaler) for item in center))
         face.features = (features * self._frame_scaler).astype("int")
-        face.angle = get_face_angle(face.features)
 
         face.robot_view = ImageFunctions.convert(
             self.__draw_on_frame(frame=frame.copy(), face=face),
