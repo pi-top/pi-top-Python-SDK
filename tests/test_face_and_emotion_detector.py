@@ -173,6 +173,16 @@ class TestFaceAndEmotionDetector(TestCase):
 
         face = face_detector(test_image)
 
+        print(face.angle)
+        print(face.pupil_distance)
+        print(face.left_eye_center)
+        print(face.right_eye_center)
+        print(face.left_eye_dimensions)
+        print(face.right_eye_dimensions)
+        print(face.mouth_center)
+        print(face.mouth_dimensions)
+        print(face.nose_bottom)
+
         self.assertEqual(face.angle, -0.5, )
         self.assertEqual(face.pupil_distance, 112.0)
         self.assertTupleEqual(face.left_eye_center, (371, 197))
