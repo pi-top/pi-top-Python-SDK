@@ -1,3 +1,16 @@
+py-pitop-sdk (0.18.9) buster; urgency=medium
+
+  [ duwudi ]
+  * Face detector updates (#358)
+
+  [ github-actions[bot] ]
+  * [CI] Update debian/changelog for next release (#356)
+
+  [ Jorge Capona ]
+  * Remove python-sonic dependency
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 13:57:38 +0000
+
 py-pitop-sdk (0.18.8) buster; urgency=medium
 
   * Face detector updates
