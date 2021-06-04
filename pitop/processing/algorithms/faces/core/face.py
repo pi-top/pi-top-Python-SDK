@@ -1,40 +1,88 @@
 from pitop.processing.core.vision_functions import center_reposition
+from .face_utils import (
+    pupil_distance,
+    get_face_angle,
+    left_eye_center,
+    left_eye_dimensions,
+    right_eye_center,
+    right_eye_dimensions,
+    mouth_center,
+    mouth_dimensions,
+    nose_bottom,
+)
 
 
 class Face:
     def __init__(self):
         self._center = None
         self._features = None
-        self._angle = None
         self._rectangle = None
         self._robot_view = None
         self._original_frame = None
 
     def clear(self):
-        self.center = None
+        self.center_default = None
         self.features = None
-        self.angle = None
         self.rectangle = None
 
     @property
     def center(self):
-        return center_reposition(self._center, self.original_detection_frame) if self._center is not None else None
+        """
+        :return: Face center with the coordinate system in the middle of the frame.
+                 Positive x points right, positive y points up.
+        :type: tuple
+        """
+        return center_reposition(self.center_default, self.original_detection_frame) if self.found else None
 
-    @center.setter
-    def center(self, value):
+    @property
+    def center_default(self):
+        """
+        :return: Face center with the coordinate system in the top left of the frame.
+                 Positive x points right, positive y points down. This is the same coordinate system used by OpenCV
+                 and PIL.
+        :type: tuple
+        """
+        return self._center
+
+    @center_default.setter
+    def center_default(self, value):
         self._center = value
 
     @property
-    def center_top_left_zero(self):
-        return self._center
+    def angle(self):
+        return get_face_angle(self.features) if self.found else None
 
     @property
-    def angle(self):
-        return self._angle
+    def pupil_distance(self):
+        return pupil_distance(self.features) if self.found else None
 
-    @angle.setter
-    def angle(self, value):
-        self._angle = value
+    @property
+    def left_eye_center(self):
+        return left_eye_center(self.features) if self.found else None
+
+    @property
+    def left_eye_dimensions(self):
+        return left_eye_dimensions(self.features) if self.found else None
+
+    @property
+    def right_eye_center(self):
+        return right_eye_center(self.features) if self.found else None
+
+    @property
+    def right_eye_dimensions(self):
+        return right_eye_dimensions(self.features) if self.found else None
+
+    @property
+    def mouth_center(self):
+        return mouth_center(self.features) if self.found else None
+
+    @property
+    def mouth_dimensions(self):
+        return mouth_dimensions(self.features) if self.found else None
+
+    @property
+    def nose_bottom(self):
+        return nose_bottom(self.features) if self.found else None
 
     @property
     def features(self):
@@ -74,4 +122,4 @@ class Face:
         :return: Boolean to determine if a face was found in the frame.
         :rtype: bool
         """
-        return self.center is not None
+        return self.center_default is not None
