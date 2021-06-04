@@ -1,4 +1,7 @@
-from pitop import Camera, Buzzer
+from pitop import (
+    Camera,
+    Buzzer,
+)
 from pitop.processing.algorithms.faces import FaceDetector
 from signal import pause
 
@@ -39,7 +42,7 @@ def find_faces(frame):
         else:
             alert_off()
     else:
-        alert_off()
+        buzzer.on() if lost_face_alert else buzzer.off()
         print("Cannot find face!")
 
 
@@ -50,6 +53,7 @@ face_detector = FaceDetector()
 drowsy_counter = 0
 DROWSY_THRESHOLD = 0.25
 ALERT_COUNT = 10
+lost_face_alert = False
 
 camera.on_frame = find_faces
 
