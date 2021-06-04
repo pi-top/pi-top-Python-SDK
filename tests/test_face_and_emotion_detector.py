@@ -94,6 +94,13 @@ class TestFaceAndEmotionDetector(TestCase):
         self.assertIsNone(face.angle)
         self.assertIsNone(face.features)
         self.assertIsNone(face.rectangle)
+        self.assertIsNone(face.mouth_dimensions)
+        self.assertIsNone(face.left_eye_dimensions)
+        self.assertIsNone(face.right_eye_dimensions)
+        self.assertIsNone(face.left_eye_center)
+        self.assertIsNone(face.right_eye_center)
+        self.assertIsNone(face.nose_bottom)
+        self.assertIsNone(face.pupil_distance)
         self.assertEqual(face.robot_view.shape[0], self._height)
         self.assertEqual(face.robot_view.shape[1], self._width)
 
@@ -156,3 +163,22 @@ class TestFaceAndEmotionDetector(TestCase):
         # check something has been drawn to robot view
         comparison = emotion.robot_view == frame
         self.assertFalse(comparison.all())
+
+    def test_calculated_face_data(self):
+        face_detector = FaceDetector(enable_tracking=False)
+        # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
+        face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
+
+        test_image = self._face_image_data[0][0]
+
+        face = face_detector(test_image)
+
+        self.assertEqual(face.angle, -0.5, )
+        self.assertEqual(face.pupil_distance, 112.0)
+        self.assertTupleEqual(face.left_eye_center, (371, 197))
+        self.assertTupleEqual(face.right_eye_center, (259, 195))
+        self.assertTupleEqual(face.left_eye_dimensions, (42.2, 18.1))
+        self.assertTupleEqual(face.right_eye_dimensions, (44.2, 18.3))
+        self.assertTupleEqual(face.mouth_center, (312, 311))
+        self.assertTupleEqual(face.mouth_dimensions, (88.0, 24.1))
+        self.assertTupleEqual(face.nose_bottom, (314, 272))
