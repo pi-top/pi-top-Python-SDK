@@ -214,7 +214,7 @@ class TestFaceAndEmotionDetector(TestCase):
 
         face = face_detector(test_image)
 
-        self.assertAlmostEqual(face.angle, -1.1, delta=0.1)
+        self.assertAlmostEqual(face.angle, -1.1, delta=1.0)
         self.assertAlmostEqual(face.pupil_distance, 108.0, delta=3)
 
         x, y = face.left_eye_center
