@@ -1,7 +1,6 @@
 py-pitop-sdk (0.18.8) buster; urgency=medium
 
-  [ duwudi ]
-  * Face detector updates (#358)
+  * Face detector updates
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 12:58:54 +0000
 
