@@ -41,9 +41,9 @@ class DeviceCLI(CliBaseClass):
             print("")
 
         def print_hub_line(data):
-            print(f"{data.get('name')}", end=" ")
+            print(f"{data.get('name')}", end="")
             if not self.args.name_only and data.get("fw_version"):
-                print(f"(v{data.get('fw_version')})", end="")
+                print(f" (v{data.get('fw_version')})", end="")
             print("")
 
         # Get host device from device manager
