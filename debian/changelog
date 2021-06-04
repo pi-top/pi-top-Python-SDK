@@ -1,7 +1,6 @@
 py-pitop-sdk (0.18.10) buster; urgency=medium
 
-  [ Jorge Capona ]
-  * Remove trailing whitespace on "pi-top device" CLI
+  * Remove trailing whitespace on "pi-top device" CLI command
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 14:22:27 +0000
 
