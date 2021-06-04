@@ -164,7 +164,7 @@ class TestFaceAndEmotionDetector(TestCase):
         comparison = emotion.robot_view == frame
         self.assertFalse(comparison.all())
 
-    def test_calculated_face_data(self):
+    def test_calculated_face_data_68_landmark(self):
         face_detector = FaceDetector(enable_tracking=False)
         # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
         face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
@@ -173,22 +173,69 @@ class TestFaceAndEmotionDetector(TestCase):
 
         face = face_detector(test_image)
 
-        print(face.angle)
-        print(face.pupil_distance)
-        print(face.left_eye_center)
-        print(face.right_eye_center)
-        print(face.left_eye_dimensions)
-        print(face.right_eye_dimensions)
-        print(face.mouth_center)
-        print(face.mouth_dimensions)
-        print(face.nose_bottom)
+        self.assertAlmostEqual(face.angle, -0.5, delta=0.1)
+        self.assertAlmostEqual(face.pupil_distance, 112.0, delta=3)
 
-        self.assertEqual(face.angle, -0.5, )
-        self.assertEqual(face.pupil_distance, 112.0)
-        self.assertTupleEqual(face.left_eye_center, (371, 197))
-        self.assertTupleEqual(face.right_eye_center, (259, 195))
-        self.assertTupleEqual(face.left_eye_dimensions, (42.2, 18.1))
-        self.assertTupleEqual(face.right_eye_dimensions, (44.2, 18.3))
-        self.assertTupleEqual(face.mouth_center, (312, 311))
-        self.assertTupleEqual(face.mouth_dimensions, (88.0, 24.1))
-        self.assertTupleEqual(face.nose_bottom, (314, 272))
+        x, y = face.left_eye_center
+        self.assertAlmostEqual(x, 371, delta=3)
+        self.assertAlmostEqual(y, 197, delta=3)
+
+        x, y = face.right_eye_center
+        self.assertAlmostEqual(x, 259, delta=3)
+        self.assertAlmostEqual(y, 195, delta=3)
+
+        w, h = face.left_eye_dimensions
+        self.assertAlmostEqual(w, 42.2, delta=3)
+        self.assertAlmostEqual(h, 18.1, delta=3)
+
+        w, h = face.right_eye_dimensions
+        self.assertAlmostEqual(w, 44.2, delta=3)
+        self.assertAlmostEqual(h, 18.3, delta=3)
+
+        x, y = face.mouth_center
+        self.assertAlmostEqual(x, 312, delta=3)
+        self.assertAlmostEqual(y, 311, delta=3)
+
+        w, h = face.mouth_dimensions
+        self.assertAlmostEqual(w, 88.0, delta=3)
+        self.assertAlmostEqual(h, 24.1, delta=3)
+
+        x, y = face.nose_bottom
+        self.assertAlmostEqual(x, 314, delta=3)
+        self.assertAlmostEqual(y, 272, delta=3)
+
+    def test_calculated_face_data_5_landmark(self):
+        face_detector = FaceDetector(dlib_landmark_predictor_filename="shape_predictor_5_face_landmarks.dat",
+                                     enable_tracking=False)
+        # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
+        face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
+
+        test_image = self._face_image_data[0][0]
+
+        face = face_detector(test_image)
+
+        self.assertAlmostEqual(face.angle, -1.1, delta=0.1)
+        self.assertAlmostEqual(face.pupil_distance, 108.0, delta=3)
+
+        x, y = face.left_eye_center
+        self.assertAlmostEqual(x, 371, delta=3)
+        self.assertAlmostEqual(y, 197, delta=3)
+
+        x, y = face.right_eye_center
+        self.assertAlmostEqual(x, 259, delta=3)
+        self.assertAlmostEqual(y, 195, delta=3)
+
+        w, h = face.left_eye_dimensions
+        self.assertAlmostEqual(w, 42.2, delta=3)
+        self.assertIsNone(h)
+
+        w, h = face.right_eye_dimensions
+        self.assertAlmostEqual(w, 44.2, delta=3)
+        self.assertIsNone(h)
+
+        self.assertRaises(ValueError, lambda: face.mouth_center)
+        self.assertRaises(ValueError, lambda: face.mouth_dimensions)
+
+        x, y = face.nose_bottom
+        self.assertAlmostEqual(x, 314, delta=3)
+        self.assertAlmostEqual(y, 276, delta=3)
