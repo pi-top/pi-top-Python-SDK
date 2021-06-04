@@ -56,17 +56,108 @@ def get_face_angle(face_features):
 
 
 def pupil_distance(face_features):
+    """
+    :param face_features: dlib face features (either 5 landmark or 68 landmark version)
+    :return: Scalar distance between left eye center and right eye center
+    :rtype: float
+    """
     return np.linalg.norm(np.asarray(left_eye_center(face_features)) - np.asarray(right_eye_center(face_features)))
 
 
 def left_eye_center(face_features):
-    left_eye_start, left_eye_end = get_landmarks_dict(face_features)["left_eye"]
-    return list(np.mean(face_features[left_eye_start:left_eye_end], axis=0).astype(int))
+    """
+    Left eye is assumed to be on the right of the face in the image frame (i.e. from camera's point of view).
+    :param face_features: dlib face features (either 5 landmark or 68 landmark version)
+    :return: (x, y) position of left eye
+    :rtype: tuple
+    """
+    return eye_center(face_features, "left_eye")
 
 
 def right_eye_center(face_features):
-    right_eye_start, right_eye_end = get_landmarks_dict(face_features)["right_eye"]
-    return list(np.mean(face_features[right_eye_start:right_eye_end], axis=0).astype(int))
+    """
+    Right eye is assumed to be on the left of the face in the image frame (i.e. from camera's point of view).
+    :param face_features: dlib face features (either 5 landmark or 68 landmark version)
+    :return: (x, y) position of right eye
+    :rtype: tuple
+    """
+    return eye_center(face_features, "right_eye")
+
+
+def eye_center(face_features, position: str):
+    return feature_center(eye_landmarks(face_features, position))
+
+
+def left_eye_dimensions(face_features):
+    """
+    Left eye is assumed to be on the right of the face in the image frame (i.e. from camera's point of view).
+    :param face_features: dlib face features (either 5 landmark or 68 landmark version)
+    :return: (width, height) for 68-landmark version and (width, None) for 5-landmark version
+    :rtype: tuple
+    """
+    return eye_dimensions(face_features, "left_eye")
+
+
+def right_eye_dimensions(face_features):
+    """
+    Right eye is assumed to be on the left of the face in the image frame (i.e. from camera's point of view).
+    :param face_features: dlib face features (either 5 landmark or 68 landmark version)
+    :return: (width, height) for 68-landmark version and (width, None) for 5-landmark version
+    :rtype: tuple
+    """
+    return eye_dimensions(face_features, "right_eye")
+
+
+def eye_dimensions(face_features, position: str):
+    landmarks = eye_landmarks(face_features, position)
+    if len(face_features) == 68:
+        width = np.linalg.norm(landmarks[0] - landmarks[3])
+        height = (np.linalg.norm(landmarks[1] - landmarks[5]) + np.linalg.norm(landmarks[2] - landmarks[4])) / 2
+        return width, height
+    elif len(face_features) == 5:
+        width = np.linalg.norm(landmarks[0] - landmarks[1])
+        return width, None
+
+
+def eye_landmarks(face_features, position: str):
+    eye_start, eye_end = get_landmarks_dict(face_features)[position]
+    return face_features[eye_start:eye_end]
+
+
+def mouth_center(face_features):
+    return feature_center(mouth_landmarks(face_features))
+
+
+def mouth_landmarks(face_features):
+    if len(face_features) == 5:
+        raise ValueError("Not compatible with 5-landmark version, use 68-landmark version instead.")
+    mouth_start, mouth_end = face_utils.FACIAL_LANDMARKS_68_IDXS["mouth"]
+    return face_features[mouth_start:mouth_end]
+
+
+def mouth_dimensions(face_features):
+    landmarks = mouth_landmarks(face_features)
+    width = np.linalg.norm(landmarks[0] - landmarks[6])
+    height = np.linalg.norm(landmarks[3] - landmarks[9])
+    return width, height
+
+
+def nose_bottom(face_features):
+    """
+    :param face_features: dlib face features (either 5 landmark or 68 landmark version)
+    :return: (x, y) position of the bottom of the nose
+    :rtype: tuple
+    """
+    if len(face_features) == 68:
+        return list(np.take(face_features, 33, axis=0).astype(int))
+    elif len(face_features) == 5:
+        return list(np.take(face_features, 4, axis=0).astype(int))
+    else:
+        raise ValueError("dlib face features not recognised, please try again")
+
+
+def feature_center(feature_landmarks):
+    return list(np.mean(feature_landmarks, axis=0).astype(int))
 
 
 def get_landmarks_dict(face_features):

@@ -3,7 +3,12 @@ from .face_utils import (
     pupil_distance,
     get_face_angle,
     left_eye_center,
+    left_eye_dimensions,
     right_eye_center,
+    right_eye_dimensions,
+    mouth_center,
+    mouth_dimensions,
+    nose_bottom,
 )
 
 
@@ -27,8 +32,7 @@ class Face:
                  Positive x points right, positive y points up.
         :type: tuple
         """
-        return center_reposition(self.center_default, self.original_detection_frame) \
-            if self.center_default is not None else None
+        return center_reposition(self.center_default, self.original_detection_frame) if self.found else None
 
     @property
     def center_default(self):
@@ -57,8 +61,28 @@ class Face:
         return left_eye_center(self.features) if self.found else None
 
     @property
+    def left_eye_dimensions(self):
+        return left_eye_dimensions(self.features) if self.found else None
+
+    @property
     def right_eye_center(self):
         return right_eye_center(self.features) if self.found else None
+
+    @property
+    def right_eye_dimensions(self):
+        return right_eye_dimensions(self.features) if self.found else None
+
+    @property
+    def mouth_center(self):
+        return mouth_center(self.features) if self.found else None
+
+    @property
+    def mouth_dimensions(self):
+        return mouth_dimensions(self.features) if self.found else None
+
+    @property
+    def nose_bottom(self):
+        return nose_bottom(self.features) if self.found else None
 
     @property
     def features(self):
