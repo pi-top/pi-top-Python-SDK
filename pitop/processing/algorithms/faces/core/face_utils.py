@@ -1,6 +1,25 @@
-from imutils import face_utils
 import numpy as np
 import math
+from collections import OrderedDict
+
+
+FACIAL_LANDMARKS_68_IDXS = OrderedDict([
+    ("mouth", (48, 68)),
+    ("inner_mouth", (60, 68)),
+    ("right_eyebrow", (17, 22)),
+    ("left_eyebrow", (22, 27)),
+    ("right_eye", (36, 42)),
+    ("left_eye", (42, 48)),
+    ("nose", (27, 36)),
+    ("jaw", (0, 17))
+])
+
+
+FACIAL_LANDMARKS_5_IDXS = OrderedDict([
+    ("right_eye", (2, 4)),
+    ("left_eye", (0, 2)),
+    ("nose", 4)
+])
 
 
 def get_face_angle(face_features):
@@ -13,11 +32,11 @@ def get_face_angle(face_features):
         # https://pyimagesearch.com/wp-content/uploads/2017/04/facial_landmarks_68markup.jpg
         # note: array is 0-indexed, image annotations are 1-indexed
 
-        left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
-        right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
-        left_eyebrow_start, left_eyebrow_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eyebrow"]
-        right_eyebrow_start, right_eyebrow_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eyebrow"]
-        jaw_start, jaw_end = face_utils.FACIAL_LANDMARKS_68_IDXS["jaw"]
+        left_eye_start, left_eye_end = FACIAL_LANDMARKS_68_IDXS["left_eye"]
+        right_eye_start, right_eye_end = FACIAL_LANDMARKS_68_IDXS["right_eye"]
+        left_eyebrow_start, left_eyebrow_end = FACIAL_LANDMARKS_68_IDXS["left_eyebrow"]
+        right_eyebrow_start, right_eyebrow_end = FACIAL_LANDMARKS_68_IDXS["right_eyebrow"]
+        jaw_start, jaw_end = FACIAL_LANDMARKS_68_IDXS["jaw"]
 
         left_eye = face_features[left_eye_start:left_eye_end]
         right_eye = face_features[right_eye_start:right_eye_end]
@@ -35,8 +54,8 @@ def get_face_angle(face_features):
         all_right_points = np.vstack((right_eye, right_eyebrow, right_jaw, right_mouth))
 
     elif len(face_features) == 5:
-        left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_5_IDXS["left_eye"]
-        right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_5_IDXS["right_eye"]
+        left_eye_start, left_eye_end = FACIAL_LANDMARKS_5_IDXS["left_eye"]
+        right_eye_start, right_eye_end = FACIAL_LANDMARKS_5_IDXS["right_eye"]
         all_left_points = face_features[left_eye_start:left_eye_end]
         all_right_points = face_features[right_eye_start:right_eye_end]
 
@@ -50,7 +69,7 @@ def get_face_angle(face_features):
 
     x_diff, y_diff = position_diff
 
-    angle = -math.degrees(math.atan(y_diff/x_diff))
+    angle = -math.degrees(math.atan(y_diff / x_diff))
 
     return round(angle, 1)
 
@@ -73,7 +92,7 @@ def left_eye_center(face_features):
     :return: (x, y) position of left eye
     :rtype: tuple
     """
-    return eye_center(face_features, "left_eye")
+    return feature_center(eye_landmarks(face_features, "left_eye"))
 
 
 def right_eye_center(face_features):
@@ -84,11 +103,7 @@ def right_eye_center(face_features):
     :return: (x, y) position of right eye
     :rtype: tuple
     """
-    return eye_center(face_features, "right_eye")
-
-
-def eye_center(face_features, position: str):
-    return feature_center(eye_landmarks(face_features, position))
+    return feature_center(eye_landmarks(face_features, "right_eye"))
 
 
 def left_eye_dimensions(face_features):
@@ -137,7 +152,7 @@ def mouth_center(face_features):
 def mouth_landmarks(face_features):
     if len(face_features) == 5:
         raise ValueError("Not compatible with 5-landmark version, use 68-landmark version instead.")
-    mouth_start, mouth_end = face_utils.FACIAL_LANDMARKS_68_IDXS["mouth"]
+    mouth_start, mouth_end = FACIAL_LANDMARKS_68_IDXS["mouth"]
     return face_features[mouth_start:mouth_end]
 
 
@@ -168,10 +183,10 @@ def feature_center(feature_landmarks):
 
 def get_landmarks_dict(face_features):
     if len(face_features) == 68:
-        landmarks = face_utils.FACIAL_LANDMARKS_68_IDXS
+        landmarks_dict = FACIAL_LANDMARKS_68_IDXS
     elif len(face_features) == 5:
-        landmarks = face_utils.FACIAL_LANDMARKS_5_IDXS
+        landmarks_dict = FACIAL_LANDMARKS_5_IDXS
     else:
         raise ValueError("dlib face features not recognised, please try again")
 
-    return landmarks
+    return landmarks_dict
