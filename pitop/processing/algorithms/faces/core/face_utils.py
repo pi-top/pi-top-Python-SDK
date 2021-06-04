@@ -61,7 +61,8 @@ def pupil_distance(face_features):
     :return: Scalar distance between left eye center and right eye center
     :rtype: float
     """
-    return np.linalg.norm(np.asarray(left_eye_center(face_features)) - np.asarray(right_eye_center(face_features)))
+    return round(
+        np.linalg.norm(np.asarray(left_eye_center(face_features)) - np.asarray(right_eye_center(face_features))), 1)
 
 
 def left_eye_center(face_features):
@@ -115,8 +116,9 @@ def right_eye_dimensions(face_features):
 def eye_dimensions(face_features, position: str):
     landmarks = eye_landmarks(face_features, position)
     if len(face_features) == 68:
-        width = np.linalg.norm(landmarks[0] - landmarks[3])
-        height = (np.linalg.norm(landmarks[1] - landmarks[5]) + np.linalg.norm(landmarks[2] - landmarks[4])) / 2
+        width = round(np.linalg.norm(landmarks[0] - landmarks[3]), 1)
+        height = round(
+            (np.linalg.norm(landmarks[1] - landmarks[5]) + np.linalg.norm(landmarks[2] - landmarks[4])) / 2, 1)
         return width, height
     elif len(face_features) == 5:
         width = np.linalg.norm(landmarks[0] - landmarks[1])
@@ -141,8 +143,8 @@ def mouth_landmarks(face_features):
 
 def mouth_dimensions(face_features):
     landmarks = mouth_landmarks(face_features)
-    width = np.linalg.norm(landmarks[0] - landmarks[6])
-    height = np.linalg.norm(landmarks[3] - landmarks[9])
+    width = round(np.linalg.norm(landmarks[0] - landmarks[6]), 1)
+    height = round(np.linalg.norm(landmarks[3] - landmarks[9]), 1)
     return width, height
 
 
@@ -153,15 +155,15 @@ def nose_bottom(face_features):
     :rtype: tuple
     """
     if len(face_features) == 68:
-        return list(np.take(face_features, 33, axis=0).astype(int))
+        return tuple(np.take(face_features, 33, axis=0).astype(int))
     elif len(face_features) == 5:
-        return list(np.take(face_features, 4, axis=0).astype(int))
+        return tuple(np.take(face_features, 4, axis=0).astype(int))
     else:
         raise ValueError("dlib face features not recognised, please try again")
 
 
 def feature_center(feature_landmarks):
-    return list(np.mean(feature_landmarks, axis=0).astype(int))
+    return tuple(np.mean(feature_landmarks, axis=0).astype(int))
 
 
 def get_landmarks_dict(face_features):
