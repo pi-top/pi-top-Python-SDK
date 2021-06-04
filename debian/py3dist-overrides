@@ -12,7 +12,6 @@ matplotlib python3-matplotlib
 pitopcommon python3-pitopcommon
 pyinotify python3-pyinotify
 pynput python3-pynput
-python_sonic python3-sonic
 pyv4l2camera python3-pyv4l2camera
 scipy python3-scipy
 simple_pid python3-simple-pid

@@ -109,11 +109,6 @@ __requires__ = [
     "monotonic",
     "pyinotify",
 
-    ##########
-    # Proto+ #
-    ##########
-    "python-sonic",
-
     #########
     # Pulse #
     #########
