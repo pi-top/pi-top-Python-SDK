@@ -65,8 +65,9 @@ def pupil_distance(face_features):
 
 
 def left_eye_center(face_features):
-    """
-    Left eye is assumed to be on the right of the face in the image frame (i.e. from camera's point of view).
+    """Left eye is assumed to be on the right of the face in the image frame
+    (i.e. from camera's point of view).
+
     :param face_features: dlib face features (either 5 landmark or 68 landmark version)
     :return: (x, y) position of left eye
     :rtype: tuple
@@ -75,8 +76,9 @@ def left_eye_center(face_features):
 
 
 def right_eye_center(face_features):
-    """
-    Right eye is assumed to be on the left of the face in the image frame (i.e. from camera's point of view).
+    """Right eye is assumed to be on the left of the face in the image frame
+    (i.e. from camera's point of view).
+
     :param face_features: dlib face features (either 5 landmark or 68 landmark version)
     :return: (x, y) position of right eye
     :rtype: tuple
@@ -89,8 +91,9 @@ def eye_center(face_features, position: str):
 
 
 def left_eye_dimensions(face_features):
-    """
-    Left eye is assumed to be on the right of the face in the image frame (i.e. from camera's point of view).
+    """Left eye is assumed to be on the right of the face in the image frame
+    (i.e. from camera's point of view).
+
     :param face_features: dlib face features (either 5 landmark or 68 landmark version)
     :return: (width, height) for 68-landmark version and (width, None) for 5-landmark version
     :rtype: tuple
@@ -99,8 +102,9 @@ def left_eye_dimensions(face_features):
 
 
 def right_eye_dimensions(face_features):
-    """
-    Right eye is assumed to be on the left of the face in the image frame (i.e. from camera's point of view).
+    """Right eye is assumed to be on the left of the face in the image frame
+    (i.e. from camera's point of view).
+
     :param face_features: dlib face features (either 5 landmark or 68 landmark version)
     :return: (width, height) for 68-landmark version and (width, None) for 5-landmark version
     :rtype: tuple
