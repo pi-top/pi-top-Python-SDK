@@ -4,6 +4,7 @@ from filterpy.kalman import KalmanFilter
 from enum import IntEnum
 from collections import deque
 from pitop.core.mixins import Stateful
+from pitop.robotics.navigation.core.utils import normalize_angle
 
 
 class State(IntEnum):
@@ -90,7 +91,9 @@ class StateFilter(Stateful):
     def add_measurements(self, odom_measurements, dt, imu_measurements=None):
         self._velocities.append(odom_measurements)
         self.__kalman_predict(u=self._velocities[VelocityMeasurements.previous], dt=dt)
-        self.__kalman_update(z_odom=self._velocities[VelocityMeasurements.current], z_imu=imu_measurements)
+        self.__kalman_update(z_imu=imu_measurements)
+        # normalize state angle to lie between -pi and +pi
+        self.angle_rad = normalize_angle(self.angle_rad)
 
     def __kalman_predict(self, u, dt):
         """
@@ -119,29 +122,15 @@ class StateFilter(Stateful):
                      )
         self._kalman_filter.predict(u=u, B=B)
 
-    def __kalman_update(self, z_odom, z_imu=None):
-        z = z_odom
-        if z_imu is not None:
-            z = np.vstack((z, z_imu))
-            self._kalman_filter.dim_z = 3
-            self._kalman_filter.H = np.array([[0, 0, 0, 1, 0],
-                                              [0, 0, 0, 0, 1],
-                                              [0, 0, 0, 0, 1]
-                                              ])
-            self._kalman_filter.R = np.diag([self._odom_linear_velocity_variance,
-                                             self._odom_angular_velocity_variance,
-                                             self._imu_angular_velocity_variance
-                                             ])
-        else:
-            self._kalman_filter.dim_z = 2
-            self._kalman_filter.H = np.array([[0, 0, 0, 1, 0],
-                                              [0, 0, 0, 0, 1]
-                                              ])
-            self._kalman_filter.R = np.diag([self._odom_linear_velocity_variance,
-                                             self._odom_angular_velocity_variance
-                                             ])
+    def __kalman_update(self, z_imu):
+        if z_imu is None:
+            self._kalman_filter.update(z=None)
+            return
 
-        self._kalman_filter.update(z=z)
+        self._kalman_filter.dim_z = 1
+        self._kalman_filter.H = np.array([[0, 0, 0, 0, 1]])
+        self._kalman_filter.R = np.diag([self._imu_angular_velocity_variance])
+        self._kalman_filter.update(z=z_imu)
 
     @property
     def x(self):
