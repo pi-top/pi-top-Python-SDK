@@ -29,7 +29,6 @@ motor_sync_start_register = 0x58
 class DriveController(Stateful, Recreatable):
     """Represents a vehicle with two wheels connected by an axis, and an
     optional support wheel or caster."""
-    _initialized = False
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
         self.name = name

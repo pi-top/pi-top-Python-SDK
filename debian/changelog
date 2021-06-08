@@ -1,3 +1,37 @@
+py-pitop-sdk (0.18.10) buster; urgency=medium
+
+  * Remove trailing whitespace on "pi-top device" CLI command
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 14:22:27 +0000
+
+py-pitop-sdk (0.18.9) buster; urgency=medium
+
+  * Face detector updates
+  * Remove python-sonic dependency
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 13:57:38 +0000
+
+py-pitop-sdk (0.18.8) buster; urgency=medium
+
+  * Face detector updates
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 12:58:54 +0000
+
+py-pitop-sdk (0.18.7) buster; urgency=medium
+
+  * Update URL from where to download machine learning models
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 02 Jun 2021 02:27:57 +0000
+
+py-pitop-sdk (0.18.6) buster; urgency=medium
+
+  * Drop references to deprecated GitHub wiki
+  * Remove NativeFactory usage from PMA components
+  * Add face detection and emotion tracking algorithms
+  * Stop CLI from failing when rpi-eeprom-update fails
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 01 Jun 2021 20:48:12 +0000
+
 py-pitop-sdk (0.18.5) buster; urgency=medium
 
   * Update paths to include css/js/html from pitop.labs.web

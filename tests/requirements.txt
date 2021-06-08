@@ -1,7 +1,9 @@
+dlib
 gpiozero
 imutils
 matplotlib
 numpy
+onnxruntime
 opencv-python
 pitopcommon
 flask
@@ -10,3 +12,4 @@ flask_cors
 Pillow
 simple_pid
 filterpy
+wget

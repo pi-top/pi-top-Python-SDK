@@ -11,6 +11,15 @@ def import_opencv():
             "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
 
 
+def import_dlib():
+    try:
+        import dlib
+        return dlib
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "dlib Python library is not installed. You can install it by running 'sudo apt install python3-dlib'.") from None
+
+
 def color_mask(frame, hsv_lower, hsv_upper):
     cv2 = import_opencv()
     # apply gaussian blur to smooth out the frame
@@ -71,8 +80,9 @@ def find_largest_rectangle(rectangles):
 
 
 def center_reposition(center, frame):
-    """Reposition center so that (0, 0) is in the middle of the frame instead
-    of OpenCV standard which is at top left.
+    """Reposition center so that (0, 0) is in the middle of the frame and y is
+    pointing up instead of the OpenCV standard where (0, 0) is at the top left
+    and y is pointing down.
 
     :param center: OpenCV center (x, y)
     :param frame: Frame to reposition center within
@@ -81,8 +91,8 @@ def center_reposition(center, frame):
     if center is None:
         return None
     # convert so (0, 0) is at the middle bottom of the frame
-    center_x = center[0] - int(frame.shape[1] / 2)
-    center_y = int(frame.shape[0] / 2) - center[1]
+    center_x = center[0] - int(round(frame.shape[1] / 2))
+    center_y = int(round(frame.shape[0] / 2)) - center[1]
 
     return center_x, center_y
 

@@ -10,11 +10,20 @@ valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
 
 
 class UsbCamera:
-    def __init__(self, index: int = None, resolution=None, rotate_angle: int = 0):
+    def __init__(self,
+                 index: int = None,
+                 resolution=None,
+                 rotate_angle: int = 0,
+                 flip_top_bottom: bool = False,
+                 flip_left_right: bool = False):
+
         # if no index is provided, loop over available video devices
         indexes = self.list_device_indexes() if index is None else [index]
         self.__camera = None
         self.index = None
+
+        self._flip_top_bottom = flip_top_bottom
+        self._flip_left_right = flip_left_right
 
         if rotate_angle not in valid_rotate_angles:
             raise ValueError(f"Rotate angle must be one of "
@@ -51,13 +60,21 @@ class UsbCamera:
 
     def get_frame(self):
         # Always PIL format
-        return Image.frombytes(
+        pil_image = Image.frombytes(
             'RGB',
             (self.__camera.width, self.__camera.height),
             self.__camera.get_frame(),
             'raw',
             'RGB'
         ).rotate(angle=self._rotate_angle, expand=True)
+
+        if self._flip_top_bottom:
+            pil_image = pil_image.transpose(method=Image.FLIP_TOP_BOTTOM)
+
+        if self._flip_left_right:
+            pil_image = pil_image.transpose(method=Image.FLIP_LEFT_RIGHT)
+
+        return pil_image
 
     @staticmethod
     def list_device_indexes():
