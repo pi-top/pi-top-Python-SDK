@@ -196,8 +196,8 @@ class TestNavigationController(TestCase):
 
     def robot_state_assertions(self, navigation_controller, x_expected, y_expected, angle_expected):
         sleep(0.25)  # give robot time to slow down
-        self.assertAlmostEqual(navigation_controller.state.x, x_expected, places=1)
-        self.assertAlmostEqual(navigation_controller.state.y, y_expected, places=1)
-        self.assertAlmostEqual(navigation_controller.state.angle, angle_expected, delta=4)
-        self.assertAlmostEqual(navigation_controller.state.v, 0, places=1)
-        self.assertAlmostEqual(navigation_controller.state.w, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.state_tracker.x, x_expected, places=1)
+        self.assertAlmostEqual(navigation_controller.state_tracker.y, y_expected, places=1)
+        self.assertAlmostEqual(navigation_controller.state_tracker.angle, angle_expected, delta=4)
+        self.assertAlmostEqual(navigation_controller.state_tracker.v, 0, places=1)
+        self.assertAlmostEqual(navigation_controller.state_tracker.w, 0, places=1)
