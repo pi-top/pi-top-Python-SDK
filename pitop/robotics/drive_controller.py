@@ -3,10 +3,7 @@ from math import (
     radians,
 )
 from time import sleep
-
 from simple_pid import PID
-
-from pitop.core.exceptions import UninitializedComponent
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -15,6 +12,18 @@ from pitop.pma import (
     EncoderMotor,
     ForwardDirection,
 )
+from pitop.pma.plate_interface import PlateInterface
+
+
+motor_sync_bits = {
+    "M0": 0b0000001,
+    "M1": 0b0000010,
+    "M2": 0b0000100,
+    "M3": 0b0001000,
+}
+
+motor_sync_config_register = 0x57
+motor_sync_start_register = 0x58
 
 
 class DriveController(Stateful, Recreatable):
@@ -52,19 +61,18 @@ class DriveController(Stateful, Recreatable):
                                                                self.max_robot_angular_speed)
                                                 )
 
-        self._initialized = True
+        # Motor syncing
+        self.__mcu_device = PlateInterface().get_device_mcu()
+        self.__set_sync_motor_config()
 
         Stateful.__init__(self, children=['left_motor', 'right_motor'])
         Recreatable.__init__(self, config_dict={"left_motor_port": left_motor_port,
                                                 "right_motor_port": right_motor_port,
                                                 "name": self.name})
 
-    def is_initialized(fcn):
-        def check_initialization(self, *args, **kwargs):
-            if not self._initialized:
-                raise UninitializedComponent("DriveController not initialized")
-            return fcn(self, *args, **kwargs)
-        return check_initialization
+    def __set_sync_motor_config(self):
+        sync_config = motor_sync_bits[self.left_motor_port] | motor_sync_bits[self.right_motor_port]
+        self.__mcu_device.write_byte(motor_sync_config_register, sync_config)
 
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -78,15 +86,17 @@ class DriveController(Stateful, Recreatable):
 
         return speed_left, speed_right
 
-    @is_initialized
     def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         speed_left, speed_right = self._calculate_motor_speeds(linear_speed, angular_speed, turn_radius)
         self.left_motor.set_target_speed(target_speed=speed_left)
         self.right_motor.set_target_speed(target_speed=speed_right)
+        self.__sync_start()
 
-    @is_initialized
+    def __sync_start(self):
+        self.__mcu_device.write_byte(motor_sync_start_register, 1)
+
     def forward(self, speed_factor, hold=False):
         """Move the robot forward.
 
@@ -103,7 +113,6 @@ class DriveController(Stateful, Recreatable):
             self._linear_speed_x_hold = 0
         self.robot_move(linear_speed_x, 0)
 
-    @is_initialized
     def backward(self, speed_factor, hold=False):
         """Move the robot backward.
 
@@ -115,7 +124,6 @@ class DriveController(Stateful, Recreatable):
         """
         self.forward(-speed_factor, hold)
 
-    @is_initialized
     def left(self, speed_factor, turn_radius=0):
         """Make the robot move to the left, using a circular trajectory.
 
@@ -128,7 +136,6 @@ class DriveController(Stateful, Recreatable):
 
         self.robot_move(self._linear_speed_x_hold, self.max_robot_angular_speed * speed_factor, turn_radius)
 
-    @is_initialized
     def right(self, speed_factor, turn_radius=0):
         """Make the robot move to the right, using a circular trajectory.
 
@@ -147,7 +154,6 @@ class DriveController(Stateful, Recreatable):
         angular_speed = self.__target_lock_pid_controller(angle)
         self.robot_move(self._linear_speed_x_hold, angular_speed)
 
-    @is_initialized
     def rotate(self, angle, time_to_take):
         """Rotate the robot in place by a given angle and stop.
 
