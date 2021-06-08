@@ -210,15 +210,14 @@ class NavigationController(Stateful):
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose()
 
-            x_diff = x_goal - x if not self._backwards else x - x_goal
-            y_diff = y_goal - y if not self._backwards else y - y_goal
-
-            angle_error = normalize_angle(theta - math.atan2(y_diff, x_diff))
-            angular_speed = self.__get_angular_speed(angle_error=angle_error)
+            x_diff, y_diff = self.__get_position_error(x=x, x_goal=x_goal, y=y, y_goal=y_goal)
+            angle_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
 
             if self._goal_criteria.angle(angle_error):
                 self.__sub_goal_reached()
                 break
+
+            angular_speed = self.__get_angular_speed(angle_error=angle_error)
 
             self.drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
@@ -226,9 +225,7 @@ class NavigationController(Stateful):
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose()
 
-            x_diff = x_goal - x if not self._backwards else x - x_goal
-            y_diff = y_goal - y if not self._backwards else y - y_goal
-
+            x_diff, y_diff = self.__get_position_error(x=x, x_goal=x_goal, y=y, y_goal=y_goal)
             angle_error = self.__get_angle_error(current_angle=theta, target_angle=math.atan2(y_diff, x_diff))
             distance_error = -np.hypot(x_diff, y_diff) if not self._backwards else np.hypot(x_diff, y_diff)
 
@@ -246,12 +243,13 @@ class NavigationController(Stateful):
         while not self._stop_triggered:
             x, y, theta = self.__get_new_pose()
 
-            heading_error = self.__get_angle_error(current_angle=theta, target_angle=theta_goal)
-            angular_speed = self.__get_angular_speed(angle_error=heading_error)
+            angle_error = self.__get_angle_error(current_angle=theta, target_angle=theta_goal)
 
-            if self._goal_criteria.angle(heading_error):
+            if self._goal_criteria.angle(angle_error):
                 self.__sub_goal_reached()
                 break
+
+            angular_speed = self.__get_angular_speed(angle_error=angle_error)
 
             self.drive_controller.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
@@ -307,6 +305,11 @@ class NavigationController(Stateful):
     def __get_linear_speed(self, distance_error):
         return self._drive_manager.max_velocity * self._drive_manager.pid.distance(distance_error)
 
+    def __get_position_error(self, x, x_goal, y, y_goal):
+        x_diff = x_goal - x if not self._backwards else x - x_goal
+        y_diff = y_goal - y if not self._backwards else y - y_goal
+        return x_diff, y_diff
+
     def __measurement_scheduler(self):
         s = sched.scheduler(time.time, time.sleep)
         current_time = time.time()
@@ -318,9 +321,7 @@ class NavigationController(Stateful):
         dt = current_time - previous_time
 
         odom_measurements = self.__get_odometry_measurements()
-        self.state_tracker.add_measurements(odom_measurements=odom_measurements,
-                                            imu_measurements=None,
-                                            dt=dt)
+        self.state_tracker.add_measurements(odom_measurements=odom_measurements, dt=dt)
 
         self._new_pose_event.set()
         self._new_pose_event.clear()
