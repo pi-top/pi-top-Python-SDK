@@ -19,7 +19,7 @@ def navigation_finished():
 def check_for_obstacles():
     while not goal_reached:
         sleep(0.15)
-        if ultrasonic.distance < 0.2:
+        if robot.ultrasonic.distance < 0.2:
             print("Obstacle blocking navigation goal, changing to next goal!")
             robot.navigate.stop()
             sleep(1)
@@ -54,11 +54,9 @@ def main():
 goal_reached = False
 robot = Pitop()
 robot.add_component(NavigationController(
-    drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")), name="navigate"
+    drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")),
+    name="navigate"
 )
-# navigate = NavigationController(
-#     drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")
-# )
-ultrasonic = UltrasonicSensor("D3")
+robot.add_component(UltrasonicSensor("D3"))
 
 main()
