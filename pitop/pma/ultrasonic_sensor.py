@@ -299,9 +299,9 @@ class UltrasonicSensorRPI(Stateful, Recreatable, SmoothedInputDevice, Ultrasonic
             if self._echo.wait(0.2):
                 if self._echo_fall is not None and self._echo_rise is not None:
                     distance = (
-                            self.pin_factory.ticks_diff(
-                                self._echo_fall, self._echo_rise) *
-                            self.speed_of_sound / 2.0)
+                        self.pin_factory.ticks_diff(
+                            self._echo_fall, self._echo_rise) *
+                        self.speed_of_sound / 2.0)
                     return round(min(1.0, distance / self._max_distance), 2)
                 else:
                     # If we only saw the falling edge it means we missed

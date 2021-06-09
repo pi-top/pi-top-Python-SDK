@@ -23,5 +23,3 @@ UltrasonicConfigSettings = {
     "A1": 0xA1,
     "A3": 0xA3,
 }
-
-
