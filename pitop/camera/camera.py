@@ -14,8 +14,7 @@ from pitop.pma.common import type_check
 
 from enum import Enum
 from inspect import signature
-from multiprocessing import Process
-from threading import Event
+from multiprocessing import Event, Process
 
 
 class Camera(Stateful, Recreatable):
