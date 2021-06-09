@@ -15,28 +15,54 @@ from .common.ultrasonic_registers import (
     UltrasonicRegisterTypes,
     UltrasonicConfigSettings,
 )
+import atexit
 
 
-def UltrasonicSensor(*args, **kwargs):
-    def factory(_port_name):
+valid_analog_ports = ["A1", "A3"]
+
+
+class UltrasonicSensor(Stateful, Recreatable):
+    def __init__(self,
+                 port_name,
+                 queue_len=9,
+                 max_distance=3,
+                 threshold_distance=0.3,
+                 partial=False,
+                 name="ultrasonic"
+                 ):
+
         assert (port_name in Port)
+        self._pma_port = port_name
+        self.name = name
+
         if port_name in valid_analog_ports:
-            return UltrasonicSensorMCU(*args, **kwargs)
+            self.__ultrasonic_device = UltrasonicSensorMCU(port_name=port_name,
+                                                           max_distance=max_distance,
+                                                           threshold_distance=threshold_distance,
+                                                           name=name
+                                                           )
         else:
-            return UltrasonicSensorRPI(*args, **kwargs)
+            self.__ultrasonic_device = UltrasonicSensorRPI(port_name=port_name,
+                                                           queue_len=queue_len,
+                                                           max_distance=max_distance,
+                                                           threshold_distance=threshold_distance,
+                                                           partial=partial,
+                                                           name=name
+                                                           )
 
-    valid_analog_ports = ["A1", "A3"]
-    if "port_name" in kwargs:
-        port_name = kwargs.get("port_name")
-    else:
-        port_name = args[0]
+        Stateful.__init__(self)
+        Recreatable.__init__(self, {"port_name": port_name,
+                                    "queue_len": queue_len,
+                                    "partial": partial,
+                                    "name": self.name,
+                                    "max_distance": lambda: self.max_distance,
+                                    "threshold_distance": lambda: self.threshold_distance})
 
-    return factory(_port_name=port_name)
+    def __enter__(self):
+        return self
 
-
-class UltrasonicSensorBaseClass:
-    _max_distance = None
-    threshold = None
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     @property
     def own_state(self):
@@ -54,6 +80,123 @@ class UltrasonicSensorBaseClass:
         :attr:`max_distance`, :attr:`~SmoothedInputDevice.value` will be
         1.
         """
+        return self.__ultrasonic_device.max_distance
+
+    @max_distance.setter
+    def max_distance(self, value):
+        self.__ultrasonic_device.max_distance = value
+
+    @property
+    def threshold_distance(self):
+        """
+        The distance, measured in meters, that will trigger the
+        :attr:`when_in_range` and :attr:`when_out_of_range` events when
+        crossed. This is simply a meter-scaled variant of the usual
+        :attr:`~SmoothedInputDevice.threshold` attribute.
+        """
+        return self.__ultrasonic_device.threshold_distance
+
+    @threshold_distance.setter
+    def threshold_distance(self, value):
+        self.__ultrasonic_device.threshold_distance = value
+
+    @property
+    def distance(self):
+        """Returns the current distance measured by the sensor in meters.
+
+        Note
+        that this property will have a value between 0 and
+        :attr:`max_distance`.
+        """
+        return self.__ultrasonic_device.distance
+
+    @property
+    def value(self):
+        """Returns a value between 0, indicating that something is either
+        touching the sensor or is sufficiently near that the sensor can't tell
+        the difference, and 1, indicating that something is at or beyond the
+        specified *max_distance*."""
+        return self.__ultrasonic_device.value
+
+    @property
+    def pin(self):
+        return self.__ultrasonic_device.pin
+
+    def close(self):
+        """Shut down the device and release all associated resources. This
+        method can be called on an already closed device without raising an
+        exception.
+
+        This method is primarily intended for interactive use at the command
+        line. It disables the device and releases its pin(s) for use by another
+        device.
+
+        You can attempt to do this simply by deleting an object, but unless
+        you've cleaned up all references to the object this may not work (even
+        if you've cleaned up all references, there's still no guarantee the
+        garbage collector will actually delete the object at that point).  By
+        contrast, the close method provides a means of ensuring that the object
+        is shut down.
+
+        For example, if you have a buzzer connected to port D4, but then wish
+        to attach an LED instead:
+
+            >>> from pitop import Buzzer, LED
+            >>> bz = Buzzer("D4")
+            >>> bz.on()
+            >>> bz.off()
+            >>> bz.close()
+            >>> led = LED("D4")
+            >>> led.blink()
+
+        :class:`Device` descendents can also be used as context managers using
+        the :keyword:`with` statement. For example:
+
+            >>> from pitop import Buzzer, LED
+            >>> with Buzzer("D4") as bz:
+            ...     bz.on()
+            ...
+            >>> with LED("D4") as led:
+            ...     led.on()
+            ...
+        """
+        self.__ultrasonic_device.close()
+
+    @property
+    def in_range(self):
+        return self.__ultrasonic_device.in_range
+
+    @property
+    def when_in_range(self):
+        pass
+
+    @when_in_range.setter
+    def when_in_range(self, function):
+        if callable(function):
+            self.__ultrasonic_device.when_deactivated = function
+
+    @property
+    def when_out_of_range(self):
+        pass
+
+    @when_out_of_range.setter
+    def when_out_of_range(self, function):
+        if callable(function):
+            self.__ultrasonic_device.when_activated = function
+
+    def wait_for_in_range(self, timeout=None):
+        self.__ultrasonic_device.wait_for_inactive(timeout=timeout)
+
+    def wait_for_out_of_range(self, timeout=None):
+        self.__ultrasonic_device.wait_for_active(timeout=timeout)
+
+
+class UltrasonicSensorBaseClass:
+    _max_distance = None
+    threshold = None
+
+    @property
+    def max_distance(self):
         return self._max_distance
 
     @max_distance.setter
@@ -66,12 +209,6 @@ class UltrasonicSensorBaseClass:
 
     @property
     def threshold_distance(self):
-        """
-        The distance, measured in meters, that will trigger the
-        :attr:`when_in_range` and :attr:`when_out_of_range` events when
-        crossed. This is simply a meter-scaled variant of the usual
-        :attr:`~SmoothedInputDevice.threshold` attribute.
-        """
         return self.threshold * self.max_distance
 
     @threshold_distance.setter
@@ -80,13 +217,11 @@ class UltrasonicSensorBaseClass:
 
     @property
     def distance(self):
-        """Returns the current distance measured by the sensor in meters.
-
-        Note
-        that this property will have a value between 0 and
-        :attr:`max_distance`.
-        """
         return self.value * self._max_distance
+
+    @abstractmethod
+    def in_range(self):
+        pass
 
     @abstractmethod
     def value(self):
@@ -100,8 +235,16 @@ class UltrasonicSensorBaseClass:
     def close(self):
         pass
 
+    @abstractmethod
+    def wait_for_active(self, timeout=None):
+        pass
 
-class UltrasonicSensorMCU(Stateful, Recreatable, UltrasonicSensorBaseClass):
+    @abstractmethod
+    def wait_for_inactive(self, timeout=None):
+        pass
+
+
+class UltrasonicSensorMCU(UltrasonicSensorBaseClass):
     def __init__(
             self,
             port_name,
@@ -123,11 +266,7 @@ class UltrasonicSensorMCU(Stateful, Recreatable, UltrasonicSensorBaseClass):
 
         self.__configure_mcu()
 
-        Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name,
-                                    "name": self.name,
-                                    "max_distance": lambda: self.max_distance,
-                                    "threshold_distance": lambda: self.threshold_distance})
+        atexit.register(self.close)
 
     def __configure_mcu(self):
         self.__mcu_device.write_byte(self.__registers[UltrasonicRegisterTypes.CONFIG],
@@ -136,10 +275,6 @@ class UltrasonicSensorMCU(Stateful, Recreatable, UltrasonicSensorBaseClass):
 
     @property
     def value(self):
-        """Returns a value between 0, indicating that something is either
-        touching the sensor or is sufficiently near that the sensor can't tell
-        the difference, and 1, indicating that something is at or beyond the
-        specified *max_distance*."""
         distance_cm = self.__mcu_device.read_unsigned_word(
             register_address=self.__registers[UltrasonicRegisterTypes.DATA],
             little_endian=True
@@ -156,12 +291,22 @@ class UltrasonicSensorMCU(Stateful, Recreatable, UltrasonicSensorBaseClass):
     def close(self):
         self.__mcu_device.write_byte(self.__registers[UltrasonicRegisterTypes.CONFIG], 0x00)
 
+    @property
+    def in_range(self):
+        pass
+
+    def wait_for_active(self, timeout=None):
+        pass
+
+    def wait_for_inactive(self, timeout=None):
+        pass
+
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
 #
 # Note: all private member variables are semi-private to follow upstream gpiozero convention
 # and to override inherited functions
-class UltrasonicSensorRPI(Stateful, Recreatable, SmoothedInputDevice, UltrasonicSensorBaseClass):
+class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBaseClass):
     ECHO_LOCK = Lock()
 
     def __init__(
@@ -204,52 +349,7 @@ class UltrasonicSensorRPI(Stateful, Recreatable, SmoothedInputDevice, Ultrasonic
             self.close()
             raise
 
-        Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name,
-                                    "queue_len": queue_len,
-                                    "partial": partial,
-                                    "name": self.name,
-                                    "max_distance": lambda: self.max_distance,
-                                    "threshold_distance": lambda: self.threshold_distance})
-
     def close(self):
-        """Shut down the device and release all associated resources. This
-        method can be called on an already closed device without raising an
-        exception.
-
-        This method is primarily intended for interactive use at the command
-        line. It disables the device and releases its pin(s) for use by another
-        device.
-
-        You can attempt to do this simply by deleting an object, but unless
-        you've cleaned up all references to the object this may not work (even
-        if you've cleaned up all references, there's still no guarantee the
-        garbage collector will actually delete the object at that point).  By
-        contrast, the close method provides a means of ensuring that the object
-        is shut down.
-
-        For example, if you have a buzzer connected to port D4, but then wish
-        to attach an LED instead:
-
-            >>> from pitop import Buzzer, LED
-            >>> bz = Buzzer("D4")
-            >>> bz.on()
-            >>> bz.off()
-            >>> bz.close()
-            >>> led = LED("D4")
-            >>> led.blink()
-
-        :class:`Device` descendents can also be used as context managers using
-        the :keyword:`with` statement. For example:
-
-            >>> from pitop import Buzzer, LED
-            >>> with Buzzer("D4") as bz:
-            ...     bz.on()
-            ...
-            >>> with LED("D4") as led:
-            ...     led.on()
-            ...
-        """
         try:
             super(UltrasonicSensorRPI, self).close()
         except RuntimeError:
@@ -258,19 +358,10 @@ class UltrasonicSensorRPI(Stateful, Recreatable, SmoothedInputDevice, Ultrasonic
 
     @property
     def value(self):
-        """Returns a value between 0, indicating that something is either
-        touching the sensor or is sufficiently near that the sensor can't tell
-        the difference, and 1, indicating that something is at or beyond the
-        specified *max_distance*."""
         return super(UltrasonicSensorRPI, self).value
 
     @property
     def pin(self):
-        """Returns the :class:`Pin` that the sensor is connected to.
-
-        This is simply an alias for the usual :attr:`~GPIODevice.pin`
-        attribute.
-        """
         return super(UltrasonicSensorRPI, self).pin
 
     def _echo_changed(self, ticks, level):
@@ -299,9 +390,9 @@ class UltrasonicSensorRPI(Stateful, Recreatable, SmoothedInputDevice, Ultrasonic
             if self._echo.wait(0.2):
                 if self._echo_fall is not None and self._echo_rise is not None:
                     distance = (
-                        self.pin_factory.ticks_diff(
-                            self._echo_fall, self._echo_rise) *
-                        self.speed_of_sound / 2.0)
+                            self.pin_factory.ticks_diff(
+                                self._echo_fall, self._echo_rise) *
+                            self.speed_of_sound / 2.0)
                     return round(min(1.0, distance / self._max_distance), 2)
                 else:
                     # If we only saw the falling edge it means we missed
@@ -316,9 +407,3 @@ class UltrasonicSensorRPI(Stateful, Recreatable, SmoothedInputDevice, Ultrasonic
     @property
     def in_range(self):
         return not self.is_active
-
-
-UltrasonicSensorRPI.when_out_of_range = UltrasonicSensorRPI.when_activated
-UltrasonicSensorRPI.when_in_range = UltrasonicSensorRPI.when_deactivated
-UltrasonicSensorRPI.wait_for_out_of_range = UltrasonicSensorRPI.wait_for_active
-UltrasonicSensorRPI.wait_for_in_range = UltrasonicSensorRPI.wait_for_inactive
