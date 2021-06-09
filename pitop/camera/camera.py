@@ -14,7 +14,8 @@ from pitop.pma.common import type_check
 
 from enum import Enum
 from inspect import signature
-from threading import Thread, Event
+from multiprocessing import Process
+from threading import Event
 
 
 class Camera(Stateful, Recreatable):
@@ -72,7 +73,7 @@ class Camera(Stateful, Recreatable):
         self.__continue_processing = True
         self.__frame_handler = FrameHandler()
         self.__new_frame_event = Event()
-        self.__process_image_thread = Thread(target=self.__process_camera_output, daemon=True)
+        self.__process_image_thread = Process(target=self.__process_camera_output, daemon=True)
         self.__process_image_thread.start()
 
         self.name = name
