@@ -19,7 +19,6 @@ import time
 import sched
 
 
-
 class Camera(Stateful, Recreatable):
     """Provides a variety of high-level functionality for using the PMA USB
     Camera, including capturing images and video, and processing image data
