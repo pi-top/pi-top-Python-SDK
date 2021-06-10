@@ -8,6 +8,7 @@ import numpy as np
 from threading import Thread
 from threading import Event as TheadEvent
 from time import sleep
+from pitop import UltrasonicSensor
 
 
 def frame_producer(shared_array, e, w, h, d):
@@ -73,7 +74,15 @@ if __name__ == "__main__":
     width = 640
     height = 480
     depth = 3
+
     camera = Camera(width, height, depth)
+
+    print("Testing ultrasonic")
+    ultrasonic = UltrasonicSensor("D3")
+    for _ in range(100):
+        print(f"distance: {ultrasonic.distance}")
+        sleep(0.1)
+
     print("Running get frame mode")
     for _ in range(150):
         pil_frame = camera.get_frame()
