@@ -5,6 +5,9 @@ from PIL import Image
 from pitop.core import ImageFunctions
 import cv2
 import numpy as np
+from threading import Thread
+from threading import Event as TheadEvent
+from time import sleep
 
 
 def frame_producer(shared_array, e, w, h, d):
@@ -27,26 +30,56 @@ class Camera:
     def __init__(self, w, h, d):
         self.w, self.h, self.d = w, h, d
         self._shared_array = RawArray(c_uint8, h * w * d)
-        self._new_frame_event = Event()
-        self._process = Process(target=frame_producer, args=(self._shared_array, self._new_frame_event, w, h, d,))
+        self._processing_frame_event = Event()
+        self._process = Process(target=frame_producer, args=(self._shared_array, self._processing_frame_event, w, h, d,))
         self._process.daemon = True
         self._process.start()
 
+        self._frame = None
+        self.on_frame = None
+        self._threading_event = TheadEvent()
+        self._process_frame_thread = Thread(target=self.__process_frame, daemon=True)
+        self._process_frame_thread.start()
+
+    def __get_frame_from_multiprocessing(self):
+        self._processing_frame_event.wait()
+        array = np.frombuffer(self._shared_array, np.uint8).reshape((self.h, self.w, self.d))
+        frame = Image.fromarray(array)
+        return frame
+
+    def __process_frame(self):
+        while True:
+            self._frame = self.__get_frame_from_multiprocessing()
+            self._threading_event.set()
+            self._threading_event.clear()
+
+            if callable(self.on_frame):
+                self.on_frame(self._frame)
 
     def get_frame(self):
-        self._new_frame_event.wait()
-        array = np.frombuffer(self._shared_array, np.uint8).reshape((self.h, self.w, self.d))
-        image = Image.fromarray(array)
-        return image
+        self._threading_event.wait()
+        return self._frame
 
 
 if __name__ == "__main__":
+    def view_frame_cv(frame, title):
+        cv_frame = ImageFunctions.convert(frame, "opencv")
+        cv2.imshow(title, cv_frame)
+        cv2.waitKey(1)
+
+    def callback(frame):
+        view_frame_cv(frame, "on_frame mode")
+
     width = 640
     height = 480
     depth = 3
     camera = Camera(width, height, depth)
-    while True:
+    print("Running get frame mode")
+    for _ in range(150):
         pil_frame = camera.get_frame()
-        cv_frame = ImageFunctions.convert(pil_frame, "opencv")
-        cv2.imshow("frame", cv_frame)
-        cv2.waitKey(1)
+        view_frame_cv(pil_frame, "get_frame mode")
+
+    print("Running on_frame callback mode")
+    camera.on_frame = callback
+    sleep(5)
+    cv2.destroyAllWindows()
