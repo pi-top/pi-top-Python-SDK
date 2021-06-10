@@ -39,7 +39,7 @@ class Camera:
         self._frame = None
         self.on_frame = None
         self._threading_event = TheadEvent()
-        self._process_frame_thread = Thread(target=self.__process_frame, daemon=True)
+        self._process_frame_thread = Thread(target=self.__process_camera_output, daemon=True)
         self._process_frame_thread.start()
 
     def __get_frame_from_multiprocessing(self):
@@ -48,7 +48,7 @@ class Camera:
         frame = Image.fromarray(array)
         return frame
 
-    def __process_frame(self):
+    def __process_camera_output(self):
         while True:
             self._frame = self.__get_frame_from_multiprocessing()
             self._threading_event.set()
