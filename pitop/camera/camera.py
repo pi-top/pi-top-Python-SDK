@@ -16,6 +16,8 @@ from enum import Enum
 from inspect import signature
 from threading import Thread, Event
 
+from time import sleep
+
 
 class Camera(Stateful, Recreatable):
     """Provides a variety of high-level functionality for using the PMA USB
@@ -280,6 +282,7 @@ class Camera(Stateful, Recreatable):
                 self.__frame_handler.process()
             except Exception as e:
                 print(f"Error in camera frame handler: {e}")
+            sleep(0.015)
 
     def current_frame(self, format=None):
         """Returns the latest frame captured by the camera. This method is non-
