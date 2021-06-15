@@ -135,10 +135,10 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
     def __init__(
             self,
             port_name,
-            queue_len=9,
+            queue_len=3,
             max_distance=3,
             threshold_distance=0.3,
-            partial=False,
+            partial=True,
             name="ultrasonic"
     ):
 
@@ -149,7 +149,7 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
                                      get_pin_for_port(self._pma_port),
                                      pull_up=False,
                                      queue_len=queue_len,
-                                     sample_wait=0.06,
+                                     sample_wait=0.1,
                                      partial=partial,
                                      ignore=frozenset({None}),
                                      )
