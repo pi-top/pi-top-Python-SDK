@@ -5,7 +5,7 @@ from pitop.core.mixins import (
 from pitop.pma import ServoMotor
 from pitop.robotics.two_servo_assembly_calibrator import TwoServoAssemblyCalibrator
 from simple_pid import PID
-from threading import Thread, Event
+from threading import Thread
 from time import sleep
 
 
