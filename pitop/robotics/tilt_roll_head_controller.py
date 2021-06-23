@@ -104,11 +104,11 @@ class TiltRollHeadController(Stateful, Recreatable):
         if not flipped:
             angle = -angle
         current_angle = self.roll.current_angle
-        state = current_angle - angle
-        if abs(state) < 1.0:
+        error = current_angle - angle
+        if abs(error) < 1.0:
             self.roll.sweep(speed=0)
         else:
-            servo_speed = self._head_roll_pid(state)
+            servo_speed = self._head_roll_pid(error)
             self.roll.sweep(speed=servo_speed)
 
     def calibrate(self, save=True, reset=False) -> None:
