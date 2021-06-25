@@ -18,6 +18,7 @@ from pitop.processing.core.vision_functions import (
 cv2 = None
 dlib = None
 
+
 class FaceDetector:
     _FACE_DETECTOR_PYRAMID_LAYERS = 1  # set higher to detect smaller faces. Cost: large reduction in detection FPS.
 
@@ -236,7 +237,7 @@ class FaceDetector:
         cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
 
         cv2.drawMarker(frame, face.center_default, tuple_for_color_by_name("orangered", bgr=True),
-                            markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
+                       markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
 
         return frame
 
