@@ -1,6 +1,3 @@
-from matplotlib import colors
-
-
 def import_imutils():
     try:
         import imutils
@@ -151,6 +148,7 @@ def tuple_for_color_by_name(color_name, bgr=False):
         # lime:  (0, 255, 0)
         color_name = "lime"
 
+    from matplotlib import colors
     values = tuple(int(i * 255) for i in colors.to_rgb(color_name))
     if bgr:
         return values[::-1]
