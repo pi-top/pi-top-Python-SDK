@@ -9,6 +9,8 @@ from pitop.processing.algorithms.faces.core.face import Face
 from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.processing.core.vision_functions import (
     import_dlib,
+    import_face_utils,
+    import_imutils,
     import_opencv,
     tuple_for_color_by_name,
 )
@@ -16,6 +18,8 @@ from pitop.processing.core.vision_functions import (
 
 cv2 = None
 dlib = None
+imutils = None
+face_utils = None
 
 
 class FaceDetector:
@@ -94,13 +98,15 @@ class FaceDetector:
         return self.face
 
     def __import_libs(self):
+        global cv2, dlib, imutils, face_utils
         if cv2 is None:
-            global cv2
             cv2 = import_opencv()
         if dlib is None:
-            global dlib
             dlib = import_dlib()
-        from imutils import face_utils
+        if face_utils is None:
+            face_utils = import_face_utils()
+        if imutils is None:
+            imutils = import_imutils()
 
     def __get_frame_to_process(self, frame):
         """Resize frame, convert to grayscale and use contrast limited adaptive
@@ -110,10 +116,9 @@ class FaceDetector:
         :param frame: original frame from the camera in OpenCV format
         :return: OpenCV image to send to face processing algorithms
         """
-        from imutils import resize
         return self._clahe_filter.apply(
             cv2.cvtColor(
-                resize(frame, width=self._image_processing_width),
+                imutils.resize(frame, width=self._image_processing_width),
                 cv2.COLOR_BGR2GRAY
             )
         )

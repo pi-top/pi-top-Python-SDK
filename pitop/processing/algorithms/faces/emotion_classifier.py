@@ -3,6 +3,7 @@ import numpy as np
 from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.emotion import Emotion
 from pitop.processing.core.vision_functions import (
+    import_face_utils,
     import_opencv,
     tuple_for_color_by_name,
 )
@@ -11,15 +12,21 @@ from pitop.processing.core.math_functions import running_mean
 
 
 cv2 = None
+face_utils = None
+
+def import_libs():
+    global cv2, face_utils
+    if cv2 is None:
+        cv2 = import_opencv()
+    if face_utils is None:
+        face_utils = import_face_utils()
 
 
 class EmotionClassifier:
     __MEAN_N = 5
 
     def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
-        from imutils import face_utils
-        global cv2
-        cv2 = import_opencv()
+        import_libs()
 
         self.left_eye_start, self.left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
         self.right_eye_start, self.right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]

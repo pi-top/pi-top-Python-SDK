@@ -11,6 +11,7 @@ from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
+    import_imutils,
     import_opencv,
     tuple_for_color_by_name,
 )
@@ -20,13 +21,15 @@ VALID_COLORS = ["red", "green", "blue"]
 DETECTION_POINTS_BUFFER_LENGTH = 16
 
 cv2 = None
+imutils = None
 
 
 def import_libs():
+    global cv2, imutils
     if cv2 is None:
-        global cv2
         cv2 = import_opencv()
-    from imutils import resize, grab_contours
+    if imutils is None:
+        imutils = import_imutils()
 
 
 class BallLikeness:
@@ -52,7 +55,7 @@ class BallLikeness:
         cv2.circle(mask_to_compare, (int(self.radius), int(self.radius)), int(self.radius), 255, -1)
 
         return max(
-            grab_contours(
+            imutils.grab_contours(
                 cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             ), key=cv2.contourArea
         )
@@ -279,7 +282,7 @@ class BallDetector:
     def __find_contours(self, frame, color):
         mask = self.__get_color_mask(frame, color=color)
 
-        return grab_contours(  # fixes problems with OpenCV changing their protocol
+        return imutils.grab_contours(  # fixes problems with OpenCV changing their protocol
             cv2.findContours(
                 mask.copy(),
                 cv2.RETR_EXTERNAL,
@@ -288,7 +291,7 @@ class BallDetector:
         )
 
     def __find_most_likely_ball(self, ball, frame, color):
-        resized_frame = resize(frame, width=self._image_processing_width)
+        resized_frame = imutils.resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
             ball.center_points.appendleft(None)
