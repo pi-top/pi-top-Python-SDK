@@ -9,7 +9,6 @@ from pitop.processing.algorithms.faces.core.face import Face
 from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.processing.core.vision_functions import (
     import_dlib,
-    import_imutils,
     import_opencv,
     tuple_for_color_by_name,
 )

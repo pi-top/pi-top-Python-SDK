@@ -4,7 +4,6 @@ from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.emotion import Emotion
 from pitop.processing.core.vision_functions import (
     import_opencv,
-    import_imutils,
     tuple_for_color_by_name,
 )
 from pitop.processing.core.load_models import load_emotion_model

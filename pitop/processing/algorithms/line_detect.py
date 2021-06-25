@@ -8,7 +8,6 @@ from pitop.processing.core.vision_functions import (
     find_centroid,
     find_largest_contour,
     get_object_target_lock_control_angle,
-    import_imutils,
     import_opencv,
 )
 
@@ -37,8 +36,8 @@ def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
     cv2 = import_opencv()
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
-    imutils = import_imutils()
-    resized_frame = imutils.resize(cv_frame, width=process_image_width)
+    from imutils import resize
+    resized_frame = resize(cv_frame, width=process_image_width)
     hsv_lower, hsv_upper = calculate_blue_limits()
     image_mask = color_mask(resized_frame, hsv_lower, hsv_upper)
     line_contour = find_largest_contour(image_mask)

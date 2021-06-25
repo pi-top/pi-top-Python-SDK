@@ -11,7 +11,6 @@ from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
-    import_imutils,
     import_opencv,
     tuple_for_color_by_name,
 )

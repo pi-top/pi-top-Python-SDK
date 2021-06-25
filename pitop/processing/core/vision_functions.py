@@ -1,12 +1,3 @@
-def import_imutils():
-    try:
-        import imutils
-        return imutils
-    except (ImportError, ModuleNotFoundError):
-        raise ModuleNotFoundError(
-            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
-
-
 def import_opencv():
     try:
         import cv2
@@ -42,8 +33,8 @@ def color_mask(frame, hsv_lower, hsv_upper):
 def find_largest_contour(frame):
     cv2 = import_opencv()
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
-    imutils = import_imutils()
-    contours = imutils.grab_contours(cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
+    from imutils import grab_contours
+    contours = grab_contours(cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
 
     # Find the biggest contour (if detected)
     if len(contours) > 0:
