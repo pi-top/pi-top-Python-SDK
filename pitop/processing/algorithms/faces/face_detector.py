@@ -40,10 +40,7 @@ class FaceDetector:
         cv2 = import_opencv()
         global dlib
         dlib = import_dlib()
-        from imutils import (
-            face_utils,
-            resize,
-        )
+        from imutils import face_utils
 
         self._image_processing_width = image_processing_width
         self._format = format
@@ -107,6 +104,7 @@ class FaceDetector:
         :param frame: original frame from the camera in OpenCV format
         :return: OpenCV image to send to face processing algorithms
         """
+        from imutils import resize
         return self._clahe_filter.apply(
             cv2.cvtColor(
                 resize(frame, width=self._image_processing_width),
