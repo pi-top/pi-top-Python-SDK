@@ -146,6 +146,7 @@ class BallDetector:
         :param int image_processing_width: image width to scale to for image processing
         :param str format: output image format
         """
+        self.imutils = import_imutils()
         self._image_processing_width = image_processing_width
         self.format = format
         self.balls = {c: Ball(c) for c in VALID_COLORS}

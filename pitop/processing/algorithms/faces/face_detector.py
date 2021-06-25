@@ -5,7 +5,7 @@ from typing import Union
 from imutils.video import FPS
 
 from pitop.core import ImageFunctions
-from pitop.core.face import Face
+from pitop.processing.algorithms.faces.core.face import Face
 from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.processing.core.vision_functions import (
     import_dlib,
