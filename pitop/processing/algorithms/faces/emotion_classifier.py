@@ -1,33 +1,33 @@
-from pitop.core import ImageFunctions
 import numpy as np
-from pitop.processing.core.load_models import load_emotion_model
-from pitop.processing.core.math_functions import running_mean
-from imutils import face_utils
-from .core.emotion import Emotion
+
+from pitop.core import ImageFunctions
+from pitop.core.emotion import Emotion
 from pitop.processing.core.vision_functions import (
     import_opencv,
+    import_imutils,
     tuple_for_color_by_name,
 )
-
-
-cv2 = import_opencv()
-
-
-left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
-right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+from pitop.processing.core.load_models import load_emotion_model
+from pitop.processing.core.math_functions import running_mean
 
 
 class EmotionClassifier:
     __MEAN_N = 5
 
     def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
+        self.cv2 = import_opencv()
+        self.imutils = import_imutils()
+
+        self.left_eye_start, self.left_eye_end = self.imutils.face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
+        self.right_eye_start, self.right_eye_end = self.imutils.face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
         self._onnx_input_node_name = self._emotion_model.get_inputs()[0].name
         self.emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
         self.emotion = Emotion()
-        self.font = cv2.FONT_HERSHEY_PLAIN
+        self.font = self.cv2.FONT_HERSHEY_PLAIN
         self.font_scale = 2
         self.font_thickness = 3
         if self._apply_mean_filter:
@@ -99,8 +99,8 @@ class EmotionClassifier:
             face_features_rotated = rotation_matrix.dot(features.T).T
             face_feature_mean = face_features_rotated.mean(axis=0)
 
-            left_eye_center = np.mean(face_features_rotated[left_eye_start:left_eye_end], axis=0)
-            right_eye_center = np.mean(face_features_rotated[right_eye_start:right_eye_end], axis=0)
+            left_eye_center = np.mean(face_features_rotated[self.left_eye_start:self.left_eye_end], axis=0)
+            right_eye_center = np.mean(face_features_rotated[self.right_eye_start:self.right_eye_end], axis=0)
 
             interpupillary_distance = np.linalg.norm(left_eye_center - right_eye_center)
 
@@ -143,7 +143,7 @@ class EmotionClassifier:
         x, y, w, h = face.rectangle
 
         text = f"{round(emotion.confidence * 100)}% {emotion.type}"
-        text_size = cv2.getTextSize(text, self.font, self.font_scale, self.font_thickness)[0]
+        text_size = self.cv2.getTextSize(text, self.font, self.font_scale, self.font_thickness)[0]
 
         text_x = (x + w // 2) - (text_size[0] // 2)
         text_y = y - 5
@@ -155,10 +155,10 @@ class EmotionClassifier:
         else:
             text_colour = tuple_for_color_by_name("springgreen", bgr=True)
 
-        cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
+        self.cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
                     thickness=self.font_thickness)
 
         for (x, y) in face.features:
-            cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)
+            self.cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)
 
         return frame

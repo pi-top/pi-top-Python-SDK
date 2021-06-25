@@ -1,23 +1,18 @@
-from typing import Union
-from pitop.processing.core.load_models import load_face_landmark_predictor
-from pitop.core import ImageFunctions
-from imutils import (
-    face_utils,
-    resize,
-)
-from imutils.video import FPS
-from os import getenv
 import atexit
+from os import getenv
+from typing import Union
+
+from imutils.video import FPS
+
+from pitop.core import ImageFunctions
+from pitop.core.face import Face
+from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.processing.core.vision_functions import (
     import_dlib,
+    import_imutils,
     import_opencv,
     tuple_for_color_by_name,
 )
-from .core.face import Face
-
-
-cv2 = import_opencv()
-dlib = import_dlib()
 
 
 class FaceDetector:
@@ -38,11 +33,15 @@ class FaceDetector:
         slightly better performance whilst retaining ability to calculate face angle. May be incompatible with further
          processing e.g. emotion detection requires the 68-landmark version.
         """
+        self.cv2 = import_opencv()
+        self.dlib = import_dlib()
+        self.imutils = import_imutils()
+
         self._image_processing_width = image_processing_width
         self._format = format
-        self._face_rectangle_detector = dlib.get_frontal_face_detector()
+        self._face_rectangle_detector = self.dlib.get_frontal_face_detector()
         self._predictor = load_face_landmark_predictor(model_filename=dlib_landmark_predictor_filename)
-        self._clahe_filter = cv2.createCLAHE(clipLimit=5)
+        self._clahe_filter = self.cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
         self._enable_tracking = enable_tracking
@@ -101,9 +100,9 @@ class FaceDetector:
         :return: OpenCV image to send to face processing algorithms
         """
         return self._clahe_filter.apply(
-            cv2.cvtColor(
-                resize(frame, width=self._image_processing_width),
-                cv2.COLOR_BGR2GRAY
+            self.cv2.cvtColor(
+                self.imutils.resize(frame, width=self._image_processing_width),
+                self.cv2.COLOR_BGR2GRAY
             )
         )
 
@@ -137,7 +136,7 @@ class FaceDetector:
         face_rectangle = None
         face_center = None
         for rectangle_dlib in rectangles_dlib:
-            x, y, w, h = face_utils.rect_to_bb(rectangle_dlib)
+            x, y, w, h = self.imutils.face_utils.rect_to_bb(rectangle_dlib)
             current_area = w * h
             if current_area > area:
                 area = current_area
@@ -158,12 +157,12 @@ class FaceDetector:
         :return: 68x2 numpy array of x, y coordinates for facial features.
         """
         face_features_dlib = self._predictor(frame, dlib_rectangle)
-        return face_utils.shape_to_np(face_features_dlib)
+        return self.imutils.face_utils.shape_to_np(face_features_dlib)
 
     def __start_tracker(self, frame, rectangle):
-        self._face_tracker = dlib.correlation_tracker()
+        self._face_tracker = self.dlib.correlation_tracker()
         self._face_tracker.start_track(frame,
-                                       dlib.rectangle(
+                                       self.dlib.rectangle(
                                            rectangle[0],
                                            rectangle[1],
                                            rectangle[0] + rectangle[2],
@@ -186,7 +185,7 @@ class FaceDetector:
             y_start = int(round(rectangle.top()))
             x_end = int(round(rectangle.right()))
             y_end = int(round(rectangle.bottom()))
-            return dlib.rectangle(x_start, y_start, x_end, y_end)
+            return self.dlib.rectangle(x_start, y_start, x_end, y_end)
 
         peak_to_side_lobe_ratio = self._face_tracker.update(frame)
 
@@ -198,7 +197,7 @@ class FaceDetector:
         rectangle_dlib = convert_dlib_rect_to_int_type(self._face_tracker.get_position())
         face_features = self.__get_dlib_face_features(frame, rectangle_dlib)
 
-        face_rectangle = face_utils.rect_to_bb(rectangle_dlib)
+        face_rectangle = self.imutils.face_utils.rect_to_bb(rectangle_dlib)
         face_center = (face_rectangle[0] + int(round(face_rectangle[2] / 2)),
                        face_rectangle[1] + int(round(face_rectangle[3] / 2)))
 
@@ -226,10 +225,10 @@ class FaceDetector:
     @staticmethod
     def __draw_on_frame(frame, face):
         x, y, w, h = face.rectangle
-        cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
+        self.cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
 
-        cv2.drawMarker(frame, face.center_default, tuple_for_color_by_name("orangered", bgr=True),
-                       markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
+        self.cv2.drawMarker(frame, face.center_default, tuple_for_color_by_name("orangered", bgr=True),
+                       markerType=self.cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=self.cv2.FILLED)
 
         return frame
 

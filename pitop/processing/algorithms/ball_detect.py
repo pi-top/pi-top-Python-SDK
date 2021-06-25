@@ -1,21 +1,20 @@
+import atexit
 from collections import deque
+from os import getenv
+from typing import Union
+
 import numpy as np
+from imutils.video import FPS
+
 from pitop.core import ImageFunctions
+from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
-)
-from typing import Union
-from imutils import resize, grab_contours
-from imutils.video import FPS
-from os import getenv
-from pitop.core.data_structures import DotDict
-import atexit
-from pitop.processing.core.vision_functions import (
+    import_imutils,
     import_opencv,
-    tuple_for_color_by_name
+    tuple_for_color_by_name,
 )
-cv2 = import_opencv()
 
 
 VALID_COLORS = ["red", "green", "blue"]
@@ -24,11 +23,13 @@ DETECTION_POINTS_BUFFER_LENGTH = 16
 
 class BallLikeness:
     def __init__(self, contour):
+        self.imutils = import_imutils()
+        self.cv2 = import_opencv()
         self.contour = contour
-        self.pos, self.radius = cv2.minEnclosingCircle(self.contour)
-        self.area = cv2.contourArea(self.contour)
+        self.pos, self.radius = self.cv2.minEnclosingCircle(self.contour)
+        self.area = self.cv2.contourArea(self.contour)
 
-        self.circular_likeness = cv2.matchShapes(
+        self.circular_likeness = self.cv2.matchShapes(
             self.contour, self.__circular_match_contour(), 1, 0.0
         )
 
@@ -40,12 +41,12 @@ class BallLikeness:
         mask_to_compare = np.zeros((int(2 * self.radius), int(2 * self.radius)), dtype="uint8")
 
         # Draw circle matching contour's position and radius
-        cv2.circle(mask_to_compare, (int(self.radius), int(self.radius)), int(self.radius), 255, -1)
+        self.cv2.circle(mask_to_compare, (int(self.radius), int(self.radius)), int(self.radius), 255, -1)
 
         return max(
-            grab_contours(
-                cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            ), key=cv2.contourArea
+            self.imutils.grab_contours(
+                self.cv2.findContours(mask_to_compare, self.cv2.RETR_EXTERNAL, self.cv2.CHAIN_APPROX_SIMPLE)
+            ), key=self.cv2.contourArea
         )
 
 
@@ -206,8 +207,8 @@ class BallDetector:
         print(f"[INFO] Approx. FPS: {self._fps.fps():.2f}")
 
     def __draw_ball_position(self, frame, ball):
-        cv2.circle(frame, ball.center_points[0], ball.radius, (0, 255, 255), 2)
-        cv2.circle(frame, ball.center_points[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
+        self.cv2.circle(frame, ball.center_points[0], ball.radius, (0, 255, 255), 2)
+        self.cv2.circle(frame, ball.center_points[0], 5, tuple_for_color_by_name(ball.color, bgr=True), -1)
 
     def __draw_ball_contrail(self, frame, ball):
         for i in range(1, len(ball.center_points)):
@@ -215,21 +216,21 @@ class BallDetector:
                 continue
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
-            cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
+            self.cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
                      tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
     def color_filter(self, frame, color: str = "red"):
         frame = ImageFunctions.convert(frame, format="OpenCV")
         mask = self.__get_color_mask(frame, color)
-        filtered_image = cv2.bitwise_and(frame, frame, mask=mask)
+        filtered_image = self.cv2.bitwise_and(frame, frame, mask=mask)
         if self.format.lower() == "pil":
             filtered_image = ImageFunctions.convert(mask, format="PIL")
 
         return filtered_image
 
     def __get_color_mask(self, frame, color: str):
-        blurred = cv2.blur(frame, (11, 11))
-        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
+        blurred = self.cv2.blur(frame, (11, 11))
+        hsv = self.cv2.cvtColor(blurred, self.cv2.COLOR_BGR2HSV)
 
         masks = []
         color_ranges = {
@@ -255,28 +256,28 @@ class BallDetector:
         for color_range in color_ranges[color]:
             hsv_lower = color_range["lower"]
             hsv_upper = color_range["upper"]
-            mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
+            mask = self.cv2.inRange(hsv, hsv_lower, hsv_upper)
             masks.append(mask)
         mask = sum(masks)
 
-        mask = cv2.erode(mask, None, iterations=1)
-        mask = cv2.dilate(mask, None, iterations=1)
+        mask = self.cv2.erode(mask, None, iterations=1)
+        mask = self.cv2.dilate(mask, None, iterations=1)
 
         return mask
 
     def __find_contours(self, frame, color):
         mask = self.__get_color_mask(frame, color=color)
 
-        return grab_contours(  # fixes problems with OpenCV changing their protocol
-            cv2.findContours(
+        return self.imutils.grab_contours(  # fixes problems with OpenCV changing their protocol
+            self.cv2.findContours(
                 mask.copy(),
-                cv2.RETR_EXTERNAL,
-                cv2.CHAIN_APPROX_SIMPLE
+                self.cv2.RETR_EXTERNAL,
+                self.cv2.CHAIN_APPROX_SIMPLE
             )
         )
 
     def __find_most_likely_ball(self, ball, frame, color):
-        resized_frame = resize(frame, width=self._image_processing_width)
+        resized_frame = self.imutils.resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
             ball.center_points.appendleft(None)
