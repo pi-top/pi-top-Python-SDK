@@ -217,7 +217,7 @@ class BallDetector:
             thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
 
             self.cv2.line(frame, ball.center_points[i - 1], ball.center_points[i],
-                     tuple_for_color_by_name(ball.color, bgr=True), thickness)
+                          tuple_for_color_by_name(ball.color, bgr=True), thickness)
 
     def color_filter(self, frame, color: str = "red"):
         frame = ImageFunctions.convert(frame, format="OpenCV")

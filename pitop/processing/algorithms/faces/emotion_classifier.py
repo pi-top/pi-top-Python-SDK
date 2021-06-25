@@ -156,7 +156,7 @@ class EmotionClassifier:
             text_colour = tuple_for_color_by_name("springgreen", bgr=True)
 
         self.cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
-                    thickness=self.font_thickness)
+                         thickness=self.font_thickness)
 
         for (x, y) in face.features:
             self.cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)

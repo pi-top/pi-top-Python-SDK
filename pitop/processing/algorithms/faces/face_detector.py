@@ -228,7 +228,7 @@ class FaceDetector:
         self.cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
 
         self.cv2.drawMarker(frame, face.center_default, tuple_for_color_by_name("orangered", bgr=True),
-                       markerType=self.cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=self.cv2.FILLED)
+                            markerType=self.cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=self.cv2.FILLED)
 
         return frame
 
