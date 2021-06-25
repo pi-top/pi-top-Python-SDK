@@ -36,11 +36,7 @@ class FaceDetector:
         slightly better performance whilst retaining ability to calculate face angle. May be incompatible with further
          processing e.g. emotion detection requires the 68-landmark version.
         """
-        global cv2
-        cv2 = import_opencv()
-        global dlib
-        dlib = import_dlib()
-        from imutils import face_utils
+        self.__import_libs()
 
         self._image_processing_width = image_processing_width
         self._format = format
@@ -64,6 +60,7 @@ class FaceDetector:
         :param frame: Image frame in OpenCV or PIL format.
         :return: Face object containing data about the detected face.
         """
+        self.__import_libs()
         frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if self._frame_scaler is None:
@@ -95,6 +92,15 @@ class FaceDetector:
             self._fps.update()
 
         return self.face
+
+    def __import_libs(self):
+        if cv2 is None:
+            global cv2
+            cv2 = import_opencv()
+        if dlib is None:
+            global dlib
+            dlib = import_dlib()
+        from imutils import face_utils
 
     def __get_frame_to_process(self, frame):
         """Resize frame, convert to grayscale and use contrast limited adaptive

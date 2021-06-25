@@ -22,11 +22,16 @@ DETECTION_POINTS_BUFFER_LENGTH = 16
 cv2 = None
 
 
-class BallLikeness:
-    def __init__(self, contour):
-        from imutils import grab_contours
+def import_libs():
+    if cv2 is None:
         global cv2
         cv2 = import_opencv()
+    from imutils import resize, grab_contours
+
+
+class BallLikeness:
+    def __init__(self, contour):
+        import_libs()
 
         self.contour = contour
         self.pos, self.radius = cv2.minEnclosingCircle(self.contour)
@@ -149,9 +154,7 @@ class BallDetector:
         :param int image_processing_width: image width to scale to for image processing
         :param str format: output image format
         """
-        global cv2
-        cv2 = import_opencv()
-        from imutils import resize, grab_contours
+        import_libs()
 
         self._image_processing_width = image_processing_width
         self.format = format
@@ -180,6 +183,7 @@ class BallDetector:
 
             return colors
 
+        import_libs()
         frame = ImageFunctions.convert(frame, format="OpenCV")
 
         if self._frame_scaler is None:
