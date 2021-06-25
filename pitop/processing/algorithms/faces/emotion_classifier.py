@@ -11,15 +11,19 @@ from pitop.processing.core.load_models import load_emotion_model
 from pitop.processing.core.math_functions import running_mean
 
 
+cv2 = None
+
+
 class EmotionClassifier:
     __MEAN_N = 5
 
     def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
-        self.cv2 = import_opencv()
-        self.imutils = import_imutils()
+        from imutils import face_utils
+        global cv2
+        cv2 = import_opencv()
 
-        self.left_eye_start, self.left_eye_end = self.imutils.face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
-        self.right_eye_start, self.right_eye_end = self.imutils.face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+        self.left_eye_start, self.left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
+        self.right_eye_start, self.right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
 
         self._format = format
         self._apply_mean_filter = apply_mean_filter
@@ -27,7 +31,7 @@ class EmotionClassifier:
         self._onnx_input_node_name = self._emotion_model.get_inputs()[0].name
         self.emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
         self.emotion = Emotion()
-        self.font = self.cv2.FONT_HERSHEY_PLAIN
+        self.font = cv2.FONT_HERSHEY_PLAIN
         self.font_scale = 2
         self.font_thickness = 3
         if self._apply_mean_filter:
@@ -143,7 +147,7 @@ class EmotionClassifier:
         x, y, w, h = face.rectangle
 
         text = f"{round(emotion.confidence * 100)}% {emotion.type}"
-        text_size = self.cv2.getTextSize(text, self.font, self.font_scale, self.font_thickness)[0]
+        text_size = cv2.getTextSize(text, self.font, self.font_scale, self.font_thickness)[0]
 
         text_x = (x + w // 2) - (text_size[0] // 2)
         text_y = y - 5
@@ -155,10 +159,10 @@ class EmotionClassifier:
         else:
             text_colour = tuple_for_color_by_name("springgreen", bgr=True)
 
-        self.cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
+        cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
                          thickness=self.font_thickness)
 
         for (x, y) in face.features:
-            self.cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)
+            cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)
 
         return frame
