@@ -14,6 +14,7 @@ from pitop.processing.core.math_functions import running_mean
 cv2 = None
 face_utils = None
 
+
 def import_libs():
     global cv2, face_utils
     if cv2 is None:

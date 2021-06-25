@@ -6,6 +6,7 @@ def import_imutils():
         raise ModuleNotFoundError(
             "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
 
+
 def import_face_utils():
     try:
         import imutils.face_utils
@@ -13,6 +14,7 @@ def import_face_utils():
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
             "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
+
 
 def import_opencv():
     try:
