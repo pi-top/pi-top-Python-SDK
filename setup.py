@@ -133,7 +133,6 @@ __requires__ = [
     #############################
     "dlib",
     "imutils",
-    "scikit-learn",
 
     ###################
     # Use Model Files #
