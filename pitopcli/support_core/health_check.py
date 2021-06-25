@@ -13,9 +13,6 @@ from time import strftime
 from ..formatter import StdoutFormat, StdoutTable
 from .ptsoftware import PitopSoftware
 from .hub_communication import HubCommunication
-from pitop.system import pitop_peripherals
-
-from pitop.system import device_type
 from pitopcommon.command_runner import run_command
 from pitopcommon.common_names import DeviceName
 
@@ -25,7 +22,6 @@ def str_to_bool(value):
 
 
 class HealthCheck:
-
     RASPI_CONFIG_BOOT_SETTINGS = {
         "get_boot_cli": {
             "description": "Boot to Desktop?",
@@ -128,6 +124,9 @@ class HealthCheck:
         "Power status of HDMI 1": "vcgencmd display_power -1 7",
         "Resolution & color depth of displays": "vcgencmd get_lcd_info",
     }
+
+    def __init__(self):
+        from pitop.system import pitop_peripherals, device_type
 
     def run(self):
         StdoutFormat.print_header("SYSTEM HEALTH CHECK")

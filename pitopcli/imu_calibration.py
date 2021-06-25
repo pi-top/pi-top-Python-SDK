@@ -28,7 +28,6 @@ from warnings import (
 
 import atexit
 import numpy as np
-import matplotlib.pyplot as plt
 # Enables "add_subplot(projection='3d')"
 from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
 from scipy.linalg import sqrtm
@@ -99,6 +98,8 @@ class ImuCalibration:
             self.imu_controller.write_mag_cal_params(self.__hard_iron_offset, self.__soft_iron_matrix)
 
     def plot_graphs(self, path_to_save_figure="/tmp/"):
+        import matplotlib.pyplot as plt
+
         if path_to_save_figure and not path.isdir(path_to_save_figure):
             print(f"Provided path {path_to_save_figure} is not a valid directory")
             return
