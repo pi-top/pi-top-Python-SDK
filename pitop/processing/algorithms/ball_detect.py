@@ -23,8 +23,8 @@ DETECTION_POINTS_BUFFER_LENGTH = 16
 
 class BallLikeness:
     def __init__(self, contour):
-        self.imutils = import_imutils()
         self.cv2 = import_opencv()
+        self.imutils = import_imutils()
         self.contour = contour
         self.pos, self.radius = self.cv2.minEnclosingCircle(self.contour)
         self.area = self.cv2.contourArea(self.contour)
@@ -146,6 +146,7 @@ class BallDetector:
         :param int image_processing_width: image width to scale to for image processing
         :param str format: output image format
         """
+        self.cv2 = import_opencv()
         self.imutils = import_imutils()
         self._image_processing_width = image_processing_width
         self.format = format

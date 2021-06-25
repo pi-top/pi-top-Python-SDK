@@ -1,7 +1,7 @@
 import numpy as np
 
 from pitop.core import ImageFunctions
-from pitop.core.emotion import Emotion
+from pitop.processing.algorithms.faces.core.emotion import Emotion
 from pitop.processing.core.vision_functions import (
     import_opencv,
     import_imutils,
