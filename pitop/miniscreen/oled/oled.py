@@ -23,7 +23,11 @@ from pyinotify import (
     ProcessEvent,
     WatchManager,
 )
-from threading import Thread
+from threading import (
+    Thread,
+    current_thread,
+    main_thread,
+)
 from time import sleep
 
 
@@ -439,8 +443,7 @@ class OLED:
         """
         self.__kill_thread = False
         if background is True:
-            self.__auto_play_thread = Thread(
-                target=self.__auto_play, args=(image, loop))
+            self.__auto_play_thread = Thread(target=self.__auto_play, args=(image, loop))
             self.__auto_play_thread.start()
         else:
             self.__auto_play(image, loop)
@@ -448,7 +451,11 @@ class OLED:
     def stop_animated_image(self):
         """Stop background animation started using `start()`, if currently
         running."""
-        if self.__auto_play_thread is not None:
+        if current_thread() is not main_thread():
+            # thread that runs an animation in the background can't "join" itself
+            return
+
+        if self.__auto_play_thread is not None and self.__auto_play_thread.is_alive():
             self.__kill_thread = True
             self.__auto_play_thread.join()
 
