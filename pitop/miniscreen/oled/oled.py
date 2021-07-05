@@ -441,6 +441,7 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
+        self.stop_animated_image()
         self.__kill_thread = False
         if background is True:
             self.__auto_play_thread = Thread(target=self.__auto_play, args=(image, loop))
