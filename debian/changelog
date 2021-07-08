@@ -1,3 +1,9 @@
+py-pitop-sdk (0.18.11) buster; urgency=medium
+
+  * Rename TiltRollHeadController class name and attributes (#366)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 05 Jul 2021 10:03:16 +0000
+
 py-pitop-sdk (0.18.10) buster; urgency=medium
 
   * Remove trailing whitespace on "pi-top device" CLI command
