@@ -1,13 +1,6 @@
 py-pitop-sdk (0.18.11) buster; urgency=medium
 
-  [ duwudi ]
   * Rename TiltRollHeadController class name and attributes (#366)
-
-  [ Jorge Capona ]
-  * Create codeql-analysis.yml
-
-  [ Mike Roberts ]
-  * Workflow: create draft release manually
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 05 Jul 2021 10:03:16 +0000
 
