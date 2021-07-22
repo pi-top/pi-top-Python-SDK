@@ -45,9 +45,8 @@ class TiltRollHeadController(Stateful, Recreatable):
         self.roll.sweep(speed=0)
 
     def shake(self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True) -> None:
-        """
-        Shakes the head by rotating the roll servo back and forth between :data:`-angle` and :data:`+angle` from
-        current angle position.
+        """Shakes the head by rotating the roll servo back and forth between
+        :data:`-angle` and :data:`+angle` from current angle position.
 
         :param int times: Number of times to shake head
         :param int angle: angle in degrees either side of current angle to rotate servo by
@@ -58,9 +57,8 @@ class TiltRollHeadController(Stateful, Recreatable):
         self.__start_servo_oscillation(servo=self._roll_servo, times=times, angle=angle, speed=speed, block=block)
 
     def nod(self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True) -> None:
-        """
-        Nod the head by rotating the tilt servo back and forth between :data:`-angle` and :data:`+angle` from
-        current angle position.
+        """Nod the head by rotating the tilt servo back and forth between
+        :data:`-angle` and :data:`+angle` from current angle position.
 
         :param int times: Number of times to nod head
         :param int angle: angle in degrees either side of current angle to rotate servo by
