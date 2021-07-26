@@ -1,3 +1,16 @@
+py-pitop-sdk (0.19.1) buster; urgency=medium
+
+  [ Angus Whitehead ]
+  * Add keyword arg to select font to miniscreen display text methods (#391)
+
+  [ Mike Roberts ]
+  * Add dependency versions (#400)
+
+  [ github-actions[bot] ]
+  * [CI] Update debian/changelog for next release (#388)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 26 Jul 2021 11:00:21 +0000
+
 py-pitop-sdk (0.19.0) buster; urgency=medium
 
   [ Angus Whitehead ]
