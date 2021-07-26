@@ -1,26 +1,26 @@
-flask python3-flask
-flask-cors python3-flask-cors
-flask-sockets python3-flask-sockets
-gevent python3-gevent
-gevent-websocket python3-gevent-websocket
-gpiozero python3-gpiozero
-imageio python3-imageio
-imutils python3-imutils
-luma.core python3-luma-core
-luma.oled python3-luma-oled
-matplotlib python3-matplotlib
-pitopcommon python3-pitopcommon
-pyinotify python3-pyinotify
-pynput python3-pynput
-pyv4l2camera python3-pyv4l2camera
-scipy python3-scipy
-simple_pid python3-simple-pid
-flask python3-flask
-flask-cors python3-flask-cors
-flask-sockets python3-flask-sockets
-gevent python3-gevent
-gevent-websocket python3-gevent-websocket
-dlib python3-dlib
-imutils python3-imutils
-wget python3-wget
-onnxruntime python3-onnxruntime
+flask python3-flask; PEP386
+flask-cors python3-flask-cors; PEP386
+flask-sockets python3-flask-sockets; PEP386
+gevent python3-gevent; PEP386
+gevent-websocket python3-gevent-websocket; PEP386
+gpiozero python3-gpiozero; PEP386
+imageio python3-imageio; PEP386
+imutils python3-imutils; PEP386
+luma.core python3-luma-core; PEP386
+luma.oled python3-luma-oled; PEP386
+matplotlib python3-matplotlib; PEP386
+pitopcommon python3-pitopcommon; PEP386
+pyinotify python3-pyinotify; PEP386
+pynput python3-pynput; PEP386
+pyv4l2camera python3-pyv4l2camera; PEP386
+scipy python3-scipy; PEP386
+simple_pid python3-simple-pid; PEP386
+flask python3-flask; PEP386
+flask-cors python3-flask-cors; PEP386
+flask-sockets python3-flask-sockets; PEP386
+gevent python3-gevent; PEP386
+gevent-websocket python3-gevent-websocket; PEP386
+dlib python3-dlib; PEP386
+imutils python3-imutils; PEP386
+wget python3-wget; PEP386
+onnxruntime python3-onnxruntime; PEP386
