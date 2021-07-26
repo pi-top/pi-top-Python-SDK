@@ -77,73 +77,73 @@ __requires__ = [
     ####################################
     # Utilities - functions, IDs, etc. #
     ####################################
-    "pitopcommon==0.8.8",
+    "pitopcommon>=0.8.8,<0.9.0",
 
     #######
     # PMA #
     #######
     # To use GPIO & components
-    "gpiozero==1.6.2",
+    "gpiozero>=1.6.2,<1.7",
     # To perform operations with images
-    "imageio==2.4.1",
+    "imageio>=2.4.1,<2.5",
     # Camera uses numpy arrays for image data
-    "numpy==1.16.6",
+    "numpy>=1.16.0,<1.17",
     # Manage camera images
-    "Pillow==5.4.1",
+    "Pillow>=5.4.0,<5.5",
     # Camera communication
     "PyV4L2Camera==0.1a2",
     # IMU Calibration
-    "matplotlib==3.0.2",
-    "scipy==1.1.0",
+    "matplotlib>=3.0.0,<3.1",
+    "scipy>=1.1.0,<1.2",
 
     ############
     # Keyboard #
     ############
-    "pynput==1.4.2",
+    "pynput>=1.4.2,<1.5",
 
     ########
     # OLED #
     ########
-    "luma.core==2.3.1",
-    "luma.oled==3.8.1",
-    "monotonic==1.1",
-    "pyinotify==0.9.6",
+    "luma.core>=2.3.1,<2.4",
+    "luma.oled>=3.8.1,<3.9",
+    "monotonic>=1.1,<1.2",
+    "pyinotify>=0.9.6,<0.10",
 
     #########
     # Pulse #
     #########
-    "pyserial==3.4",
+    "pyserial>=3.4,<3.5",
 
     ##############
     # Algorithms #
     ##############
-    "simple_pid==0.2.4",
+    "simple_pid>=0.2.4,<0.3",
 
     #############
     # Webserver #
     #############
-    "flask==1.0.2",
-    "flask-cors==3.0.7",
-    "flask-sockets==0.2.1",
-    "gevent==1.3.7",
-    "gevent-websocket==0.10.1",
+    "flask>=1.0.2,<1.1",
+    "flask-cors>=3.0.7,<3.1",
+    "flask-sockets>=0.2.1,<0.3",
+    "gevent>=1.3.7,<1.4",
+    "gevent-websocket>=0.10.1,<0.11.0",
 
     #############################
     # Advanced image processing #
     #############################
-    "dlib==19.22.0",
-    "imutils==0.5.4",
-    "scikit-learn==0.20.2",
+    "dlib>=19.22.0,<19.23.0",
+    "imutils>=0.5.4,<0.6.0",
+    "scikit-learn>=0.20.2,<0.21.0",
 
     ###################
     # Use Model Files #
     ###################
-    "onnxruntime==1.8.1",
+    "onnxruntime>=1.8.1,<1.9",
 
     ########################
     # Download Model Files #
     ########################
-    "wget==3.2",
+    "wget>=3.2,<4.0",
 ]
 
 __extra_requires__ = {
