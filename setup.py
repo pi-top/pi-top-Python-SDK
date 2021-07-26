@@ -77,73 +77,73 @@ __requires__ = [
     ####################################
     # Utilities - functions, IDs, etc. #
     ####################################
-    "pitopcommon",
+    "pitopcommon==0.8.8",
 
     #######
     # PMA #
     #######
     # To use GPIO & components
-    "gpiozero",
+    "gpiozero==1.6.2",
     # To perform operations with images
-    "imageio",
+    "imageio==2.4.1",
     # Camera uses numpy arrays for image data
-    "numpy",
+    "numpy==1.16.6",
     # Manage camera images
-    "Pillow",
+    "Pillow==5.4.1",
     # Camera communication
-    "PyV4L2Camera",
+    "PyV4L2Camera==0.1a2",
     # IMU Calibration
-    "matplotlib",
-    "scipy",
+    "matplotlib==3.0.2",
+    "scipy==1.1.0",
 
     ############
     # Keyboard #
     ############
-    "pynput",
+    "pynput==1.4.2",
 
     ########
     # OLED #
     ########
-    "luma.oled",
-    "luma.core",
-    "monotonic",
-    "pyinotify",
+    "luma.core==2.3.1",
+    "luma.oled==3.8.1",
+    "monotonic==1.1",
+    "pyinotify==0.9.6",
 
     #########
     # Pulse #
     #########
-    "pyserial",
+    "pyserial==3.4",
 
     ##############
     # Algorithms #
     ##############
-    "simple_pid",
+    "simple_pid==0.2.4",
 
     #############
     # Webserver #
     #############
-    "flask",
-    "flask-cors",
-    "flask-sockets",
-    "gevent",
-    "gevent-websocket",
+    "flask==1.0.2",
+    "flask-cors==3.0.7",
+    "flask-sockets==0.2.1",
+    "gevent==1.3.7",
+    "gevent-websocket==0.10.1",
 
     #############################
     # Advanced image processing #
     #############################
-    "dlib",
-    "imutils",
-    "scikit-learn",
+    "dlib==19.22.0",
+    "imutils==0.5.4",
+    "scikit-learn==0.20.2",
 
     ###################
     # Use Model Files #
     ###################
-    "onnxruntime",
+    "onnxruntime==1.8.1",
 
     ########################
     # Download Model Files #
     ########################
-    "wget",
+    "wget==3.2",
 ]
 
 __extra_requires__ = {
