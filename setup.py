@@ -77,72 +77,83 @@ __requires__ = [
     ####################################
     # Utilities - functions, IDs, etc. #
     ####################################
-    "pitopcommon",
+    "pitopcommon>=0.8.8,<0.9.0",
 
     #######
     # PMA #
     #######
     # To use GPIO & components
-    "gpiozero",
+    "gpiozero>=1.6.2,<1.7",
     # To perform operations with images
-    "imageio",
+    "imageio>=2.4.1,<2.5",
     # Camera uses numpy arrays for image data
-    "numpy",
+    "numpy>=1.16.0,<1.17",
     # Manage camera images
-    "Pillow",
+    "Pillow>=5.4.0,<5.5",
     # Camera communication
-    "PyV4L2Camera",
+    # Release version is '0.1a2', but Debian package is '0.1.2'
+    # so we allow for both here
+    #
+    # TODO: build '0.1~a2' Debian package
+    "PyV4L2Camera>=0.1a2,<0.2",
     # IMU Calibration
-    "matplotlib",
-    "scipy",
+    "matplotlib>=3.0.0,<3.1",
+    "scipy>=1.1.0,<1.2",
 
     ############
     # Keyboard #
     ############
-    "pynput",
+    "pynput>=1.4.2,<1.5",
 
     ########
     # OLED #
     ########
-    "luma.oled",
-    "luma.core",
-    "monotonic",
-    "pyinotify",
+    "luma.core>=2.3.1,<2.4",
+    "luma.oled>=3.8.1,<3.9",
+    "monotonic>=1.1,<1.2",
+    "pyinotify>=0.9.6,<0.10",
 
     #########
     # Pulse #
     #########
-    "pyserial",
+    "pyserial>=3.4,<3.5",
 
     ##############
     # Algorithms #
     ##############
-    "simple_pid",
+    "simple_pid>=0.2.4,<0.3",
 
     #############
     # Webserver #
     #############
-    "flask",
-    "flask-cors",
-    "flask-sockets",
-    "gevent",
-    "gevent-websocket",
+    "flask>=1.0.2,<1.1",
+    "flask-cors>=3.0.7,<3.1",
+    "flask-sockets>=0.2.1,<0.3",
+    "gevent>=1.3.7,<1.4",
+    "gevent-websocket>=0.10.1,<0.11.0",
 
     #############################
     # Advanced image processing #
     #############################
-    "dlib",
-    "imutils",
+    "dlib>=19.22.0,<19.23.0",
+    "imutils>=0.5.4,<0.6.0",
+    "scikit-learn>=0.20.2,<0.21.0",
 
     ###################
     # Use Model Files #
     ###################
-    "onnxruntime",
+    # python3-onnxruntime is currently 1.7.2-1 on Buster
+    # but PyPI has 1.7.0, 1.8.0 and 1.8.1
+    #
+    # We allow all because new features shouldn't affect our use-case
+    #
+    # TODO: Build python3-onnxruntime 1.8.1
+    "onnxruntime>=1.7.2,<1.9",
 
     ########################
     # Download Model Files #
     ########################
-    "wget",
+    "wget>=3.2,<4.0",
 ]
 
 __extra_requires__ = {
