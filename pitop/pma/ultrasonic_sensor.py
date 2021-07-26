@@ -25,8 +25,10 @@ class UltrasonicSensor(Stateful, Recreatable):
 
         if port_name in valid_analog_ports:
             self.__ultrasonic_device = UltrasonicSensorMCU(port_name=port_name,
+                                                           queue_len=queue_len,
                                                            max_distance=max_distance,
                                                            threshold_distance=threshold_distance,
+                                                           partial=partial,
                                                            name=name
                                                            )
         else:
@@ -37,6 +39,9 @@ class UltrasonicSensor(Stateful, Recreatable):
                                                            partial=partial,
                                                            name=name
                                                            )
+
+        self._in_range_function = None
+        self._out_of_range_function = None
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name,
@@ -156,7 +161,7 @@ class UltrasonicSensor(Stateful, Recreatable):
 
     @property
     def when_in_range(self):
-        pass
+        return self.__ultrasonic_device.when_deactivated
 
     @when_in_range.setter
     def when_in_range(self, function):
@@ -165,7 +170,7 @@ class UltrasonicSensor(Stateful, Recreatable):
 
     @property
     def when_out_of_range(self):
-        pass
+        return self.__ultrasonic_device.when_activated
 
     @when_out_of_range.setter
     def when_out_of_range(self, function):

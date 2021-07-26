@@ -1,5 +1,5 @@
 from gpiozero import SmoothedInputDevice
-from threading import Event, Lock
+from threading import Thread, Event, Lock
 
 from pitopcommon.logger import PTLogger
 
@@ -12,6 +12,9 @@ from .common.ultrasonic_registers import (
 )
 from pitop.pma.common.utils import get_pin_for_port
 import atexit
+from sched import scheduler
+import time
+from collections import deque
 
 
 class UltrasonicSensorBase:
@@ -71,9 +74,11 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
     def __init__(
             self,
             port_name,
-            max_distance=3,
-            threshold_distance=0.3,
-            name="ultrasonic",
+            queue_len,
+            max_distance,
+            threshold_distance,
+            partial,
+            name,
             **_ignored
     ):
         self._pma_port = port_name
@@ -82,12 +87,28 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         if max_distance <= 0:
             raise ValueError('invalid maximum distance (must be positive)')
         self._max_distance = max_distance
+        self._filtered_distance = max_distance
         self.threshold = threshold_distance / max_distance
 
         self.__mcu_device = PlateInterface().get_device_mcu()
         self.__registers = UltrasonicRegisters[self._pma_port]
 
         self.__configure_mcu()
+
+        self._queue_len = queue_len
+        self._partial = partial
+        self.when_activated = None
+        self.when_deactivated = None
+        self.__active = True
+        self.__queue = deque(maxlen=queue_len)
+
+        self._read_dt = 0.1
+        self.__new_reading = Event()
+        self._read_scheduler = Thread(target=self.__read_scheduler, daemon=True)
+        self._read_scheduler.start()
+
+        self.__state_check = Thread(target=self.__update_active_state, daemon=True)
+        self.__state_check.start()
 
         atexit.register(self.close)
 
@@ -98,12 +119,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
     @property
     def value(self):
-        distance_cm = self.__mcu_device.read_unsigned_word(
-            register_address=self.__registers[UltrasonicRegisterTypes.DATA],
-            little_endian=True
-        )
-        distance = distance_cm / 100
-        return min(1.0, distance / self._max_distance)
+        return min(1.0, self.__read_distance() / self._max_distance)
 
     @property
     def pin(self):
@@ -116,13 +132,57 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
     @property
     def in_range(self):
-        pass
+        return not self.__active
 
     def wait_for_active(self, timeout=None):
         pass
 
     def wait_for_inactive(self, timeout=None):
         pass
+
+    def __read_scheduler(self):
+        s = scheduler(time.time, time.sleep)
+        s.enter(self._read_dt, 1, self.__read_loop, (s, ))
+        s.run()
+
+    def __read_loop(self, s):
+        # TODO: add filtering using queue
+        self._filtered_distance = self.__read_distance()
+        self.__new_reading.set()
+        self.__new_reading.clear()
+        s.enter(self._read_dt, 1, self.__read_loop, (s, ))
+
+    def __update_active_state(self):
+        while True:
+            self.__new_reading.wait()
+            if self.__active and self.__inactive_criteria():
+                self.__was_deactivated()
+                continue
+            if not self.__active and self.__active_criteria():
+                self.__was_activated()
+
+    def __active_criteria(self):
+        return self._filtered_distance >= self.threshold_distance
+
+    def __inactive_criteria(self):
+        return not self.__active_criteria()
+
+    def __was_activated(self):
+        if callable(self.when_activated):
+            self.when_activated()
+        self.__active = True
+
+    def __was_deactivated(self):
+        if callable(self.when_deactivated):
+            self.when_deactivated()
+        self.__active = False
+
+    def __read_distance(self):
+        distance_cm = self.__mcu_device.read_unsigned_word(
+            register_address=self.__registers[UltrasonicRegisterTypes.DATA],
+            little_endian=True
+        )
+        return distance_cm / 100
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
