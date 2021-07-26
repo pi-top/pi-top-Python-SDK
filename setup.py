@@ -91,7 +91,11 @@ __requires__ = [
     # Manage camera images
     "Pillow>=5.4.0,<5.5",
     # Camera communication
-    "PyV4L2Camera==0.1a2",
+    # Release version is '0.1a2', but Debian package is '0.1.2'
+    # so we allow for both here
+    #
+    # TODO: build '0.1~a2' Debian package
+    "PyV4L2Camera>=0.1a2,<0.2",
     # IMU Calibration
     "matplotlib>=3.0.0,<3.1",
     "scipy>=1.1.0,<1.2",
@@ -138,7 +142,13 @@ __requires__ = [
     ###################
     # Use Model Files #
     ###################
-    "onnxruntime>=1.8.1,<1.9",
+    # python3-onnxruntime is currently 1.7.2-1 on Buster
+    # but PyPI has 1.7.0, 1.8.0 and 1.8.1
+    #
+    # We allow all because new features shouldn't affect our use-case
+    #
+    # TODO: Build python3-onnxruntime 1.8.1
+    "onnxruntime>=1.7.2,<1.9",
 
     ########################
     # Download Model Files #
