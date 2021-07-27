@@ -15,6 +15,7 @@ import atexit
 from sched import scheduler
 import time
 from collections import deque
+import numpy as np
 
 
 class UltrasonicSensorBase:
@@ -95,8 +96,9 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
         self.__configure_mcu()
 
-        self._queue_len = queue_len
-        self._partial = partial
+        self.__queue_len = queue_len
+        self.__partial = partial
+        self.__return_reading = False
         self.when_activated = None
         self.when_deactivated = None
         self.__active = True
@@ -109,8 +111,14 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self._read_scheduler = Thread(target=self.__read_scheduler, daemon=True)
         self._read_scheduler.start()
 
-        self.__state_check = Thread(target=self.__update_active_state, daemon=True)
+        self.__state_check = Thread(target=self.__state_monitor, daemon=True)
         self.__state_check.start()
+
+        if not self.__partial:
+            self.__state_check = Thread(target=self.__queue_filled_check(), daemon=True)
+            self.__state_check.start()
+        else:
+            self.__data_ready = True
 
         atexit.register(self.close)
 
@@ -121,7 +129,9 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
     @property
     def value(self):
-        return min(1.0, self.__read_distance() / self._max_distance)
+        while not self.__data_ready:
+            time.sleep(self._read_dt)
+        return min(1.0, self._filtered_distance / self._max_distance)
 
     @property
     def pin(self):
@@ -154,14 +164,19 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self.__new_reading_event.clear()
         s.enter(self._read_dt, 1, self.__read_loop, (s, ))
 
-    def __update_active_state(self):
+    def __state_monitor(self):
         while True:
             self.__new_reading_event.wait()
-            if self.__active and self.__inactive_criteria():
-                self.__was_deactivated()
-                continue
-            if not self.__active and self.__active_criteria():
-                self.__was_activated()
+            if self.__data_ready:
+                self.__check_for_state_change()
+
+    def __check_for_state_change(self):
+        if self.__active and self.__inactive_criteria():
+            self.__was_deactivated()
+            return
+        if not self.__active and self.__active_criteria():
+            self.__was_activated()
+            return
 
     def __active_criteria(self):
         return self._filtered_distance >= self.threshold_distance
@@ -182,6 +197,13 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self.__active = False
         self.__deactivated_event.set()
         self.__deactivated_event.clear()
+
+    def __queue_filled_check(self):
+        while True:
+            self.__new_reading_event.wait()
+            if self.__queue_len == len(self.__queue):
+                self.__data_ready = True
+                break
 
     def __read_distance(self):
         distance_cm = self.__mcu_device.read_unsigned_word(
