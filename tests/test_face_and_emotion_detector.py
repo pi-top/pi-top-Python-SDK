@@ -8,6 +8,7 @@ modules_to_patch = [
     "pitopcommon.ptdm",
     "pitopcommon.smbus_device",
     "simple_pid",
+    "v4l2py",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
