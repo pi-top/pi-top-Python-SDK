@@ -103,7 +103,9 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self.__queue = deque(maxlen=queue_len)
 
         self._read_dt = 0.1
-        self.__new_reading = Event()
+        self.__new_reading_event = Event()
+        self.__activated_event = Event()
+        self.__deactivated_event = Event()
         self._read_scheduler = Thread(target=self.__read_scheduler, daemon=True)
         self._read_scheduler.start()
 
@@ -135,10 +137,10 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         return not self.__active
 
     def wait_for_active(self, timeout=None):
-        pass
+        self.__activated_event.wait(timeout=timeout)
 
     def wait_for_inactive(self, timeout=None):
-        pass
+        self.__deactivated_event.wait(timeout=timeout)
 
     def __read_scheduler(self):
         s = scheduler(time.time, time.sleep)
@@ -148,13 +150,13 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
     def __read_loop(self, s):
         # TODO: add filtering using queue
         self._filtered_distance = self.__read_distance()
-        self.__new_reading.set()
-        self.__new_reading.clear()
+        self.__new_reading_event.set()
+        self.__new_reading_event.clear()
         s.enter(self._read_dt, 1, self.__read_loop, (s, ))
 
     def __update_active_state(self):
         while True:
-            self.__new_reading.wait()
+            self.__new_reading_event.wait()
             if self.__active and self.__inactive_criteria():
                 self.__was_deactivated()
                 continue
@@ -171,11 +173,15 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         if callable(self.when_activated):
             self.when_activated()
         self.__active = True
+        self.__activated_event.set()
+        self.__activated_event.clear()
 
     def __was_deactivated(self):
         if callable(self.when_deactivated):
             self.when_deactivated()
         self.__active = False
+        self.__deactivated_event.set()
+        self.__deactivated_event.clear()
 
     def __read_distance(self):
         distance_cm = self.__mcu_device.read_unsigned_word(
