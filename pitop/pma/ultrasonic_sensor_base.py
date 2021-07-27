@@ -219,11 +219,13 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
                 break
 
     def __read_distance(self):
-        distance_cm = self.__mcu_device.read_unsigned_word(
+        distance = self.__mcu_device.read_unsigned_word(
             register_address=self.__registers[UltrasonicRegisterTypes.DATA],
             little_endian=True
-        )
-        return distance_cm / 100
+        ) / 100
+        if distance == 0:
+            return self._max_distance
+        return distance
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
