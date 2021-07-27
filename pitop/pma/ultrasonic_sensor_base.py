@@ -51,27 +51,27 @@ class UltrasonicSensorBase:
 
     @abstractmethod
     def in_range(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def value(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def pin(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def close(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def wait_for_active(self, timeout=None):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def wait_for_inactive(self, timeout=None):
-        pass
+        raise NotImplementedError
 
 
 class UltrasonicSensorMCU(UltrasonicSensorBase):
