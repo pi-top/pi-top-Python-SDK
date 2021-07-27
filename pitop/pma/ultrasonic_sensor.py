@@ -12,7 +12,7 @@ valid_analog_ports = ["A1", "A3"]
 class UltrasonicSensor(Stateful, Recreatable):
     def __init__(self,
                  port_name,
-                 queue_len=9,
+                 queue_len=5,
                  max_distance=3,
                  threshold_distance=0.3,
                  partial=False,
