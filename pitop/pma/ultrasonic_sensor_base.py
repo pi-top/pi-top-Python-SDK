@@ -172,15 +172,10 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
     def __read_loop(self, s):
         self.__data_queue.append(self.__read_distance())
-        self.__data_filter()
+        self._filtered_distance = np.median(self.__data_queue)
         self.__new_reading_event.set()
         self.__new_reading_event.clear()
         s.enter(self._data_read_dt, 1, self.__read_loop, (s,))
-
-    def __data_filter(self):
-        if not self.__data_ready:
-            return
-        self._filtered_distance = np.median(self.__data_queue)
 
     def __state_monitor(self):
         while True:
@@ -235,13 +230,14 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
     def __compatibility_check(self):
         plate_id = connected_plate()
         if plate_id != FirmwareDeviceID.pt4_expansion_plate:
-            raise RuntimeError("Analog ports for Ultrasonic Sensor are not compatible with the Foundation Plate, "
-                               "please use an Expansion Plate instead.")
+            raise RuntimeError("You are trying to use analog ports for the Ultrasonic Sensor, this is not compatible "
+                               "with a Foundation Plate. Please use an Expansion Plate instead.")
 
         firmware_device = FirmwareDevice(plate_id)
         if firmware_device.get_fw_version_major() < self.__MIN_FIRMWARE_MAJOR_VERSION:
-            raise RuntimeError("Please update your Expansion Plate firmware to use the analog ports for Ultrasonic "
-                               "Sensor readings.")
+            raise RuntimeError("Usage of the analog ports for the Ultrasonic Sensor requires an Expansion Plate with "
+                               f"a minimum version version of V{self.__MIN_FIRMWARE_MAJOR_VERSION}."
+                               f"Please update your Expansion Plate firmware to continue.")
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
