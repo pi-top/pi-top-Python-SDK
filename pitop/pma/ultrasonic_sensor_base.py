@@ -85,40 +85,48 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self._pma_port = port_name
         self.name = name
 
+        # Distance readings
         if max_distance <= 0:
             raise ValueError('invalid maximum distance (must be positive)')
         self._max_distance = max_distance
         self._filtered_distance = max_distance
         self.threshold = threshold_distance / max_distance
+        self._data_read_dt = 0.1
+        self.__queue_len = queue_len
+        self.__data_queue = deque(maxlen=self.__queue_len)
 
+        # MCU configuration
         self.__mcu_device = PlateInterface().get_device_mcu()
         self.__registers = UltrasonicRegisters[self._pma_port]
-
         self.__configure_mcu()
 
-        self.__queue_len = queue_len
-        self.__partial = partial
-        self.__return_reading = False
+        # User-programmable callbacks
         self.when_activated = None
         self.when_deactivated = None
-        self.__active = True
-        self.__queue = deque(maxlen=queue_len)
 
-        self._read_dt = 0.1
+        # Data state
+        self.__partial = partial
+        self.__data_ready = False
+        self.__active = True
+
+        # Thread communication
         self.__new_reading_event = Event()
         self.__activated_event = Event()
         self.__deactivated_event = Event()
+
+        if self.__partial:
+            self.__data_ready = True
+        else:
+            self.__queue_check = Thread(target=self.__queue_filled_check, daemon=True)
+            self.__queue_check.start()
+
+        # Data read loop
         self._read_scheduler = Thread(target=self.__read_scheduler, daemon=True)
         self._read_scheduler.start()
 
+        # Monitor for changes from active to inactive or vice versa
         self.__state_check = Thread(target=self.__state_monitor, daemon=True)
         self.__state_check.start()
-
-        if not self.__partial:
-            self.__state_check = Thread(target=self.__queue_filled_check(), daemon=True)
-            self.__state_check.start()
-        else:
-            self.__data_ready = True
 
         atexit.register(self.close)
 
@@ -130,7 +138,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
     @property
     def value(self):
         while not self.__data_ready:
-            time.sleep(self._read_dt)
+            time.sleep(self._data_read_dt)
         return min(1.0, self._filtered_distance / self._max_distance)
 
     @property
@@ -154,15 +162,20 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
     def __read_scheduler(self):
         s = scheduler(time.time, time.sleep)
-        s.enter(self._read_dt, 1, self.__read_loop, (s, ))
+        s.enter(self._data_read_dt, 1, self.__read_loop, (s,))
         s.run()
 
     def __read_loop(self, s):
-        # TODO: add filtering using queue
-        self._filtered_distance = self.__read_distance()
+        self.__data_queue.append(self.__read_distance())
+        self.__data_filter()
         self.__new_reading_event.set()
         self.__new_reading_event.clear()
-        s.enter(self._read_dt, 1, self.__read_loop, (s, ))
+        s.enter(self._data_read_dt, 1, self.__read_loop, (s,))
+
+    def __data_filter(self):
+        if not self.__data_ready:
+            return
+        self._filtered_distance = np.median(self.__data_queue)
 
     def __state_monitor(self):
         while True:
@@ -201,7 +214,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
     def __queue_filled_check(self):
         while True:
             self.__new_reading_event.wait()
-            if self.__queue_len == len(self.__queue):
+            if self.__queue_len == len(self.__data_queue):
                 self.__data_ready = True
                 break
 
