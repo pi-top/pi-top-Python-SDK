@@ -10,12 +10,15 @@ from .common.ultrasonic_registers import (
     UltrasonicRegisterTypes,
     UltrasonicConfigSettings,
 )
+from pitopcommon.firmware_device import FirmwareDevice
+from pitopcommon.common_ids import FirmwareDeviceID
 from pitop.pma.common.utils import get_pin_for_port
 import atexit
 from sched import scheduler
 import time
 from collections import deque
 import numpy as np
+from pitop.system.peripherals import connected_plate
 
 
 class UltrasonicSensorBase:
@@ -72,6 +75,8 @@ class UltrasonicSensorBase:
 
 
 class UltrasonicSensorMCU(UltrasonicSensorBase):
+    __MIN_FIRMWARE_MAJOR_VERSION = 22
+
     def __init__(
             self,
             port_name,
@@ -79,8 +84,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
             max_distance,
             threshold_distance,
             partial,
-            name,
-            **_ignored
+            name
     ):
         self._pma_port = port_name
         self.name = name
@@ -97,6 +101,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
         # MCU configuration
         self.__mcu_device = PlateInterface().get_device_mcu()
+        self.__compatibility_check()
         self.__registers = UltrasonicRegisters[self._pma_port]
         self.__configure_mcu()
 
@@ -226,6 +231,17 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         if distance == 0:
             return self._max_distance
         return distance
+
+    def __compatibility_check(self):
+        plate_id = connected_plate()
+        if plate_id != FirmwareDeviceID.pt4_expansion_plate:
+            raise RuntimeError("Analog ports for Ultrasonic Sensor are not compatible with the Foundation Plate, "
+                               "please use an Expansion Plate instead.")
+
+        firmware_device = FirmwareDevice(plate_id)
+        if firmware_device.get_fw_version_major() < self.__MIN_FIRMWARE_MAJOR_VERSION:
+            raise RuntimeError("Please update your Expansion Plate firmware to use the analog ports for Ultrasonic "
+                               "Sensor readings.")
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
