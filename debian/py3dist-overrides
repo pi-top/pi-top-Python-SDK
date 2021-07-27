@@ -12,7 +12,7 @@ matplotlib python3-matplotlib; PEP386
 pitopcommon python3-pitopcommon; PEP386
 pyinotify python3-pyinotify; PEP386
 pynput python3-pynput; PEP386
-pyv4l2camera python3-pyv4l2camera; PEP386
+v4l2py python3-v4l2py; PEP386
 scipy python3-scipy; PEP386
 simple_pid python3-simple-pid; PEP386
 flask python3-flask; PEP386

@@ -7,8 +7,6 @@ modules_to_patch = [
     "imageio",
     "pitopcommon.ptdm",
     "pitopcommon.smbus_device",
-    "PyV4L2Camera.camera",
-    "PyV4L2Camera.exceptions",
     "simple_pid",
 ]
 for module in modules_to_patch:

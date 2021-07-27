@@ -1,8 +1,7 @@
 from PIL import Image
 from os import listdir, system
 
-from PyV4L2Camera.camera import Camera as V4L2Camera
-from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
+from v4l2py import Device as V4L2Device
 from pitopcommon.command_runner import run_command
 
 
@@ -21,6 +20,7 @@ class UsbCamera:
         indexes = self.list_device_indexes() if index is None else [index]
         self.__camera = None
         self.index = None
+        self.resolution = resolution
 
         self._flip_top_bottom = flip_top_bottom
         self._flip_left_right = flip_left_right
@@ -32,19 +32,14 @@ class UsbCamera:
         else:
             self._rotate_angle = rotate_angle
 
-        def create_camera_object(index, resolution=None):
-            if resolution is not None:
-                return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
-            else:
-                return V4L2Camera(f"/dev/video{index}")
-
         for idx in indexes:
             try:
-                self.__camera = create_camera_object(idx, resolution)
+                self.__camera = V4L2Device.from_id(index)
                 if self.__camera:
                     self.index = idx
                     break
-            except V4L2CameraError:
+
+            except FileNotFoundError:
                 continue
 
         if self.__camera is None:
@@ -59,11 +54,21 @@ class UsbCamera:
             pass
 
     def get_frame(self):
+        def gen_frames():
+            with self.__camera as cam:
+                cam.video_capture.set_format(
+                    self.resolution[0],
+                    self.resolution[1],
+                    'MJPG'
+                )
+                for frame in cam:
+                    yield frame
+
         # Always PIL format
         pil_image = Image.frombytes(
             'RGB',
-            (self.__camera.width, self.__camera.height),
-            self.__camera.get_frame(),
+            self.resolution,
+            gen_frames(),
             'raw',
             'RGB'
         ).rotate(angle=self._rotate_angle, expand=True)

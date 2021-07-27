@@ -124,12 +124,12 @@ autodoc_mock_imports = [
     'PIL',
     'pynput',
     'pyinotify',
-    'PyV4L2Camera',
     'scipy',
     'serial',
     'simple_pid',
+    'wget',
+    'v4l2py',
     'zmq',
-    'wget'
 ]
 
 # -- Options for manual page output ---------------------------------------
