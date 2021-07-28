@@ -118,11 +118,6 @@ __requires__ = [
     #########
     "pyserial>=3.4,<3.5",
 
-    ##############
-    # Algorithms #
-    ##############
-    "simple_pid>=0.2.4,<0.3",
-
     #############
     # Webserver #
     #############
@@ -131,34 +126,37 @@ __requires__ = [
     "flask-sockets>=0.2.1,<0.3",
     "gevent>=1.3.7,<1.4",
     "gevent-websocket>=0.10.1,<0.11.0",
-
-    #############################
-    # Advanced image processing #
-    #############################
-    "dlib>=19.22.0,<19.23.0",
-    "imutils>=0.5.4,<0.6.0",
-    "scikit-learn>=0.20.2,<0.21.0",
-
-    ###################
-    # Use Model Files #
-    ###################
-    # python3-onnxruntime is currently 1.7.2-1 on Buster
-    # but PyPI has 1.7.0, 1.8.0 and 1.8.1
-    #
-    # We allow all because new features shouldn't affect our use-case
-    #
-    # TODO: Build python3-onnxruntime 1.8.1
-    "onnxruntime>=1.7.2,<1.9",
-
-    ########################
-    # Download Model Files #
-    ########################
-    "wget>=3.2,<4.0",
 ]
 
 __extra_requires__ = {
-    "computer_vision": ["opencv"],
-    "doc": ["sphinx"],
+    "robotics": [
+        ##############
+        # Algorithms #
+        ##############
+        "simple_pid>=0.2.4,<0.3",
+        #############################
+        # Advanced image processing #
+        #############################
+        "dlib>=19.22.0,<19.23.0",
+        "imutils>=0.5.4,<0.6.0",
+        "opencv>=3.2.0,<3.3.0",
+        "scikit-learn>=0.20.2,<0.21.0",
+        ###################
+        # Use Model Files #
+        ###################
+        # python3-onnxruntime is currently 1.7.2-1 on Buster
+        # but PyPI has 1.7.0, 1.8.0 and 1.8.1
+        #
+        # We allow all because new features shouldn't affect our use-case
+        #
+        # TODO: Build python3-onnxruntime 1.8.1
+        "onnxruntime>=1.7.2,<1.9",
+        ########################
+        # Download Model Files #
+        ########################
+        "wget>=3.2,<4.0",
+    ],
+    "doc": ["sphinx>=1.8.4,<1.9.0"],
 }
 
 __entry_points__ = {
