@@ -30,3 +30,8 @@ jobs:
           build: true
           upload: true
           url: https://test.pypi.org/legacy/
+
+      - name: Upload dist files
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist/
