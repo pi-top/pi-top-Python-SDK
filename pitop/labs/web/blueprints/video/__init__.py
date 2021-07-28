@@ -5,34 +5,34 @@ from flask import Response, abort, Blueprint
 
 class VideoResponse(Response):
     def __init__(self, get_frame=None, *args, **kwargs):
-        if get_frame is None:
-            abort(500, 'Unable to get frames')
+        def __generate_frames():
+            def __get_frame():
+                try:
+                    frame = get_frame()
+                    buffered = BytesIO()
+                    frame.save(buffered, format="JPEG")
+                    return buffered.getvalue()
+                except Exception as e:
+                    print(e)
 
-        def _get_frame():
-            try:
-                frame = get_frame()
-                buffered = BytesIO()
-                frame.save(buffered, format="JPEG")
-                return buffered.getvalue()
-            except Exception as e:
-                print(e)
-
-        def generate_frames():
             pool = gevent.get_hub().threadpool
             while True:
                 # get_frame in thread so it won't block handler greenlets
-                frame_bytes = pool.spawn(_get_frame).get()
+                frame_bytes = pool.spawn(__get_frame).get()
                 yield (
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n'+frame_bytes+b'\r\n'
                 )
 
-        Response.__init__(
+        super(VideoResponse, self).__init__(
             self,
-            generate_frames(),
+            __generate_frames(),
             mimetype='multipart/x-mixed-replace; boundary=frame',
             **kwargs
         )
+
+        if get_frame is None:
+            abort(500, 'Unable to get frames')
 
 
 class VideoBlueprint(Blueprint):
