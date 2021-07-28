@@ -29,4 +29,4 @@ jobs:
           password: ${{ secrets.PYPI_PASSWORD }}
           build: true
           upload: true
-          url: https://test.pypi.org/simple/
+          url: https://test.pypi.org/legacy/
