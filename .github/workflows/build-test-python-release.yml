@@ -1,12 +1,9 @@
-name: Deploy Test Python Release
+name: Build Test Python Release
 
 on:
   push:
     branches:
       - "rework-deps"
-  release:
-    types:
-      - published
 
 jobs:
   deploy-python-release:
@@ -22,14 +19,14 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Upload to TestPyPI
-        uses: casperdcl/deploy-pypi@v2
-        with:
-          user: ${{ secrets.PYPI_USERNAME }}
-          password: ${{ secrets.PYPI_PASSWORD }}
-          build: true
-          upload: true
-          url: https://test.pypi.org/legacy/
+      # - name: Upload to TestPyPI
+      #   uses: casperdcl/deploy-pypi@v2
+      #   with:
+      #     user: ${{ secrets.PYPI_USERNAME }}
+      #     password: ${{ secrets.PYPI_PASSWORD }}
+      #     build: true
+      #     upload: true
+      #     url: https://test.pypi.org/legacy/
 
       - name: Upload dist files
         uses: actions/upload-artifact@v2
