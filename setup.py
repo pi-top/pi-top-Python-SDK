@@ -162,7 +162,7 @@ __extra_requires__ = {
     "pulse": dependencies["pulse"],
     "pma": dependencies["images"] + dependencies["pma"],
     "advanced": dependencies["images"] + dependencies["pma"] + dependencies["advanced"],
-    "doc": dependencies["docs"]
+    "doc": dependencies["doc"]
 }
 
 __entry_points__ = {
