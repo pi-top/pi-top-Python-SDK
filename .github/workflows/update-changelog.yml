@@ -1,0 +1,39 @@
+name: Update Changelog
+
+on:
+  workflow_dispatch:
+    branches:
+      - master
+
+env:
+  CHANGELOG_AUTHOR_NAME: "pi-top"
+  CHANGELOG_AUTHOR_EMAIL: "deb-maintainers@pi-top.com"
+
+jobs:
+  commit-updated-changelog:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.2.0
+        with:
+          fetch-depth: 0
+
+      - name: Update Debian changelog for release
+        uses: pi-top/git-debian-changelog-bump-action@master
+        with:
+          release: true
+          author_name: ${{ env.CHANGELOG_AUTHOR_NAME }}
+          author_email: ${{ env.CHANGELOG_AUTHOR_EMAIL }}
+
+      - name: Determine current version
+        run: |
+          sudo apt install -y dpkg-dev
+          echo "CURRENT_VERSION=$(dpkg-parsechangelog -Sversion)" >> $GITHUB_ENV
+
+      - name: Commit and push changelog to master
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: "New changelog entry: v${{ env.CURRENT_VERSION }}"
+          add: 'debian/changelog'
+          push: true
+          branch: master
