@@ -20,8 +20,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
+
+      - id: version
+        uses: docker://lpenz/ghaction-version-gen:0.3
 
       - name: Add changelog entry for latest snapshot version
         uses: pi-top/git-debian-changelog-bump-action@master
@@ -29,6 +30,8 @@ jobs:
           release: false
           author_name: ${{ env.CHANGELOG_AUTHOR_NAME }}
           author_email: ${{ env.CHANGELOG_AUTHOR_EMAIL }}
+          snapshot_number: ${{ steps.version.outputs.distance }}
+          since: ${{ steps.version.outputs.tag_latest }}
 
       # We only want ARM builds. This step is here to provide the option of
       # using a strategy matrix if additional builds (e.g. `arm64`) are desired

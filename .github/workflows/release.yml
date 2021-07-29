@@ -15,18 +15,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.2.0
-        with:
-          fetch-depth: 0
+
+      - id: version
+        uses: docker://lpenz/ghaction-version-gen:0.3
 
       - name: Determine current and last tagged versions
         run: |
           sudo apt install -y dpkg-dev
           echo "CURRENT_VERSION=$(dpkg-parsechangelog -Sversion)" >> $GITHUB_ENV
-          echo "LATEST_TAGGED_VERSION=$(git describe --tags --abbrev=0 2>/dev/null | sed -r 's/v//g')" >> $GITHUB_ENV
 
       - name: Confirm version is higher than last tagged version
-        if: env.LATEST_TAGGED_VERSION != ''
-        run: dpkg --compare-versions ${{ env.CURRENT_VERSION }} gt ${{ env.LATEST_TAGGED_VERSION }}
+        if: steps.version.outputs.tag_latest != ""
+        run: dpkg --compare-versions ${{ env.CURRENT_VERSION }} gt ${{ steps.version.outputs.tag_latest }}
 
       - name: Determine architecture to use from package info
         # If architecture is 'all', then it can be compiled on host architecture
