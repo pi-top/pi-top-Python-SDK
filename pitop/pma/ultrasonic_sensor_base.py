@@ -10,7 +10,10 @@ from .common.ultrasonic_registers import (
     UltrasonicRegisterTypes,
     UltrasonicConfigSettings,
 )
-from pitopcommon.firmware_device import FirmwareDevice
+from pitopcommon.firmware_device import (
+    FirmwareDevice,
+    PTInvalidFirmwareDeviceException,
+)
 from pitopcommon.common_ids import FirmwareDeviceID
 from pitop.pma.common.utils import get_pin_for_port
 import atexit
@@ -18,7 +21,7 @@ from sched import scheduler
 import time
 from collections import deque
 import numpy as np
-from pitop.system.peripherals import connected_plate
+from pitopcommon.singleton import Singleton
 
 
 class UltrasonicSensorBase:
@@ -74,6 +77,26 @@ class UltrasonicSensorBase:
         raise NotImplementedError
 
 
+class CompatibilityCheck(metaclass=Singleton):
+    __MIN_FIRMWARE_MAJOR_VERSION = 22
+
+    def __init__(self):
+        self.check()
+
+    def check(self):
+        try:
+            firmware_device = FirmwareDevice(FirmwareDeviceID.pt4_expansion_plate)
+            if firmware_device.get_fw_version_major() < self.__MIN_FIRMWARE_MAJOR_VERSION:
+                raise RuntimeError(
+                    "Usage of the analog ports for the Ultrasonic Sensor requires an Expansion Plate with "
+                    f"a minimum version version of V{self.__MIN_FIRMWARE_MAJOR_VERSION}. "
+                    f"Please update your Expansion Plate firmware to continue.")
+
+        except PTInvalidFirmwareDeviceException:
+            raise RuntimeError("Please use an Expansion Plate in order to use the analog ports for the Ultrasonic "
+                               "Sensor.")
+
+
 class UltrasonicSensorMCU(UltrasonicSensorBase):
     __MIN_FIRMWARE_MAJOR_VERSION = 22
 
@@ -101,7 +124,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
         # MCU configuration
         self.__mcu_device = PlateInterface().get_device_mcu()
-        self.__compatibility_check()
+        CompatibilityCheck()
         self.__registers = UltrasonicRegisters[self._pma_port]
         self.__configure_mcu()
 
@@ -226,18 +249,6 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         if distance == 0:
             return self._max_distance
         return distance
-
-    def __compatibility_check(self):
-        plate_id = connected_plate()
-        if plate_id != FirmwareDeviceID.pt4_expansion_plate:
-            raise RuntimeError("You are trying to use analog ports for the Ultrasonic Sensor, this is not compatible "
-                               "with a Foundation Plate. Please use an Expansion Plate instead.")
-
-        firmware_device = FirmwareDevice(plate_id)
-        if firmware_device.get_fw_version_major() < self.__MIN_FIRMWARE_MAJOR_VERSION:
-            raise RuntimeError("Usage of the analog ports for the Ultrasonic Sensor requires an Expansion Plate with "
-                               f"a minimum version version of V{self.__MIN_FIRMWARE_MAJOR_VERSION}."
-                               f"Please update your Expansion Plate firmware to continue.")
 
 
 # Modified version of gpiozero's DistanceSensor class that only uses 1 pin
