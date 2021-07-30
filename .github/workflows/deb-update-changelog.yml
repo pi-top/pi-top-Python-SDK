@@ -1,4 +1,4 @@
-name: Update Changelog
+name: Update Debian Package Changelog
 
 on:
   workflow_dispatch:
@@ -28,7 +28,9 @@ jobs:
           author_email: ${{ env.CHANGELOG_AUTHOR_EMAIL }}
           snapshot_number: ${{ steps.version.outputs.distance }}
           since: ${{ steps.version.outputs.tag_latest }}
-          ignore_regex: ${{ env. COMMIT_MESSAGE_PREFIX }}
+          # Don't include previous changelog version bump commits in changelog
+          ignore_regex: |
+            ${{ env. COMMIT_MESSAGE_PREFIX }}
 
       - name: Determine current version
         run: |
