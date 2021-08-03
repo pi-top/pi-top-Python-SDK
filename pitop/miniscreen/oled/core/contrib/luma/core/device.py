@@ -4,8 +4,8 @@
 
 import atexit
 
-from pitop.miniscreen.oled.core.vendor.luma.core import mixin
-import pitop.miniscreen.oled.core.vendor.luma.core.const
+from pitop.miniscreen.oled.core.contrib.luma.core import mixin
+import pitop.miniscreen.oled.core.contrib.luma.core.const
 
 
 class device(mixin.capabilities):
@@ -15,11 +15,11 @@ class device(mixin.capabilities):
         Direct use of the :func:`command` and :func:`data` methods are
         discouraged: Screen updates should be effected through the
         :func:`display` method, or preferably with the
-        :class:`pitop.miniscreen.oled.core.vendor.luma.core.render.canvas` context manager.
+        :class:`pitop.miniscreen.oled.core.contrib.luma.core.render.canvas` context manager.
     """
 
     def __init__(self, const=None, serial_interface=None):
-        self._const = const or pitop.miniscreen.oled.core.vendor.luma.core.const.common
+        self._const = const or pitop.miniscreen.oled.core.contrib.luma.core.const.common
         self._serial_interface = serial_interface
 
         def shutdown_hook():  # pragma: no cover

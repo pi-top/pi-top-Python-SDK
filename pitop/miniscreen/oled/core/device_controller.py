@@ -9,18 +9,8 @@ from pitopcommon.ptdm import (
 
 from os import getenv
 
-from .vendor.luma.core.interface.serial import spi
-from .vendor.luma.oled.device import sh1106
-
-
-try:
-    import RPi.GPIO as GPIO
-    # Suppress warning in Luma serial class
-    GPIO.setwarnings(False)
-except (ImportError, RuntimeError):
-    # This can only be run on Raspberry Pi
-    # and is only required for reducing logging
-    pass
+from .contrib.luma.core.interface.serial import spi
+from .contrib.luma.oled.device import sh1106
 
 
 class OledDeviceController:

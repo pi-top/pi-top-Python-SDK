@@ -3,7 +3,7 @@
 # See LICENSE.rst for details.
 
 
-from pitop.miniscreen.oled.core.vendor.luma.core.error import UnsupportedPlatform
+from pitop.miniscreen.oled.core.contrib.luma.core.error import UnsupportedPlatform
 
 
 def __spidev__(self):  # pragma: no cover
@@ -20,6 +20,8 @@ def __rpi_gpio__(self):
     try:  # pragma: no cover
         import RPi.GPIO as GPIO
         GPIO.setmode(GPIO.BCM)
+        # Suppress warning in Luma serial class
+        GPIO.setwarnings(False)
         return GPIO
     except RuntimeError as e:
         if str(e) in ['This module can only be run on a Raspberry Pi!',

@@ -8,8 +8,8 @@ is I²C, SPI or bit-banging GPIO."""
 import errno
 from time import sleep
 
-from pitop.miniscreen.oled.core.vendor.luma.core.error import DeviceNotFoundError
-from pitop.miniscreen.oled.core.vendor.luma.core import lib
+from pitop.miniscreen.oled.core.contrib.luma.core.error import DeviceNotFoundError
+from pitop.miniscreen.oled.core.contrib.luma.core import lib
 
 
 @lib.rpi_gpio

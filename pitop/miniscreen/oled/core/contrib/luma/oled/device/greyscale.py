@@ -9,9 +9,9 @@
 
 from abc import abstractmethod, ABCMeta
 
-from pitop.miniscreen.oled.core.vendor.luma.core.device import device
-import pitop.miniscreen.oled.core.vendor.luma.core.error
-from pitop.miniscreen.oled.core.vendor.luma.oled.device.framebuffer_mixin import __framebuffer_mixin
+from pitop.miniscreen.oled.core.contrib.luma.core.device import device
+import pitop.miniscreen.oled.core.contrib.luma.core.error
+from pitop.miniscreen.oled.core.contrib.luma.oled.device.framebuffer_mixin import __framebuffer_mixin
 
 
 class greyscale_device(device, __framebuffer_mixin):
@@ -27,7 +27,7 @@ class greyscale_device(device, __framebuffer_mixin):
         self._nibble_order = nibble_order
 
         if (width, height) not in self._supported_dimensions():
-            raise pitop.miniscreen.oled.core.vendor.luma.core.error.DeviceDisplayModeError(
+            raise pitop.miniscreen.oled.core.contrib.luma.core.error.DeviceDisplayModeError(
                 f"Unsupported display mode: {width} x {height}")
 
         self._init_sequence()

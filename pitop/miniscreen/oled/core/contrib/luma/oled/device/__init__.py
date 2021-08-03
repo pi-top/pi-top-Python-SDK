@@ -6,9 +6,9 @@
 
 # Example usage:
 #
-#   from pitop.miniscreen.oled.core.vendor.luma.core.interface.serial import i2c, spi
-#   from pitop.miniscreen.oled.core.vendor.luma.core.render import canvas
-#   from pitop.miniscreen.oled.core.vendor.luma.oled.device import ssd1306, sh1106
+#   from pitop.miniscreen.oled.core.contrib.luma.core.interface.serial import i2c, spi
+#   from pitop.miniscreen.oled.core.contrib.luma.core.render import canvas
+#   from pitop.miniscreen.oled.core.contrib.luma.oled.device import ssd1306, sh1106
 #   from PIL import ImageDraw
 #
 #   serial = i2c(port=1, address=0x3C)
@@ -32,9 +32,9 @@
 # As before, as soon as the with block completes, the canvas buffer is flushed
 # to the device
 
-from pitop.miniscreen.oled.core.vendor.luma.core.device import device
-import pitop.miniscreen.oled.core.vendor.luma.core.error
-import pitop.miniscreen.oled.core.vendor.luma.oled.const
+from pitop.miniscreen.oled.core.contrib.luma.core.device import device
+import pitop.miniscreen.oled.core.contrib.luma.core.error
+import pitop.miniscreen.oled.core.contrib.luma.oled.const
 
 
 class sh1106(device):
@@ -46,7 +46,7 @@ class sh1106(device):
     """
 
     def __init__(self, serial_interface=None, width=128, height=64, rotate=0, **kwargs):
-        super(sh1106, self).__init__(pitop.miniscreen.oled.core.vendor.luma.oled.const.sh1106, serial_interface)
+        super(sh1106, self).__init__(pitop.miniscreen.oled.core.contrib.luma.oled.const.sh1106, serial_interface)
         self.capabilities(width, height, rotate)
         self._pages = self._h // 8
 
@@ -57,7 +57,7 @@ class sh1106(device):
         }.get((width, height))
 
         if settings is None:
-            raise pitop.miniscreen.oled.core.vendor.luma.core.error.DeviceDisplayModeError(
+            raise pitop.miniscreen.oled.core.contrib.luma.core.error.DeviceDisplayModeError(
                 f"Unsupported display mode: {width} x {height}")
 
         self.command(

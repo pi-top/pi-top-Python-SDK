@@ -3,7 +3,7 @@
 # See LICENSE.rst for details.
 
 
-from pitop.miniscreen.oled.core.vendor.luma.core.const import common
+from pitop.miniscreen.oled.core.contrib.luma.core.const import common
 
 
 class sh1106(common):
