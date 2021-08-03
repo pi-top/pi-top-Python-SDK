@@ -6,8 +6,6 @@ gevent-websocket python3-gevent-websocket; PEP386
 gpiozero python3-gpiozero; PEP386
 imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
-luma.core python3-luma-core; PEP386
-luma.oled python3-luma-oled; PEP386
 matplotlib python3-matplotlib; PEP386
 pitopcommon python3-pitopcommon; PEP386
 pyinotify python3-pyinotify; PEP386

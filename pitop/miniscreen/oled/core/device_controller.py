@@ -9,8 +9,8 @@ from pitopcommon.ptdm import (
 
 from os import getenv
 
-from luma.core.interface.serial import spi
-from luma.oled.device import sh1106
+from .vendor.luma.core.interface.serial import spi
+from .vendor.luma.oled.device import sh1106
 
 
 try:

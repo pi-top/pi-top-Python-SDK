@@ -9,8 +9,6 @@ mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 
 modules_to_patch = [
     "PIL",
-    "luma.core.interface.serial",
-    "luma.oled.device",
     "pyinotify",
     "pitop.camera",
     "numpy",
