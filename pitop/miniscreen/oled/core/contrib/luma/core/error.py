@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2017-18 Richard Hull and contributors
-# See LICENSE.rst for details.
-
-"""Exceptions for this library."""
-
-
 class Error(Exception):
     """Base class for exceptions in this library."""
     pass
@@ -28,7 +21,4 @@ class DeviceDisplayModeError(Error):
 
 class UnsupportedPlatform(Error):
     """Exception raised when trying to use the library on an incompatible
-    system.
-
-    .. versionadded:: 0.5.2
-    """
+    system."""

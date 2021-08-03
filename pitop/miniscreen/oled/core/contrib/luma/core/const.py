@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2017-18 Richard Hull and contributors
-# See LICENSE.rst for details.
-
-
 class common(object):
     DISPLAYOFF = 0xAE
     DISPLAYON = 0xAF

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2017-2021 Richard Hull and contributors
-# See LICENSE.rst for details.
-
 """Encapsulates sending commands and data over a serial interface, whether that
 is I²C, SPI or bit-banging GPIO."""
 

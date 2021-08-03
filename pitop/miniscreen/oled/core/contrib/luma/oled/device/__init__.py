@@ -1,37 +1,3 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2014-20 Richard Hull and contributors
-# See LICENSE.rst for details.
-
-"""Collection of serial interfaces to OLED devices."""
-
-# Example usage:
-#
-#   from pitop.miniscreen.oled.core.contrib.luma.core.interface.serial import i2c, spi
-#   from pitop.miniscreen.oled.core.contrib.luma.core.render import canvas
-#   from pitop.miniscreen.oled.core.contrib.luma.oled.device import ssd1306, sh1106
-#   from PIL import ImageDraw
-#
-#   serial = i2c(port=1, address=0x3C)
-#   device = ssd1306(serial)
-#
-#   with canvas(device) as draw:
-#      draw.rectangle(device.bounding_box, outline="white", fill="black")
-#      draw.text(30, 40, "Hello World", fill="white")
-#
-# As soon as the with-block scope level is complete, the graphics primitives
-# will be flushed to the device.
-#
-# Creating a new canvas is effectively 'carte blanche': If you want to retain
-# an existing canvas, then make a reference like:
-#
-#    c = canvas(device)
-#    for X in ...:
-#        with c as draw:
-#            draw.rectangle(...)
-#
-# As before, as soon as the with block completes, the canvas buffer is flushed
-# to the device
-
 from pitop.miniscreen.oled.core.contrib.luma.core.device import device
 import pitop.miniscreen.oled.core.contrib.luma.core.error
 import pitop.miniscreen.oled.core.contrib.luma.oled.const
