@@ -14,7 +14,6 @@ pyinotify python3-pyinotify; PEP386
 pynput python3-pynput; PEP386
 pyv4l2camera python3-pyv4l2camera; PEP386
 scipy python3-scipy; PEP386
-simple_pid python3-simple-pid; PEP386
 flask python3-flask; PEP386
 flask-cors python3-flask-cors; PEP386
 flask-sockets python3-flask-sockets; PEP386

@@ -7,7 +7,6 @@ modules_to_patch = [
     "pitop.camera.camera",
     "atexit",
     "numpy",
-    "simple_pid",
     "pitopcommon.common_ids",
     "pitopcommon.current_session_info",
     "pitopcommon.ptdm",
