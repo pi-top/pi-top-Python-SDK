@@ -3,7 +3,7 @@ from os import listdir, system
 
 from PyV4L2Camera.camera import Camera as V4L2Camera
 from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
-from pitopcommon.command_runner import run_command
+from pitop.common.command_runner import run_command
 
 
 valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]

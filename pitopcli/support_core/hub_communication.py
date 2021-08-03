@@ -3,7 +3,7 @@ from math import ceil
 from math import floor
 from datetime import datetime
 
-from pitopcommon.i2c_device import I2CDevice
+from pitop.common.i2c_device import I2CDevice
 
 from ..formatter import StdoutTable, StdoutFormat
 

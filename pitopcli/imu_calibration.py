@@ -33,7 +33,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
 from scipy.linalg import sqrtm
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 
 class ImuCalibration:
