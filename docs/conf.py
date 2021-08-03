@@ -103,9 +103,6 @@ autodoc_mock_imports = [
     'numpy',
     'imageio',
     'imutils',
-    'luma',
-    'luma.oled',
-    'luma.core',
     'matplotlib',
     'mpl_toolkits',
     'pitopcommon.bitwise_ops',
@@ -125,8 +122,11 @@ autodoc_mock_imports = [
     'pynput',
     'pyinotify',
     'PyV4L2Camera',
+    'RPi',
     'scipy',
     'serial',
+    'simple_pid',
+    'spidev',
     'zmq',
     'wget'
 ]
