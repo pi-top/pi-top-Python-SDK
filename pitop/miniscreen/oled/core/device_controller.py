@@ -70,7 +70,6 @@ class OledDeviceController:
                 transfer_size=self.SPI_TRANSFER_SIZE,
                 gpio_DC=17 if self.__spi_bus == 1 else 7,  # Always use CE1
                 gpio_RST=None,
-                gpio=None,
             ),
             rotate=0
         )

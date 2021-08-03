@@ -122,9 +122,11 @@ autodoc_mock_imports = [
     'pynput',
     'pyinotify',
     'PyV4L2Camera',
+    'RPi',
     'scipy',
     'serial',
     'simple_pid',
+    'spidev',
     'zmq',
     'wget'
 ]
