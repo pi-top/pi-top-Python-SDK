@@ -35,7 +35,7 @@ jobs:
           # Don't include previous changelog version bump commits in changelog
           ignore_regex: |
             ${{ env. COMMIT_MESSAGE_PREFIX }}
-            [pre-commit.ci]
+            \[pre-commit.ci\]
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
