@@ -1,3 +1,4 @@
+dlib python3-dlib; PEP386
 flask python3-flask; PEP386
 flask-cors python3-flask-cors; PEP386
 flask-sockets python3-flask-sockets; PEP386
@@ -7,18 +8,13 @@ gpiozero python3-gpiozero; PEP386
 imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
 matplotlib python3-matplotlib; PEP386
+onnxruntime python3-onnxruntime; PEP386
 pitopcommon python3-pitopcommon; PEP386
 pyinotify python3-pyinotify; PEP386
 pynput python3-pynput; PEP386
-pyv4l2camera python3-pyv4l2camera; PEP386
+PyV4L2Camera python3-pyv4l2camera; PEP386
+RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
 simple_pid python3-simple-pid; PEP386
-flask python3-flask; PEP386
-flask-cors python3-flask-cors; PEP386
-flask-sockets python3-flask-sockets; PEP386
-gevent python3-gevent; PEP386
-gevent-websocket python3-gevent-websocket; PEP386
-dlib python3-dlib; PEP386
-imutils python3-imutils; PEP386
+spidev python3-spidev; PEP386
 wget python3-wget; PEP386
-onnxruntime python3-onnxruntime; PEP386
