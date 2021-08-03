@@ -58,7 +58,6 @@ Depends:
 # ZMQ for messaging
  python3-zmq,
  raspi-config,
-
 Recommends:
 # Preferred OLED font
  fonts-fs-me-pro,
