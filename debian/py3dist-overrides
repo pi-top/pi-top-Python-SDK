@@ -12,7 +12,6 @@ onnxruntime python3-onnxruntime; PEP386
 pitopcommon python3-pitopcommon; PEP386
 pyinotify python3-pyinotify; PEP386
 pynput python3-pynput; PEP386
-pyserial python3-pyserial; PEP386
 PyV4L2Camera python3-pyv4l2camera; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
