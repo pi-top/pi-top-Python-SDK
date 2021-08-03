@@ -127,7 +127,6 @@ autodoc_mock_imports = [
     'PyV4L2Camera',
     'scipy',
     'serial',
-    'simple_pid',
     'zmq',
     'wget'
 ]
