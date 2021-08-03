@@ -1,11 +1,18 @@
-from os import environ, path
-from sys import modules
+import sys
+from os import environ, listdir, path
 from unittest.mock import Mock, patch
 
 import pytest
 
 pytest_plugins = ("pytest_snapshot", "tests.plugins.snapshot_reporter")
 
+# add packages to sys path so they can be imported normally in tests
+packages_dir = path.join(path.dirname(__file__), "packages")
+for dir in listdir(packages_dir):
+    subdir = path.join(packages_dir, dir)
+    sys.path.append(subdir)
+
+# mock modules that are not installed but need to be impored
 for module in [
     "pitop.common.ptdm.zmq",
     "imageio",
@@ -18,7 +25,7 @@ for module in [
     "spidev",
     "pyinotify",
 ]:
-    modules[module] = Mock()
+    sys.modules[module] = Mock()
 
 # use gpiozero fake pins
 environ["GPIOZERO_PIN_FACTORY"] = "mock"

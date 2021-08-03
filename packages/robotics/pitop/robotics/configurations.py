@@ -25,7 +25,7 @@ class AlexRobot:
         )
 
     def __new__(cls, *args, **kwargs):
-        from pitop import Pitop
+        from pitop.system.pitop import Pitop
 
         obj = Pitop.from_config(alex_config)
         obj.__class__ = cls
