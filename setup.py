@@ -84,7 +84,7 @@ __requires__ = [
     # For journal logging
     "systemd-python>=234,<235",
     #  SMBusDevice (PMA)
-    "smbus2>=0.4.0,<0.5.0"
+    "smbus2>=0.4.0,<0.5.0",
 
     #######
     # PMA #
