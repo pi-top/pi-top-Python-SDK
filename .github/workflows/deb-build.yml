@@ -3,23 +3,26 @@ name: Debian Package Build
 on:
   pull_request:
     branches:
-      - master
+      - bullseye
   push:
     branches:
-      - master
+      - bullseye
 
 env:
   DEB_BUILD_DOCKER_IMAGE: "pitop/pi-top-os-deb-build"
-  DEB_BUILD_DOCKER_TAG: "latest"
+  DEB_BUILD_DOCKER_TAG: "bullseye-master"
   CHANGELOG_AUTHOR_NAME: "pi-top"
   CHANGELOG_AUTHOR_EMAIL: "deb-maintainers@pi-top.com"
+  PACKAGECLOUD_REPO: "experimental"
+  OS: "debian"
+  DISTRO: "bullseye"
 
 jobs:
   build-debian-package:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.2.0
+        uses: actions/checkout@v2.3.4
 
       - id: version
         uses: docker://lpenz/ghaction-version-gen:0.3
@@ -51,6 +54,10 @@ jobs:
           target_architecture: ${{ env.TARGET_ARCHITECTURE }}
           docker_image: ${{ env.DEB_BUILD_DOCKER_IMAGE }}:${{ env.DEB_BUILD_DOCKER_TAG }}
           build_directory: ./artifacts
+          # Optional, repo-specific build environment variables
+          additional_env: |
+            DATA="${{ secrets.DATA }}"
+            TLS_KEY="${{ secrets.TLS_KEY }}"
 
       - name: Generate artifact name
         run: |
@@ -76,3 +83,11 @@ jobs:
             ./artifacts/**
             !./artifacts/*.deb
             !./artifacts/*.tar.xz
+
+      # Upload experimental build
+      - uses: docker://lpenz/ghaction-packagecloud:v0.3
+        with:
+          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+          files: ./deb/*.dsc
