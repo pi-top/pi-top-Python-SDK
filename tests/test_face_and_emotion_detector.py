@@ -4,7 +4,6 @@ from unittest import TestCase
 import cv2
 import numpy as np
 from imutils import resize, rotate
-
 from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
 
 face_image_dir = "assets/face_images"

@@ -1,7 +1,6 @@
 from random import randint
 
 from PIL import Image, ImageDraw
-
 from pitop import Pitop
 
 pitop = Pitop()

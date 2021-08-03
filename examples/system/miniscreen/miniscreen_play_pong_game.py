@@ -2,7 +2,6 @@ from random import randrange
 from time import sleep
 
 from PIL import Image, ImageDraw, ImageFont
-
 from pitop import Pitop
 
 # Game variables

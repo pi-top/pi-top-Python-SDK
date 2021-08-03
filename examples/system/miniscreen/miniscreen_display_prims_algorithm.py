@@ -2,7 +2,6 @@ from random import randint, random
 from time import sleep
 
 from PIL import Image, ImageDraw
-
 from pitop import Pitop
 
 # https://en.wikipedia.org/wiki/Maze_generation_algorithm

@@ -1,7 +1,6 @@
 from signal import pause
 
 import cv2
-
 from pitop.camera import Camera
 from pitop.processing.algorithms import BallDetector
 

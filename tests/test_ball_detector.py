@@ -2,7 +2,6 @@ from unittest import TestCase
 
 import cv2
 import numpy as np
-
 from pitop.core.ImageFunctions import convert
 from pitop.processing.algorithms.ball_detect import BallDetector
 from pitop.processing.core.vision_functions import (

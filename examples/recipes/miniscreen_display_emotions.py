@@ -1,7 +1,6 @@
 from signal import pause
 
 from PIL import Image, ImageDraw, ImageFont
-
 from pitop import Camera, Pitop
 from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
 
