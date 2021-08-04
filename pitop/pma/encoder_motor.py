@@ -26,7 +26,7 @@ class EncoderMotor(Stateful, Recreatable):
 
         The conversions between angle, rotations and RPM used by the motor to meters and meters/second are performed considering
         the :data:`wheel_diameter` parameter. This parameter defaults to the diameter of the wheel included with MMK.
-        If a wheel of different dimmensions is attached to the motor, you'll need to measure it's diameter, in order for these
+        If a wheel of different dimensions is attached to the motor, you'll need to measure it's diameter, in order for these
         methods to work properly.
 
     :type port_name: str

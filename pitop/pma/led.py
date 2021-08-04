@@ -18,6 +18,12 @@ class LED(Stateful, Recreatable, gpiozero_LED):
         self._pma_port = port_name
         self.name = name
 
+        if port_name not in Port.keys():
+            raise ValueError(f"{port_name} is not a valid port name. An example of a valid port name is D0")
+
+        if not port_name.startswith("D"):
+            raise ValueError(f"{port_name} is not a valid port type for an LED. Try using a digital port, such as D0")
+
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
         gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))

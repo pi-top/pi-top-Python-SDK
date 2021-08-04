@@ -6,6 +6,7 @@ from pitop.core.mixins import (
 )
 from pitop.pma.plate_interface import PlateInterface
 from pitop.pma.common import get_pin_for_port
+from pitop.pma.common.utils import Port
 
 
 class ADCBase(Stateful, Recreatable):
@@ -22,6 +23,12 @@ class ADCBase(Stateful, Recreatable):
     """
 
     def __init__(self, port_name, pin_number=1, name="adcbase"):
+        if port_name not in Port.keys():
+            raise ValueError(f"{port_name} is not a valid port name. An example of a valid port name is A0")
+
+        if not port_name.startswith("A"):
+            raise ValueError(f"{port_name} is not a valid port type for an analog component. Try using an analog port, such as A0")
+
         self._pma_port = port_name
         self.name = name
 

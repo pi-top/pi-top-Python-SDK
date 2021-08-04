@@ -30,6 +30,13 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
         self._pma_port = port_name
         self.name = name
 
+        if port_name not in Port.keys():
+            raise ValueError(f"{port_name} is not a valid port name. An example of a valid port name is D0")
+
+        # todo: what ports do we allow for ultrasonic? Is the MCU now capable of handling ultrasonic, and if so do we unconditionally allow all D or A ports to be used?
+        #if not port_name.startswith("D"):
+        #    raise ValueError(f"{port_name} is not a valid port type for an ultrasonic sensor. Try using a digital port, such as D0")
+
         SmoothedInputDevice.__init__(self,
                                      get_pin_for_port(self._pma_port),
                                      pull_up=False,
