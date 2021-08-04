@@ -119,7 +119,6 @@ autodoc_mock_imports = [
     'pitopcommon.smbus_device',
     'pitopcommon.sys_config',
     'PIL',
-    'pynput',
     'pyinotify',
     'PyV4L2Camera',
     'RPi',
