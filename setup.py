@@ -87,9 +87,9 @@ __requires__ = [
     # To perform operations with images
     "imageio>=2.4.1,<2.5",
     # Camera uses numpy arrays for image data
-    "numpy>=1.16.0,<1.17",
+    "numpy>=1.19.5,<1.20",
     # Manage camera images
-    "Pillow>=5.4.0,<5.5",
+    "Pillow>=8.1.2,<8.2",
     # Camera communication
     # Release version is '0.1a2', but Debian package is '0.1.2'
     # so we allow for both here
@@ -97,8 +97,8 @@ __requires__ = [
     # TODO: build '0.1~a2' Debian package
     "PyV4L2Camera>=0.1a2,<0.2",
     # IMU Calibration
-    "matplotlib>=3.0.0,<3.1",
-    "scipy>=1.1.0,<1.2",
+    "matplotlib>=3.3.4,<3.4",
+    "scipy>=1.6.0,<1.7",
 
     ############
     # Keyboard #
@@ -108,47 +108,41 @@ __requires__ = [
     ##############
     # Miniscreen #
     ##############
-    "monotonic>=1.1,<1.2",
+    "monotonic>=1.5,<1.6",
     "pyinotify>=0.9.6,<0.10",
-    "RPi.GPIO>=0.7.0<0.8.0",
+    "RPi.GPIO>=0.7.0<0.8",
     "spidev>=3.5<3.6",
 
     #########
     # Pulse #
     #########
-    "pyserial>=3.4,<3.5",
+    "pyserial>=3.5,<3.6",
 
     #############
     # Webserver #
     #############
-    "flask>=1.0.2,<1.1",
-    "flask-cors>=3.0.7,<3.1",
+    "flask>=1.1.2,<1.2",
+    "flask-cors>=3.0.9,<3.1",
     "flask-sockets>=0.2.1,<0.3",
-    "gevent>=1.3.7,<1.4",
-    "gevent-websocket>=0.10.1,<0.11.0",
+    "gevent>=20.9.0,<1.4",
+    "gevent-websocket>=0.10.1,<0.11",
 
     #############################
     # Advanced image processing #
     #############################
-    "dlib>=19.22.0,<19.23.0",
-    "imutils>=0.5.4,<0.6.0",
-    "scikit-learn>=0.20.2,<0.21.0",
+    "dlib>=19.22.0,<19.23",
+    "imutils>=0.5.4,<0.6",
+    "scikit-learn>=0.20.2,<0.21",
 
     ###################
     # Use Model Files #
     ###################
-    # python3-onnxruntime is currently 1.7.2-1 on Buster
-    # but PyPI has 1.7.0, 1.8.0 and 1.8.1
-    #
-    # We allow all because new features shouldn't affect our use-case
-    #
-    # TODO: Build python3-onnxruntime 1.8.1
-    "onnxruntime>=1.7.2,<1.9",
+    "onnxruntime>=1.8.1,<1.9",
 
     ########################
     # Download Model Files #
     ########################
-    "wget>=3.2,<4.0",
+    "wget>=3.2,<4",
 ]
 
 __extra_requires__ = {
