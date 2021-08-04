@@ -7,7 +7,6 @@ gevent-websocket python3-gevent-websocket; PEP386
 gpiozero python3-gpiozero; PEP386
 imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
-matplotlib python3-matplotlib; PEP386
 isc_dhcp_leases python3-isc-dhcp-leases; PEP386
 matplotlib python3-matplotlib; PEP386
 netifaces python3-netifaces; PEP386
