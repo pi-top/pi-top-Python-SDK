@@ -106,7 +106,6 @@ autodoc_mock_imports = [
     'matplotlib',
     'mpl_toolkits',
     'PIL',
-    'pynput',
     'pyinotify',
     'PyV4L2Camera',
     'RPi',
