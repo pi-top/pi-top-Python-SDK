@@ -5,7 +5,7 @@ from numpy import (
 )
 from urllib.request import urlopen
 
-from pitopcommon.formatting import is_url
+from pitop.common.formatting import is_url
 
 
 def image_format_check(format):

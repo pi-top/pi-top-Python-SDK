@@ -1,7 +1,7 @@
 from gpiozero import SmoothedInputDevice
 from threading import Event, Lock
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from pitop.core.mixins import (
     Stateful,

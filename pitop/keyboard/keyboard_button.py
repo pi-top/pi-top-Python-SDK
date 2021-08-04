@@ -1,4 +1,4 @@
-from pitopcommon.current_session_info import get_first_display
+from pitop.common.current_session_info import get_first_display
 from os import environ
 
 

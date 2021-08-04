@@ -1,7 +1,7 @@
 import atexit
 
-from pitopcommon.lock import PTLock
-from pitopcommon.ptdm import (
+from pitop.common.lock import PTLock
+from pitop.common.ptdm import (
     Message,
     PTDMRequestClient,
     PTDMSubscribeClient,
