@@ -45,7 +45,11 @@ def retrieve_model(model_filename, base_download_link):
 
 
 def load_emotion_model(model_filename="emotion_classification_model_svc_v1.onnx"):
-    import onnxruntime as rt
+    try:
+        import onnxruntime as rt
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "onnxruntime Python library is not installed. You can install it by running 'sudo apt install python3-onnxruntime'.") from None
 
     model_file_path = retrieve_model(model_filename=model_filename,
                                      base_download_link="https://github.com/pi-top/Machine-Learning-Models/raw/master/")
