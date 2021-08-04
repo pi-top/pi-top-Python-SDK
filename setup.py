@@ -134,17 +134,6 @@ __requires__ = [
     "imutils>=0.5.4,<0.6.0",
     "scikit-learn>=0.20.2,<0.21.0",
 
-    ###################
-    # Use Model Files #
-    ###################
-    # python3-onnxruntime is currently 1.7.2-1 on Buster
-    # but PyPI has 1.7.0, 1.8.0 and 1.8.1
-    #
-    # We allow all because new features shouldn't affect our use-case
-    #
-    # TODO: Build python3-onnxruntime 1.8.1
-    "onnxruntime>=1.7.2,<1.9",
-
     ########################
     # Download Model Files #
     ########################
@@ -152,7 +141,19 @@ __requires__ = [
 ]
 
 __extra_requires__ = {
-    "computer_vision": ["opencv"],
+    "computer_vision": [
+        ###################
+        # Use Model Files #
+        ###################
+        # python3-onnxruntime is currently 1.7.2-1 on Buster
+        # but PyPI has 1.7.0, 1.8.0 and 1.8.1
+        #
+        # We allow all because new features shouldn't affect our use-case
+        #
+        # TODO: Build python3-onnxruntime 1.8.1
+        "onnxruntime>=1.7.2,<1.9",
+        "opencv",
+    ],
     "doc": ["sphinx"],
 }
 
