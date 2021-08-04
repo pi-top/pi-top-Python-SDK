@@ -1,5 +1,5 @@
-from pitopcommon.logger import PTLogger
-from pitopcommon.ptdm import (
+from pitop.common.logger import PTLogger
+from pitop.common.ptdm import (
     PTDMRequestClient,
     PTDMSubscribeClient,
     Message,

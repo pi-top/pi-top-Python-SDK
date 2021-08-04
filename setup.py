@@ -74,10 +74,17 @@ __keywords__ = [
 ]
 
 __requires__ = [
-    ####################################
-    # Utilities - functions, IDs, etc. #
-    ####################################
-    "pitopcommon>=0.8.8,<0.9.0",
+    #############
+    # Utilities #
+    #############
+    # For reviewing DHCP leases
+    "isc_dhcp_leases>=0.9.1,<0.10.0",
+    # For network interface checking
+    "netifaces>=0.10.4,<0.11.0",
+    # For journal logging
+    "systemd-python>=234,<235",
+    #  SMBusDevice (PMA)
+    "smbus2>=0.4.0,<0.5.0",
 
     #######
     # PMA #
@@ -99,11 +106,6 @@ __requires__ = [
     # IMU Calibration
     "matplotlib>=3.3.4,<3.4",
     "scipy>=1.6.0,<1.7",
-
-    ############
-    # Keyboard #
-    ############
-    "pynput>=1.4.2,<1.5",
 
     ##############
     # Miniscreen #

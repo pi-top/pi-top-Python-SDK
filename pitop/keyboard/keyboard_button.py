@@ -1,4 +1,4 @@
-from pitopcommon.current_session_info import get_first_display
+from pitop.common.current_session_info import get_first_display
 from os import environ
 
 
@@ -14,7 +14,7 @@ class KeyboardButton:
         if not environ.get("DISPLAY"):
             environ["DISPLAY"] = str(get_first_display())
 
-        from pynput.keyboard import Listener
+        from .vendor.pynput.keyboard import Listener
 
         self.listener = Listener(
             on_press=self.__on_press, on_release=self.__on_release)

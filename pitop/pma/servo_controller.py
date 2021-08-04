@@ -1,7 +1,7 @@
 from numpy import interp
 from typing import Union
 
-from pitopcommon.bitwise_ops import split_into_bytes
+from pitop.common.bitwise_ops import split_into_bytes
 from .plate_interface import PlateInterface
 from .common import type_check
 from .common.servo_motor_registers import (
