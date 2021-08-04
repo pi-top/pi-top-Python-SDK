@@ -151,9 +151,9 @@ __extra_requires__ = {
         #
         # TODO: Build python3-onnxruntime 1.8.1
         "onnxruntime>=1.7.2,<1.9",
-        "opencv",
+        "opencv>=4.5.1,<4.6",
     ],
-    "doc": ["sphinx"],
+    "doc": ["sphinx>=3.4.3,<3.5"],
 }
 
 __entry_points__ = {
