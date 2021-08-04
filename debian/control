@@ -27,6 +27,7 @@ Depends:
  ${python3:Depends},
 # Used for drawing emojis
  fonts-symbola,
+ python3-onnxruntime,
  python3-opencv,
  python3-pitop (= ${binary:Version}),
  libopenblas-dev,

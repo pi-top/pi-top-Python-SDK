@@ -8,7 +8,6 @@ gpiozero python3-gpiozero; PEP386
 imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
 matplotlib python3-matplotlib; PEP386
-onnxruntime python3-onnxruntime; PEP386
 pitopcommon python3-pitopcommon; PEP386
 pyinotify python3-pyinotify; PEP386
 pynput python3-pynput; PEP386
