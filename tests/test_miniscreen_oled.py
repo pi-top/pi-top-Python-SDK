@@ -9,12 +9,9 @@ mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 
 modules_to_patch = [
     "PIL",
-    "luma.core.interface.serial",
-    "luma.oled.device",
     "pyinotify",
     "pitop.camera",
     "numpy",
-    "simple_pid",
     "pitopcommon.smbus_device",
     "pitopcommon.logger",
     "pitopcommon.singleton",
@@ -29,7 +26,6 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = MagicMock()
 
-from pitop.miniscreen import Miniscreen
 from unittest import TestCase, skip
 from PIL import Image
 from os import environ, path
@@ -53,6 +49,7 @@ class OLEDTestCase(TestCase):
         del environ["SDL_VIDEODRIVER"]
 
     def setUp(self):
+        from pitop.miniscreen import Miniscreen
         self.miniscreen = Miniscreen()
 
     def tearDown(self):
