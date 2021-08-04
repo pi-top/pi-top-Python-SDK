@@ -1,6 +1,6 @@
 # coding=utf-8
 # pynput
-# Copyright (C) 2015-2021 Moses Palmér
+# Copyright (C) 2015-2018 Moses Palmér
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the Free
@@ -30,37 +30,26 @@ import unicodedata
 
 import six
 
-from pitop.keyboard.vendor._util import AbstractListener
-from pitop.keyboard.vendor import _logger
+from pynput._util import AbstractListener
+from pynput import _logger
 
 
 class KeyCode(object):
     """A :class:`KeyCode` represents the description of a key code used by the
     operating system."""
-    #: The names of attributes used as platform extensions.
-    _PLATFORM_EXTENSIONS = []
 
-    def __init__(self, vk=None, char=None, is_dead=False, **kwargs):
+    def __init__(self, vk=None, char=None, is_dead=False):
         self.vk = vk
         self.char = six.text_type(char) if char is not None else None
         self.is_dead = is_dead
 
         if self.is_dead:
-            try:
-                self.combining = unicodedata.lookup(
-                    'COMBINING ' + unicodedata.name(self.char))
-            except KeyError:
-                self.is_dead = False
-                self.combining = None
-            if self.is_dead and not self.combining:
+            self.combining = unicodedata.lookup(
+                'COMBINING ' + unicodedata.name(self.char))
+            if not self.combining:
                 raise KeyError(char)
         else:
             self.combining = None
-
-        for key in self._PLATFORM_EXTENSIONS:
-            setattr(self, key, kwargs.pop(key, None))
-        if kwargs:
-            raise ValueError(kwargs)
 
     def __repr__(self):
         if self.is_dead:
@@ -79,9 +68,7 @@ class KeyCode(object):
         if self.char is not None and other.char is not None:
             return self.char == other.char and self.is_dead == other.is_dead
         else:
-            return self.vk == other.vk and all(
-                getattr(self, f) == getattr(other, f)
-                for f in self._PLATFORM_EXTENSIONS)
+            return self.vk == other.vk
 
     def __hash__(self):
         return hash(repr(self))
@@ -275,24 +262,6 @@ class Key(enum.Enum):
     #: An up arrow key.
     up = 0
 
-    #: The play/pause toggle.
-    media_play_pause = 0
-
-    #: The volume mute button.
-    media_volume_mute = 0
-
-    #: The volume down button.
-    media_volume_down = 0
-
-    #: The volume up button.
-    media_volume_up = 0
-
-    #: The previous track button.
-    media_previous = 0
-
-    #: The next track button.
-    media_next = 0
-
     #: The Insert key. This may be undefined for some platforms.
     insert = 0
 
@@ -344,6 +313,28 @@ class Controller(object):
         self._caps_lock = False
         self._dead_key = None
 
+        kc = self._Key
+
+        # pylint: disable=C0103; this is treated as a class scope constant, but
+        # we cannot set it in the class scope, as _Key is overridden by
+        # platform implementations
+        # pylint: disable=C0326; it is easier to read column aligned keys
+        #: The keys used as modifiers; the first value in each tuple is the
+        #: base modifier to use for subsequent modifiers.
+        self._MODIFIER_KEYS = (
+            (kc.alt_gr, (kc.alt_gr.value,)),
+            (kc.alt,    (kc.alt.value,   kc.alt_l.value,   kc.alt_r.value)),
+            (kc.cmd,    (kc.cmd.value,   kc.cmd_l.value,   kc.cmd_r.value)),
+            (kc.ctrl,   (kc.ctrl.value,  kc.ctrl_l.value,  kc.ctrl_r.value)),
+            (kc.shift,  (kc.shift.value, kc.shift_l.value, kc.shift_r.value)))
+
+        #: Control codes to transform into key codes when typing
+        self._CONTROL_CODES = {
+            '\n': kc.enter,
+            '\r': kc.enter,
+            '\t': kc.tab}
+        # pylint: enable=C0103,C0326
+
     def press(self, key):
         """Presses a key.
 
@@ -361,8 +352,6 @@ class Controller(object):
         :raises ValueError: if ``key`` is a string, but its length is not ``1``
         """
         resolved = self._resolve(key)
-        if resolved is None:
-            raise self.InvalidKeyException(key)
         self._update_modifiers(resolved, True)
 
         # Update caps lock state
@@ -411,8 +400,6 @@ class Controller(object):
         :raises ValueError: if ``key`` is a string, but its length is not ``1``
         """
         resolved = self._resolve(key)
-        if resolved is None:
-            raise self.InvalidKeyException(key)
         self._update_modifiers(resolved, False)
 
         # Ignore released dead keys
@@ -420,23 +407,6 @@ class Controller(object):
             return
 
         self._handle(resolved, False)
-
-    def tap(self, key):
-        """Presses and releases a key.
-
-        This is equivalent to the following code::
-
-            controller.press(key)
-            controller.release(key)
-
-        :param key: The key to press.
-
-        :raises InvalidKeyException: if the key is invalid
-
-        :raises ValueError: if ``key`` is a string, but its length is not ``1``
-        """
-        self.press(key)
-        self.release(key)
 
     def touch(self, key, is_press):
         """Calls either :meth:`press` or :meth:`release` depending on the value
@@ -479,9 +449,8 @@ class Controller(object):
         :raises InvalidCharacterException: if an untypable character is
             encountered
         """
-        from . import _CONTROL_CODES
         for i, character in enumerate(string):
-            key = _CONTROL_CODES.get(character, character)
+            key = self._CONTROL_CODES.get(character, character)
             try:
                 self.press(key)
                 self.release(key)
@@ -569,7 +538,7 @@ class Controller(object):
         :return: a key code, or ``None`` if it cannot be resolved
         """
         # Use the value for the key constants
-        if key in (k for k in self._Key):
+        if key in self._Key:
             return key.value
 
         # Convert strings to key codes
@@ -614,8 +583,9 @@ class Controller(object):
         :return: the base modifier key, or ``None`` if ``key`` is not a
             modifier
         """
-        from . import _NORMAL_MODIFIERS
-        return _NORMAL_MODIFIERS.get(key, None)
+        for base, modifiers in self._MODIFIER_KEYS:
+            if key in modifiers:
+                return base
 
     def _handle(self, key, is_press):
         """The platform implementation of the actual emitting of keyboard
@@ -679,7 +649,7 @@ class Listener(AbstractListener):
         ``win32_event_filter``
             A callable taking the arguments ``(msg, data)``, where ``msg`` is
             the current message, and ``data`` associated data as a
-            `KBDLLHOOKSTRUCT <https://docs.microsoft.com/en-gb/windows/win32/api/winuser/ns-winuser-kbdllhookstruct>`_.
+            `KBLLHOOKSTRUCT <https://msdn.microsoft.com/en-us/library/windows/desktop/ms644967(v=vs.85).aspx>`_.
 
             If this callback returns ``False``, the event will not be
             propagated to the listener callback.
@@ -699,27 +669,3 @@ class Listener(AbstractListener):
         super(Listener, self).__init__(
             on_press=on_press, on_release=on_release, suppress=suppress)
 # pylint: enable=W0223
-
-    def canonical(self, key):
-        """Performs normalisation of a key.
-
-        This method attempts to convert key events to their canonical form, so
-        that events will equal regardless of modifier state.
-
-        This method will convert upper case keys to lower case keys, convert
-        any modifiers with a right and left version to the same value, and may
-        slow perform additional platform dependent normalisation.
-
-        :param key: The key to normalise.
-        :type key: Key or KeyCode
-
-        :return: a key
-        :rtype: Key or KeyCode
-        """
-        from pynput.keyboard import Key, KeyCode, _NORMAL_MODIFIERS
-        if isinstance(key, KeyCode) and key.char is not None:
-            return KeyCode.from_char(key.char.lower())
-        elif isinstance(key, Key) and key.value in _NORMAL_MODIFIERS:
-            return _NORMAL_MODIFIERS[key.value]
-        else:
-            return key

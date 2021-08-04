@@ -1,6 +1,6 @@
 # coding=utf-8
 # pynput
-# Copyright (C) 2015-2021 Moses Palmér
+# Copyright (C) 2015-2018 Moses Palmér
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the Free
@@ -24,7 +24,6 @@ import functools
 import itertools
 import operator
 import Xlib.display
-import Xlib.keysymdef
 import Xlib.threaded
 import Xlib.XK
 
@@ -33,16 +32,13 @@ from .xorg_keysyms import SYMBOLS
 
 
 # Create a display to verify that we have an X connection
-def _check_and_initialize():
+def _check():
     display = Xlib.display.Display()
     display.close()
 
-    for group in Xlib.keysymdef.__all__:
-        Xlib.XK.load_keysym_group(group)
 
-
-_check_and_initialize()
-del _check_and_initialize
+_check()
+del _check
 
 
 class X11Error(Exception):
@@ -286,7 +282,7 @@ def shift_to_index(display, shift):
 
     :param int index: The keyboard mapping *key code* index.
 
-    :return: a shift mask
+    :retur: a shift mask
     """
     return (
         (1 if shift & 1 else 0) +
@@ -336,20 +332,6 @@ def keyboard_mapping(display):
     return mapping
 
 
-def char_to_keysym(char):
-    """Converts a unicode character to a *keysym*.
-
-    :param str char: The unicode character.
-
-    :return: the corresponding *keysym*, or ``0`` if it cannot be found
-    """
-    ordinal = ord(char)
-    if ordinal < 0x100:
-        return ordinal
-    else:
-        return ordinal | 0x01000000
-
-
 def symbol_to_keysym(symbol):
     """Converts a symbol name to a *keysym*.
 
@@ -357,14 +339,17 @@ def symbol_to_keysym(symbol):
 
     :return: the corresponding *keysym*, or ``0`` if it cannot be found
     """
-    # First try simple translation, the try a module attribute of
-    # Xlib.keysymdef.xkb and fall back on our pre-generated table
-    return (
-        0
-        or Xlib.XK.string_to_keysym(symbol)
-        or getattr(Xlib.keysymdef.xkb, "XK_" + symbol, 0)
-        or SYMBOLS.get(symbol, (0,))[0]
-    )
+    # First try simple translation
+    keysym = Xlib.XK.string_to_keysym(symbol)
+    if keysym:
+        return keysym
+
+    # If that fails, try checking a module attribute of Xlib.keysymdef.xkb
+    if not keysym:
+        try:
+            return getattr(Xlib.keysymdef.xkb, 'XK_' + symbol, 0)
+        except AttributeError:
+            return SYMBOLS.get(symbol, (0,))[0]
 
 
 class ListenerMixin(object):

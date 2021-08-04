@@ -1,6 +1,6 @@
 # coding=utf-8
 # pynput
-# Copyright (C) 2015-2021 Moses Palmér
+# Copyright (C) 2015-2018 Moses Palmér
 #
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License as published by the Free
@@ -22,13 +22,6 @@
 # pylint: disable=R0903
 # We implement stubs
 
-# pylint: disable=W0611
-try:
-    import pynput._util.xorg  # noqa: F401
-except Exception as e:
-    raise ImportError('failed to acquire X connection: {}'.format(str(e)), e)
-# pylint: enable=W0611
-
 import enum
 import threading
 
@@ -44,7 +37,6 @@ from pynput._util import NotifierMixin
 from pynput._util.xorg import (
     alt_mask,
     alt_gr_mask,
-    char_to_keysym,
     display_manager,
     index_to_shift,
     keyboard_mapping,
@@ -62,14 +54,6 @@ from . import _base
 
 
 class KeyCode(_base.KeyCode):
-    _PLATFORM_EXTENSIONS = (
-        # The symbol name for this key
-        '_symbol',
-    )
-
-    # Be explicit about fields
-    _symbol = None
-
     @classmethod
     def _from_symbol(cls, symbol, **kwargs):
         """Creates a key from a symbol.
@@ -81,37 +65,22 @@ class KeyCode(_base.KeyCode):
         # First try simple translation
         keysym = Xlib.XK.string_to_keysym(symbol)
         if keysym:
-            return cls.from_vk(keysym, _symbol=symbol, **kwargs)
+            return cls.from_vk(keysym, **kwargs)
 
         # If that fails, try checking a module attribute of Xlib.keysymdef.xkb
         if not keysym:
             # pylint: disable=W0702; we want to ignore errors
             try:
-                symbol = 'XK_' + symbol
                 return cls.from_vk(
-                    getattr(Xlib.keysymdef.xkb, symbol, 0),
-                    _symbol=symbol,
+                    getattr(Xlib.keysymdef.xkb, 'XK_' + symbol, 0),
                     **kwargs)
             except Exception:
                 return cls.from_vk(
                     SYMBOLS.get(symbol, (0,))[0],
-                    _symbol=symbol,
                     **kwargs)
             # pylint: enable=W0702
 
-    @classmethod
-    def _from_media(cls, name, **kwargs):
-        """Creates a media key from a partial name.
 
-        :param str name: The name. The actual symbol name will be this string
-            with ``'XF86_Audio'`` prepended.
-
-        :return: a key code
-        """
-        return cls._from_symbol('XF86_Audio' + name, **kwargs)
-
-
-# pylint: disable=W0212
 class Key(enum.Enum):
     # Default keys
     alt = KeyCode._from_symbol('Alt_L')
@@ -163,20 +132,12 @@ class Key(enum.Enum):
     tab = KeyCode._from_symbol('Tab')
     up = KeyCode._from_symbol('Up')
 
-    media_play_pause = KeyCode._from_media('Play')
-    media_volume_mute = KeyCode._from_media('Mute')
-    media_volume_down = KeyCode._from_media('LowerVolume')
-    media_volume_up = KeyCode._from_media('RaiseVolume')
-    media_previous = KeyCode._from_media('Prev')
-    media_next = KeyCode._from_media('Next')
-
     insert = KeyCode._from_symbol('Insert')
     menu = KeyCode._from_symbol('Menu')
     num_lock = KeyCode._from_symbol('Num_Lock')
     pause = KeyCode._from_symbol('Pause')
     print_screen = KeyCode._from_symbol('Print')
     scroll_lock = KeyCode._from_symbol('Scroll_Lock')
-# pylint: enable=W0212
 
 
 class Controller(NotifierMixin, _base.Controller):
@@ -439,17 +400,10 @@ class Controller(NotifierMixin, _base.Controller):
         :return: a keysym if found
         :rtype: int or None
         """
-        # If the key code already has a VK, simply return it
-        if key.vk is not None:
-            return key.vk
-
-        # If the character has no associated symbol, we try to map the
-        # character to a keysym
         symbol = CHARS.get(key.char, None)
         if symbol is None:
-            return char_to_keysym(key.char)
+            return None
 
-        # Otherwise we attempt to convert the symbol to a keysym
         # pylint: disable=W0702; we want to ignore errors
         try:
             return symbol_to_keysym(symbol)
