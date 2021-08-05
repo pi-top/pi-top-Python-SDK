@@ -1,9 +1,8 @@
-py-pitop-sdk (0.20.0-1) bullseye; urgency=medium
+py-pitop-sdk (0.19.1-1) buster; urgency=medium
 
-  * Bullseye release
-  * First version as quilt Debian package
+  * Initial release as quilt package
 
- -- pi-top <deb-maintainers@pi-top.com>  Thu, 05 Aug 2021 19:07:32 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 26 Jul 2021 10:59:06 +0000
 
 py-pitop-sdk (0.19.0) buster; urgency=medium
 
