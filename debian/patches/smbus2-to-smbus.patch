@@ -1,3 +1,8 @@
+Description: smbus2 is a pure Python implementation of the python-smbus package
+Forwarded: not-needed
+Author: pi-top <deb-maintainers@pi-top.com>
+Last-Update: 2021-09-05
+
 --- a/pitop/common/smbus_device.py
 +++ b/pitop/common/smbus_device.py
 @@ -1,4 +1,4 @@
