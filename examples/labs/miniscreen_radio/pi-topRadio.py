@@ -3,6 +3,7 @@ from mpd.base import ConnectionError
 from pitop.miniscreen import Miniscreen
 from signal import pause
 from time import sleep
+import os
 
 
 class StationManager:
@@ -155,7 +156,8 @@ station_manager = StationManager()
 
 def display_station():
     print(f"Playing station: {station_manager.current_station_name}")
-    image_file_path = "./Desktop/RadioIcons/" + station_manager.current_station_name + ".bmp"
+    #image_file_path = os.path.dirname(__file__)
+    image_file_path = os.path.join(os.path.dirname(__file__), 'RadioIcons/') + station_manager.current_station_name + ".bmp"
     try:
         miniscreen.display_image_file(image_file_path)
     except:
@@ -177,7 +179,7 @@ def next_station():
 
 def toggle_play():
     if station_manager.toggle() == 'stopped':
-        image_file_path = "./Desktop/RadioIcons/Pause.bmp"
+        image_file_path = os.path.join(os.path.dirname(__file__),'RadioIcons/') + "Pause.bmp"
         try:
                 miniscreen.display_image_file(image_file_path)
         except:
@@ -193,6 +195,8 @@ def exit_radio():
 
 
 def main():
+    #print(os.getcwd())
+    #print(__file__)
     miniscreen.display_multiline_text("Loading...", font_size=15)
 
     miniscreen.up_button.when_pressed = prev_station
