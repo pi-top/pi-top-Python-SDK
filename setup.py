@@ -83,8 +83,10 @@ __requires__ = [
     "netifaces>=0.10.4,<0.11.0",
     # For journal logging
     "systemd-python>=234,<235",
-    #  SMBusDevice (PMA)
+    # SMBusDevice (PMA)
     "smbus2>=0.4.0,<0.5.0",
+    # Device Communication
+    "pyzmq>=17.1.2,<17.2.0",
 
     #######
     # PMA #
