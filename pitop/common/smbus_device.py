@@ -1,12 +1,12 @@
-"""Wrapper for smbus for when standard I2C protocol is required, in contrast to
-the less-than-standard I2C used on older devices."""
+from smbus2 import SMBus
 
 from pitop.common.logger import PTLogger
 from pitop.common.bitwise_ops import get_bits, split_into_bytes, join_bytes
-from smbus2 import SMBus
 
 
 class SMBusDevice:
+    """Wrapper for smbus for when standard I2C protocol is required, in
+    contrast to the less-than-standard I2C used on older devices."""
 
     def __init__(self, bus_number: int, device_address: int):
         self._bus_number = bus_number
