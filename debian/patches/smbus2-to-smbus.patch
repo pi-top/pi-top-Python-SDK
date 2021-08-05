@@ -8,6 +8,6 @@ Last-Update: 2021-09-05
 @@ -1,4 +1,4 @@
 -from smbus2 import SMBus
 +from smbus import SMBus
-
-
+ 
  from pitop.common.logger import PTLogger
+ from pitop.common.bitwise_ops import get_bits, split_into_bytes, join_bytes
