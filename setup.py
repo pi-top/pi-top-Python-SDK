@@ -85,7 +85,7 @@ __requires__ = [
     "systemd-python>=234,<235",
     # SMBusDevice (PMA)
     "smbus2>=0.4.0,<0.5.0",
-    # Device Communiction
+    # Device Communication
     "pyzmq>=17.1.2,<17.2.0",
 
     #######
