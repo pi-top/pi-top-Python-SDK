@@ -74,10 +74,19 @@ __keywords__ = [
 ]
 
 __requires__ = [
-    ####################################
-    # Utilities - functions, IDs, etc. #
-    ####################################
-    "pitopcommon>=0.8.8,<0.9.0",
+    #############
+    # Utilities #
+    #############
+    # For reviewing DHCP leases
+    "isc_dhcp_leases>=0.9.1,<0.10.0",
+    # For network interface checking
+    "netifaces>=0.10.4,<0.11.0",
+    # For journal logging
+    "systemd-python>=234,<235",
+    # SMBusDevice (PMA)
+    "smbus2>=0.4.0,<0.5.0",
+    # Device Communication
+    "pyzmq>=17.1.2,<17.2.0",
 
     #######
     # PMA #
@@ -100,28 +109,18 @@ __requires__ = [
     "matplotlib>=3.0.0,<3.1",
     "scipy>=1.1.0,<1.2",
 
-    ############
-    # Keyboard #
-    ############
-    "pynput>=1.4.2,<1.5",
-
-    ########
-    # OLED #
-    ########
-    "luma.core>=2.3.1,<2.4",
-    "luma.oled>=3.8.1,<3.9",
+    ##############
+    # Miniscreen #
+    ##############
     "monotonic>=1.1,<1.2",
     "pyinotify>=0.9.6,<0.10",
+    "RPi.GPIO>=0.7.0<0.8.0",
+    "spidev>=3.5<3.6",
 
     #########
     # Pulse #
     #########
     "pyserial>=3.4,<3.5",
-
-    ##############
-    # Algorithms #
-    ##############
-    "simple_pid>=0.2.4,<0.3",
 
     #############
     # Webserver #
@@ -137,18 +136,6 @@ __requires__ = [
     #############################
     "dlib>=19.22.0,<19.23.0",
     "imutils>=0.5.4,<0.6.0",
-    "scikit-learn>=0.20.2,<0.21.0",
-
-    ###################
-    # Use Model Files #
-    ###################
-    # python3-onnxruntime is currently 1.7.2-1 on Buster
-    # but PyPI has 1.7.0, 1.8.0 and 1.8.1
-    #
-    # We allow all because new features shouldn't affect our use-case
-    #
-    # TODO: Build python3-onnxruntime 1.8.1
-    "onnxruntime>=1.7.2,<1.9",
 
     ########################
     # Download Model Files #
@@ -157,8 +144,20 @@ __requires__ = [
 ]
 
 __extra_requires__ = {
-    "computer_vision": ["opencv"],
-    "doc": ["sphinx"],
+    "computer_vision": [
+        ###################
+        # Use Model Files #
+        ###################
+        # python3-onnxruntime is currently 1.7.2-1 on Buster
+        # but PyPI has 1.7.0, 1.8.0 and 1.8.1
+        #
+        # We allow all because new features shouldn't affect our use-case
+        #
+        # TODO: Build python3-onnxruntime 1.8.1
+        "onnxruntime>=1.7.2,<1.9",
+        "opencv>=3.2.0,<3.3",
+    ],
+    "doc": ["sphinx>=1.8.4,<1.9"],
 }
 
 __entry_points__ = {

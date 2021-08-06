@@ -50,7 +50,7 @@ class DistanceSensor(gpiozero_DistanceSensor):
             ...     led.on()
             ...
         """
-        super(gpiozero_DistanceSensor, self).close()
+        super(DistanceSensor, self).close()
 
     ##################
     # Legacy methods #

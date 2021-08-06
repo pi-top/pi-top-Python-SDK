@@ -1,3 +1,4 @@
+dlib python3-dlib; PEP386
 flask python3-flask; PEP386
 flask-cors python3-flask-cors; PEP386
 flask-sockets python3-flask-sockets; PEP386
@@ -6,21 +7,19 @@ gevent-websocket python3-gevent-websocket; PEP386
 gpiozero python3-gpiozero; PEP386
 imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
-luma.core python3-luma-core; PEP386
-luma.oled python3-luma-oled; PEP386
+isc_dhcp_leases python3-isc-dhcp-leases; PEP386
 matplotlib python3-matplotlib; PEP386
-pitopcommon python3-pitopcommon; PEP386
+netifaces python3-netifaces; PEP386
+onnxruntime python3-onnxruntime; PEP386
 pyinotify python3-pyinotify; PEP386
-pynput python3-pynput; PEP386
-pyv4l2camera python3-pyv4l2camera; PEP386
+PyV4L2Camera python3-pyv4l2camera; PEP386
+RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
 simple_pid python3-simple-pid; PEP386
-flask python3-flask; PEP386
-flask-cors python3-flask-cors; PEP386
-flask-sockets python3-flask-sockets; PEP386
-gevent python3-gevent; PEP386
-gevent-websocket python3-gevent-websocket; PEP386
-dlib python3-dlib; PEP386
-imutils python3-imutils; PEP386
+# smbus2 is a pure Python implementation of the python-smbus package
+# Versions do not match so ignore PEP386
+smbus2 python3-smbus
+spidev python3-spidev; PEP386
+systemd_python python3-systemd; PEP386
 wget python3-wget; PEP386
-onnxruntime python3-onnxruntime; PEP386
+pyzmq python3-zmq; PEP386

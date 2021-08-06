@@ -16,8 +16,8 @@ from .hub_communication import HubCommunication
 from pitop.system import pitop_peripherals
 
 from pitop.system import device_type
-from pitopcommon.command_runner import run_command
-from pitopcommon.common_names import DeviceName
+from pitop.common.command_runner import run_command
+from pitop.common.common_names import DeviceName
 
 
 def str_to_bool(value):
