@@ -17,6 +17,7 @@ modules_to_patch = [
     "pitopcommon.i2c_device",
     "pitopcommon.logger",
     "pitopcommon.singleton",
+    "gpiozero",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
@@ -44,4 +45,3 @@ class UltrasonicSensorTestCase(TestCase):
         for port in [f'D{i}'for i in range(0, 8)]:
             ultrasonic_sensor = UltrasonicSensor(port)
             self.assertIsInstance(ultrasonic_sensor._UltrasonicSensor__ultrasonic_device, UltrasonicSensorRPI)
-    
