@@ -26,6 +26,9 @@ class TiltRollHeadController(Stateful, Recreatable):
                                   output_limits=(-100, 100)
                                   )
 
+        self.__oscillate_thread = Thread()
+        self.__new_request_received = False
+
         Stateful.__init__(self, children=['_roll_servo', '_tilt_servo'])
         Recreatable.__init__(self, config_dict={'servo_roll_port': servo_roll_port,
                                                 'servo_tilt_port': servo_tilt_port,
@@ -72,9 +75,16 @@ class TiltRollHeadController(Stateful, Recreatable):
         if block:
             self.__oscillate_servo(servo=servo, times=times, angle=angle, speed=speed)
         else:
-            Thread(target=self.__oscillate_servo,
-                   kwargs={"servo": servo, "times": times, "angle": angle, "speed": speed},
-                   daemon=True).start()
+            if self.__oscillate_thread.is_alive():
+                self.__new_request_received = True
+                self.__oscillate_thread.join()
+                self.__new_request_received = False
+                print("New request")
+
+            self.__oscillate_thread = Thread(target=self.__oscillate_servo,
+                                             kwargs={"servo": servo, "times": times, "angle": angle, "speed": speed},
+                                             daemon=True)
+            self.__oscillate_thread.start()
 
     def __oscillate_servo(self, servo: ServoMotor, times: int, angle: int, speed: int) -> None:
         previous_target_speed = servo.target_speed
@@ -92,10 +102,9 @@ class TiltRollHeadController(Stateful, Recreatable):
         servo.target_angle = current_angle
         servo.target_speed = previous_target_speed
 
-    @staticmethod
-    def __set_angle_until_reached(servo: ServoMotor, angle):
+    def __set_angle_until_reached(self, servo: ServoMotor, angle):
         servo.target_angle = angle
-        while abs(angle - servo.current_angle) > 1:
+        while abs(angle - servo.current_angle) > 1 and not self.__new_request_received:
             sleep(0.05)
 
     def track_head_angle(self, angle, flipped=True) -> None:
