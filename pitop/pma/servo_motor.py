@@ -169,6 +169,9 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the current angle of the servo motor in degrees.
         """
+        if not self.__has_set_angle:
+            raise RuntimeError("Current angle is unknown. "
+                               "Please set a servo angle first to initialise the servo to an angle.")
         angle, _ = self.__controller.get_current_angle_and_speed()
         return angle - self.zero_point
 
