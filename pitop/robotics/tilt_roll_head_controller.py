@@ -9,6 +9,7 @@ from threading import Thread
 from time import sleep
 from dataclasses import dataclass
 from typing import Optional
+import time
 
 
 @dataclass
@@ -43,6 +44,7 @@ class TiltRollHeadController(Stateful, Recreatable):
                                   output_limits=(-100, 100)
                                   )
 
+        self.timeout = 5  # s
         self.__shake_thread_control = ThreadControl()
         self.__nod_thread_control = ThreadControl()
 
@@ -97,6 +99,7 @@ class TiltRollHeadController(Stateful, Recreatable):
                                              angle=angle,
                                              speed=speed,
                                              block=block)
+
         self.__start_servo_oscillation(oscillate_request, thread_control=self.__nod_thread_control)
 
     def __start_servo_oscillation(self, oscillate_request: OscillateRequest, thread_control: ThreadControl):
@@ -141,13 +144,21 @@ class TiltRollHeadController(Stateful, Recreatable):
 
         reset_servo_state()
 
-    @staticmethod
-    def __set_angle_until_reached(servo: ServoMotor, angle: int, thread_control: Optional[ThreadControl] = None):
+    def __set_angle_until_reached(self,
+                                  servo: ServoMotor,
+                                  angle: int,
+                                  thread_control: Optional[ThreadControl] = None):
         def cancelled():
+            if time.time() - start_time > self.timeout:
+                servo.stop()
+                thread_control.cancel = True
+                print(f"Head nod/shake cancelled because time exceeded {self.timeout} seconds. Try a higher speed.")
+                return True
             if thread_control is not None:
                 return thread_control.cancel
             return False
 
+        start_time = time.time()
         if not cancelled():
             servo.target_angle = angle
 
