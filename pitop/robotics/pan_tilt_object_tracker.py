@@ -1,5 +1,5 @@
 from pitop.pma.servo_controller import ServoHardwareSpecs
-from simple_pid import PID
+from .simple_pid import PID
 from time import time
 
 
