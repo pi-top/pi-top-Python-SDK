@@ -7,7 +7,7 @@ from pitop.pma.servo_controller import (
     ServoHardwareSpecs,
 )
 
-# import atexit
+import atexit
 from dataclasses import dataclass
 
 
@@ -42,7 +42,6 @@ class ServoMotor(Stateful, Recreatable):
 
         self.__controller = ServoController(self._pma_port)
 
-        self.__target_state = ServoMotorSetting()
         self.__target_angle = 0.0
         self.__target_speed = self.__DEFAULT_SPEED
 
@@ -50,13 +49,14 @@ class ServoMotor(Stateful, Recreatable):
         self.__max_angle = self.__HARDWARE_MAX_ANGLE
         self.__has_set_angle = False
         self.__zero_point = zero_point
-        # TODO: re-add cleanup when firmware 'current_speed' bug is resolved
-        # This bug is causing cleanup to be called every time, even if servo is not moving
-        #
-        # atexit.register(self.__cleanup)
+
+        atexit.register(self.__cleanup)
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, config_dict={"port_name": port_name, "name": name, "zero_point": lambda: self.zero_point})
+        Recreatable.__init__(self, config_dict={"port_name": port_name,
+                                                "name": name,
+                                                "zero_point": lambda: self.zero_point}
+                             )
 
     @property
     def own_state(self):
@@ -67,7 +67,14 @@ class ServoMotor(Stateful, Recreatable):
 
     def __cleanup(self):
         if self.__has_set_angle and self.current_speed != 0.0:
-            self.__controller.cleanup()
+            self.stop()
+
+    def stop(self):
+        """
+        Stop servo at its current position.
+        :return: None
+        """
+        self.target_angle = self.current_angle
 
     @property
     def zero_point(self):
@@ -203,7 +210,7 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the target angle of the servo motor in deg.
         """
-        return self.__target_state.angle
+        return self.__target_angle
 
     @target_angle.setter
     def target_angle(self, angle):
