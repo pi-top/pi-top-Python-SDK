@@ -131,7 +131,7 @@ class TiltRollHeadController(Stateful, Recreatable):
             if oscillate_request.new_request_received:
                 reset_servo_state()
                 return
-            
+
             self.__set_angle_until_reached(servo=oscillate_request.servo,
                                            angle=shake_angle_start,
                                            new_request_received=oscillate_request.new_request_received)

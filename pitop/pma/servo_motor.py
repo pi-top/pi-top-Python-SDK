@@ -70,8 +70,8 @@ class ServoMotor(Stateful, Recreatable):
             self.stop()
 
     def stop(self):
-        """
-        Stop servo at its current position.
+        """Stop servo at its current position.
+
         :return: None
         """
         self.target_angle = self.current_angle
