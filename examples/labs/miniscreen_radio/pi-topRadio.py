@@ -15,17 +15,17 @@ class StationManager:
         self.playlist_id = None
 
         self.radio_stations = {
-            "BBC Radio 1": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_one.m3u8", #"http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radioB1_mf_p",
-            "BBC Radio 1 Xtra": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1xtra_mf_p",
-            "BBC Radio 2": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio2_mf_p",
-            "BBC Radio 3": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio3_mf_p",
-            "BBC Radio 4": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio4fm_mf_p",
-            "BBC Radio 5 live.": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio5live_mf_p",
-            "BBC Radio 6": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_6music_mf_p",
-            "BBC Asian Network": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_asianet_mf_p",
-            "BBC World Service UK stream": "http://bbcwssc.ic.llnwd.net/stream/bbcwssc_mp1_ws-eieuk",
-            "BBC Radio Scotland": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_scotlandfm_mf_p",
-            "BBC Radio Wales": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_walesmw_mf_p",
+            "BBC Radio 1": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_one.m3u8",
+            "BBC Radio 1 Xtra": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_1xtra.m3u8",
+            "BBC Radio 2": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_two.m3u8",
+            "BBC Radio 3": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_three.m3u8",
+            "BBC Radio 4": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_fourfm.m3u8",
+            "BBC Radio 5 live.": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_five_live.m3u8",
+            "BBC Radio 6": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_6music.m3u8",
+            "BBC Asian Network": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_asian_network.m3u8",
+            "BBC World Service UK stream": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_world_service.m3u8",
+            "BBC Radio Scotland": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_scotland_fm.m3u8",
+            "BBC Radio Wales": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/nonuk/sbr_low/ak/bbc_radio_wales_fm.m3u8",
         }
 
         #Add radio streams
@@ -71,6 +71,7 @@ class StationManager:
     def current_station_name(self):
         attempts = 0
         radio_station_name = "Unknown"
+        #self.debug()
         # print(f"Attempting to get current station name")
 
         while radio_station_name == "Unknown" and attempts < 6:
