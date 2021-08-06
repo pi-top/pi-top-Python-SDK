@@ -19,16 +19,22 @@ from time import sleep
 
 def assemble_robot():
     pitop = Pitop()
+
     pitop.add_component(TiltRollHeadController())
+    pitop.head.calibrate()
+
     pitop.add_component(Camera(resolution=(640, 480),
                                flip_top_bottom=True)
                         )
+
     pitop.add_component(UltrasonicSensor("A1"))
+
     return pitop
 
 
 def wake_and_shake():
     robot.head.tilt.target_angle = 60
+    robot.head.roll.target_angle = 0
     sleep(1)
     robot.head.shake()
 
