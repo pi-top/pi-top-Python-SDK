@@ -114,7 +114,7 @@ class ServoMotor(Stateful, Recreatable):
 
     @property
     def setting(self):
-        """Returns the current state of the servo motor, giving curent angle
+        """Returns the current state of the servo motor, giving current angle
         and current speed.
 
         :return: :class:'ServoMotorSetting` object that has angle and speed attributes.
@@ -148,14 +148,11 @@ class ServoMotor(Stateful, Recreatable):
             .. code-block:: python
                 from pitop import ServoMotor, ServoMotorSetting
                 servo = ServoMotor()
-                target_state = ServoMotorSetting()
-                target_state.angle = 45
-                target_state.speed = 20
-                servo.state = target_state
+                target_setting = ServoMotorSetting()
+                target_setting.angle = 45
+                target_setting.speed = 20
+                servo.setting = target_setting
         """
-        self.target_angle = target_state.angle
-        self.target_speed = target_state.speed
-
         self.__controller.set_target_angle(target_state.angle + self.__zero_point, target_state.speed)
         self.__has_set_angle = True
 
