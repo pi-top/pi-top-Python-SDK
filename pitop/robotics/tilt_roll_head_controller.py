@@ -72,35 +72,39 @@ class TiltRollHeadController(Stateful, Recreatable):
         self.__start_servo_oscillation(servo=self._tilt_servo, times=times, angle=angle, speed=speed, block=block)
 
     def __start_servo_oscillation(self, servo: ServoMotor, times: int, angle: int, speed: int, block: bool) -> None:
+        if self.__oscillate_thread.is_alive():
+            self.__new_request_received = True
+            self.__oscillate_thread.join()
+            self.__new_request_received = False
         if block:
             self.__oscillate_servo(servo=servo, times=times, angle=angle, speed=speed)
         else:
-            if self.__oscillate_thread.is_alive():
-                self.__new_request_received = True
-                self.__oscillate_thread.join()
-                self.__new_request_received = False
-                print("New request")
-
             self.__oscillate_thread = Thread(target=self.__oscillate_servo,
                                              kwargs={"servo": servo, "times": times, "angle": angle, "speed": speed},
                                              daemon=True)
             self.__oscillate_thread.start()
 
     def __oscillate_servo(self, servo: ServoMotor, times: int, angle: int, speed: int) -> None:
+        def reset():
+            servo.target_angle = starting_angle
+            servo.target_speed = previous_target_speed
+
         previous_target_speed = servo.target_speed
         servo.target_speed = speed
 
-        current_angle = servo.current_angle
-        shake_angle_start = current_angle - angle
-        shake_angle_end = current_angle + angle
+        starting_angle = servo.current_angle
+        shake_angle_start = starting_angle - angle
+        shake_angle_end = starting_angle + angle
 
         for _ in range(times):
+            if self.__new_request_received:
+                reset()
+                return
             self.__set_angle_until_reached(servo=servo, angle=shake_angle_start)
             self.__set_angle_until_reached(servo=servo, angle=shake_angle_end)
 
         # Reset the servo state to how it was before
-        servo.target_angle = current_angle
-        servo.target_speed = previous_target_speed
+        reset()
 
     def __set_angle_until_reached(self, servo: ServoMotor, angle):
         servo.target_angle = angle
