@@ -8,6 +8,7 @@ from simple_pid import PID
 from threading import Thread
 from time import sleep
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -17,8 +18,12 @@ class OscillateRequest:
     angle: int
     speed: int
     block: bool
-    thread: Thread
-    new_request_received: bool
+
+
+class ThreadControl:
+    def __init__(self):
+        self.thread = Thread()
+        self.cancel = False
 
 
 class TiltRollHeadController(Stateful, Recreatable):
@@ -38,10 +43,8 @@ class TiltRollHeadController(Stateful, Recreatable):
                                   output_limits=(-100, 100)
                                   )
 
-        self.__shake_thread = Thread()
-        self.__nod_thread = Thread()
-        self.__new_shake_request_received = False
-        self.__new_nod_request_received = False
+        self.__shake_thread_control = ThreadControl()
+        self.__nod_thread_control = ThreadControl()
 
         Stateful.__init__(self, children=['_roll_servo', '_tilt_servo'])
         Recreatable.__init__(self, config_dict={'servo_roll_port': servo_roll_port,
@@ -75,11 +78,9 @@ class TiltRollHeadController(Stateful, Recreatable):
                                              times=times,
                                              angle=angle,
                                              speed=speed,
-                                             block=block,
-                                             thread=self.__shake_thread,
-                                             new_request_received=self.__new_shake_request_received)
+                                             block=block)
 
-        self.__start_servo_oscillation(oscillate_request)
+        self.__start_servo_oscillation(oscillate_request, thread_control=self.__shake_thread_control)
 
     def nod(self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True) -> None:
         """Nod the head by rotating the tilt servo back and forth between
@@ -95,56 +96,65 @@ class TiltRollHeadController(Stateful, Recreatable):
                                              times=times,
                                              angle=angle,
                                              speed=speed,
-                                             block=block,
-                                             thread=self.__nod_thread,
-                                             new_request_received=self.__new_nod_request_received)
-        self.__start_servo_oscillation(oscillate_request)
+                                             block=block)
+        self.__start_servo_oscillation(oscillate_request, thread_control=self.__nod_thread_control)
 
-    def __start_servo_oscillation(self, oscillate_request: OscillateRequest) -> None:
+    def __start_servo_oscillation(self, oscillate_request: OscillateRequest, thread_control: ThreadControl):
 
-        if oscillate_request.thread.is_alive():
-            oscillate_request.new_request_received = True
-            oscillate_request.thread.join()
-            oscillate_request.new_request_received = False
+        if thread_control.thread.is_alive():
+            thread_control.cancel = True
+            thread_control.thread.join()
+            thread_control.cancel = False
 
         if oscillate_request.block:
-            self.__oscillate_servo(oscillate_request)
+            self.__oscillate_servo(oscillate_request=oscillate_request, thread_control=thread_control)
         else:
-            self.__oscillate_thread = Thread(target=self.__oscillate_servo,
-                                             kwargs={"oscillate_request": oscillate_request},
-                                             daemon=True)
-            self.__oscillate_thread.start()
+            thread_control.thread = Thread(target=self.__oscillate_servo,
+                                           kwargs={"oscillate_request": oscillate_request,
+                                                   "thread_control": thread_control},
+                                           daemon=True)
+            thread_control.thread.start()
 
-    def __oscillate_servo(self, oscillate_request: OscillateRequest) -> None:
+    def __oscillate_servo(self, oscillate_request: OscillateRequest, thread_control: ThreadControl) -> None:
         def reset_servo_state():
-            oscillate_request.servo.target_angle = starting_angle
             oscillate_request.servo.target_speed = previous_target_speed
+            self.__set_angle_until_reached(servo=oscillate_request.servo, angle=starting_angle)
 
         previous_target_speed = oscillate_request.servo.target_speed
         oscillate_request.servo.target_speed = oscillate_request.speed
 
         starting_angle = oscillate_request.servo.current_angle
-        shake_angle_start = starting_angle - oscillate_request.angle
-        shake_angle_end = starting_angle + oscillate_request.angle
+        angle_start = starting_angle - oscillate_request.angle
+        angle_end = starting_angle + oscillate_request.angle
 
         for _ in range(oscillate_request.times):
-            if oscillate_request.new_request_received:
+            if thread_control.cancel:
                 reset_servo_state()
                 return
-            
+
             self.__set_angle_until_reached(servo=oscillate_request.servo,
-                                           angle=shake_angle_start,
-                                           new_request_received=oscillate_request.new_request_received)
+                                           angle=angle_start,
+                                           thread_control=thread_control)
             self.__set_angle_until_reached(servo=oscillate_request.servo,
-                                           angle=shake_angle_end,
-                                           new_request_received=oscillate_request.new_request_received)
+                                           angle=angle_end,
+                                           thread_control=thread_control)
 
         reset_servo_state()
 
-    def __set_angle_until_reached(self, servo: ServoMotor, angle: int, new_request_received: bool):
-        servo.target_angle = angle
-        while abs(angle - servo.current_angle) > 1 and not new_request_received:
-            sleep(0.05)
+    @staticmethod
+    def __set_angle_until_reached(servo: ServoMotor, angle: int, thread_control: Optional[ThreadControl] = None):
+        def cancelled():
+            if thread_control is not None:
+                return thread_control.cancel
+            return False
+
+        if not cancelled():
+            servo.target_angle = angle
+
+            while abs(angle - servo.current_angle) > 1:
+                if cancelled():
+                    break
+                sleep(0.05)
 
     def track_head_angle(self, angle: int, flipped=True) -> None:
         if not flipped:
@@ -157,7 +167,7 @@ class TiltRollHeadController(Stateful, Recreatable):
             servo_speed = self._head_roll_pid(error)
             self.roll.sweep(speed=servo_speed)
 
-    def calibrate(self, save=True, reset=False) -> None:
+    def calibrate(self, save: bool = True, reset: bool = False) -> None:
         """Calibrates the assembly to work in optimal conditions.
 
         Based on the provided arguments, it will either load the calibration
