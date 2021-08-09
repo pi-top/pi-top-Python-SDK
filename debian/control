@@ -27,7 +27,6 @@ Depends:
 # Used for drawing emojis
  fonts-symbola,
  python3-onnxruntime,
- python3-opencv,
  python3-pitop (= ${binary:Version}),
  libopenblas-dev,
 # Required for face detection & emotion mapping
