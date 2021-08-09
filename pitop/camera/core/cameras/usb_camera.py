@@ -26,10 +26,8 @@ class UsbCamera:
 
         VideoCapture = import_opencv().VideoCapture
 
-        # if no index is provided, loop over available video devices
-        indexes = self.list_device_indexes() if index is None else [index]
         self.__camera = None
-        self.index = None
+        self.index = -1 if index is None else index
 
         self._flip_top_bottom = flip_top_bottom
         self._flip_left_right = flip_left_right
@@ -48,15 +46,9 @@ class UsbCamera:
                 cap.set(4, resolution[1])
             return cap
 
-        for idx in indexes:
-            self.__camera = create_camera_object(idx, resolution)
-            if self.is_opened():
-                self.index = idx
-                break
-            else:
-                self.__camera = None
-
-        if self.__camera is None:
+        self.__camera = create_camera_object(self.index, resolution)
+        if not self.is_opened():
+            self.__camera = None
             raise IOError("Error opening camera. Make sure it's correctly connected via USB.") from None
 
     def __del__(self):
@@ -99,6 +91,7 @@ class UsbCamera:
         device_indexes = [int(dev[len("video"):]) for dev in device_names]
         # indexes >= 10 are for bcm2835, not useful for us
         camera_indexes = [i for i in device_indexes if i < 10]
+        camera_indexes.sort()
 
         # Not all devices actually provide video
         # eg: video1 can be a metadata device for video0
@@ -112,5 +105,4 @@ class UsbCamera:
             except Exception:
                 continue
 
-        indexes.sort()
         return indexes
