@@ -87,6 +87,8 @@ __requires__ = [
     "smbus2>=0.4.0,<0.5.0",
     # Device Communication
     "pyzmq>=20.0.0,<21.0.0",
+    # Images
+    "opencv>=4.5.1,<4.6",
 
     #######
     # PMA #
@@ -149,7 +151,6 @@ __extra_requires__ = {
         #
         # TODO: Build python3-onnxruntime 1.8.1
         "onnxruntime>=1.7.2,<1.9",
-        "opencv>=4.5.1,<4.6",
     ],
     "doc": ["sphinx>=3.4.3,<3.5"],
 }
