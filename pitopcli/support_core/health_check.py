@@ -6,7 +6,7 @@ from netifaces import (
     interfaces,
 )
 from distutils.util import strtobool
-from os import path, uname
+from os import uname
 from time import strftime
 
 
@@ -18,6 +18,8 @@ from pitop.system import pitop_peripherals
 from pitop.system import device_type
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
+from pitop.common.pt_os import get_legacy_pitopOS_info, get_pitopOS_info
+from pitop.common.sys_info import get_maj_debian_version, get_debian_version, get_uname_release, get_uname_version
 
 
 def str_to_bool(value):
@@ -226,43 +228,21 @@ class HealthCheck:
             data_arr.append([description, result])
         t.print_data(data_arr)
 
-    def get_uname_output(self):
-        data_arr = []
-        u = uname()
-        data_arr.append(("Kernel Version", u.release))
-        data_arr.append(("Kernel Release", u.version))
-        return data_arr
-
-    def get_pitopOS_info(self):
-        data_arr = []
-        ptissue_path = "/etc/pt-issue"
-        if not path.exists(ptissue_path):
-            return
-        data = {}
-        with open(ptissue_path, 'r') as reader:
-            for line in reader.readlines():
-                content = line.split(":")
-                if len(content) == 2:
-                    data[content[0].strip()] = content[1].strip()
-        headers_to_skip = ("Build Apt Repo", "Final Apt Repo", "Build Pipeline Commit Hash")
-        for k, v in data.items():
-            if k in headers_to_skip:
-                continue
-            data_arr.append((k, v))
-        return data_arr
-
-    def get_debian_version(self):
-        debian_version_file = "/etc/debian_version"
-        if not path.exists(debian_version_file):
-            return None
-        with open(debian_version_file, 'r') as reader:
-            content = reader.read()
-        return [("Debian Version", content.strip())]
-
     def get_system_information(self):
-        sys_info_arr = self.get_debian_version()
-        sys_info_arr += self.get_uname_output()
-        sys_info_arr += self.get_pitopOS_info()
+        sys_info_arr = [
+            ("Debian Version", get_debian_version()),
+            ("Kernel Version", get_uname_release()),
+            ("Kernel Release", get_uname_version())
+        ]
+
+        if get_maj_debian_version() < 11:
+            data = get_legacy_pitopOS_info()
+        else:
+            data = get_pitopOS_info()
+
+        for k, v in data.items():
+            sys_info_arr.append((k, v))
+
         return sys_info_arr
 
     def get_raspi_config_setting_value(self, setting):
