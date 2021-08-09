@@ -99,8 +99,6 @@ __requires__ = [
     "numpy>=1.19.5,<1.20",
     # Manage camera images
     "Pillow>=8.1.2,<8.2",
-    # Not available on Bullseye
-    # "PyV4L2Camera>=0.1a2,<0.2",
     # IMU Calibration
     "matplotlib>=3.3.4,<3.4",
     "scipy>=1.6.0,<1.7",

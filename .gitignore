@@ -40,4 +40,4 @@ coverage
 .DS_Store
 
 # Debian patching
-.pc
+.pc/

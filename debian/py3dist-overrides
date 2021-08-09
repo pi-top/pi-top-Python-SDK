@@ -13,7 +13,6 @@ matplotlib python3-matplotlib; PEP386
 netifaces python3-netifaces; PEP386
 opencv python3-opencv; PEP386
 pyinotify python3-pyinotify; PEP386
-# PyV4L2Camera python3-pyv4l2camera; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
 simple_pid python3-simple-pid; PEP386
