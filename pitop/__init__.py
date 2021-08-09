@@ -34,6 +34,5 @@ from .robotics.configurations import (
 )
 
 # System Devices
-# PyV4L2Camera not available on bullseye
-# from .camera import Camera
+from .camera import Camera
 from .keyboard import KeyboardButton
