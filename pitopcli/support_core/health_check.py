@@ -238,7 +238,7 @@ class HealthCheck:
         if get_maj_debian_version() < 11:
             data = get_legacy_pitopOS_info()
         else:
-            data = get_pitopOS_info()
+            data = get_pitopOS_info().as_dict()
 
         for k, v in data.items():
             sys_info_arr.append((k, v))
