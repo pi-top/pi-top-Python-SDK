@@ -1,19 +1,11 @@
 from os import listdir
 from PIL import Image
 
+from pitop.core.import_opencv import import_opencv
 from pitop.core.ImageFunctions import convert
 
 
 valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
-
-
-def import_opencv():
-    try:
-        import cv2
-        return cv2
-    except (ImportError, ModuleNotFoundError):
-        raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
 
 
 class UsbCamera:
