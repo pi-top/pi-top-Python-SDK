@@ -99,12 +99,6 @@ __requires__ = [
     "numpy>=1.16.0,<1.17",
     # Manage camera images
     "Pillow>=5.4.0,<5.5",
-    # Camera communication
-    # Release version is '0.1a2', but Debian package is '0.1.2'
-    # so we allow for both here
-    #
-    # TODO: build '0.1~a2' Debian package
-    "PyV4L2Camera>=0.1a2,<0.2",
     # IMU Calibration
     "matplotlib>=3.0.0,<3.1",
     "scipy>=1.1.0,<1.2",
