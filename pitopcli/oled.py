@@ -2,9 +2,8 @@
 from os.path import isfile, isdir, join
 from time import sleep, strftime
 
-from pitopcommon.formatting import is_url
+from pitop.common.formatting import is_url
 
-from pitop.miniscreen import Miniscreen
 from .cli_base import CliBaseClass, PitopCliInvalidArgument
 
 
@@ -32,6 +31,7 @@ class OledCLI(CliBaseClass):
             return file_path
 
         try:
+            from pitop.miniscreen import Miniscreen
             if self.args.oled_subcommand == "display":
                 oled = Miniscreen()
 

@@ -1,5 +1,5 @@
-from pitopcommon.command_runner import run_command, run_command_background
-from pitopcommon.current_session_info import get_first_display
+from pitop.common.command_runner import run_command, run_command_background
+from pitop.common.current_session_info import get_first_display
 
 from ..formatter import StdoutFormat
 

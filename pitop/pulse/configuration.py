@@ -1,6 +1,6 @@
 from math import pow
-from pitopcommon.i2c_device import I2CDevice
-from pitopcommon.logger import PTLogger
+from pitop.common.i2c_device import I2CDevice
+from pitop.common.logger import PTLogger
 
 _i2c_device_name = "/dev/i2c-1"
 _device_addr = 0x24

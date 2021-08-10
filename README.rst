@@ -15,7 +15,7 @@
   :alt: Latest Build Status
 
 .. image:: https://readthedocs.com/projects/pi-top-pi-top-python-sdk/badge/?version=latest&token=13589f150cf192dcfc6ebfd53aae33164450aafd181c5e49018a21fd93149127
-    :target: https://docs.pi-top.com/python-sdk/latest/?badge=latest
+    :target: https://docs.pi-top.com/python-sdk/en/latest/?badge=latest
     :alt: Documentation
 
 .. image:: https://img.shields.io/lgtm/grade/python/g/pi-top/pi-top-Python-SDK.svg

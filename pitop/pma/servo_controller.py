@@ -1,7 +1,7 @@
 from numpy import interp
 from typing import Union
 
-from pitopcommon.bitwise_ops import split_into_bytes
+from pitop.common.bitwise_ops import split_into_bytes
 from .plate_interface import PlateInterface
 from .common import type_check
 from .common.servo_motor_registers import (
@@ -35,12 +35,6 @@ class ServoController:
         self.set_pwm_frequency(ServoHardwareSpecs.PWM_FREQUENCY)
         self.set_min_pulse_width(ServoHardwareSpecs.MIN_PULSE_WIDTH_MICRO_S)
         self.set_max_pulse_width(ServoHardwareSpecs.MAX_PULSE_WIDTH_MICRO_S)
-
-    def cleanup(self, state=None):
-        self.set_target_angle(
-            state.angle if state is not None else 0,
-            state.speed if state is not None else 0
-        )
 
     @type_check
     def set_min_pulse_width(self, min_width_us: int) -> None:

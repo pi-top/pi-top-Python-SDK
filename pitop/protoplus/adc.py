@@ -1,5 +1,5 @@
-from pitopcommon.i2c_device import I2CDevice
-from pitopcommon.bitwise_ops import split_into_bytes
+from pitop.common.i2c_device import I2CDevice
+from pitop.common.bitwise_ops import split_into_bytes
 from time import sleep
 
 

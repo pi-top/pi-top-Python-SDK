@@ -5,7 +5,8 @@ from numpy import (
 )
 from urllib.request import urlopen
 
-from pitopcommon.formatting import is_url
+from pitop.core.import_opencv import import_opencv
+from pitop.common.formatting import is_url
 
 
 def image_format_check(format):
@@ -14,16 +15,7 @@ def image_format_check(format):
 
 
 def convert(image, format="PIL"):
-
-    try:
-        from cv2 import (
-            cvtColor,
-            COLOR_BGR2RGB,
-            COLOR_RGB2BGR,
-        )
-    except (ImportError, ModuleNotFoundError):
-        raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
+    cv2 = import_opencv()
 
     image_format_check(format)
     format = format.lower()
@@ -38,13 +30,13 @@ def convert(image, format="PIL"):
         # Convert PIL to OpenCV
         cv_image = asarray(image)
         if image.mode == "RGB":
-            cv_image = cvtColor(cv_image, COLOR_RGB2BGR)
+            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
         return cv_image
     elif isinstance(image, ndarray) and format == "pil":
         # Convert OpenCV to PIL
         if len(image.shape) > 2 and image.shape[2] == 3:
             # If incoming image has 3 channels, convert from BGR to RGB
-            image = cvtColor(image, COLOR_BGR2RGB)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return Image.fromarray(image)
 
 

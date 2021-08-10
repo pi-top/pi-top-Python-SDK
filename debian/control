@@ -14,9 +14,6 @@ Build-Depends:
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
-# Required for building the docs (see rules file)
- python3-pip,
- python3-pitopcommon,
 # Required for autodetecting camera devices
  v4l-utils,
 Standards-Version: 4.5.1
@@ -26,8 +23,16 @@ Package: python3-pitop-full
 Architecture: all
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
+# Used for drawing emojis
+ fonts-symbola,
+ python3-onnxruntime,
  python3-opencv,
  python3-pitop (= ${binary:Version}),
+ libopenblas-dev,
+# Required for face detection & emotion mapping
+ liblapack-dev,
+ libatlas-base-dev,
 Recommends:
  python3-pitop-doc (= ${source:Version}),
 Description: pi-top Python 3 Library - Complete
@@ -42,19 +47,29 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
  alsa-utils,
- coreutils (>= 8),
+# 'arping' command
+ arping,
 # Minimum essential OLED font
  fonts-droid-fallback,
  i2c-tools,
+# 'ping' command
+ iputils-ping,
 # Required for hub communication; such as getting case button state
  pt-device-manager,
+# ZMQ for messaging
+ python3-zmq,
  raspi-config,
 Recommends:
 # Preferred OLED font
  fonts-fs-me-pro,
 Suggests:
+# Required for 'pt-notify-send'
+ pt-notifications,
 # OLED system menu is optional, but useful for [4] users
  pt-sys-oled,
+# Required to get state about Access Point mode
+ wifi-ap-sta,
+# Other SDK packages
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
 Breaks:

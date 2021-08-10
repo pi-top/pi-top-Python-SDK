@@ -26,6 +26,7 @@ from .pma.parameters import (
 # Robotics
 from .robotics.drive_controller import DriveController
 from .robotics.pan_tilt_controller import PanTiltController
+from .robotics.tilt_roll_head_controller import TiltRollHeadController
 from .robotics.pincer_controller import PincerController
 from .robotics.configurations import (
     alex_config,

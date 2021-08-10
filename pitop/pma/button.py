@@ -1,6 +1,4 @@
 from gpiozero import Button as gpiozero_Button
-from gpiozero.pins.native import NativeFactory
-
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
@@ -22,7 +20,7 @@ class Button(Stateful, Recreatable, gpiozero_Button):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
-        gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port), pin_factory=NativeFactory())
+        gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port))
 
     @property
     def own_state(self):
@@ -70,4 +68,4 @@ class Button(Stateful, Recreatable, gpiozero_Button):
             ...     led.on()
             ...
         """
-        super(gpiozero_Button, self).close()
+        super(Button, self).close()
