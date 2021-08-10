@@ -14,6 +14,8 @@ from ..formatter import StdoutFormat, StdoutTable
 from .ptsoftware import PitopSoftware
 from .hub_communication import HubCommunication
 
+from pitop.system import pitop_peripherals, device_type
+
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 
@@ -125,9 +127,6 @@ class HealthCheck:
         "Power status of HDMI 1": "vcgencmd display_power -1 7",
         "Resolution & color depth of displays": "vcgencmd get_lcd_info",
     }
-
-    def __init__(self):
-        from pitop.system import pitop_peripherals, device_type
 
     def run(self):
         StdoutFormat.print_header("SYSTEM HEALTH CHECK")
