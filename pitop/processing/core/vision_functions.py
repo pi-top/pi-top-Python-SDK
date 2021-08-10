@@ -1,3 +1,6 @@
+from pitop.core.import_opencv import import_opencv
+
+
 def import_imutils():
     try:
         import imutils
@@ -14,8 +17,6 @@ def import_face_utils():
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
             "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
-
-from pitop.core.import_opencv import import_opencv
 
 
 def import_dlib():
