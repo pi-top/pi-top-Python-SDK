@@ -1,15 +1,15 @@
 from numpy import array
+
+from pitop.core.data_structures import DotDict
+from pitop.core import ImageFunctions
 from pitop.processing.core.vision_functions import (
+    center_reposition,
     color_mask,
     find_centroid,
     find_largest_contour,
-    import_opencv,
     get_object_target_lock_control_angle,
-    center_reposition,
+    import_opencv,
 )
-from pitop.core.data_structures import DotDict
-from pitop.core import ImageFunctions
-from imutils import resize
 
 
 def calculate_blue_limits():
@@ -36,6 +36,7 @@ def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
     cv2 = import_opencv()
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
+    from imutils import resize
     resized_frame = resize(cv_frame, width=process_image_width)
     hsv_lower, hsv_upper = calculate_blue_limits()
     image_mask = color_mask(resized_frame, hsv_lower, hsv_upper)

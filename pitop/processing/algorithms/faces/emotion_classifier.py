@@ -1,26 +1,37 @@
-from pitop.core import ImageFunctions
 import numpy as np
-from pitop.processing.core.load_models import load_emotion_model
-from pitop.processing.core.math_functions import running_mean
-from imutils import face_utils
-from .core.emotion import Emotion
+
+from pitop.core import ImageFunctions
+from pitop.processing.algorithms.faces.core.emotion import Emotion
 from pitop.processing.core.vision_functions import (
+    import_face_utils,
     import_opencv,
     tuple_for_color_by_name,
 )
+from pitop.processing.core.load_models import load_emotion_model
+from pitop.processing.core.math_functions import running_mean
 
 
-cv2 = import_opencv()
+cv2 = None
+face_utils = None
 
 
-left_eye_start, left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
-right_eye_start, right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+def import_libs():
+    global cv2, face_utils
+    if cv2 is None:
+        cv2 = import_opencv()
+    if face_utils is None:
+        face_utils = import_face_utils()
 
 
 class EmotionClassifier:
     __MEAN_N = 5
 
     def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
+        import_libs()
+
+        self.left_eye_start, self.left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
+        self.right_eye_start, self.right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
@@ -99,8 +110,8 @@ class EmotionClassifier:
             face_features_rotated = rotation_matrix.dot(features.T).T
             face_feature_mean = face_features_rotated.mean(axis=0)
 
-            left_eye_center = np.mean(face_features_rotated[left_eye_start:left_eye_end], axis=0)
-            right_eye_center = np.mean(face_features_rotated[right_eye_start:right_eye_end], axis=0)
+            left_eye_center = np.mean(face_features_rotated[self.left_eye_start:self.left_eye_end], axis=0)
+            right_eye_center = np.mean(face_features_rotated[self.right_eye_start:self.right_eye_end], axis=0)
 
             interpupillary_distance = np.linalg.norm(left_eye_center - right_eye_center)
 
