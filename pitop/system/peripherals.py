@@ -1,8 +1,8 @@
-from pitopcommon.command_runner import run_command
-from pitopcommon.common_ids import FirmwareDeviceID, PeripheralID
-from pitopcommon.common_names import PeripheralName
-from pitopcommon.firmware_device import FirmwareDevice
-from pitopcommon.ptdm import PTDMRequestClient, Message
+from pitop.common.command_runner import run_command
+from pitop.common.common_ids import FirmwareDeviceID, PeripheralID
+from pitop.common.common_names import PeripheralName
+from pitop.common.firmware_device import FirmwareDevice
+from pitop.common.ptdm import PTDMRequestClient, Message
 
 
 def legacy_pitop_peripherals():

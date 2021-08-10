@@ -1,10 +1,6 @@
 #! /usr/bin/python3
 
 import argparse
-from pitop.system import (
-    device_info,
-    pitop_peripherals,
-)
 
 from .cli_base import CliBaseClass
 
@@ -48,6 +44,7 @@ class DeviceCLI(CliBaseClass):
 
         # Get host device from device manager
         try:
+            from pitop.system import device_info
             device = device_info()
             if self.args.devices_subcommand in ("hub", None):
                 if self.args.devices_subcommand is None:
@@ -63,6 +60,7 @@ class DeviceCLI(CliBaseClass):
 
             try:
                 # Get list of all pi-top peripherals
+                from pitop.system import pitop_peripherals
                 for periph in pitop_peripherals():
                     print_peripheral_line(periph)
             except Exception as e:

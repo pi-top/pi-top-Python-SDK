@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
 
-from pitop.display import Display
 from .cli_base import CliBaseClass, PitopCliException, PitopCliInvalidArgument
 
 
@@ -35,6 +34,7 @@ class DisplayCLI(CliBaseClass):
             raise PitopCliException
 
     def perform_desired_action(self) -> None:
+        from pitop.display import Display
         display = Display()
 
         if self.args.display_subcommand == "brightness":
