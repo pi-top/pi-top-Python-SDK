@@ -1,61 +1,47 @@
-from gpiozero import SmoothedInputDevice
-from threading import Event, Lock
-
-from pitop.common.logger import PTLogger
-
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
 )
-from pitop.pma.common import get_pin_for_port
+from pitop.pma.common.utils import Port
+from .ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
 
 
-# Modified version of gpiozero's DistanceSensor class that only uses 1 pin
-#
-# Note: all private member variables are semi-private to follow upstream gpiozero convention
-# and to override inherited functions
-class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
-    ECHO_LOCK = Lock()
+valid_analog_ports = ["A1", "A3"]
 
-    def __init__(
-        self,
-        port_name,
-        queue_len=9,
-        max_distance=3,
-        threshold_distance=0.3,
-        partial=False,
-        name="ultrasonic"
-    ):
 
+class UltrasonicSensor(Stateful, Recreatable):
+    def __init__(self,
+                 port_name,
+                 queue_len=5,
+                 max_distance=3,
+                 threshold_distance=0.3,
+                 partial=False,
+                 name="ultrasonic"
+                 ):
+
+        assert (port_name in Port)
         self._pma_port = port_name
         self.name = name
 
-        SmoothedInputDevice.__init__(self,
-                                     get_pin_for_port(self._pma_port),
-                                     pull_up=False,
-                                     queue_len=queue_len,
-                                     sample_wait=0.06,
-                                     partial=partial,
-                                     ignore=frozenset({None}),
-                                     )
+        if port_name in valid_analog_ports:
+            self.__ultrasonic_device = UltrasonicSensorMCU(port_name=port_name,
+                                                           queue_len=queue_len,
+                                                           max_distance=max_distance,
+                                                           threshold_distance=threshold_distance,
+                                                           partial=partial,
+                                                           name=name
+                                                           )
+        else:
+            self.__ultrasonic_device = UltrasonicSensorRPI(port_name=port_name,
+                                                           queue_len=queue_len,
+                                                           max_distance=max_distance,
+                                                           threshold_distance=threshold_distance,
+                                                           partial=partial,
+                                                           name=name
+                                                           )
 
-        try:
-            if max_distance <= 0:
-                raise ValueError('invalid maximum distance (must be positive)')
-            self._max_distance = max_distance
-            self.threshold = threshold_distance / max_distance
-            self.speed_of_sound = 343.26  # m/s
-
-            self._echo = Event()
-            self._echo_rise = None
-            self._echo_fall = None
-            self.pin.edges = 'both'
-            self.pin.bounce = None
-            self.pin.when_changed = self._echo_changed
-            self._queue.start()
-        except Exception:
-            self.close()
-            raise
+        self._in_range_function = None
+        self._out_of_range_function = None
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name,
@@ -65,11 +51,69 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
                                     "max_distance": lambda: self.max_distance,
                                     "threshold_distance": lambda: self.threshold_distance})
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
     @property
     def own_state(self):
         return {
             'distance': self.distance,
         }
+
+    @property
+    def max_distance(self):
+        """The maximum distance that the sensor will measure in meters.
+
+        This value is specified in the constructor and is used to
+        provide the scaling for the :attr:`~SmoothedInputDevice.value`
+        attribute. When :attr:`distance` is equal to
+        :attr:`max_distance`, :attr:`~SmoothedInputDevice.value` will be
+        1.
+        """
+        return self.__ultrasonic_device.max_distance
+
+    @max_distance.setter
+    def max_distance(self, value):
+        self.__ultrasonic_device.max_distance = value
+
+    @property
+    def threshold_distance(self):
+        """
+        The distance, measured in meters, that will trigger the
+        :attr:`when_in_range` and :attr:`when_out_of_range` events when
+        crossed. This is simply a meter-scaled variant of the usual
+        :attr:`~SmoothedInputDevice.threshold` attribute.
+        """
+        return self.__ultrasonic_device.threshold_distance
+
+    @threshold_distance.setter
+    def threshold_distance(self, value):
+        self.__ultrasonic_device.threshold_distance = value
+
+    @property
+    def distance(self):
+        """Returns the current distance measured by the sensor in meters.
+
+        Note
+        that this property will have a value between 0 and
+        :attr:`max_distance`.
+        """
+        return self.__ultrasonic_device.distance
+
+    @property
+    def value(self):
+        """Returns a value between 0, indicating that something is either
+        touching the sensor or is sufficiently near that the sensor can't tell
+        the difference, and 1, indicating that something is at or beyond the
+        specified *max_distance*."""
+        return self.__ultrasonic_device.value
+
+    @property
+    def pin(self):
+        return self.__ultrasonic_device.pin
 
     def close(self):
         """Shut down the device and release all associated resources. This
@@ -109,119 +153,32 @@ class UltrasonicSensor(Stateful, Recreatable, SmoothedInputDevice):
             ...     led.on()
             ...
         """
-        try:
-            super(UltrasonicSensor, self).close()
-        except RuntimeError:
-            PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
-                           "there was an error in closing the port!")
-
-    @property
-    def max_distance(self):
-        """The maximum distance that the sensor will measure in meters.
-
-        This value is specified in the constructor and is used to
-        provide the scaling for the :attr:`~SmoothedInputDevice.value`
-        attribute. When :attr:`distance` is equal to
-        :attr:`max_distance`, :attr:`~SmoothedInputDevice.value` will be
-        1.
-        """
-        return self._max_distance
-
-    @max_distance.setter
-    def max_distance(self, value):
-        if value <= 0:
-            raise ValueError('invalid maximum distance (must be positive)')
-        t = self.threshold_distance
-        self._max_distance = value
-        self.threshold_distance = t
-
-    @property
-    def threshold_distance(self):
-        """
-        The distance, measured in meters, that will trigger the
-        :attr:`when_in_range` and :attr:`when_out_of_range` events when
-        crossed. This is simply a meter-scaled variant of the usual
-        :attr:`~SmoothedInputDevice.threshold` attribute.
-        """
-        return self.threshold * self.max_distance
-
-    @threshold_distance.setter
-    def threshold_distance(self, value):
-        self.threshold = value / self.max_distance
-
-    @property
-    def distance(self):
-        """Returns the current distance measured by the sensor in meters.
-
-        Note
-        that this property will have a value between 0 and
-        :attr:`max_distance`.
-        """
-        return self.value * self._max_distance
-
-    @property
-    def value(self):
-        """Returns a value between 0, indicating that something is either
-        touching the sensor or is sufficiently near that the sensor can't tell
-        the difference, and 1, indicating that something is at or beyond the
-        specified *max_distance*."""
-        return super(UltrasonicSensor, self).value
-
-    @property
-    def pin(self):
-        """Returns the :class:`Pin` that the sensor is connected to.
-
-        This is simply an alias for the usual :attr:`~GPIODevice.pin`
-        attribute.
-        """
-        return super(UltrasonicSensor, self).pin
-
-    def _echo_changed(self, ticks, level):
-        if level:
-            self._echo_rise = ticks
-        else:
-            self._echo_fall = ticks
-            self._echo.set()
-
-    def _read(self):
-        # Wait up to 50ms for the echo pin to fall to low (the maximum echo
-        # pulse is 35ms so this gives some leeway); if it doesn't something is
-        # horribly wrong (most likely at the hardware level)
-        if self.pin.state:
-            if not self._echo.wait(0.05):
-                PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
-                               "no echo received, not using value")
-                return None
-        self._echo.clear()
-        self._echo_fall = None
-        self._echo_rise = None
-        # Obtain the class-level ECHO_LOCK to ensure multiple distance sensors
-        # don't listen for each other's "pings"
-        with UltrasonicSensor.ECHO_LOCK:
-            # Wait up to 200ms for the echo pin to rise and fall
-            if self._echo.wait(0.2):
-                if self._echo_fall is not None and self._echo_rise is not None:
-                    distance = (
-                        self.pin_factory.ticks_diff(
-                            self._echo_fall, self._echo_rise) *
-                        self.speed_of_sound / 2.0)
-                    return min(1.0, distance / self._max_distance)
-                else:
-                    # If we only saw the falling edge it means we missed
-                    # the echo because it was too fast
-                    return None
-            else:
-                # The echo pin never rose or fell - assume that distance is max
-                PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
-                               "no echo received, using max distance ")
-                return 1.0
+        self.__ultrasonic_device.close()
 
     @property
     def in_range(self):
-        return not self.is_active
+        return self.__ultrasonic_device.in_range
 
+    @property
+    def when_in_range(self):
+        return self.__ultrasonic_device.when_deactivated
 
-UltrasonicSensor.when_out_of_range = UltrasonicSensor.when_activated
-UltrasonicSensor.when_in_range = UltrasonicSensor.when_deactivated
-UltrasonicSensor.wait_for_out_of_range = UltrasonicSensor.wait_for_active
-UltrasonicSensor.wait_for_in_range = UltrasonicSensor.wait_for_inactive
+    @when_in_range.setter
+    def when_in_range(self, function):
+        if callable(function):
+            self.__ultrasonic_device.when_deactivated = function
+
+    @property
+    def when_out_of_range(self):
+        return self.__ultrasonic_device.when_activated
+
+    @when_out_of_range.setter
+    def when_out_of_range(self, function):
+        if callable(function):
+            self.__ultrasonic_device.when_activated = function
+
+    def wait_for_in_range(self, timeout=None):
+        self.__ultrasonic_device.wait_for_inactive(timeout=timeout)
+
+    def wait_for_out_of_range(self, timeout=None):
+        self.__ultrasonic_device.wait_for_active(timeout=timeout)
