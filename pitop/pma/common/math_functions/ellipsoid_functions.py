@@ -1,6 +1,6 @@
 import numpy as np
 from os import environ
-from pitopcommon.current_session_info import get_first_display
+from pitop.common.current_session_info import get_first_display
 if not environ.get('DISPLAY'):
     environ["DISPLAY"] = str(get_first_display())
 

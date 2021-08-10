@@ -1,7 +1,7 @@
 from pitop.core.exceptions import UnavailableComponent
 from pitop.system import device_type
 
-from pitopcommon.common_names import DeviceName
+from pitop.common.common_names import DeviceName
 
 
 class SupportsMiniscreen():

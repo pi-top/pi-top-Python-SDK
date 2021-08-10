@@ -1,4 +1,4 @@
-from pitopcommon.ptdm import (
+from pitop.common.ptdm import (
     PTDMRequestClient,
     PTDMSubscribeClient,
     Message,

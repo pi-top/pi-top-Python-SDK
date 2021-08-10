@@ -1,6 +1,6 @@
 from .oled import OLED
 
-from pitopcommon.ptdm import (
+from pitop.common.ptdm import (
     PTDMSubscribeClient,
     Message
 )

@@ -13,11 +13,11 @@ from time import strftime
 from ..formatter import StdoutFormat, StdoutTable
 from .ptsoftware import PitopSoftware
 from .hub_communication import HubCommunication
-from pitop.system import pitop_peripherals
 
-from pitop.system import device_type
-from pitopcommon.command_runner import run_command
-from pitopcommon.common_names import DeviceName
+from pitop.system import pitop_peripherals, device_type
+
+from pitop.common.command_runner import run_command
+from pitop.common.common_names import DeviceName
 
 
 def str_to_bool(value):
@@ -25,7 +25,6 @@ def str_to_bool(value):
 
 
 class HealthCheck:
-
     RASPI_CONFIG_BOOT_SETTINGS = {
         "get_boot_cli": {
             "description": "Boot to Desktop?",

@@ -1,3 +1,19 @@
+py-pitop-sdk (0.19.1-1) buster; urgency=medium
+
+  * Initial release as quilt package
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 26 Jul 2021 10:59:06 +0000
+
+py-pitop-sdk (0.19.0) buster; urgency=medium
+
+  [ Angus Whitehead ]
+  * Add keyword arg to select font to miniscreen display text methods (#391)
+
+  [ Mike Roberts ]
+  * Add dependency versions (#400)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 26 Jul 2021 10:59:05 +0000
+
 py-pitop-sdk (0.18.12) buster; urgency=medium
 
   [ Jorge Capona ]
