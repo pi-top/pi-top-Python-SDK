@@ -1,7 +1,7 @@
 from gpiozero import SmoothedInputDevice
 from threading import Thread, Event, Lock
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from abc import abstractmethod
 from .plate_interface import PlateInterface
@@ -10,18 +10,18 @@ from .common.ultrasonic_registers import (
     UltrasonicRegisterTypes,
     UltrasonicConfigSettings,
 )
-from pitopcommon.firmware_device import (
+from pitop.common.firmware_device import (
     FirmwareDevice,
     PTInvalidFirmwareDeviceException,
 )
-from pitopcommon.common_ids import FirmwareDeviceID
+from pitop.common.common_ids import FirmwareDeviceID
 from pitop.pma.common.utils import get_pin_for_port
 import atexit
 from sched import scheduler
 import time
 from collections import deque
 import numpy as np
-from pitopcommon.singleton import Singleton
+from pitop.common.singleton import Singleton
 
 
 class UltrasonicSensorBase:
