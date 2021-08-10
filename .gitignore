@@ -38,3 +38,6 @@ coverage
 .pytest_cache
 
 .DS_Store
+
+# Debian patching
+.pc/
