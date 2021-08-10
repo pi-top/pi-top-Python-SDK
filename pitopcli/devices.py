@@ -1,10 +1,6 @@
 #! /usr/bin/python3
 
 import argparse
-from pitop.system import (
-    device_info,
-    pitop_peripherals,
-)
 
 from .cli_base import CliBaseClass
 
@@ -41,13 +37,14 @@ class DeviceCLI(CliBaseClass):
             print("")
 
         def print_hub_line(data):
-            print(f"{data.get('name')}", end=" ")
+            print(f"{data.get('name')}", end="")
             if not self.args.name_only and data.get("fw_version"):
-                print(f"(v{data.get('fw_version')})", end="")
+                print(f" (v{data.get('fw_version')})", end="")
             print("")
 
         # Get host device from device manager
         try:
+            from pitop.system import device_info
             device = device_info()
             if self.args.devices_subcommand in ("hub", None):
                 if self.args.devices_subcommand is None:
@@ -63,6 +60,7 @@ class DeviceCLI(CliBaseClass):
 
             try:
                 # Get list of all pi-top peripherals
+                from pitop.system import pitop_peripherals
                 for periph in pitop_peripherals():
                     print_peripheral_line(periph)
             except Exception as e:

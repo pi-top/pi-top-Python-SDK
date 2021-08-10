@@ -32,10 +32,12 @@ class Camera(Stateful, Recreatable):
 
     def __init__(self,
                  index=None,
-                 resolution=None,
+                 resolution=(640, 480),
                  camera_type=CameraTypes.USB_CAMERA,
                  path_to_images="",
                  format='PIL',
+                 flip_top_bottom: bool = False,
+                 flip_left_right: bool = False,
                  rotate_angle=0,
                  name="camera"
                  ):
@@ -54,9 +56,15 @@ class Camera(Stateful, Recreatable):
         self._camera_type = CameraTypes(camera_type)
         self._path_to_images = path_to_images
         self._rotate_angle = rotate_angle
+        self._flip_top_bottom = flip_top_bottom
+        self._flip_left_right = flip_left_right
 
         if self._camera_type == CameraTypes.USB_CAMERA:
-            self.__camera = UsbCamera(self._index, self._resolution, self._rotate_angle)
+            self.__camera = UsbCamera(index=self._index,
+                                      resolution=self._resolution,
+                                      flip_top_bottom=flip_top_bottom,
+                                      flip_left_right=flip_left_right,
+                                      rotate_angle=self._rotate_angle)
 
         elif self._camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
             self.__camera = FileSystemCamera(self._path_to_images)
@@ -76,6 +84,9 @@ class Camera(Stateful, Recreatable):
             "path_to_images": path_to_images,
             "format": format,
             "name": self.name,
+            "flip_top_bottom": self._flip_top_bottom,
+            "flip_left_right": self._flip_left_right,
+            "rotate_angle": self._rotate_angle,
         })
 
     @property

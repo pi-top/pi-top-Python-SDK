@@ -4,8 +4,8 @@ from flask_sockets import Sockets
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 
-from pitopcommon.sys_info import get_internal_ip
-from pitopcommon.formatting import is_url
+from pitop.common.sys_info import get_internal_ip
+from pitop.common.formatting import is_url
 
 from .blueprints.base import BaseBlueprint
 

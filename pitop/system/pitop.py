@@ -1,4 +1,4 @@
-from pitopcommon.singleton import Singleton
+from pitop.common.singleton import Singleton
 from pitop.core.mixins import (
     Componentable,
     SupportsBattery,

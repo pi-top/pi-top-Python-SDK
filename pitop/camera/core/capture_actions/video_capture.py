@@ -1,7 +1,6 @@
-from imageio import get_writer
 from numpy import asarray
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .capture_action_base import CaptureActionBase
 
@@ -18,6 +17,7 @@ class VideoCapture(CaptureActionBase):
     """
 
     def __init__(self, output_file_name="", fps=20.0, resolution=None):
+        from imageio import get_writer
         default_video_resolution = (640, 368)
 
         if output_file_name == "":

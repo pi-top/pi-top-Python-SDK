@@ -74,74 +74,85 @@ __keywords__ = [
 ]
 
 __requires__ = [
-    ####################################
-    # Utilities - functions, IDs, etc. #
-    ####################################
-    "pitopcommon",
+    #############
+    # Utilities #
+    #############
+    # For reviewing DHCP leases
+    "isc_dhcp_leases>=0.9.1,<0.10.0",
+    # For network interface checking
+    "netifaces>=0.10.4,<0.11.0",
+    # For journal logging
+    "systemd-python>=234,<235",
+    # SMBusDevice (PMA)
+    "smbus2>=0.4.0,<0.5.0",
+    # Device Communication
+    "pyzmq>=17.1.2,<17.2.0",
+    # Images
+    "opencv>=3.2.0,<3.3",
 
     #######
     # PMA #
     #######
     # To use GPIO & components
-    "gpiozero",
+    "gpiozero>=1.6.2,<1.7",
     # To perform operations with images
-    "imageio",
+    "imageio>=2.4.1,<2.5",
     # Camera uses numpy arrays for image data
-    "numpy",
+    "numpy>=1.16.0,<1.17",
     # Manage camera images
-    "Pillow",
-    # Camera communication
-    "PyV4L2Camera",
+    "Pillow>=5.4.0,<5.5",
     # IMU Calibration
-    "matplotlib",
-    "scipy",
+    "matplotlib>=3.0.0,<3.1",
+    "scipy>=1.1.0,<1.2",
 
-    ############
-    # Keyboard #
-    ############
-    "pynput",
-
-    ########
-    # OLED #
-    ########
-    "luma.oled",
-    "luma.core",
-    "monotonic",
-    "pyinotify",
-
-    ##########
-    # Proto+ #
-    ##########
-    "python-sonic",
+    ##############
+    # Miniscreen #
+    ##############
+    "monotonic>=1.1,<1.2",
+    "pyinotify>=0.9.6,<0.10",
+    "RPi.GPIO>=0.7.0<0.8.0",
+    "spidev>=3.5<3.6",
 
     #########
     # Pulse #
     #########
-    "pyserial",
-
-    ##############
-    # Algorithms #
-    ##############
-    "simple_pid",
+    "pyserial>=3.4,<3.5",
 
     #############
     # Webserver #
     #############
-    "flask",
-    "flask-cors",
-    "flask-sockets",
-    "gevent",
-    "gevent-websocket",
+    "flask>=1.0.2,<1.1",
+    "flask-cors>=3.0.7,<3.1",
+    "flask-sockets>=0.2.1,<0.3",
+    "gevent>=1.3.7,<1.4",
+    "gevent-websocket>=0.10.1,<0.11.0",
 
     #############################
     # Advanced image processing #
     #############################
-    "imutils",
+    "dlib>=19.22.0,<19.23.0",
+    "imutils>=0.5.4,<0.6.0",
+
+    ########################
+    # Download Model Files #
+    ########################
+    "wget>=3.2,<4.0",
 ]
 
 __extra_requires__ = {
-    "computer_vision": ["opencv"],
-    "doc": ["sphinx"],
+    "computer_vision": [
+        ###################
+        # Use Model Files #
+        ###################
+        # python3-onnxruntime is currently 1.7.2-1 on Buster
+        # but PyPI has 1.7.0, 1.8.0 and 1.8.1
+        #
+        # We allow all because new features shouldn't affect our use-case
+        #
+        # TODO: Build python3-onnxruntime 1.8.1
+        "onnxruntime>=1.7.2,<1.9",
+    ],
+    "doc": ["sphinx>=1.8.4,<1.9"],
 }
 
 __entry_points__ = {
