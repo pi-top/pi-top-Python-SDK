@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from pitop.battery import Battery
 from .cli_base import CliBaseClass
 
 
@@ -30,6 +29,7 @@ class BatteryCLI(CliBaseClass):
         if self.args.wattage:
             self.args_order.append('wattage')
 
+        from pitop.battery import Battery
         charging_state, capacity, time_remaining, wattage = Battery.get_full_state()
 
         if len(self.args_order) > 0:

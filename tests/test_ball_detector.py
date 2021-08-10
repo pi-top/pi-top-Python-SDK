@@ -5,8 +5,6 @@ from unittest.mock import Mock
 modules_to_patch = [
     "imageio",
     "pitop.common",
-    "PyV4L2Camera.camera",
-    "PyV4L2Camera.exceptions",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
