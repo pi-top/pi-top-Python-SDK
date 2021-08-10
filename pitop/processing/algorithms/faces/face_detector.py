@@ -1,23 +1,25 @@
-from typing import Union
-from pitop.processing.core.load_models import load_face_landmark_predictor
-from pitop.core import ImageFunctions
-from imutils import (
-    face_utils,
-    resize,
-)
-from imutils.video import FPS
-from os import getenv
 import atexit
+from os import getenv
+from typing import Union
+
+from imutils.video import FPS
+
+from pitop.core import ImageFunctions
+from pitop.processing.algorithms.faces.core.face import Face
+from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.processing.core.vision_functions import (
     import_dlib,
+    import_face_utils,
+    import_imutils,
     import_opencv,
     tuple_for_color_by_name,
 )
-from .core.face import Face
 
 
-cv2 = import_opencv()
-dlib = import_dlib()
+cv2 = None
+dlib = None
+imutils = None
+face_utils = None
 
 
 class FaceDetector:
@@ -38,6 +40,8 @@ class FaceDetector:
         slightly better performance whilst retaining ability to calculate face angle. May be incompatible with further
          processing e.g. emotion detection requires the 68-landmark version.
         """
+        self.__import_libs()
+
         self._image_processing_width = image_processing_width
         self._format = format
         self._face_rectangle_detector = dlib.get_frontal_face_detector()
@@ -60,6 +64,7 @@ class FaceDetector:
         :param frame: Image frame in OpenCV or PIL format.
         :return: Face object containing data about the detected face.
         """
+        self.__import_libs()
         frame = ImageFunctions.convert(frame, format='OpenCV')
 
         if self._frame_scaler is None:
@@ -92,6 +97,17 @@ class FaceDetector:
 
         return self.face
 
+    def __import_libs(self):
+        global cv2, dlib, imutils, face_utils
+        if cv2 is None:
+            cv2 = import_opencv()
+        if dlib is None:
+            dlib = import_dlib()
+        if face_utils is None:
+            face_utils = import_face_utils()
+        if imutils is None:
+            imutils = import_imutils()
+
     def __get_frame_to_process(self, frame):
         """Resize frame, convert to grayscale and use contrast limited adaptive
         histogram equalization (CLAHE) to improve the contrast of the image so
@@ -102,7 +118,7 @@ class FaceDetector:
         """
         return self._clahe_filter.apply(
             cv2.cvtColor(
-                resize(frame, width=self._image_processing_width),
+                imutils.resize(frame, width=self._image_processing_width),
                 cv2.COLOR_BGR2GRAY
             )
         )
