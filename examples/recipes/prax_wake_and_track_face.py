@@ -84,7 +84,6 @@ def main():
             distance = robot.ultrasonic.distance
 
             if distance < 0.05:
-                pass
                 wake_and_shake()
 
             sleep(0.1)
