@@ -111,6 +111,7 @@ autodoc_mock_imports = [
     'scipy',
     'serial',
     'simple_pid',
+    'smbus',
     'smbus2',
     'spidev',
     'zmq',
