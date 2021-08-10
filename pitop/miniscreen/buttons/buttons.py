@@ -1,11 +1,11 @@
 from pitop.miniscreen import MiniscreenButton
 
-from pitopcommon.ptdm import (
+from pitop.common.ptdm import (
     PTDMSubscribeClient,
     Message
 )
-from pitopcommon.lock import PTLock
-from pitopcommon.singleton import Singleton
+from pitop.common.lock import PTLock
+from pitop.common.singleton import Singleton
 
 from os import getenv
 import atexit

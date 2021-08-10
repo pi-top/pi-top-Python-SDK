@@ -3,7 +3,7 @@ from math import (
     radians,
 )
 from time import sleep
-from simple_pid import PID
+from .simple_pid import PID
 from pitop.core.mixins import (
     Stateful,
     Recreatable,

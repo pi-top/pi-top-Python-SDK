@@ -23,7 +23,11 @@ from pyinotify import (
     ProcessEvent,
     WatchManager,
 )
-from threading import Thread
+from threading import (
+    Thread,
+    current_thread,
+    main_thread,
+)
 from time import sleep
 
 
@@ -107,7 +111,7 @@ class OLED:
     def device(self):
         """Gets the miniscreen display device instance.
 
-        :rtype: :class:`luma.oled.device.sh1106`
+        :rtype: :class:`pitop.miniscreen.oled.core.contrib.luma.oled.device.sh1106`
         """
         return self.__controller.get_device()
 
@@ -284,7 +288,7 @@ class OLED:
             invert=invert,
         )
 
-    def display_text(self, text, xy=None, font_size=None, invert=False):
+    def display_text(self, text, xy=None, font_size=None, font=None, invert=False):
         """Renders a single line of text to the screen at a given position and
         size.
 
@@ -297,6 +301,8 @@ class OLED:
             the screen.
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
+        :param string font: A filename or path of a TrueType or OpenType font.
+            If not provided or passed as `None`, the default font will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         if xy is None:
@@ -304,6 +310,9 @@ class OLED:
 
         if font_size is None:
             font_size = 30
+
+        if font is None:
+            font = self.__font_path()
 
         # Create empty image
         image = self.__empty_image
@@ -313,7 +322,7 @@ class OLED:
             xy,
             str(text),
             font=ImageFont.truetype(
-                self.__font_path(),
+                font,
                 size=font_size
             ),
             fill=1,
@@ -324,7 +333,7 @@ class OLED:
         # Display image
         self.display_image(image, invert=invert)
 
-    def display_multiline_text(self, text, xy=None, font_size=None):
+    def display_multiline_text(self, text, xy=None, font_size=None, font=None):
         """Renders multi-lined text to the screen at a given position and size.
         Text that is too long for the screen will automatically wrap to the
         next line.
@@ -338,6 +347,8 @@ class OLED:
             the screen.
         :param int font_size: The font size in pixels. If not provided or passed as
             `None`, the default font size will be used
+        :param string font: A filename or path of a TrueType or OpenType font.
+            If not provided or passed as `None`, the default font will be used
         """
         if xy is None:
             xy = self.top_left
@@ -345,12 +356,15 @@ class OLED:
         if font_size is None:
             font_size = 30
 
+        if font is None:
+            font = self.__font_path()
+
         # Create empty image
         image = self.__empty_image
 
         # Create font
         font = ImageFont.truetype(
-            self.__font_path(),
+            font,
             size=font_size
         )
 
@@ -437,10 +451,10 @@ class OLED:
         :param bool loop: Set whether the image animation should start again when it
             has finished
         """
+        self.stop_animated_image()
         self.__kill_thread = False
         if background is True:
-            self.__auto_play_thread = Thread(
-                target=self.__auto_play, args=(image, loop))
+            self.__auto_play_thread = Thread(target=self.__auto_play, args=(image, loop))
             self.__auto_play_thread.start()
         else:
             self.__auto_play(image, loop)
@@ -448,7 +462,11 @@ class OLED:
     def stop_animated_image(self):
         """Stop background animation started using `start()`, if currently
         running."""
-        if self.__auto_play_thread is not None:
+        if current_thread() is not main_thread():
+            # thread that runs an animation in the background can't "join" itself
+            return
+
+        if self.__auto_play_thread is not None and self.__auto_play_thread.is_alive():
             self.__kill_thread = True
             self.__auto_play_thread.join()
 
@@ -652,6 +670,7 @@ class OLED:
         self.__file_monitor_thread.start()
 
     def __cleanup(self):
+        self.stop_animated_image()
         if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
 

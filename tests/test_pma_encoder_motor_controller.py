@@ -4,21 +4,14 @@ from unittest.mock import Mock, patch
 
 modules_to_patch = [
     "pitop.camera",
+    "pitop.common",
     "numpy",
-    "pitopcommon.smbus_device",
-    "pitopcommon.logger",
-    "pitopcommon.singleton",
-    "pitopcommon.common_ids",
-    "pitopcommon.current_session_info",
-    "pitopcommon.ptdm",
-    "pitopcommon.firmware_device",
-    "pitopcommon.command_runner",
-    "pitopcommon.common_names",
-
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
+
 from pitop.pma.parameters import BrakingType
+
 from pitop.pma.common.encoder_motor_registers import (
     MotorControlRegisters,
     MotorRegisterTypes,
