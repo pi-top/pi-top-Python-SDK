@@ -18,8 +18,8 @@ from pitop.system import pitop_peripherals, device_type
 
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
-from pitop.common.pt_os import get_legacy_pitopOS_info, get_pitopOS_info
-from pitop.common.sys_info import get_maj_debian_version, get_debian_version, get_uname_release, get_uname_version
+from pitop.common.pt_os import get_pitopOS_info
+from pitop.common.sys_info import get_debian_version, get_uname_release, get_uname_version
 
 
 def str_to_bool(value):
@@ -234,13 +234,9 @@ class HealthCheck:
             ("Kernel Release", get_uname_version())
         ]
 
-        if get_maj_debian_version() < 11:
-            data = get_legacy_pitopOS_info()
-        else:
-            data = get_pitopOS_info().as_dict()
-
-        for k, v in data.items():
-            sys_info_arr.append((k, v))
+        data = get_pitopOS_info()
+        for k, v in data.__dict__.items():
+            sys_info_arr.append((k.replace("_", " ").title(), v))
 
         return sys_info_arr
 
