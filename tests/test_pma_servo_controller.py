@@ -9,9 +9,9 @@ modules_to_patch = [
     "gpiozero.exc",
     "cv2",
     "numpy",
-    "pitopcommon.smbus_device",
-    "pitopcommon.logger",
-    "pitopcommon.singleton",
+    "pitop.common.smbus_device",
+    "pitop.common.logger",
+    "pitop.common.singleton",
     "pitop.pma.ultrasonic_sensor",
 ]
 for module in modules_to_patch:

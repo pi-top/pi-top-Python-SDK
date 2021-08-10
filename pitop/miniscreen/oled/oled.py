@@ -111,7 +111,7 @@ class OLED:
     def device(self):
         """Gets the miniscreen display device instance.
 
-        :rtype: :class:`luma.oled.device.sh1106`
+        :rtype: :class:`pitop.miniscreen.oled.core.contrib.luma.oled.device.sh1106`
         """
         return self.__controller.get_device()
 

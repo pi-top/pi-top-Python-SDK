@@ -2,9 +2,9 @@
 from .cli_base import CliBaseClass, PitopCliInvalidArgument
 from .imu_calibration import ImuCalibration
 
-from pitopcommon.common_ids import FirmwareDeviceID
-from pitopcommon.common_names import DeviceName
-from pitopcommon.firmware_device import FirmwareDevice
+from pitop.common.common_ids import FirmwareDeviceID
+from pitop.common.common_names import DeviceName
+from pitop.common.firmware_device import FirmwareDevice
 
 from os import path
 from subprocess import getstatusoutput

@@ -1,6 +1,6 @@
 from numpy import asarray
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from .capture_action_base import CaptureActionBase
 
