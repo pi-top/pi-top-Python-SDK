@@ -1,7 +1,4 @@
 #! /usr/bin/python3
-
-from pitop.system import device_type
-
 from .cli_base import CliBaseClass, PitopCliInvalidArgument
 from .imu_calibration import ImuCalibration
 
@@ -23,6 +20,7 @@ class ImuCLI(CliBaseClass):
 
     def run(self) -> int:
         # Check if device is a pi-top[4]
+        from pitop.system import device_type
         is_pi_four = device_type() == DeviceName.pi_top_4.value
         if not is_pi_four:
             print("This CLI only runs on a pi-top [4].", file=stderr)
