@@ -180,8 +180,8 @@ class DriveController4WD(Stateful, Recreatable):
         """Stop any angular movement performed by the robot.
 
         In the case where linear and rotational movements are being
-        performed at the same time, calling this method will cause the robot
-        to continue the linear movement, so it will continue to move
-        forward.
+        performed at the same time, calling this method will cause the
+        robot to continue the linear movement, so it will continue to
+        move forward.
         """
         self.robot_move(linear_x=self._linear_speed_x_hold, linear_y=self._linear_speed_y_hold, angular_z=0)
