@@ -1,9 +1,8 @@
+from os import listdir
 from PIL import Image
-from os import listdir, system
 
-from PyV4L2Camera.camera import Camera as V4L2Camera
-from PyV4L2Camera.exceptions import CameraError as V4L2CameraError
-from pitop.common.command_runner import run_command
+from pitop.core.import_opencv import import_opencv
+from pitop.core.ImageFunctions import convert
 
 
 valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
@@ -17,10 +16,10 @@ class UsbCamera:
                  flip_top_bottom: bool = False,
                  flip_left_right: bool = False):
 
-        # if no index is provided, loop over available video devices
-        indexes = self.list_device_indexes() if index is None else [index]
+        VideoCapture = import_opencv().VideoCapture
+
         self.__camera = None
-        self.index = None
+        self.index = -1 if index is None else index
 
         self._flip_top_bottom = flip_top_bottom
         self._flip_left_right = flip_left_right
@@ -33,40 +32,36 @@ class UsbCamera:
             self._rotate_angle = rotate_angle
 
         def create_camera_object(index, resolution=None):
+            cap = VideoCapture(index)
             if resolution is not None:
-                return V4L2Camera(f"/dev/video{index}", resolution[0], resolution[1])
-            else:
-                return V4L2Camera(f"/dev/video{index}")
+                cap.set(3, resolution[0])
+                cap.set(4, resolution[1])
+            return cap
 
-        for idx in indexes:
-            try:
-                self.__camera = create_camera_object(idx, resolution)
-                if self.__camera:
-                    self.index = idx
-                    break
-            except V4L2CameraError:
-                continue
-
-        if self.__camera is None:
+        self.__camera = create_camera_object(self.index, resolution)
+        if not self.is_opened():
+            self.__camera = None
             raise IOError("Error opening camera. Make sure it's correctly connected via USB.") from None
 
     def __del__(self):
         try:
-            if hasattr(self.__camera, "close"):
-                self.__camera.close()
+            if hasattr(self.__camera, "release"):
+                self.__camera.release()
         except AttributeError:
             # Camera was not initialized
             pass
 
     def get_frame(self):
+        if not self.is_opened():
+            raise IOError("Camera not connected")
+
+        result, frame = self.__camera.read()
+        if not result:
+            raise ValueError("Couldn't grab frame from camera")
+
         # Always PIL format
-        pil_image = Image.frombytes(
-            'RGB',
-            (self.__camera.width, self.__camera.height),
-            self.__camera.get_frame(),
-            'raw',
-            'RGB'
-        ).rotate(angle=self._rotate_angle, expand=True)
+        pil_image = convert(frame, "PIL").rotate(angle=self._rotate_angle,
+                                                 expand=True)
 
         if self._flip_top_bottom:
             pil_image = pil_image.transpose(method=Image.FLIP_TOP_BOTTOM)
@@ -76,31 +71,30 @@ class UsbCamera:
 
         return pil_image
 
+    def is_opened(self):
+        return self.__camera is not None and self.__camera.isOpened()
+
     @staticmethod
     def list_device_indexes():
-        try:
-            run_command("dpkg -l v4l-utils", timeout=1, log_errors=False)
-        except Exception:
-            print("Warning: can't autodetect camera device indexes, using default value 0.")
-            print("Warning: Package v4l-utils is not installed. You can install it by running 'sudo apt install v4l-utils'.")
-            return [0]
+        VideoCapture = import_opencv().VideoCapture
 
-        indexes = []
+        # find "video" device indexes in /dev
         device_names = [name for name in listdir("/dev") if "video" in name]
+        device_indexes = [int(dev[len("video"):]) for dev in device_names]
+        # indexes >= 10 are for bcm2835, not useful for us
+        camera_indexes = [i for i in device_indexes if i < 10]
+        camera_indexes.sort()
 
         # Not all devices actually provide video
         # eg: video1 can be a metadata device for video0
-        for device in device_names:
-            cmd = f"v4l2-ctl --list-formats --device /dev/{device} | grep -qE '[[0-9]]'"
+        indexes = []
+        for index in camera_indexes:
             try:
-                if system(cmd) != 0:
-                    continue
-                index = int(device[len("video"):])
-                # indexes > 10 are for bcm2835, not useful for us
-                if index < 10:
+                cap = VideoCapture(index)
+                if cap.read()[0]:
                     indexes.append(index)
+                    cap.release()
             except Exception:
                 continue
 
-        indexes.sort()
         return indexes
