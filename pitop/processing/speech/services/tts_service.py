@@ -5,9 +5,8 @@ from abc import (
 
 
 class AttributeMeta(ABCMeta):
-    """
-    Metaclass for ensuring children of abstract base class define specified attributes.
-    """
+    """Metaclass for ensuring children of abstract base class define specified
+    attributes."""
     required_attributes = []
 
     def __call__(cls, *args, **kwargs):
