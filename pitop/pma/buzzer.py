@@ -4,6 +4,7 @@ from pitop.core.mixins import (
     Recreatable,
 )
 from pitop.pma.common import get_pin_for_port
+from pitop.pma.common.utils import Port
 
 
 class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
