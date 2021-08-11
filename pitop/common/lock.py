@@ -16,7 +16,7 @@ class PTLock(object):
     __locked_by_self = False
 
     def __init__(self, id):
-        self.path = "/tmp/%s.lock" % id
+        self.path = f"/tmp/.com.pi-top.sdk.{id}.lock"
 
         self._thread_lock = Lock()
 
