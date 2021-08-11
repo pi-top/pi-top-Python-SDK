@@ -35,8 +35,6 @@ class OLED:
     """Provides access to the miniscreen display on the pi-top [4], and exposes
     methods for simple rendering of text or images to the screen."""
 
-    __LOCK_FILE_PATH = "/tmp/.com.pi-top.sdk.pt-oled.lock"
-
     def __init__(self):
         self.__controller = OledDeviceController(self._redraw_last_image)
 
@@ -660,7 +658,7 @@ class OLED:
                 events_to_watch = events_to_watch | IN_OPEN
 
             wm = WatchManager()
-            wm.add_watch(self.__LOCK_FILE_PATH, events_to_watch)
+            wm.add_watch(self.__controller.lock.path, events_to_watch)
             notifier = Notifier(wm, eh)
             notifier.loop()
 
