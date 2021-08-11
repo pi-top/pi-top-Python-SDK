@@ -1,29 +1,41 @@
+import atexit
 from collections import deque
+from os import getenv
+from typing import Union
+
 import numpy as np
+from imutils.video import FPS
+
 from pitop.core import ImageFunctions
+from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
-)
-from typing import Union
-from imutils import resize, grab_contours
-from imutils.video import FPS
-from os import getenv
-from pitop.core.data_structures import DotDict
-import atexit
-from pitop.processing.core.vision_functions import (
+    import_imutils,
     import_opencv,
-    tuple_for_color_by_name
+    tuple_for_color_by_name,
 )
-cv2 = import_opencv()
 
 
 VALID_COLORS = ["red", "green", "blue"]
 DETECTION_POINTS_BUFFER_LENGTH = 16
 
+cv2 = None
+imutils = None
+
+
+def import_libs():
+    global cv2, imutils
+    if cv2 is None:
+        cv2 = import_opencv()
+    if imutils is None:
+        imutils = import_imutils()
+
 
 class BallLikeness:
     def __init__(self, contour):
+        import_libs()
+
         self.contour = contour
         self.pos, self.radius = cv2.minEnclosingCircle(self.contour)
         self.area = cv2.contourArea(self.contour)
@@ -43,7 +55,7 @@ class BallLikeness:
         cv2.circle(mask_to_compare, (int(self.radius), int(self.radius)), int(self.radius), 255, -1)
 
         return max(
-            grab_contours(
+            imutils.grab_contours(
                 cv2.findContours(mask_to_compare, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             ), key=cv2.contourArea
         )
@@ -145,6 +157,8 @@ class BallDetector:
         :param int image_processing_width: image width to scale to for image processing
         :param str format: output image format
         """
+        import_libs()
+
         self._image_processing_width = image_processing_width
         self.format = format
         self.balls = {c: Ball(c) for c in VALID_COLORS}
@@ -172,6 +186,7 @@ class BallDetector:
 
             return colors
 
+        import_libs()
         frame = ImageFunctions.convert(frame, format="OpenCV")
 
         if self._frame_scaler is None:
@@ -267,7 +282,7 @@ class BallDetector:
     def __find_contours(self, frame, color):
         mask = self.__get_color_mask(frame, color=color)
 
-        return grab_contours(  # fixes problems with OpenCV changing their protocol
+        return imutils.grab_contours(  # fixes problems with OpenCV changing their protocol
             cv2.findContours(
                 mask.copy(),
                 cv2.RETR_EXTERNAL,
@@ -276,7 +291,7 @@ class BallDetector:
         )
 
     def __find_most_likely_ball(self, ball, frame, color):
-        resized_frame = resize(frame, width=self._image_processing_width)
+        resized_frame = imutils.resize(frame, width=self._image_processing_width)
         contours = self.__find_contours(resized_frame, color)
         if len(contours) == 0:
             ball.center_points.appendleft(None)

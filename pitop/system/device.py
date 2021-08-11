@@ -1,7 +1,7 @@
-from pitopcommon.common_ids import DeviceID
-from pitopcommon.ptdm import PTDMRequestClient, Message
-from pitopcommon.firmware_device import FirmwareDevice
-from pitopcommon.common_ids import FirmwareDeviceID
+from pitop.common.common_ids import DeviceID
+from pitop.common.ptdm import PTDMRequestClient, Message
+from pitop.common.firmware_device import FirmwareDevice
+from pitop.common.common_ids import FirmwareDeviceID
 
 from subprocess import getstatusoutput
 

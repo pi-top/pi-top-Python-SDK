@@ -1,14 +1,22 @@
-from matplotlib import colors
-from imutils import grab_contours
+from pitop.core.import_opencv import import_opencv
 
 
-def import_opencv():
+def import_imutils():
     try:
-        import cv2
-        return cv2
+        import imutils
+        return imutils
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
-            "OpenCV Python library is not installed. You can install it by running 'sudo apt install python3-opencv libatlas-base-dev'.") from None
+            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
+
+
+def import_face_utils():
+    try:
+        import imutils.face_utils
+        return imutils.face_utils
+    except (ImportError, ModuleNotFoundError):
+        raise ModuleNotFoundError(
+            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
 
 
 def import_dlib():
@@ -37,6 +45,7 @@ def color_mask(frame, hsv_lower, hsv_upper):
 def find_largest_contour(frame):
     cv2 = import_opencv()
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
+    from imutils import grab_contours
     contours = grab_contours(cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
 
     # Find the biggest contour (if detected)
@@ -142,6 +151,7 @@ def tuple_for_color_by_name(color_name, bgr=False):
         # lime:  (0, 255, 0)
         color_name = "lime"
 
+    from matplotlib import colors
     values = tuple(int(i * 255) for i in colors.to_rgb(color_name))
     if bgr:
         return values[::-1]
