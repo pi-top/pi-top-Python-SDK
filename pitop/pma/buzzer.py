@@ -44,25 +44,25 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
         contrast, the close method provides a means of ensuring that the object
         is shut down.
 
-        For example, if you have a buzzer connected to port D4, but then wish
+        For example, if you have a buzzer connected to port D0, but then wish
         to attach an LED instead:
 
             >>> from pitop import Buzzer, LED
-            >>> bz = Buzzer("D4")
+            >>> bz = Buzzer("D0")
             >>> bz.on()
             >>> bz.off()
             >>> bz.close()
-            >>> led = LED("D4")
+            >>> led = LED("D0")
             >>> led.blink()
 
         :class:`Device` descendents can also be used as context managers using
         the :keyword:`with` statement. For example:
 
             >>> from pitop import Buzzer, LED
-            >>> with Buzzer("D4") as bz:
+            >>> with Buzzer("D0") as bz:
             ...     bz.on()
             ...
-            >>> with LED("D4") as led:
+            >>> with LED("D0") as led:
             ...     led.on()
             ...
         """
