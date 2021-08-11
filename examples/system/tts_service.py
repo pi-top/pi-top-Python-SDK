@@ -4,6 +4,6 @@ config = {
     "language": "us",
 }
 
-tts = tts.services.get(service_id="FESTIVAL", **config)
+speech = tts.services.get(service_id="FESTIVAL", **config)
 
-tts.say("This is the festival tts service")
+speech.say("This is the festival tts service")
