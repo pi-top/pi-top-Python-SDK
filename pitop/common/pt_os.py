@@ -9,9 +9,9 @@ legacy_ptissue_path = "/etc/pt-issue"
 
 @dataclass
 class PitopOsBuildInfo:
-    build_date: str
-    build_run_number: str
-    build_commit: str
+    build_date: str = ""
+    build_run_number: str = ""
+    build_commit: str = ""
     # latest fields
     schema_version: str = ""
     build_type: str = ""
