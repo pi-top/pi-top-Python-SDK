@@ -83,7 +83,7 @@ def save_gif_as_startup():
     display_saving_dialog()
 
     # Save file
-    gif.save('/etc/pi-top/pt-sys-oled/startup.gif', save_all=True)
+    gif.save('/etc/pi-top/pt-miniscreen/startup.gif', save_all=True)
 
     # Go back to the start
     display_instructions_dialog()

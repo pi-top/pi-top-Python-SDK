@@ -50,7 +50,7 @@ class OLED:
         self.__visible = False
         self.__auto_play_thread = None
 
-        # Lock file monitoring - used by pt-sys-oled
+        # Lock file monitoring - used by pt-miniscreen/pt-sys-oled
         self.__file_monitor_thread = None
         self.__when_user_stops_using_oled = None
         self.__when_user_starts_using_oled = None
