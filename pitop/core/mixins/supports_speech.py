@@ -1,7 +1,9 @@
+from pitop.processing import tts
+
+
 class SupportsSpeech:
-    def __init__(self):
-        from pitop.processing.speech import services
-        self._tts = services.get("DEFAULT")
+    def __init__(self, service_id: str = "DEFAULT"):
+        self._tts = tts.services.get(service_id=service_id)
 
     @property
     def speak(self):

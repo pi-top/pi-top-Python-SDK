@@ -1,9 +1,9 @@
-from pitop.processing.speech import services
+from pitop.processing import tts
 
 config = {
     "language": "us",
 }
 
-tts = services.get(service_id="FESTIVAL", **config)
+tts = tts.services.get(service_id="FESTIVAL", **config)
 
-tts.say("This is the festival speech service")
+tts.say("This is the festival tts service")

@@ -8,9 +8,9 @@ class FestivalBuilder:
     def __init__(self):
         self._instance = None
 
-    def __call__(self, language, **ignored):
+    def __call__(self, **kwargs):
         if self._instance is None:
-            self._instance = FestivalService(language=language)
+            self._instance = FestivalService(**kwargs)
         return self._instance
 
 
@@ -18,7 +18,7 @@ class FestivalService(TTSService):
 
     __VOICE_DIR = os.path.join(os.sep, "usr", "share", "festival", "voices")
 
-    def __init__(self, language="us"):
+    def __init__(self, language="us", **_ignored):
         self._speed = 1.0
         self._available_voices = self.__get_available_voices()
         self._language = language
