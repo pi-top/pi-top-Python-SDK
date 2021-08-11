@@ -1,6 +1,6 @@
 import os
 import festival
-from processing.speech.services.tts_service import TTSService
+from .tts_service import TTSService
 from threading import Thread
 
 
@@ -8,9 +8,9 @@ class FestivalBuilder:
     def __init__(self):
         self._instance = None
 
-    def __call__(self, **ignored):
+    def __call__(self, language, **ignored):
         if self._instance is None:
-            self._instance = FestivalService()
+            self._instance = FestivalService(language=language)
         return self._instance
 
 
@@ -18,10 +18,10 @@ class FestivalService(TTSService):
 
     __VOICE_DIR = os.path.join(os.sep, "usr", "share", "festival", "voices")
 
-    def __init__(self):
+    def __init__(self, language="us"):
         self._speed = 1.0
         self._available_voices = self.__get_available_voices()
-        self._language = "us"
+        self._language = language
         self._voice = self._available_voices.get(self.language)[0]
         self.set_voice(self._language, self._voice)
         self._say_thread = Thread()
