@@ -1,1 +1,1 @@
-from .text_to_speech import TTS
+from .tts import services

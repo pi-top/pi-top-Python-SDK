@@ -1,22 +1,37 @@
-import festival
 import os
+import festival
+from processing.speech.services.tts_service import TTSService
 
 
-class TTS:
+class FestivalBuilder:
+    def __init__(self):
+        self._instance = None
+
+    def __call__(self, **ignored):
+        if self._instance is None:
+            self._instance = FestivalService()
+        return self._instance
+
+
+class FestivalService(TTSService):
+
     __VOICE_DIR = os.path.join(os.sep, "usr", "share", "festival", "voices")
 
     def __init__(self):
         self._speed = 1.0
-        self.__voices = self.get_voices()
-        self._language = None
-        self.language = "us"
-        self._voice = None
-        self.voice = self.__voices.get(self.language)[0]
+        self._available_voices = self.__get_available_voices()
+        self._language = "us"
+        self._voice = self._available_voices.get(self.language)[0]
+        self.set_voice(self._language, self._voice)
 
-    def __call__(self, text: str):
-        festival.sayText(text)
+    def __call__(self, text: str, blocking: bool = True):
+        self.say(text=text, blocking=blocking)
 
-    def get_voices(self):
+    def say(self, text: str, blocking: bool = True) -> None:
+        if blocking:
+            festival.sayText(text)
+
+    def __get_available_voices(self):
         languages = os.listdir(self.__VOICE_DIR)
         language_dirs = (os.path.join(self.__VOICE_DIR, lang) for lang in languages)
 
@@ -27,32 +42,33 @@ class TTS:
         return voice_dict
 
     @property
-    def voice(self):
-        return self._voice
+    def available_voices(self) -> dict:
+        return self._available_voices
 
-    @voice.setter
-    def voice(self, voice: str):
-        available_voices = self.__voices.get(self.language)
+    def set_voice(self, language: str, voice: str) -> None:
+        available_languages = list(self._available_voices.keys())
+        if language not in available_languages:
+            raise ValueError("Invalid language choice. Please choose from:\n"
+                             f"{available_languages}")
+
+        available_voices = self._available_voices.get(language)
         if voice not in available_voices:
             raise ValueError(f"Invalid voice choice. Please choose from:\n"
                              f"{available_voices}\n"
                              f"Or choose a different language. Run display_voices() method to see what is available.")
+
         self._voice = voice
         success = festival.execCommand(f"(voice_{self._voice})")
         if not success:
             print("Changing voice failed.")
 
     @property
+    def voice(self):
+        return self._voice
+
+    @property
     def language(self):
         return self._language
-
-    @language.setter
-    def language(self, language: str):
-        available_languages = list(self.__voices.keys())
-        if language not in available_languages:
-            raise ValueError("Invalid language choice. Please choose from:\n"
-                             f"{available_languages}")
-        self._language = language
 
     @property
     def speed(self):
@@ -68,9 +84,3 @@ class TTS:
 
         if not success:
             print("Changing speed failed.")
-
-    def display_voices(self):
-        print("LANGUAGE   VOICES")
-        for language, voices in self.__voices.items():
-            print(f"{language:<10} {', '.join(voices)}")
-        print()
