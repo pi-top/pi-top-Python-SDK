@@ -1,5 +1,5 @@
 from .object_factory import ObjectFactory
-from processing.speech.services.festival_service import FestivalBuilder
+from .services.festival_service import FestivalBuilder
 
 
 class TTSServiceProvider(ObjectFactory):

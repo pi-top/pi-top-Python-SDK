@@ -7,6 +7,7 @@ pitop.speak.print_voices()
 
 voices = pitop.speak.available_voices
 
+
 for language, voices in voices.items():
     for voice in voices:
         pitop.speak.set_voice(language, voice)

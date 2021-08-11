@@ -1,6 +1,7 @@
 import os
 import festival
 from processing.speech.services.tts_service import TTSService
+from threading import Thread
 
 
 class FestivalBuilder:
@@ -23,13 +24,33 @@ class FestivalService(TTSService):
         self._language = "us"
         self._voice = self._available_voices.get(self.language)[0]
         self.set_voice(self._language, self._voice)
+        self._say_thread = Thread()
 
     def __call__(self, text: str, blocking: bool = True):
         self.say(text=text, blocking=blocking)
 
     def say(self, text: str, blocking: bool = True) -> None:
+        def sayText(_text):
+            festival.sayText(_text)
+
+        if not self.__validate_request(text):
+            return
+
         if blocking:
-            festival.sayText(text)
+            sayText(text)
+        else:
+            self._say_thread = Thread(target=sayText, args=(text,), daemon=True)
+            self._say_thread.start()
+
+    def __validate_request(self, text):
+        if text == "" or type(text) != str:
+            raise ValueError("Text must be a string and cannot be empty.")
+
+        if self._say_thread.is_alive():
+            print("Speech already in progress, request cancelled.")
+            return False
+
+        return True
 
     def __get_available_voices(self):
         languages = os.listdir(self.__VOICE_DIR)
