@@ -1,8 +1,9 @@
 import os
-import festival
 from .tts_service import TTSService
 from threading import Thread
-
+from typing import Optional
+import festival
+# from importlib import reload
 
 class FestivalBuilder:
     def __init__(self):
@@ -66,21 +67,28 @@ class FestivalService(TTSService):
     def available_voices(self) -> dict:
         return self._available_voices
 
-    def set_voice(self, language: str, voice: str) -> None:
+    def set_voice(self, language: str, voice: Optional[str] = None) -> None:
         available_languages = list(self._available_voices.keys())
         if language not in available_languages:
             raise ValueError("Invalid language choice. Please choose from:\n"
                              f"{available_languages}")
 
         available_voices = self._available_voices.get(language)
+
+        voice = available_voices[0] if voice is None else voice
+
         if voice not in available_voices:
             raise ValueError(f"Invalid voice choice. Please choose from:\n"
                              f"{available_voices}\n"
-                             f"Or choose a different language. Run display_voices() method to see what is available.")
+                             f"Or choose a different language. "
+                             f"Run display_voices() method to see what is available.")
 
-        self._voice = voice
-        success = festival.execCommand(f"(voice_{self._voice})")
-        if not success:
+        success = festival.execCommand(f"(voice_{voice})")
+
+        if success:
+            self._voice = voice
+            self._language = language
+        else:
             print("Changing voice failed.")
 
     @property
