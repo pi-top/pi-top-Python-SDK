@@ -1,0 +1,46 @@
+name: Update Debian Package Changelog
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  CHANGELOG_AUTHOR_NAME: "pi-top"
+  CHANGELOG_AUTHOR_EMAIL: "deb-maintainers@pi-top.com"
+  COMMIT_MESSAGE_PREFIX: "New changelog entry:"
+
+jobs:
+  bump-changelog-on-pr:
+    runs-on: ubuntu-20.04
+    # if last commit was not a merge of the changelog
+    # env vars can't be used in if checks
+    if: ${{ ! contains(github.event.head_commit.message, 'New changelog entry:') }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.4
+
+      - id: version
+        uses: docker://lpenz/ghaction-version-gen:0.3
+
+      - name: Add changelog entry for release version
+        id: bump_changelog
+        uses: pi-top/git-debian-changelog-bump-action@master
+        with:
+          release: true
+          author_name: ${{ env.CHANGELOG_AUTHOR_NAME }}
+          author_email: ${{ env.CHANGELOG_AUTHOR_EMAIL }}
+          snapshot_number: ${{ steps.version.outputs.distance }}
+          since: ${{ steps.version.outputs.tag_latest }}
+          # Don't include previous changelog version bump commits in changelog
+          ignore_regex: |
+            ${{ env. COMMIT_MESSAGE_PREFIX }}
+            \[pre-commit.ci\]
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: "${{ env.COMMIT_MESSAGE_PREFIX }} v${{ steps.bump_changelog.outputs.version }}"
+          branch: bump-changelog
+          title: "${{ env.COMMIT_MESSAGE_PREFIX }} v${{ steps.bump_changelog.outputs.version }}"
+          body: ""

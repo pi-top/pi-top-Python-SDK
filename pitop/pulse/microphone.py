@@ -1,6 +1,6 @@
 from pitop.pulse import configuration
 
-from pitopcommon.logger import PTLogger
+from pitop.common.logger import PTLogger
 
 from binascii import (
     hexlify,
