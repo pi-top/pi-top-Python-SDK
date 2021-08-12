@@ -8,7 +8,7 @@ from pitop.pma.common import get_pin_for_port
 from pitop.pma.common.utils import Port
 
 
-class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
+class Buzzer(Stateful, Recreatable, DigitalComponentChecks, gpiozero_Buzzer):
     """Encapsulates the behaviour of a simple buzzer that can be turned on and
     off.
 

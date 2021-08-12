@@ -8,7 +8,7 @@ from pitop.pma.common import get_pin_for_port
 from pitop.pma.common.utils import Port
 
 
-class LED(Stateful, Recreatable, gpiozero_LED):
+class LED(Stateful, Recreatable, DigitalComponentChecks, gpiozero_LED):
     """Encapsulates the behaviour of an LED.
 
     An LED (Light Emitting Diode) is a simple light source that can be controlled directly.

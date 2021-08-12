@@ -7,7 +7,7 @@ from pitop.core.mixins import (
 from pitop.pma.common import get_pin_for_port
 
 
-class Button(Stateful, Recreatable, gpiozero_Button):
+class Button(Stateful, Recreatable, DigitalComponentChecks, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.
 
     A push-button is a simple switch mechanism for controlling some aspect of a circuit.
