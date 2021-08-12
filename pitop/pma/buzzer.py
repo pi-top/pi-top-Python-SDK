@@ -2,6 +2,7 @@ from gpiozero import Buzzer as gpiozero_Buzzer
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
+    DigitalComponentChecks,
 )
 from pitop.pma.common import get_pin_for_port
 from pitop.pma.common.utils import Port
@@ -18,14 +19,9 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
         self._pma_port = port_name
         self.name = name
 
-        if port_name not in Port.keys():
-            raise ValueError(f"{port_name} is not a valid port name. An example of a valid port name is D0")
-
-        if not port_name.startswith("D"):
-            raise ValueError(f"{port_name} is not a valid port type for a buzzer. Try using a digital port, such as D0")
-
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        DigitalComponentChecks.__init__(self, self._pma_port)
         gpiozero_Buzzer.__init__(self, get_pin_for_port(self._pma_port))
 
     @property

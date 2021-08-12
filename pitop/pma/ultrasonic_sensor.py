@@ -9,7 +9,6 @@ from .ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
 valid_analog_ports = ["A1", "A3"]
 invalid_analog_ports = ["A0", "A2"]
 
-
 class UltrasonicSensor(Stateful, Recreatable):
     def __init__(self,
                  port_name,
