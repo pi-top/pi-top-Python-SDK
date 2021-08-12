@@ -1,8 +1,9 @@
 
 valid_digital_ports = ["D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7"]
 
+
 class DigitalComponentChecks:
-    """Performs basic checks on validity of user-specified port"""
+    """Performs basic checks on validity of user-specified port."""
 
     def __init__(self, port_name):
         self.port_name = port_name
