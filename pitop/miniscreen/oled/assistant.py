@@ -41,7 +41,7 @@ class MiniscreenAssistant:
         return ImageFont.truetype(self.get_recommended_font_path(size), size=size)
 
     def get_recommended_font_path(self, size=15):
-        font_path = self.get_recommended_font_path()
+        font_path = self.get_regular_font_path()
         if size < 12:
             font_path = self.get_mono_font()
 
