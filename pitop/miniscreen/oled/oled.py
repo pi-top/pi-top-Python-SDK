@@ -274,7 +274,7 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         self.__display(
-            self.assistant.process(ImageFunctions.convert(image, format="PIL")),
+            self.assistant.process_image(ImageFunctions.convert(image, format="PIL")),
             invert=invert,
         )
 
