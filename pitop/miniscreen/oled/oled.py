@@ -1,15 +1,13 @@
 from pitop.core import ImageFunctions
+from .assistant import MiniscreenAssistant
 from .core import (
-    Canvas,
     FPS_Regulator,
     OledDeviceController,
 )
 
 
 from atexit import register
-from os.path import isfile
 from PIL import (
-    Image,
     ImageChops,
     ImageDraw,
     ImageFont,
@@ -38,10 +36,10 @@ class OLED:
     def __init__(self):
         self.__controller = OledDeviceController(self._redraw_last_image)
 
-        self.image = self.__empty_image
+        self.image = self.assistant.empty_image
 
-        self._image = self.__empty_image
-        self.canvas = Canvas(self._image)
+        self._image = self.assistant.empty_image
+        self.assistant = MiniscreenAssistant()
 
         self.__fps_regulator = FPS_Regulator()
 
@@ -57,13 +55,6 @@ class OLED:
 
         register(self.__cleanup)
 
-    @property
-    def __empty_image(self):
-        return Image.new(
-            self.device.mode,
-            self.device.size
-        )
-
     def prepare_image(self, image_to_prepare):
         """Formats the given image into one that can be used directly by the
         OLED.
@@ -72,7 +63,8 @@ class OLED:
         :param image_to_prepare: Image to be formatted.
         :rtype: :class:`PIL.Image.Image`
         """
-        return self.canvas.process_image(image_to_prepare)
+        # TODO: deprecate this function in favour of user handling this directly
+        return self.assistant.process_image(image_to_prepare)
 
     def should_redisplay(self, image_to_display=None):
         """Determines if the miniscreen display needs to be refreshed, based on
@@ -220,7 +212,7 @@ class OLED:
 
     def clear(self):
         """Clears any content displayed in the miniscreen display."""
-        self.canvas.rectangle(self.bounding_box, fill=0)
+        ImageDraw.draw(self._image).rectangle(self.bounding_box, fill=0)
         self.__display(self._image, force=True)
 
     # TODO: evaluate dropping this 'redraw last image' function at v1.0.0
@@ -282,7 +274,7 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         self.__display(
-            self.prepare_image(ImageFunctions.convert(image, format="PIL")),
+            self.assistant.process(ImageFunctions.convert(image, format="PIL")),
             invert=invert,
         )
 
@@ -304,16 +296,16 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         if xy is None:
-            xy = self.top_left
+            xy = self.assistant.get_recommended_text_pos()
 
         if font_size is None:
-            font_size = 30
+            font_size = self.assistant.get_recommended_font_size()
 
         if font is None:
-            font = self.__font_path()
+            font = self.assistant.get_recommended_font_path(font_size)
 
         # Create empty image
-        image = self.__empty_image
+        image = self.assistant.empty_image
 
         # 'Draw' text to empty image, using desired font size
         ImageDraw.Draw(image).text(
@@ -331,7 +323,7 @@ class OLED:
         # Display image
         self.display_image(image, invert=invert)
 
-    def display_multiline_text(self, text, xy=None, font_size=None, font=None):
+    def display_multiline_text(self, text, xy=None, font_size=None, font=None, invert=False):
         """Renders multi-lined text to the screen at a given position and size.
         Text that is too long for the screen will automatically wrap to the
         next line.
@@ -347,28 +339,11 @@ class OLED:
             `None`, the default font size will be used
         :param string font: A filename or path of a TrueType or OpenType font.
             If not provided or passed as `None`, the default font will be used
+        :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        if font is None:
-            font = self.__font_path()
-
-        # Create empty image
-        image = self.__empty_image
-
-        # Create font
-        font = ImageFont.truetype(
-            font,
-            size=font_size
-        )
-
         def format_multiline_text(text):
             def get_text_size(text):
-                return ImageDraw.Draw(self.__empty_image).textsize(
+                return ImageDraw.Draw(self.assistant.empty_image).textsize(
                     text=str(text),
                     font=font,
                     spacing=0,
@@ -397,18 +372,33 @@ class OLED:
         # Format text
         text = format_multiline_text(text)
 
-        # 'Draw' text to empty image, using desired font size
+        if xy is None:
+            xy = self.assistant.get_recommended_text_pos()
+
+        if font_size is None:
+            font_size = self.assistant.get_recommended_font_size()
+
+        if font is None:
+            font = self.assistant.get_recommended_font_path(font_size)
+
+        # Create empty image
+        image = self.assistant.empty_image
+
+        # 'Draw' text to empty image, using desired font and size
         ImageDraw.Draw(image).multiline_text(
             xy,
             str(text),
-            font=font,
+            font=ImageFont.truetype(
+                font,
+                size=font_size
+            ),
             fill=1,
             spacing=0,
             align="left"
         )
 
         # Display image
-        self.display_image(image)
+        self.display_image(image, invert=invert)
 
     def __display(self, image_to_display, force=False, invert=False):
         self.stop_animated_image()
@@ -671,8 +661,3 @@ class OLED:
         self.stop_animated_image()
         if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
             self.__file_monitor_thread.join(0)
-
-    def __font_path(self):
-        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
-        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
-        return primary_font_path if isfile(primary_font_path) else fallback_font_path
