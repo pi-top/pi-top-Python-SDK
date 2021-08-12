@@ -1,2 +1,5 @@
 from .miniscreen import Miniscreen
-from .assistant import MiniscreenAssistant
+# TODO: remove this
+# (docs will break)
+from .miniscreen import MiniscreenButton
+from .oled.assistant import MiniscreenAssistant
