@@ -212,7 +212,7 @@ class OLED:
 
     def clear(self):
         """Clears any content displayed in the miniscreen display."""
-        ImageDraw.draw(self._image).rectangle(self.bounding_box, fill=0)
+        ImageDraw.Draw(self._image).rectangle(self.bounding_box, fill=0)
         self.__display(self._image, force=True)
 
     # TODO: evaluate dropping this 'redraw last image' function at v1.0.0
