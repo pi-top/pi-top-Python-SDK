@@ -36,10 +36,10 @@ class OLED:
     def __init__(self):
         self.__controller = OledDeviceController(self._redraw_last_image)
 
-        self.image = self.assistant.empty_image
+        self.assistant = MiniscreenAssistant(self.mode, self.size)
 
+        self.image = self.assistant.empty_image
         self._image = self.assistant.empty_image
-        self.assistant = MiniscreenAssistant()
 
         self.__fps_regulator = FPS_Regulator()
 
