@@ -5,9 +5,11 @@ from PIL import (
 
 
 class MiniscreenAssistant:
-    image_mode = "1"
-    image_size = (128, 64)
     resize_resampling_filter = Image.NEAREST
+
+    def __init__(self, mode, size):
+        self.image_mode = mode
+        self.image_size = size
 
     def process_image(self, image_to_process):
         if image_to_process.size == self.image_size:
