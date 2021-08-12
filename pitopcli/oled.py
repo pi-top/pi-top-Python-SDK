@@ -66,7 +66,7 @@ class OledCLI(CliBaseClass):
                     file_path = path_to_stored_file(self.args.path)
                     extension = "PNG"
                     print(f"Saving capture to {file_path}.{extension}")
-                    oled.canvas.save(f"{file_path}.{extension}")
+                    oled.image.save(f"{file_path}.{extension}")
                 elif self.args.capture_subcommand == "start":
                     file_path = path_to_stored_file(self.args.path)
                     extension = "MP4"

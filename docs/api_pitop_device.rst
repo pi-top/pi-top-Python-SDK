@@ -189,4 +189,4 @@ Here is an example demonstrating 2 ways to make use of these buttons:
 Class Reference: pi-top [4] Miniscreen Button
 ---------------------------------------------
 
-.. autoclass:: pitop.miniscreen.MiniscreenButton
+.. autoclass:: pitop.miniscreen.miniscreen.MiniscreenButton

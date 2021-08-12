@@ -14,7 +14,7 @@ class Miniscreen(OLED):
     Also owns the surrounding 4 buttons as properties
     (:class:`up_button`, :class:`down_button`, :class:`select_button`,
     :class:`cancel_button`). See
-    :class:`pitop.miniscreen.MiniscreenButton` for how to use these
+    :class:`pitop.miniscreen.miniscreen.MiniscreenButton` for how to use these
     buttons.
     """
 
@@ -67,7 +67,7 @@ class Miniscreen(OLED):
         """Gets the up button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the up button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._up_button
 
@@ -76,7 +76,7 @@ class Miniscreen(OLED):
         """Gets the down button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the down button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._down_button
 
@@ -85,7 +85,7 @@ class Miniscreen(OLED):
         """Gets the select button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the select button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._select_button
 
@@ -94,7 +94,7 @@ class Miniscreen(OLED):
         """Gets the cancel button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the cancel button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._cancel_button
 
