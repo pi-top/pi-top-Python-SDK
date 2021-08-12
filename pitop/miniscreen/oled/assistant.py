@@ -51,7 +51,7 @@ class MiniscreenAssistant:
         return ImageFont.truetype(self.get_regular_font_path(), size=size)
 
     def get_regular_font_path(self, size=15):
-        return "Roboto-Medium.ttf"
+        return "Roboto-Regular.ttf"
 
     def get_mono_font(self, size=11):
         return ImageFont.truetype(self.get_mono_font_path(), size=size)
