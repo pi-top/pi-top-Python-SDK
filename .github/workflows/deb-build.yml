@@ -85,17 +85,9 @@ jobs:
             !./artifacts/*.tar.xz
 
       # Upload experimental build
-      # debs
       - uses: docker://lpenz/ghaction-packagecloud:v0.3
         with:
           repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-
-      # dsc
-      - uses: docker://lpenz/ghaction-packagecloud:v0.3
-        with:
-          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
-          files: ./artifacts/${{ env.ARTIFACT_PREFIX }}.dsc
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+          files: ./deb/*.dsc
