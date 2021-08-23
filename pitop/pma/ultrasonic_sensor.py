@@ -28,7 +28,7 @@ class UltrasonicSensor(Stateful, Recreatable):
 
         if port_name in invalid_analog_ports:
             raise ValueError(f"Cannot use analog port {port_name} for ultrasonic sensor. Try A1, A3 or a digital port "
-                             f"such as D0") 
+                             f"such as D0")
 
         if port_name in valid_analog_ports:
             self.__ultrasonic_device = UltrasonicSensorMCU(port_name=port_name,
