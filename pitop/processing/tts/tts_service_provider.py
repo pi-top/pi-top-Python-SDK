@@ -3,7 +3,7 @@ from .services.festival_service import FestivalBuilder
 
 
 class TTSServiceProvider(ObjectFactory):
-    def get(self, service_id, **kwargs):
+    def get(self, service_id="DEFAULT", **kwargs):
         return self.create(service_id, **kwargs)
 
 
