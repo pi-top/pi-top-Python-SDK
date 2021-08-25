@@ -31,20 +31,22 @@ class FestivalService(TTSService):
         self.say(text=text, blocking=blocking)
 
     def say(self, text: str, blocking: bool = True) -> None:
-        def sayText(_text):
-            import festival
-            festival.execCommand(f"(voice_{self.voice})")
-            festival.setStretchFactor(1 / self.speed)
-            festival.sayText(_text)
-
         if not self.__validate_request(text):
             return
 
-        self._say_thread = Thread(target=sayText, args=(text,), daemon=True)
+        self._say_thread = Thread(target=self.__festival_say_commands, args=(text,), daemon=True)
         self._say_thread.start()
 
         if blocking:
             self._say_thread.join()
+
+    def __festival_say_commands(self, text):
+        # Have to import festival within the thread since it doesn't work with multi-threading
+        # As a result, have to set voice and stretch factor with every call
+        import festival
+        festival.execCommand(f"(voice_{self.voice})")
+        festival.setStretchFactor(1 / self.speed)
+        festival.sayText(text)
 
     def __validate_request(self, text):
         if text == "" or type(text) != str:
