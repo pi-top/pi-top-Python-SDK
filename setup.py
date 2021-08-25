@@ -137,6 +137,11 @@ __requires__ = [
     # Download Model Files #
     ########################
     "wget>=3.2,<4.0",
+
+    ##################
+    # Text to Speech #
+    ##################
+    "pt-pyfestival",
 ]
 
 __extra_requires__ = {
