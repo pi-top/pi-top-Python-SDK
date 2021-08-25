@@ -110,7 +110,6 @@ autodoc_mock_imports = [
     'RPi',
     'scipy',
     'serial',
-    'simple_pid',
     'smbus',
     'smbus2',
     'spidev',

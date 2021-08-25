@@ -14,7 +14,6 @@ onnxruntime python3-onnxruntime; PEP386
 pyinotify python3-pyinotify; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
-simple_pid python3-simple-pid; PEP386
 # smbus2 is a pure Python implementation of the python-smbus package
 # Versions do not match so ignore PEP386
 smbus2 python3-smbus
