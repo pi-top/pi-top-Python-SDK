@@ -1,9 +1,8 @@
 import os
 from .tts_service import TTSService
-from threading import Thread
 from typing import Optional
 import festival
-# from importlib import reload
+from subprocess import Popen
 
 
 class FestivalBuilder:
@@ -26,7 +25,7 @@ class FestivalService(TTSService):
         self._language = language
         self._voice = self._available_voices.get(self.language)[0]
         self.set_voice(self._language, self._voice)
-        self._say_thread = Thread()
+        self._say_subprocess = None
 
     def __call__(self, text: str, blocking: bool = True):
         self.say(text=text, blocking=blocking)
@@ -41,14 +40,17 @@ class FestivalService(TTSService):
         if blocking:
             sayText(text)
         else:
-            self._say_thread = Thread(target=sayText, args=(text,), daemon=True)
-            self._say_thread.start()
+            # Festival python lib not thread safe, have to use subprocess until a solution is found.
+            self._say_subprocess = Popen(f"festival -b '(voice_{self.voice})' '' '(SayText \"{text}\")'", shell=True)
 
     def __validate_request(self, text):
         if text == "" or type(text) != str:
             raise ValueError("Text must be a string and cannot be empty.")
 
-        if self._say_thread.is_alive():
+        if self._say_subprocess is None:
+            return True
+
+        if self._say_subprocess.poll() is None:
             print("Speech already in progress, request cancelled.")
             return False
 
@@ -109,8 +111,9 @@ class FestivalService(TTSService):
         if value < 0.2:
             raise ValueError("Speed value must be greater than or equal to 0.2.")
 
-        self._speed = value
-        success = festival.setStretchFactor(1 / self._speed)
+        success = festival.setStretchFactor(1 / value)
 
-        if not success:
+        if success:
+            self._speed = value
+        else:
             print("Changing speed failed.")
