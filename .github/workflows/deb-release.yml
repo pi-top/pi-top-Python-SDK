@@ -8,6 +8,9 @@ on:
 env:
   DEB_BUILD_DOCKER_IMAGE: "pitop/pi-top-os-deb-build"
   DEB_BUILD_DOCKER_TAG: "latest"
+  PACKAGECLOUD_REPO: "unstable"
+  OS: "debian"
+  DISTRO: "bullseye"
 
 jobs:
   release:
