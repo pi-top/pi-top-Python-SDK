@@ -103,6 +103,15 @@ def get_internal_ip(iface="wlan0"):
     return internal_ip
 
 
+def get_package_information(package_name: str):
+    try:
+        from apt import Cache
+    except ModuleNotFoundError:
+        return None
+    apt_cache = Cache()
+    return apt_cache.get(package_name)
+
+
 def start_systemd_service(service_name: str):
     try:
         run_command(f"systemctl start {service_name}", timeout=20, check=True, log_errors=False)
