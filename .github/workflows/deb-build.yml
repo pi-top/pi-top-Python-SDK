@@ -3,14 +3,14 @@ name: Debian Package Build
 on:
   pull_request:
     branches:
-      - bullseye
+      - master
   push:
     branches:
-      - bullseye
+      - master
 
 env:
   DEB_BUILD_DOCKER_IMAGE: "pitop/pi-top-os-deb-build"
-  DEB_BUILD_DOCKER_TAG: "bullseye-master"
+  DEB_BUILD_DOCKER_TAG: "latest"
   CHANGELOG_AUTHOR_NAME: "pi-top"
   CHANGELOG_AUTHOR_EMAIL: "deb-maintainers@pi-top.com"
   PACKAGECLOUD_REPO: "experimental"
