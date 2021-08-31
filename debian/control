@@ -60,9 +60,9 @@ Depends:
  python3-zmq,
  raspi-config,
 Suggests:
-# Required for 'pt-notify-send'
- pt-os-notifications,
-# OLED system menu is optional, but useful for [4] users
+# Required for OS notifications
+ notify-send-ng,
+# pi-top [4] miniscreen menu is optional, but useful for [4] users
  pt-miniscreen | pt-sys-oled,
 # Required to get state about Access Point mode
  wifi-ap-sta,

@@ -1,3 +1,4 @@
+from subprocess import run, CalledProcessError
 from enum import Enum, auto
 
 from pitop.common.logger import PTLogger
@@ -46,9 +47,13 @@ def send_notification(
         urgency_level: NotificationUrgencyLevel = None,
         capture_notification_id: bool = True) -> str:
 
-    # TODO: check that `pt-notify-send` is available, as it's not a hard dependency of the package
+    # Check that `notify-send-ng` is available, as it's not a hard dependency of the package
+    try:
+        run(["dpkg-query", "-l", "notify-send-ng"], capture_output=True, check=True)
+    except CalledProcessError:
+        raise Exception("notify-send-ng not installed")
 
-    cmd = "/usr/bin/pt-notify-send "
+    cmd = "/usr/bin/notify-send "
     cmd += "--print-id "
     cmd += "--expire-time=" + str(timeout) + " "
 
@@ -78,7 +83,7 @@ def send_notification(
     cmd += " \"" + title + "\" "
     cmd += "\"" + text + "\""
 
-    PTLogger.info("pt-notify-send command: {}".format(cmd))
+    PTLogger.info("notify-send command: {}".format(cmd))
 
     try:
         resp_stdout = run_command(
