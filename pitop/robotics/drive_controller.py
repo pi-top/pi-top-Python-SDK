@@ -54,6 +54,13 @@ class DriveController(Stateful, Recreatable):
                                                 "right_motor_port": right_motor_port,
                                                 "name": self.name})
 
+    def is_initialized(fcn):
+        def check_initialization(self, *args, **kwargs):
+            if not self._initialized:
+                raise UninitializedComponent("DriveController not initialized")
+            return fcn(self, *args, **kwargs)
+        return check_initialization
+
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
