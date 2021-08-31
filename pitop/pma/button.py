@@ -46,7 +46,7 @@ class Button(Stateful, Recreatable, gpiozero_Button):
         contrast, the close method provides a means of ensuring that the object
         is shut down.
 
-        For example, if you have a buzzer connected to port D4, but then wish
+        For example, if you have a buzzer connected to port D0, but then wish
         to attach an LED instead:
 
             >>> from pitop import Buzzer, LED
