@@ -15,6 +15,8 @@ from pitop.pma.common import type_check
 from enum import Enum
 from inspect import signature
 from threading import Thread, Event
+import time
+import sched
 
 
 class Camera(Stateful, Recreatable):
@@ -72,7 +74,9 @@ class Camera(Stateful, Recreatable):
         self.__continue_processing = True
         self.__frame_handler = FrameHandler()
         self.__new_frame_event = Event()
-        self.__process_image_thread = Thread(target=self.__process_camera_output, daemon=True)
+        self._camera_fps = 30
+        self.__on_frame_thread = Thread()
+        self.__process_image_thread = Thread(target=self.__processes_camera_scheduler, daemon=True)
         self.__process_image_thread.start()
 
         self.name = name
@@ -268,18 +272,36 @@ class Camera(Stateful, Recreatable):
 
         return image
 
-    def __process_camera_output(self):
-        while self.__camera and self.__continue_processing is True:
-            self.__frame_handler.frame = self.__camera.get_frame()
-            self.__new_frame_event.set()
+    def __processes_camera_scheduler(self):
+        s = sched.scheduler(time.time, time.sleep)
+        s.enter(0, 1, self.__process_camera_output, (s, ))
+        s.run()
 
-            if callable(self.on_frame):
-                self.on_frame(self.__get_processed_current_frame())
+    def __process_camera_output(self, s):
+        if not self.__camera or not self.__continue_processing:
+            return
 
-            try:
-                self.__frame_handler.process()
-            except Exception as e:
-                print(f"Error in camera frame handler: {e}")
+        frame_grab_time = time.time()
+
+        self.__frame_handler.frame = self.__camera.get_frame()
+        self.__new_frame_event.set()
+
+        if callable(self.on_frame) and not self.__on_frame_thread.is_alive():
+            self.__on_frame_thread = Thread(target=self.on_frame,
+                                            daemon=True,
+                                            args=(self.__get_processed_current_frame(),)
+                                            )
+            self.__on_frame_thread.start()
+
+        try:
+            self.__frame_handler.process()
+        except Exception as e:
+            print(f"Error in camera frame handler: {e}")
+
+        time_since_frame = time.time() - frame_grab_time
+        time_to_next_frame = max(0.0, 1 / self._camera_fps - time_since_frame)
+
+        s.enter(time_to_next_frame, 1, self.__process_camera_output, (s,))
 
     def current_frame(self, format=None):
         """Returns the latest frame captured by the camera. This method is non-
