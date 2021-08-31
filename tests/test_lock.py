@@ -13,7 +13,7 @@ from pitop.common.lock import PTLock  # noqa: E402
 @skip
 class PTLockTestCase(TestCase):
     __dummy_lock_id = 'dummy'
-    lock_file_path = '/tmp/dummy.lock'
+    lock_file_path = '/tmp/.com.pi-top.sdk.dummy.lock'
 
     def tearDown(self):
         mock_logger.reset_mock()
