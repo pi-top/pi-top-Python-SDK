@@ -6,8 +6,7 @@ Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
 # Required by pybuild
- dh-python,
- python3-all-dev,
+ python3-all,
  python3-setuptools,
 # Required until we can use dh-sequence-sphinxdoc (Bullseye)
  python3-sphinx,
