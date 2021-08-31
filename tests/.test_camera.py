@@ -17,9 +17,6 @@ from time import sleep, perf_counter
 
 modules["io"] = Mock()
 modules["cv2"] = Mock()
-modules["PyV4L2Camera"] = Mock()
-modules["PyV4L2Camera.camera"] = Mock()
-modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
 
