@@ -3,10 +3,11 @@ from pitop.core.mixins import (
     Componentable,
     SupportsBattery,
     SupportsMiniscreen,
+    SupportsSpeech,
 )
 
 
-class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):
+class Pitop(SupportsMiniscreen, SupportsBattery, SupportsSpeech, Componentable, metaclass=Singleton):
     """Represents a pi-top Device.
 
     When creating a `Pitop` object, multiple properties will be set,
@@ -33,4 +34,5 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
     def __init__(self):
         SupportsMiniscreen.__init__(self)
         SupportsBattery.__init__(self)
+        SupportsSpeech.__init__(self)
         Componentable.__init__(self)
