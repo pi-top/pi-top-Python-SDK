@@ -15,7 +15,24 @@ def is_pi():
     return machine in ("armv7l", "aarch64")
 
 
+def get_uname_release():
+    return uname().release
+
+
+def get_uname_version():
+    return uname().version
+
+
 def get_debian_version():
+    debian_version_file = "/etc/debian_version"
+    if not path.exists(debian_version_file):
+        return None
+    with open(debian_version_file, 'r') as reader:
+        content = reader.read()
+    return content.strip()
+
+
+def get_maj_debian_version():
     version = None
     with open("/etc/os-release", "r") as f:
         for line in f:
