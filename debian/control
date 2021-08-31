@@ -14,8 +14,6 @@ Build-Depends:
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
-# Required for autodetecting camera devices
- v4l-utils,
 Standards-Version: 4.5.1
 Homepage: https://pi-top.com
 
