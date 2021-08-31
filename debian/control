@@ -24,7 +24,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
-# Used for drawing emojis
+# Emojis used in emotion recipe
  fonts-symbola,
  python3-onnxruntime,
  python3-pitop (= ${binary:Version}),
@@ -48,8 +48,9 @@ Depends:
  alsa-utils,
 # 'arping' command
  arping,
-# Minimum essential OLED font
- fonts-droid-fallback,
+# Miniscreen fonts
+ fonts-roboto,
+ ttf-bitstream-vera,
  i2c-tools,
 # 'ping' command
  iputils-ping,
