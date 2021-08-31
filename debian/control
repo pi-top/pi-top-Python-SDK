@@ -7,8 +7,7 @@ Build-Depends:
  dh-sequence-python3,
  dh-sequence-sphinxdoc,
 # Required by pybuild
- dh-python,
- python3-all-dev,
+ python3-all,
  python3-setuptools,
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
