@@ -5,12 +5,11 @@ Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
+ dh-sequence-sphinxdoc,
 # Required by pybuild
  dh-python,
  python3-all-dev,
  python3-setuptools,
-# Required until we can use dh-sequence-sphinxdoc (Bullseye)
- python3-sphinx,
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
