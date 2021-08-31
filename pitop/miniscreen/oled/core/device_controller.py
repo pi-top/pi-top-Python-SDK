@@ -26,7 +26,7 @@ class OledDeviceController:
         self.__redraw_last_image_func = redraw_last_image_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
-        self.lock = PTLock("pt-oled")
+        self.lock = PTLock("miniscreen")
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
