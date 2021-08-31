@@ -110,6 +110,7 @@ autodoc_mock_imports = [
     'RPi',
     'scipy',
     'serial',
+    # Mock python-smbus and pure-Python implementation
     'smbus',
     'smbus2',
     'spidev',
