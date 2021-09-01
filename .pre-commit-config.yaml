@@ -31,8 +31,7 @@ repos:
     hooks:
     - id: autopep8
     args: [
-      "--max-line-length=150",
-      # "--ignore", "E226,E24,W50,W690,E402"
+      "--verbose"
     ]
 
 -   repo: https://github.com/PyCQA/flake8
