@@ -1,5 +1,5 @@
-from subprocess import run, CalledProcessError
 from enum import Enum, auto
+from subprocess import CalledProcessError, run
 
 from pitop.common.command_runner import run_command
 from pitop.common.logger import PTLogger

@@ -155,8 +155,7 @@ def get_vnc_enabled_state():
 
 
 def get_pt_further_link_enabled_state():
-    vnc_enabled_state = get_systemd_enabled_state(
-        "further-link.service")
+    vnc_enabled_state = get_systemd_enabled_state("further-link.service")
     return vnc_enabled_state
 
 
