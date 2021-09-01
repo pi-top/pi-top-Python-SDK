@@ -1,11 +1,10 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from pitop.camera.core import FrameHandler, CaptureActions
+from pitop.camera.core import CaptureActions, FrameHandler
 
 
 class FrameHandlerTestCase(TestCase):
-
     def test_capture_actions_empty_when_instantiating(self):
         """No capture actions are available when instantiating."""
         f = FrameHandler()
@@ -76,14 +75,15 @@ class FrameHandlerTestCase(TestCase):
     def test_actions_are_processed_on_process_call(self):
         def callback():
             print("This is a callback")
+
         motion_detector_args = {
             "callback_on_motion": callback,
-            "moving_object_minimum_area": 1
+            "moving_object_minimum_area": 1,
         }
         generic_action_args = {
             "callback_on_frame": callback,
             "frame_interval": 1,
-            "format": 'OpenCV',
+            "format": "OpenCV",
         }
         args = {
             CaptureActions.DETECT_MOTION: motion_detector_args,

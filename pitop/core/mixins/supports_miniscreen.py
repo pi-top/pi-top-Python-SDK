@@ -1,12 +1,12 @@
+from pitop.common.common_names import DeviceName
 from pitop.core.exceptions import UnavailableComponent
 from pitop.system import device_type
 
-from pitop.common.common_names import DeviceName
 
-
-class SupportsMiniscreen():
+class SupportsMiniscreen:
     def __init__(self):
         from pitop.miniscreen import Miniscreen
+
         self._miniscreen = None
         if device_type() == DeviceName.pi_top_4.value:
             self._miniscreen = Miniscreen()

@@ -1,6 +1,8 @@
-from pitop import Pitop
-from PIL import Image
 from time import sleep
+
+from PIL import Image
+
+from pitop import Pitop
 
 pitop = Pitop()
 miniscreen = pitop.miniscreen
@@ -15,10 +17,10 @@ miniscreen.play_animated_image(image, background=True, loop=True)
 print("Counting to 100 while showing animated image on miniscreen...")
 
 for i in range(100):
-    print('\r{}'.format(i), end='', flush=True)
+    print("\r{}".format(i), end="", flush=True)
     sleep(0.2)
 
-print('\rFinished!')
+print("\rFinished!")
 
 # Stop animation
 miniscreen.stop_animated_image()

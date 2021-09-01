@@ -1,12 +1,14 @@
-from pitop.pma.servo_controller import ServoHardwareSpecs
-from .simple_pid import PID
 from time import time
+
+from pitop.pma.servo_controller import ServoHardwareSpecs
+
+from .simple_pid import PID
 
 
 class PanTiltObjectTracker:
     _pid_tunings = {
-        'slow': {"kp": 0.075, "ki": 0.002, "kd": 0.04},
-        'normal': {"kp": 0.25, "ki": 0.005, "kd": 0.1}
+        "slow": {"kp": 0.075, "ki": 0.002, "kd": 0.04},
+        "normal": {"kp": 0.25, "ki": 0.005, "kd": 0.1},
     }
     _target_lock_range = 10
     _slow_fps_limit = 5.0
@@ -15,12 +17,20 @@ class PanTiltObjectTracker:
         self.__pan_servo = pan_servo
         self.__tilt_servo = tilt_servo
         self._previous_time = time()
-        self.pan_pid = PID(setpoint=0,
-                           output_limits=(-ServoHardwareSpecs.SPEED_RANGE, ServoHardwareSpecs.SPEED_RANGE)
-                           )
-        self.tilt_pid = PID(setpoint=0,
-                            output_limits=(-ServoHardwareSpecs.SPEED_RANGE, ServoHardwareSpecs.SPEED_RANGE)
-                            )
+        self.pan_pid = PID(
+            setpoint=0,
+            output_limits=(
+                -ServoHardwareSpecs.SPEED_RANGE,
+                ServoHardwareSpecs.SPEED_RANGE,
+            ),
+        )
+        self.tilt_pid = PID(
+            setpoint=0,
+            output_limits=(
+                -ServoHardwareSpecs.SPEED_RANGE,
+                ServoHardwareSpecs.SPEED_RANGE,
+            ),
+        )
         self.__set_pid_tunings(pid_mode="normal")
 
     def __call__(self, center):

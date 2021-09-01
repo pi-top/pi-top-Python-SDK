@@ -1,11 +1,8 @@
-from .oled import OLED
-
-from pitop.common.ptdm import (
-    PTDMSubscribeClient,
-    Message
-)
-
 import atexit
+
+from pitop.common.ptdm import Message, PTDMSubscribeClient
+
+from .oled import OLED
 
 
 class Miniscreen(OLED):
@@ -14,7 +11,7 @@ class Miniscreen(OLED):
     Also owns the surrounding 4 buttons as properties
     (:class:`up_button`, :class:`down_button`, :class:`select_button`,
     :class:`cancel_button`). See
-    :class:`pitop.miniscreen.MiniscreenButton` for how to use these
+    :class:`pitop.miniscreen.miniscreen.MiniscreenButton` for how to use these
     buttons.
     """
 
@@ -41,17 +38,33 @@ class Miniscreen(OLED):
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise(
             {
-                Message.PUB_V3_BUTTON_UP_PRESSED: lambda: set_button_state(self._up_button, pressed=True),
-                Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(self._up_button, pressed=False),
+                Message.PUB_V3_BUTTON_UP_PRESSED: lambda: set_button_state(
+                    self._up_button, pressed=True
+                ),
+                Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(
+                    self._up_button, pressed=False
+                ),
                 # ----------------------------------------------------------------------------------
-                Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(self._down_button, pressed=True),
-                Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(self._down_button, pressed=False),
+                Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(
+                    self._down_button, pressed=True
+                ),
+                Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(
+                    self._down_button, pressed=False
+                ),
                 # ----------------------------------------------------------------------------------
-                Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(self._select_button, pressed=True),
-                Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(self._select_button, pressed=False),
+                Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(
+                    self._select_button, pressed=True
+                ),
+                Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(
+                    self._select_button, pressed=False
+                ),
                 # ----------------------------------------------------------------------------------
-                Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(self._cancel_button, pressed=True),
-                Message.PUB_V3_BUTTON_CANCEL_RELEASED: lambda: set_button_state(self._cancel_button, pressed=False),
+                Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(
+                    self._cancel_button, pressed=True
+                ),
+                Message.PUB_V3_BUTTON_CANCEL_RELEASED: lambda: set_button_state(
+                    self._cancel_button, pressed=False
+                ),
             }
         )
         self.__ptdm_subscribe_client.start_listening()
@@ -67,7 +80,7 @@ class Miniscreen(OLED):
         """Gets the up button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the up button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._up_button
 
@@ -76,7 +89,7 @@ class Miniscreen(OLED):
         """Gets the down button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the down button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._down_button
 
@@ -85,7 +98,7 @@ class Miniscreen(OLED):
         """Gets the select button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the select button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._select_button
 
@@ -94,7 +107,7 @@ class Miniscreen(OLED):
         """Gets the cancel button of the pi-top [4] miniscreen.
 
         :return: A gpiozero-like button instance representing the cancel button of the pi-top [4] miniscreen.
-        :rtype: :class:`pitop.miniscreen.MiniscreenButton`
+        :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._cancel_button
 

@@ -1,7 +1,7 @@
 from smbus2 import SMBus
 
+from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
 from pitop.common.logger import PTLogger
-from pitop.common.bitwise_ops import get_bits, split_into_bytes, join_bytes
 
 
 class SMBusDevice:
@@ -33,11 +33,11 @@ class SMBusDevice:
     def write_n_bytes(self, register_address: int, byte_list: list):
         """Base function to write to an I2C device."""
         PTLogger.debug(
-            "I2C: Writing byte/s " +
-            str(byte_list) + " to " + hex(register_address)
+            "I2C: Writing byte/s " + str(byte_list) + " to " + hex(register_address)
         )
         self._bus.write_i2c_block_data(
-            self._device_address, register_address, byte_list)
+            self._device_address, register_address, byte_list
+        )
 
     def write_byte(self, register_address: int, byte_value: int):
         if byte_value > 0xFF:
@@ -45,12 +45,14 @@ class SMBusDevice:
                 "Possible unintended overflow writing value to register "
                 + hex(register_address)
             )
-        self._bus.write_byte_data(
-            self._device_address, register_address, byte_value)
+        self._bus.write_byte_data(self._device_address, register_address, byte_value)
 
-    def write_word(self, register_address: int, word_value: int, little_endian: bool, signed: bool):
+    def write_word(
+        self, register_address: int, word_value: int, little_endian: bool, signed: bool
+    ):
         bytes_to_write = split_into_bytes(
-            word_value, 2, little_endian=little_endian, signed=signed)
+            word_value, 2, little_endian=little_endian, signed=signed
+        )
         if bytes_to_write is None:
             PTLogger.error(f"Error splitting word into bytes list. Value: {word_value}")
             return
@@ -61,11 +63,11 @@ class SMBusDevice:
     # READ OPERATIONS #
     ###################
     def _read_n_bytes(
-            self,
-            register_address: int,
-            number_of_bytes: int,
-            signed: bool = False,
-            little_endian: bool = False,
+        self,
+        register_address: int,
+        number_of_bytes: int,
+        signed: bool = False,
+        little_endian: bool = False,
     ):
         """Base function to read from an I2C device.
 
@@ -80,7 +82,8 @@ class SMBusDevice:
         # Read from device
 
         result_array = self._bus.read_i2c_block_data(
-            self._device_address, register_address, number_of_bytes)
+            self._device_address, register_address, number_of_bytes
+        )
 
         # Check response length is correct
         if len(result_array) != number_of_bytes:
@@ -99,8 +102,14 @@ class SMBusDevice:
                 result = -(1 << (8 * number_of_bytes)) + result
 
         PTLogger.debug(
-            "I2C: Read " + str(number_of_bytes) + " bytes from " + hex(register_address) + " (" + (
-                "Signed," if signed else "Unsigned,") + ("LE" if little_endian else "BE") + ")"
+            "I2C: Read "
+            + str(number_of_bytes)
+            + " bytes from "
+            + hex(register_address)
+            + " ("
+            + ("Signed," if signed else "Unsigned,")
+            + ("LE" if little_endian else "BE")
+            + ")"
         )
         PTLogger.debug(str(result_array) + " : " + str(result))
 
@@ -108,7 +117,7 @@ class SMBusDevice:
 
     # HELPER FUNCTIONS TO SIMPLIFY EXTERNAL READABILITY
     def read_n_unsigned_bytes(
-            self, register_address: int, number_of_bytes: int, little_endian=False
+        self, register_address: int, number_of_bytes: int, little_endian=False
     ):
         return self._read_n_bytes(
             register_address, number_of_bytes, signed=False, little_endian=little_endian
@@ -118,7 +127,7 @@ class SMBusDevice:
         return self.read_n_unsigned_bytes(register_address, 1)
 
     def read_n_signed_bytes(
-            self, register_address: int, number_of_bytes: int, little_endian=False
+        self, register_address: int, number_of_bytes: int, little_endian=False
     ):
         return self._read_n_bytes(
             register_address, number_of_bytes, signed=True, little_endian=little_endian
@@ -140,9 +149,8 @@ class SMBusDevice:
         return self.read_bits_from_n_bytes_at_address(bits_to_read, addr_to_read, 1)
 
     def read_bits_from_n_bytes_at_address(
-            self, bits_to_read: int, addr_to_read: int, no_of_bytes_to_read: int = 1
+        self, bits_to_read: int, addr_to_read: int, no_of_bytes_to_read: int = 1
     ):
         return get_bits(
-            bits_to_read, self.read_n_unsigned_bytes(
-                addr_to_read, no_of_bytes_to_read)
+            bits_to_read, self.read_n_unsigned_bytes(addr_to_read, no_of_bytes_to_read)
         )

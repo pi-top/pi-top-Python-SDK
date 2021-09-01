@@ -11,19 +11,15 @@ for module in modules_to_patch:
     modules[module] = Mock()
 
 
-from pitop.common.bitwise_ops import (
-    join_bytes,
-    split_into_bytes,
-)
-from pitop.pma.encoder_motor_controller import EncoderMotorController
+from pitop.common.bitwise_ops import join_bytes, split_into_bytes
 from pitop.pma.common.encoder_motor_registers import (
+    EncoderMotorM1,
+    MotorControlModes,
     MotorControlRegisters,
     MotorRegisterTypes,
-    MotorControlModes,
-    EncoderMotorM1
 )
+from pitop.pma.encoder_motor_controller import EncoderMotorController
 from pitop.pma.parameters import BrakingType
-
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
@@ -31,14 +27,11 @@ for patched_module in modules_to_patch:
 
 
 class EncoderMotorControllerTestCase(TestCase):
-
     @patch.object(EncoderMotorController, "set_braking_type")
     def test_constructor_success(self, set_braking_type_mock):
         braking_type = 1
 
-        controller = EncoderMotorController(
-            port="M1",
-            braking_type=braking_type)
+        controller = EncoderMotorController(port="M1", braking_type=braking_type)
 
         self.assertEquals(controller.registers, EncoderMotorM1)
         self.assertEquals(controller._MAX_DC_MOTOR_RPM, 6000)
@@ -105,7 +98,7 @@ class EncoderMotorControllerTestCase(TestCase):
         test_data = [
             (MotorControlModes.MODE_0, set_power_mock, [0]),
             (MotorControlModes.MODE_1, set_rpm_control_mock, [0]),
-            (MotorControlModes.MODE_2, set_rpm_with_rotations_mock, [0, 0])
+            (MotorControlModes.MODE_2, set_rpm_with_rotations_mock, [0, 0]),
         ]
 
         for mode, method_called, expected_args in test_data:
@@ -127,7 +120,9 @@ class EncoderMotorControllerTestCase(TestCase):
 
                 # setup r/w mocks
                 write_byte_mock = controller._mcu_device.write_byte = Mock()
-                read_unsigned_byte_mock = controller._mcu_device.read_unsigned_byte = Mock()
+                read_unsigned_byte_mock = (
+                    controller._mcu_device.read_unsigned_byte
+                ) = Mock()
                 read_unsigned_byte_mock.return_value = braking_type
 
                 # test
@@ -151,12 +146,16 @@ class EncoderMotorControllerTestCase(TestCase):
 
                 # setup r/w mocks
                 write_byte_mock = controller._mcu_device.write_byte = Mock()
-                read_unsigned_byte_mock = controller._mcu_device.read_unsigned_byte = Mock()
+                read_unsigned_byte_mock = (
+                    controller._mcu_device.read_unsigned_byte
+                ) = Mock()
                 read_unsigned_byte_mock.return_value = control_mode.value
 
                 # test
                 controller.set_control_mode(control_mode)
-                write_byte_mock.assert_called_with(control_mode_register, control_mode.value)
+                write_byte_mock.assert_called_with(
+                    control_mode_register, control_mode.value
+                )
 
                 self.assertEquals(controller.control_mode(), control_mode)
                 read_unsigned_byte_mock.assert_called_with(control_mode_register)
@@ -183,10 +182,14 @@ class EncoderMotorControllerTestCase(TestCase):
 
             # test
             controller.set_power(power_value)
-            write_word_mock.assert_called_with(mode_0_power_register, power_value, little_endian=True, signed=True)
+            write_word_mock.assert_called_with(
+                mode_0_power_register, power_value, little_endian=True, signed=True
+            )
 
             self.assertEquals(controller.power(), power_value)
-            read_signed_word_mock.assert_called_with(mode_0_power_register, little_endian=True)
+            read_signed_word_mock.assert_called_with(
+                mode_0_power_register, little_endian=True
+            )
 
     def test_control_mode_1_read_write(self):
         """Registers read/written  when using control mode 1 methods."""
@@ -210,25 +213,32 @@ class EncoderMotorControllerTestCase(TestCase):
 
             # test
             controller.set_rpm_control(rpm_value)
-            write_word_mock.assert_called_with(mode_1_register, rpm_value, little_endian=True, signed=True)
+            write_word_mock.assert_called_with(
+                mode_1_register, rpm_value, little_endian=True, signed=True
+            )
 
             self.assertEquals(controller.rpm_control(), rpm_value)
-            read_signed_word_mock.assert_called_with(mode_1_register, little_endian=True)
+            read_signed_word_mock.assert_called_with(
+                mode_1_register, little_endian=True
+            )
 
     def test_control_mode_2_read_write(self):
         """Registers read/written  when using control mode 2 methods."""
         rpm_value = 500
         rotations_value = 10
         # from rpm and rotations values, calculate byte values to use in mocks
-        rpm_and_rotations_in_bytes = split_into_bytes(rotations_value, 2, signed=True, little_endian=True) + \
-            split_into_bytes(rpm_value, 2, signed=True, little_endian=True)
+        rpm_and_rotations_in_bytes = split_into_bytes(
+            rotations_value, 2, signed=True, little_endian=True
+        ) + split_into_bytes(rpm_value, 2, signed=True, little_endian=True)
         rpm_and_rotations_read = join_bytes(rpm_and_rotations_in_bytes)
 
         for motor_port_registers in MotorControlRegisters:
             motor_port_name = motor_port_registers.name
             motor_registers = motor_port_registers.value
 
-            mode_1_register = motor_registers[MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS]
+            mode_1_register = motor_registers[
+                MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS
+            ]
 
             # create instance
             controller = EncoderMotorController(port=motor_port_name)
@@ -238,12 +248,20 @@ class EncoderMotorControllerTestCase(TestCase):
 
             # setup r/w mocks
             write_n_bytes_mock = controller._mcu_device.write_n_bytes = Mock()
-            read_n_unsigned_bytes_mock = controller._mcu_device.read_n_unsigned_bytes = Mock()
+            read_n_unsigned_bytes_mock = (
+                controller._mcu_device.read_n_unsigned_bytes
+            ) = Mock()
             read_n_unsigned_bytes_mock.return_value = rpm_and_rotations_read
 
             # test
             controller.set_rpm_with_rotations(rpm_value, rotations_value)
-            write_n_bytes_mock.assert_called_with(mode_1_register, rpm_and_rotations_in_bytes)
+            write_n_bytes_mock.assert_called_with(
+                mode_1_register, rpm_and_rotations_in_bytes
+            )
 
-            self.assertEquals(controller.rpm_with_rotations(), (rpm_value, rotations_value))
-            read_n_unsigned_bytes_mock.assert_called_with(mode_1_register, 4, little_endian=True)
+            self.assertEquals(
+                controller.rpm_with_rotations(), (rpm_value, rotations_value)
+            )
+            read_n_unsigned_bytes_mock.assert_called_with(
+                mode_1_register, 4, little_endian=True
+            )

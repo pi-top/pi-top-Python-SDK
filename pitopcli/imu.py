@@ -1,19 +1,19 @@
 #! /usr/bin/python3
-from .cli_base import CliBaseClass, PitopCliInvalidArgument
-from .imu_calibration import ImuCalibration
+from os import path
+from subprocess import getstatusoutput
+from sys import stderr
 
 from pitop.common.common_ids import FirmwareDeviceID
 from pitop.common.common_names import DeviceName
 from pitop.common.firmware_device import FirmwareDevice
 
-from os import path
-from subprocess import getstatusoutput
-from sys import stderr
+from .cli_base import CliBaseClass, PitopCliInvalidArgument
+from .imu_calibration import ImuCalibration
 
 
 class ImuCLI(CliBaseClass):
-    parser_help = 'Expansion Plate IMU utilities'
-    cli_name = 'imu'
+    parser_help = "Expansion Plate IMU utilities"
+    cli_name = "imu"
 
     def __init__(self, args) -> None:
         self.args = args
@@ -21,16 +21,21 @@ class ImuCLI(CliBaseClass):
     def run(self) -> int:
         # Check if device is a pi-top[4]
         from pitop.system import device_type
+
         is_pi_four = device_type() == DeviceName.pi_top_4.value
         if not is_pi_four:
             print("This CLI only runs on a pi-top [4].", file=stderr)
             return 1
 
         # Check if Expansion Plate is connected
-        expansion_plate_info = FirmwareDevice.device_info.get(FirmwareDeviceID.pt4_expansion_plate)
-        i2c_address = expansion_plate_info.get('i2c_addr')
+        expansion_plate_info = FirmwareDevice.device_info.get(
+            FirmwareDeviceID.pt4_expansion_plate
+        )
+        i2c_address = expansion_plate_info.get("i2c_addr")
         try:
-            expansion_plate_connected = getstatusoutput(f"pt-i2cdetect {i2c_address}")[0] == 0
+            expansion_plate_connected = (
+                getstatusoutput(f"pt-i2cdetect {i2c_address}")[0] == 0
+            )
         except Exception:
             expansion_plate_connected = False
         if not expansion_plate_connected:
@@ -52,12 +57,16 @@ class ImuCLI(CliBaseClass):
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
 
-        subparser = parser.add_subparsers(title="IMU utility",
-                                          description=cls.parser_help,
-                                          dest="imu_subcommand")
+        subparser = parser.add_subparsers(
+            title="IMU utility", description=cls.parser_help, dest="imu_subcommand"
+        )
 
-        calibrate_parser = subparser.add_parser("calibrate", help="Calibrate the magnetometer")
-        calibrate_parser.add_argument("-p", "--path",
-                                      type=str,
-                                      help="Directory for storing calibration graph data"
-                                      )
+        calibrate_parser = subparser.add_parser(
+            "calibrate", help="Calibrate the magnetometer"
+        )
+        calibrate_parser.add_argument(
+            "-p",
+            "--path",
+            type=str,
+            help="Directory for storing calibration graph data",
+        )

@@ -153,7 +153,7 @@ pi-top [4] Miniscreen
 The miniscreen of the pi-top [4] can be found on the front, comprised of an 128x64 pixel
 OLED screen and 4 programmable buttons.
 
-The `pt-sys-oled` package, provided out-of-the-box with pi-topOS (and available for Raspberry Pi OS),
+The `pt-miniscreen` package (`pt-sys-oled` in earlier versions of pi-topOS), provided out-of-the-box with pi-topOS (and available for Raspberry Pi OS),
 provides a convenient interactive menu interface, using the pi-top [4]'s miniscreen OLED display and
 buttons for navigation and actions. This menu includes useful information and options about the system
 state and configuration.

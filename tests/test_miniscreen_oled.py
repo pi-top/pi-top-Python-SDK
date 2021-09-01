@@ -17,9 +17,10 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = MagicMock()
 
-from unittest import TestCase, skip
-from PIL import Image
 from os import environ, path
+from unittest import TestCase, skip
+
+from PIL import Image
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
@@ -41,6 +42,7 @@ class OLEDTestCase(TestCase):
 
     def setUp(self):
         from pitop.miniscreen import Miniscreen
+
         self.miniscreen = Miniscreen()
 
     def tearDown(self):
@@ -62,15 +64,15 @@ class OLEDTestCase(TestCase):
         logo_path = root + "/assets/images/pi-top.png"
         img = Image.open(logo_path)
         canvas_pix = self.miniscreen.core.canvas.image(
-            self.miniscreen.core.canvas.top_left(), img)
+            self.miniscreen.core.canvas.top_left(), img
+        )
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/pi-top.bmp")
 
         self.compare_arrays("image", canvas_pix, bmp_pix)
 
     def test_rectangle(self):
         self.miniscreen.reset()
-        canvas_pix = self.miniscreen.core.canvas.rectangle(
-            self.miniscreen.bounding_box)
+        canvas_pix = self.miniscreen.core.canvas.rectangle(self.miniscreen.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/rectangle.bmp")
 
         self.compare_arrays("rectangle", canvas_pix, bmp_pix)
@@ -78,7 +80,8 @@ class OLEDTestCase(TestCase):
     def test_arc(self):
         self.miniscreen.reset()
         canvas_pix = self.miniscreen.core.canvas.arc(
-            self.miniscreen.bounding_box, 0, 180)
+            self.miniscreen.bounding_box, 0, 180
+        )
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/arc.bmp")
 
         self.compare_arrays("arc", canvas_pix, bmp_pix)
@@ -86,23 +89,22 @@ class OLEDTestCase(TestCase):
     def test_chord(self):
         self.miniscreen.reset()
         canvas_pix = self.miniscreen.core.canvas.chord(
-            self.miniscreen.bounding_box, 0, 180)
+            self.miniscreen.bounding_box, 0, 180
+        )
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/chord.bmp")
 
         self.compare_arrays("chord", canvas_pix, bmp_pix)
 
     def test_ellipse(self):
         self.miniscreen.reset()
-        canvas_pix = self.miniscreen.core.canvas.ellipse(
-            self.miniscreen.bounding_box)
+        canvas_pix = self.miniscreen.core.canvas.ellipse(self.miniscreen.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/ellipse.bmp")
 
         self.compare_arrays("ellipse", canvas_pix, bmp_pix)
 
     def test_line(self):
         self.miniscreen.reset()
-        canvas_pix = self.miniscreen.core.canvas.line(
-            self.miniscreen.bounding_box)
+        canvas_pix = self.miniscreen.core.canvas.line(self.miniscreen.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/line.bmp")
 
         self.compare_arrays("line", canvas_pix, bmp_pix)
@@ -110,23 +112,22 @@ class OLEDTestCase(TestCase):
     def test_pieslice(self):
         self.miniscreen.reset()
         canvas_pix = self.miniscreen.core.canvas.pieslice(
-            self.miniscreen.bounding_box, 0, 180)
+            self.miniscreen.bounding_box, 0, 180
+        )
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/pieslice.bmp")
 
         self.compare_arrays("pieslice", canvas_pix, bmp_pix)
 
     def test_point(self):
         self.miniscreen.reset()
-        canvas_pix = self.miniscreen.core.canvas.point(
-            self.miniscreen.bounding_box)
+        canvas_pix = self.miniscreen.core.canvas.point(self.miniscreen.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/point.bmp")
 
         self.compare_arrays("point", canvas_pix, bmp_pix)
 
     def test_polygon(self):
         self.miniscreen.reset()
-        canvas_pix = self.miniscreen.core.canvas.polygon(
-            self.miniscreen.bounding_box)
+        canvas_pix = self.miniscreen.core.canvas.polygon(self.miniscreen.bounding_box)
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/polygon.bmp")
 
         self.compare_arrays("polygon", canvas_pix, bmp_pix)
@@ -134,7 +135,8 @@ class OLEDTestCase(TestCase):
     def test_text(self):
         self.miniscreen.reset()
         canvas_pix = self.miniscreen.core.canvas.text(
-            self.miniscreen.core.canvas.top_left(), "test")
+            self.miniscreen.core.canvas.top_left(), "test"
+        )
         bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/text.bmp")
 
         self.compare_arrays("text", canvas_pix, bmp_pix)
@@ -142,9 +144,9 @@ class OLEDTestCase(TestCase):
     def test_multiline_text(self):
         self.miniscreen.reset()
         canvas_pix = self.miniscreen.core.canvas.multiline_text(
-            self.miniscreen.core.canvas.top_left(), "Hello World!")
-        bmp_pix = self.get_bitmap_pix(
-            root + "/assets/bitmaps/multiline_text.bmp")
+            self.miniscreen.core.canvas.top_left(), "Hello World!"
+        )
+        bmp_pix = self.get_bitmap_pix(root + "/assets/bitmaps/multiline_text.bmp")
 
         self.compare_arrays("multiline_text", canvas_pix, bmp_pix)
 

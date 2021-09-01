@@ -1,33 +1,31 @@
-from pitop import Pitop, Camera
-from PIL import Image, ImageFont, ImageDraw
-from pitop.processing.algorithms.faces import (
-    FaceDetector,
-    EmotionClassifier
-)
 from signal import pause
 
+from PIL import Image, ImageDraw, ImageFont
 
-'''
+from pitop import Camera, Pitop
+from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
+
+"""
 Designed for the Prax robot configuration, this example will use the camera module to detect face emotions.
 The emotion will be displayed on the miniscreen alongside a confidence level. Also displayed is a live 68-point facial
 landmark detection of the face being detected.
 
 To change emoji's, go here to see a list of unicodes: https://unicode.org/emoji/charts/full-emoji-list.html
-'''
+"""
 
 emoji_unicodes = {
-    "Happy": u"\U0001F642",
-    "Anger": u"\U0001F620",
-    "Surprise": u"\U0001F62E",
-    "Neutral": u"\U0001F610",
-    "Sad": u"\U0001F641",
-    "Disgust": u"\U0001F62C",
-    "Looking": u"\U0001F440"
+    "Happy": "\U0001F642",
+    "Anger": "\U0001F620",
+    "Surprise": "\U0001F62E",
+    "Neutral": "\U0001F610",
+    "Sad": "\U0001F641",
+    "Disgust": "\U0001F62C",
+    "Looking": "\U0001F440",
 }
 
 
 text_font = ImageFont.truetype("VeraMono.ttf", size=12)
-emoji_font = ImageFont.truetype("Symbola_hint.ttf", size=50, encoding='unic')
+emoji_font = ImageFont.truetype("Symbola_hint.ttf", size=50, encoding="unic")
 
 
 def update_displayed_image(face, emotion):
@@ -46,7 +44,10 @@ def update_displayed_image(face, emotion):
     def draw_facial_landmarks(canvas, face):
         x_f, y_f, w_f, h_f = face.rectangle
         x_l, y_l, w_l, h_l = left_bounding_box
-        translation_vector = [x_f - x_l + (w_l - w_f) // 2, y_f - y_l + (h_l - h_f) // 2]
+        translation_vector = [
+            x_f - x_l + (w_l - w_f) // 2,
+            y_f - y_l + (h_l - h_f) // 2,
+        ]
 
         scaler_width = w_l / w_f
         scaler_height = h_l / h_f
@@ -65,7 +66,9 @@ def update_displayed_image(face, emotion):
         draw_emoji(canvas, emotion.type, right_bounding_box)
         draw_text(canvas, f"{round(emotion.confidence * 100)}% {emotion.type}")
     else:
-        draw_emoji(canvas=canvas, emoji="Looking", bounding_box=wide_bounding_box, offset_y=5)
+        draw_emoji(
+            canvas=canvas, emoji="Looking", bounding_box=wide_bounding_box, offset_y=5
+        )
         draw_text(canvas=canvas, text="Looking...")
 
     robot.miniscreen.display_image(image)
@@ -92,7 +95,12 @@ sample_text = "100% Happy"
 _, top_section_height = text_font.getsize(sample_text)
 
 left_bounding_box = (0, top_section_height, w_ms // 2, h_ms - top_section_height)
-right_bounding_box = (w_ms // 2, top_section_height, w_ms // 2, h_ms - top_section_height)
+right_bounding_box = (
+    w_ms // 2,
+    top_section_height,
+    w_ms // 2,
+    h_ms - top_section_height,
+)
 wide_bounding_box = (0, top_section_height, w_ms, h_ms - top_section_height)
 
 face_detector = FaceDetector()

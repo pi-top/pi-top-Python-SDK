@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
 
       - id: version
         uses: docker://lpenz/ghaction-version-gen:0.3

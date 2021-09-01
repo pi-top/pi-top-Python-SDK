@@ -1,5 +1,6 @@
-from pitop import ServoMotor, ServoMotorSetting
 from time import sleep
+
+from pitop import ServoMotor, ServoMotorSetting
 
 servo = ServoMotor("S0")
 

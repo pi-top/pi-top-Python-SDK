@@ -23,12 +23,11 @@
 # We implement stubs
 
 import enum
+
 import Quartz
-
 from AppKit import NSEvent
+from pynput._util.darwin import ListenerMixin
 
-from pynput._util.darwin import (
-    ListenerMixin)
 from . import _base
 
 
@@ -44,17 +43,20 @@ def _button_value(base_name, mouse_button):
     """
     return (
         tuple(
-            getattr(Quartz, '%sMouse%s' % (base_name, name))
-            for name in ('Down', 'Up', 'Dragged')),
-        mouse_button)
+            getattr(Quartz, "%sMouse%s" % (base_name, name))
+            for name in ("Down", "Up", "Dragged")
+        ),
+        mouse_button,
+    )
 
 
 class Button(enum.Enum):
     """The various buttons."""
+
     unknown = None
-    left = _button_value('kCGEventLeft', 0)
-    middle = _button_value('kCGEventOther', 2)
-    right = _button_value('kCGEventRight', 1)
+    left = _button_value("kCGEventLeft", 0)
+    middle = _button_value("kCGEventOther", 2)
+    right = _button_value("kCGEventRight", 1)
 
 
 class Controller(_base.Controller):
@@ -80,11 +82,8 @@ class Controller(_base.Controller):
 
         Quartz.CGEventPost(
             Quartz.kCGHIDEventTap,
-            Quartz.CGEventCreateMouseEvent(
-                None,
-                mouse_type,
-                pos,
-                mouse_button))
+            Quartz.CGEventCreateMouseEvent(None, mouse_type, pos, mouse_button),
+        )
 
     def _scroll(self, dx, dy):
         while dx != 0 or dy != 0:
@@ -100,23 +99,20 @@ class Controller(_base.Controller):
                     Quartz.kCGScrollEventUnitPixel,
                     2,
                     yval * self._SCROLL_SPEED,
-                    xval * self._SCROLL_SPEED))
+                    xval * self._SCROLL_SPEED,
+                ),
+            )
 
     def _press(self, button):
         (press, _, _), mouse_button = button.value
-        event = Quartz.CGEventCreateMouseEvent(
-            None,
-            press,
-            self.position,
-            mouse_button)
+        event = Quartz.CGEventCreateMouseEvent(None, press, self.position, mouse_button)
 
         # If we are performing a click, we need to set this state flag
         if self._click is not None:
             self._click += 1
             Quartz.CGEventSetIntegerValueField(
-                event,
-                Quartz.kCGMouseEventClickState,
-                self._click)
+                event, Quartz.kCGMouseEventClickState, self._click
+            )
 
         Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
 
@@ -126,17 +122,14 @@ class Controller(_base.Controller):
     def _release(self, button):
         (_, release, _), mouse_button = button.value
         event = Quartz.CGEventCreateMouseEvent(
-            None,
-            release,
-            self.position,
-            mouse_button)
+            None, release, self.position, mouse_button
+        )
 
         # If we are performing a click, we need to set this state flag
         if self._click is not None:
             Quartz.CGEventSetIntegerValueField(
-                event,
-                Quartz.kCGMouseEventClickState,
-                self._click)
+                event, Quartz.kCGMouseEventClickState, self._click
+            )
 
         Quartz.CGEventPost(Quartz.kCGHIDEventTap, event)
 
@@ -154,23 +147,22 @@ class Controller(_base.Controller):
 class Listener(ListenerMixin, _base.Listener):
     #: The events that we listen to
     _EVENTS = (
-        Quartz.CGEventMaskBit(Quartz.kCGEventMouseMoved) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventLeftMouseDown) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventLeftMouseUp) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventLeftMouseDragged) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventRightMouseDown) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventRightMouseUp) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventRightMouseDragged) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventOtherMouseDown) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventOtherMouseUp) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventOtherMouseDragged) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventScrollWheel))
+        Quartz.CGEventMaskBit(Quartz.kCGEventMouseMoved)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventLeftMouseDown)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventLeftMouseUp)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventLeftMouseDragged)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventRightMouseDown)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventRightMouseUp)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventRightMouseDragged)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventOtherMouseDown)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventOtherMouseUp)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventOtherMouseDragged)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventScrollWheel)
+    )
 
     def __init__(self, *args, **kwargs):
         super(Listener, self).__init__(*args, **kwargs)
-        self._intercept = self._options.get(
-            'intercept',
-            None)
+        self._intercept = self._options.get("intercept", None)
 
     def _handle(self, dummy_proxy, event_type, event, dummy_refcon):
         """The callback registered with *Mac OSX* for mouse events.
@@ -190,11 +182,11 @@ class Listener(ListenerMixin, _base.Listener):
 
         elif event_type == Quartz.kCGEventScrollWheel:
             dx = Quartz.CGEventGetIntegerValueField(
-                event,
-                Quartz.kCGScrollWheelEventDeltaAxis2)
+                event, Quartz.kCGScrollWheelEventDeltaAxis2
+            )
             dy = Quartz.CGEventGetIntegerValueField(
-                event,
-                Quartz.kCGScrollWheelEventDeltaAxis1)
+                event, Quartz.kCGScrollWheelEventDeltaAxis1
+            )
             self.on_scroll(px, py, dx, dy)
 
         else:

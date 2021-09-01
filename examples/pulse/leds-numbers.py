@@ -1,9 +1,12 @@
-from pitop.pulse import ledmatrix
 import time
+
+from pitop.pulse import ledmatrix
 
 OFFSET_LEFT = 0
 OFFSET_TOP = 2
 
+
+# fmt: off
 NUMS = [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1,  # 0
         0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,  # 1
         1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1,  # 2
@@ -14,6 +17,7 @@ NUMS = [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1,  # 0
         1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0,  # 7
         1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1,  # 8
         1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1]  # 9
+# fmt: on
 
 
 # Displays a single digit (0-9)
@@ -31,7 +35,7 @@ def show_number(val, r, g, b):
     abs_val = abs(val)
     tens = abs_val // 10
     units = abs_val % 10
-    if (abs_val > 9):
+    if abs_val > 9:
         show_digit(tens, OFFSET_LEFT, OFFSET_TOP, r, g, b)
     show_digit(units, OFFSET_LEFT + 4, OFFSET_TOP, r, g, b)
 

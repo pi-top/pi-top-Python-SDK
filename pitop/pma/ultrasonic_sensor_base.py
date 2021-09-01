@@ -1,27 +1,28 @@
-from gpiozero import SmoothedInputDevice
-from threading import Thread, Event, Lock
-
-from pitop.common.logger import PTLogger
-
+import atexit
+import time
 from abc import abstractmethod
-from .plate_interface import PlateInterface
-from .common.ultrasonic_registers import (
-    UltrasonicRegisters,
-    UltrasonicRegisterTypes,
-    UltrasonicConfigSettings,
-)
+from collections import deque
+from sched import scheduler
+from threading import Event, Lock, Thread
+
+import numpy as np
+from gpiozero import SmoothedInputDevice
+
+from pitop.common.common_ids import FirmwareDeviceID
 from pitop.common.firmware_device import (
     FirmwareDevice,
     PTInvalidFirmwareDeviceException,
 )
-from pitop.common.common_ids import FirmwareDeviceID
-from pitop.pma.common.utils import get_pin_for_port
-import atexit
-from sched import scheduler
-import time
-from collections import deque
-import numpy as np
+from pitop.common.logger import PTLogger
 from pitop.common.singleton import Singleton
+from pitop.pma.common.utils import get_pin_for_port
+
+from .common.ultrasonic_registers import (
+    UltrasonicConfigSettings,
+    UltrasonicRegisters,
+    UltrasonicRegisterTypes,
+)
+from .plate_interface import PlateInterface
 
 
 class UltrasonicSensorBase:
@@ -35,7 +36,7 @@ class UltrasonicSensorBase:
     @max_distance.setter
     def max_distance(self, value):
         if value <= 0:
-            raise ValueError('invalid maximum distance (must be positive)')
+            raise ValueError("invalid maximum distance (must be positive)")
         t = self.threshold_distance
         self._max_distance = value
         self.threshold_distance = t
@@ -86,35 +87,35 @@ class CompatibilityCheck(metaclass=Singleton):
     def check(self):
         try:
             firmware_device = FirmwareDevice(FirmwareDeviceID.pt4_expansion_plate)
-            if firmware_device.get_fw_version_major() < self.__MIN_FIRMWARE_MAJOR_VERSION:
+            if (
+                firmware_device.get_fw_version_major()
+                < self.__MIN_FIRMWARE_MAJOR_VERSION
+            ):
                 raise RuntimeError(
                     "Usage of the analog ports for the Ultrasonic Sensor requires an Expansion Plate with "
                     f"a minimum version version of V{self.__MIN_FIRMWARE_MAJOR_VERSION}. "
-                    f"Please update your Expansion Plate firmware to continue.")
+                    f"Please update your Expansion Plate firmware to continue."
+                )
 
         except PTInvalidFirmwareDeviceException:
-            raise RuntimeError("Please use an Expansion Plate in order to use the analog ports for the Ultrasonic "
-                               "Sensor.")
+            raise RuntimeError(
+                "Please use an Expansion Plate in order to use the analog ports for the Ultrasonic "
+                "Sensor."
+            )
 
 
 class UltrasonicSensorMCU(UltrasonicSensorBase):
     __MIN_FIRMWARE_MAJOR_VERSION = 22
 
     def __init__(
-            self,
-            port_name,
-            queue_len,
-            max_distance,
-            threshold_distance,
-            partial,
-            name
+        self, port_name, queue_len, max_distance, threshold_distance, partial, name
     ):
         self._pma_port = port_name
         self.name = name
 
         # Distance readings
         if max_distance <= 0:
-            raise ValueError('invalid maximum distance (must be positive)')
+            raise ValueError("invalid maximum distance (must be positive)")
         self._max_distance = max_distance
         self._filtered_distance = max_distance
         self.threshold = threshold_distance / max_distance
@@ -159,9 +160,10 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         atexit.register(self.close)
 
     def __configure_mcu(self):
-        self.__mcu_device.write_byte(self.__registers[UltrasonicRegisterTypes.CONFIG],
-                                     UltrasonicConfigSettings[self._pma_port]
-                                     )
+        self.__mcu_device.write_byte(
+            self.__registers[UltrasonicRegisterTypes.CONFIG],
+            UltrasonicConfigSettings[self._pma_port],
+        )
 
     @property
     def value(self):
@@ -171,12 +173,16 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
 
     @property
     def pin(self):
-        print("An Ultrasonic Sensor connected to an analog port is controlled directly by the MCU and does not have an"
-              "associated Raspberry Pi pin. Returning None.")
+        print(
+            "An Ultrasonic Sensor connected to an analog port is controlled directly by the MCU and does not have an"
+            "associated Raspberry Pi pin. Returning None."
+        )
         return None
 
     def close(self):
-        self.__mcu_device.write_byte(self.__registers[UltrasonicRegisterTypes.CONFIG], 0x00)
+        self.__mcu_device.write_byte(
+            self.__registers[UltrasonicRegisterTypes.CONFIG], 0x00
+        )
 
     @property
     def in_range(self):
@@ -242,10 +248,13 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
                 break
 
     def __read_distance(self):
-        distance = self.__mcu_device.read_unsigned_word(
-            register_address=self.__registers[UltrasonicRegisterTypes.DATA],
-            little_endian=True
-        ) / 100
+        distance = (
+            self.__mcu_device.read_unsigned_word(
+                register_address=self.__registers[UltrasonicRegisterTypes.DATA],
+                little_endian=True,
+            )
+            / 100
+        )
         if distance == 0:
             return self._max_distance
         return distance
@@ -259,30 +268,31 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
     ECHO_LOCK = Lock()
 
     def __init__(
-            self,
-            port_name,
-            queue_len=3,
-            max_distance=3,
-            threshold_distance=0.3,
-            partial=True,
-            name="ultrasonic"
+        self,
+        port_name,
+        queue_len=3,
+        max_distance=3,
+        threshold_distance=0.3,
+        partial=True,
+        name="ultrasonic",
     ):
 
         self._pma_port = port_name
         self.name = name
 
-        SmoothedInputDevice.__init__(self,
-                                     get_pin_for_port(self._pma_port),
-                                     pull_up=False,
-                                     queue_len=queue_len,
-                                     sample_wait=0.1,
-                                     partial=partial,
-                                     ignore=frozenset({None}),
-                                     )
+        SmoothedInputDevice.__init__(
+            self,
+            get_pin_for_port(self._pma_port),
+            pull_up=False,
+            queue_len=queue_len,
+            sample_wait=0.1,
+            partial=partial,
+            ignore=frozenset({None}),
+        )
 
         try:
             if max_distance <= 0:
-                raise ValueError('invalid maximum distance (must be positive)')
+                raise ValueError("invalid maximum distance (must be positive)")
             self._max_distance = max_distance
             self.threshold = threshold_distance / max_distance
             self.speed_of_sound = 343.26  # m/s
@@ -290,7 +300,7 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
             self._echo = Event()
             self._echo_rise = None
             self._echo_fall = None
-            self.pin.edges = 'both'
+            self.pin.edges = "both"
             self.pin.bounce = None
             self.pin.when_changed = self._echo_changed
             self._queue.start()
@@ -302,8 +312,10 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
         try:
             super(UltrasonicSensorRPI, self).close()
         except RuntimeError:
-            PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
-                           "there was an error in closing the port!")
+            PTLogger.debug(
+                f"Ultrasonic Sensor on port {self._pma_port} - "
+                "there was an error in closing the port!"
+            )
 
     @property
     def value(self):
@@ -326,8 +338,10 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
         # horribly wrong (most likely at the hardware level)
         if self.pin.state:
             if not self._echo.wait(0.05):
-                PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
-                               "no echo received, not using value")
+                PTLogger.debug(
+                    f"Ultrasonic Sensor on port {self._pma_port} - "
+                    "no echo received, not using value"
+                )
                 return None
         self._echo.clear()
         self._echo_fall = None
@@ -339,9 +353,10 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
             if self._echo.wait(0.2):
                 if self._echo_fall is not None and self._echo_rise is not None:
                     distance = (
-                        self.pin_factory.ticks_diff(
-                            self._echo_fall, self._echo_rise) *
-                        self.speed_of_sound / 2.0)
+                        self.pin_factory.ticks_diff(self._echo_fall, self._echo_rise)
+                        * self.speed_of_sound
+                        / 2.0
+                    )
                     return round(min(1.0, distance / self._max_distance), 2)
                 else:
                     # If we only saw the falling edge it means we missed
@@ -349,8 +364,10 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
                     return None
             else:
                 # The echo pin never rose or fell - assume that distance is max
-                PTLogger.debug(f"Ultrasonic Sensor on port {self._pma_port} - "
-                               "no echo received, using max distance ")
+                PTLogger.debug(
+                    f"Ultrasonic Sensor on port {self._pma_port} - "
+                    "no echo received, using max distance "
+                )
                 return 1.0
 
     @property

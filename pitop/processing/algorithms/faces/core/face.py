@@ -1,14 +1,15 @@
 from pitop.processing.core.vision_functions import center_reposition
+
 from .face_utils import (
-    pupil_distance,
     get_face_angle,
     left_eye_center,
     left_eye_dimensions,
-    right_eye_center,
-    right_eye_dimensions,
     mouth_center,
     mouth_dimensions,
     nose_bottom,
+    pupil_distance,
+    right_eye_center,
+    right_eye_dimensions,
 )
 
 
@@ -32,7 +33,11 @@ class Face:
                  Positive x points right, positive y points up.
         :type: tuple
         """
-        return center_reposition(self.center_default, self.original_detection_frame) if self.found else None
+        return (
+            center_reposition(self.center_default, self.original_detection_frame)
+            if self.found
+            else None
+        )
 
     @property
     def center_default(self):

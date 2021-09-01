@@ -1,13 +1,11 @@
-from .parameters import BrakingType, ForwardDirection, Direction
-from .encoder_motor_controller import EncoderMotorController
-from pitop.core.mixins import (
-    Stateful,
-    Recreatable,
-)
-
+import atexit
 import time
 from math import floor, pi
-import atexit
+
+from pitop.core.mixins import Recreatable, Stateful
+
+from .encoder_motor_controller import EncoderMotorController
+from .parameters import BrakingType, Direction, ForwardDirection
 
 
 class EncoderMotor(Stateful, Recreatable):
@@ -49,13 +47,14 @@ class EncoderMotor(Stateful, Recreatable):
     MMK_STANDARD_GEAR_RATIO = 41.8
     MAX_DC_MOTOR_RPM = 4800
 
-    def __init__(self,
-                 port_name,
-                 forward_direction,
-                 braking_type=BrakingType.COAST,
-                 wheel_diameter=0.075,
-                 name=None
-                 ):
+    def __init__(
+        self,
+        port_name,
+        forward_direction,
+        braking_type=BrakingType.COAST,
+        wheel_diameter=0.075,
+        name=None,
+    ):
         self.name = name
         self._pma_port = port_name
 
@@ -69,12 +68,16 @@ class EncoderMotor(Stateful, Recreatable):
         atexit.register(self.stop)
 
         Stateful.__init__(self)
-        Recreatable.__init__(self,
-                             config_dict={"port_name": port_name,
-                                          "name": name,
-                                          "forward_direction": lambda: self.forward_direction,
-                                          "braking_type": lambda: self.braking_type,
-                                          "wheel_diameter": lambda: self.wheel_diameter})
+        Recreatable.__init__(
+            self,
+            config_dict={
+                "port_name": port_name,
+                "name": name,
+                "forward_direction": lambda: self.forward_direction,
+                "braking_type": lambda: self.braking_type,
+                "wheel_diameter": lambda: self.wheel_diameter,
+            },
+        )
 
     @property
     def own_state(self):
@@ -167,7 +170,9 @@ class EncoderMotor(Stateful, Recreatable):
             return power / 1000.0
         return None
 
-    def set_target_rpm(self, target_rpm, direction=Direction.FORWARD, total_rotations=0.0):
+    def set_target_rpm(
+        self, target_rpm, direction=Direction.FORWARD, total_rotations=0.0
+    ):
         """Run the motor at the specified :data:`.target_rpm` RPM.
 
         If desired, a number of full or partial rotations can also be set through the :data:`total_rotations`
@@ -199,18 +204,32 @@ class EncoderMotor(Stateful, Recreatable):
         :param total_rotations:
             Total number of rotations to be execute. Set to 0 to run indefinitely.
         """
-        dc_motor_rpm = int(round(target_rpm * self.MMK_STANDARD_GEAR_RATIO) * self.__forward_direction * direction)
-        dc_motor_rotations = int(round(total_rotations * self.MMK_STANDARD_GEAR_RATIO) * self.__forward_direction * direction)
+        dc_motor_rpm = int(
+            round(target_rpm * self.MMK_STANDARD_GEAR_RATIO)
+            * self.__forward_direction
+            * direction
+        )
+        dc_motor_rotations = int(
+            round(total_rotations * self.MMK_STANDARD_GEAR_RATIO)
+            * self.__forward_direction
+            * direction
+        )
 
         if not (-self.MAX_DC_MOTOR_RPM <= dc_motor_rpm <= self.MAX_DC_MOTOR_RPM):
-            raise ValueError(f"DC motor RPM value must be between {-self.MAX_DC_MOTOR_RPM} and {self.MAX_DC_MOTOR_RPM} (inclusive)")
+            raise ValueError(
+                f"DC motor RPM value must be between {-self.MAX_DC_MOTOR_RPM} and {self.MAX_DC_MOTOR_RPM} (inclusive)"
+            )
 
         if dc_motor_rotations == 0:
             self.__motor_core.set_rpm_control(dc_motor_rpm)
         else:
             dc_motor_rotation_counter = self.__motor_core.odometer()
-            rotations_offset_to_send = int(dc_motor_rotations + dc_motor_rotation_counter)
-            self.__motor_core.set_rpm_with_rotations(dc_motor_rpm, rotations_offset_to_send)
+            rotations_offset_to_send = int(
+                dc_motor_rotations + dc_motor_rotation_counter
+            )
+            self.__motor_core.set_rpm_with_rotations(
+                dc_motor_rpm, rotations_offset_to_send
+            )
 
     def target_rpm(self):
         """Get the desired RPM of the motor output shaft, assuming the user is
@@ -254,8 +273,12 @@ class EncoderMotor(Stateful, Recreatable):
         the output shaft.
         """
 
-        dc_motor_rotation_counter = self.__motor_core.odometer() * self.__forward_direction
-        output_shaft_rotation_counter = round(dc_motor_rotation_counter / self.MMK_STANDARD_GEAR_RATIO, 1)
+        dc_motor_rotation_counter = (
+            self.__motor_core.odometer() * self.__forward_direction
+        )
+        output_shaft_rotation_counter = round(
+            dc_motor_rotation_counter / self.MMK_STANDARD_GEAR_RATIO, 1
+        )
 
         return output_shaft_rotation_counter
 
@@ -338,7 +361,9 @@ class EncoderMotor(Stateful, Recreatable):
             Total distance to travel in m. Set to 0 to run indefinitely.
         """
         if not (-self.max_speed <= target_speed <= self.max_speed):
-            raise ValueError(f"Wheel speed value must be between {-self.max_speed} and {self.max_speed} (inclusive)")
+            raise ValueError(
+                f"Wheel speed value must be between {-self.max_speed} and {self.max_speed} (inclusive)"
+            )
 
         rpm = 60.0 * (target_speed / self.wheel_circumference)
         total_rotations = distance / self.wheel_circumference

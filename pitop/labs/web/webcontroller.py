@@ -1,24 +1,15 @@
-from .webserver import WebServer
 from .blueprints import ControllerBlueprint, RoverControllerBlueprint
+from .webserver import WebServer
 
 
 class WebController(WebServer):
-    def __init__(
-        self,
-        get_frame=None,
-        message_handlers={},
-        blueprints=[],
-        **kwargs
-    ):
+    def __init__(self, get_frame=None, message_handlers={}, blueprints=[], **kwargs):
         self.controller_blueprint = ControllerBlueprint(
-            get_frame=get_frame,
-            message_handlers=message_handlers
+            get_frame=get_frame, message_handlers=message_handlers
         )
 
         WebServer.__init__(
-            self,
-            blueprints=[self.controller_blueprint] + blueprints,
-            **kwargs
+            self, blueprints=[self.controller_blueprint] + blueprints, **kwargs
         )
 
     def broadcast(self, message):
@@ -39,13 +30,11 @@ class RoverWebController(WebServer):
             get_frame=get_frame,
             drive=drive,
             pan_tilt=pan_tilt,
-            message_handlers=message_handlers
+            message_handlers=message_handlers,
         )
 
         WebServer.__init__(
-            self,
-            blueprints=[self.rover_blueprint] + blueprints,
-            **kwargs
+            self, blueprints=[self.rover_blueprint] + blueprints, **kwargs
         )
 
     def broadcast(self, message):

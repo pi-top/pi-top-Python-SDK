@@ -2,8 +2,8 @@ from signal import pause
 from threading import Lock
 
 from bluedot import BlueDot
-from pitop import DriveController
 
+from pitop import DriveController
 
 bd = BlueDot()
 bd.color = "#00B2A2"
@@ -16,10 +16,12 @@ def move(pos):
     if lock.locked():
         return
 
-    if any([
-        pos.angle > 0 and pos.angle < 20,
-        pos.angle < 0 and pos.angle > -20,
-    ]):
+    if any(
+        [
+            pos.angle > 0 and pos.angle < 20,
+            pos.angle < 0 and pos.angle > -20,
+        ]
+    ):
         drive.forward(pos.distance, hold=True)
     elif pos.angle > 0 and 20 <= pos.angle <= 160:
         turn_radius = 0 if 70 < pos.angle < 110 else pos.distance
@@ -29,10 +31,12 @@ def move(pos):
         turn_radius = 0 if -110 < pos.angle < -70 else pos.distance
         speed_factor = -pos.distance if pos.angle < -110 else pos.distance
         drive.left(speed_factor, turn_radius)
-    elif any([
-        pos.angle > 0 and pos.angle > 160,
-        pos.angle < 0 and pos.angle < -160,
-    ]):
+    elif any(
+        [
+            pos.angle > 0 and pos.angle > 160,
+            pos.angle < 0 and pos.angle < -160,
+        ]
+    ):
         drive.backward(pos.distance, hold=True)
 
 

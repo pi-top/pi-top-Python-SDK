@@ -1,5 +1,6 @@
-from pitop import KeyboardButton
 from time import sleep
+
+from pitop import KeyboardButton
 
 
 def on_up_pressed():

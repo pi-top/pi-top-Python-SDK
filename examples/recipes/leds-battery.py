@@ -1,7 +1,7 @@
-from pitop.pulse import ledmatrix
-from pitop import Pitop
-
 from time import sleep
+
+from pitop import Pitop
+from pitop.pulse import ledmatrix
 
 
 def draw_battery_outline():  # Draw the naked battery
@@ -69,8 +69,8 @@ def update_battery_state(charging_state, capacity):
 
 def main():
     ledmatrix.rotation(0)
-    ledmatrix.clear()          # Clear the display
-    draw_battery_outline()     # Draw the battery outline
+    ledmatrix.clear()  # Clear the display
+    draw_battery_outline()  # Draw the battery outline
 
     battery = Pitop().battery
 

@@ -18,6 +18,7 @@ class VideoCapture(CaptureActionBase):
 
     def __init__(self, output_file_name="", fps=20.0, resolution=None):
         from imageio import get_writer
+
         default_video_resolution = (640, 368)
 
         if output_file_name == "":
@@ -30,20 +31,19 @@ class VideoCapture(CaptureActionBase):
         def fix_dimension(dimension):
             if dimension % 16:
                 dimension = dimension + 16 - dimension % 16
-                PTLogger.warning(f"Invalid resolution. Setting dimension to {dimension}")
+                PTLogger.warning(
+                    f"Invalid resolution. Setting dimension to {dimension}"
+                )
             return dimension
 
         self.__video_resolution = [fix_dimension(x) for x in resolution]
-        self.__video_output_writer = get_writer(output_file_name,
-                                                format="avi",
-                                                mode="I",
-                                                fps=fps)
+        self.__video_output_writer = get_writer(
+            output_file_name, format="avi", mode="I", fps=fps
+        )
 
     def process(self, frame):
         self.__video_output_writer.append_data(
-            asarray(
-                frame.resize(self.__video_resolution)
-            )
+            asarray(frame.resize(self.__video_resolution))
         )
 
     def stop(self):

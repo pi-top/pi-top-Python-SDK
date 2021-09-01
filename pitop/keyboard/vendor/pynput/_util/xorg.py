@@ -23,6 +23,7 @@ import contextlib
 import functools
 import itertools
 import operator
+
 import Xlib.display
 import Xlib.threaded
 import Xlib.XK
@@ -45,6 +46,7 @@ class X11Error(Exception):
     """An error that is thrown at the end of a code block managed by a
     :func:`display_manager` if an *X11* error occurred.
     """
+
     pass
 
 
@@ -87,8 +89,7 @@ def _find_mask(display, symbol):
     :return: the modifier mask
     """
     # Get the key code for the symbol
-    modifier_keycode = display.keysym_to_keycode(
-        Xlib.XK.string_to_keysym(symbol))
+    modifier_keycode = display.keysym_to_keycode(Xlib.XK.string_to_keysym(symbol))
 
     for index, keycodes in enumerate(display.get_modifier_mapping()):
         for keycode in keycodes:
@@ -108,8 +109,8 @@ def alt_mask(display):
 
     :return: the modifier mask
     """
-    if not hasattr(display, '__alt_mask'):
-        display.__alt_mask = _find_mask(display, 'Alt_L')
+    if not hasattr(display, "__alt_mask"):
+        display.__alt_mask = _find_mask(display, "Alt_L")
     return display.__alt_mask
 
 
@@ -123,8 +124,8 @@ def alt_gr_mask(display):
 
     :return: the modifier mask
     """
-    if not hasattr(display, '__altgr_mask'):
-        display.__altgr_mask = _find_mask(display, 'Mode_switch')
+    if not hasattr(display, "__altgr_mask"):
+        display.__altgr_mask = _find_mask(display, "Mode_switch")
     return display.__altgr_mask
 
 
@@ -138,8 +139,8 @@ def numlock_mask(display):
 
     :return: the modifier mask
     """
-    if not hasattr(display, '__numlock_mask'):
-        display.__numlock_mask = _find_mask(display, 'Num_Lock')
+    if not hasattr(display, "__numlock_mask"):
+        display.__numlock_mask = _find_mask(display, "Num_Lock")
     return display.__numlock_mask
 
 
@@ -223,10 +224,11 @@ def keysym_normalize(keysym):
     :return: the tuple ``(group_1, group_2)`` or ``None``
     """
     # Remove trailing NoSymbol
-    stripped = list(reversed(list(
-        itertools.dropwhile(
-            lambda n: n == Xlib.XK.NoSymbol,
-            reversed(keysym)))))
+    stripped = list(
+        reversed(
+            list(itertools.dropwhile(lambda n: n == Xlib.XK.NoSymbol, reversed(keysym)))
+        )
+    )
 
     if not stripped:
         return
@@ -234,29 +236,34 @@ def keysym_normalize(keysym):
     elif len(stripped) == 1:
         return (
             keysym_group(stripped[0], Xlib.XK.NoSymbol),
-            keysym_group(stripped[0], Xlib.XK.NoSymbol))
+            keysym_group(stripped[0], Xlib.XK.NoSymbol),
+        )
 
     elif len(stripped) == 2:
         return (
             keysym_group(stripped[0], stripped[1]),
-            keysym_group(stripped[0], stripped[1]))
+            keysym_group(stripped[0], stripped[1]),
+        )
 
     elif len(stripped) == 3:
         return (
             keysym_group(stripped[0], stripped[1]),
-            keysym_group(stripped[2], Xlib.XK.NoSymbol))
+            keysym_group(stripped[2], Xlib.XK.NoSymbol),
+        )
 
     elif len(stripped) >= 6:
         # TODO: Find out why this is necessary; using only the documented
         # behaviour may lead to only a US layout being used?
         return (
             keysym_group(stripped[0], stripped[1]),
-            keysym_group(stripped[4], stripped[5]))
+            keysym_group(stripped[4], stripped[5]),
+        )
 
     else:
         return (
             keysym_group(stripped[0], stripped[1]),
-            keysym_group(stripped[2], stripped[3]))
+            keysym_group(stripped[2], stripped[3]),
+        )
 
 
 def index_to_shift(display, index):
@@ -269,9 +276,7 @@ def index_to_shift(display, index):
 
     :return: a shift mask
     """
-    return (
-        (1 << 0 if index & 1 else 0) |
-        (alt_gr_mask(display) if index & 2 else 0))
+    return (1 << 0 if index & 1 else 0) | (alt_gr_mask(display) if index & 2 else 0)
 
 
 def shift_to_index(display, shift):
@@ -284,9 +289,7 @@ def shift_to_index(display, shift):
 
     :retur: a shift mask
     """
-    return (
-        (1 if shift & 1 else 0) +
-        (2 if shift & alt_gr_mask(display) else 0))
+    return (1 if shift & 1 else 0) + (2 if shift & alt_gr_mask(display) else 0)
 
 
 def keyboard_mapping(display):
@@ -306,8 +309,9 @@ def keyboard_mapping(display):
     # Iterate over all keysym lists in the keyboard mapping
     min_keycode = display.display.info.min_keycode
     keycode_count = display.display.info.max_keycode - min_keycode + 1
-    for index, keysyms in enumerate(display.get_keyboard_mapping(
-            min_keycode, keycode_count)):
+    for index, keysyms in enumerate(
+        display.get_keyboard_mapping(min_keycode, keycode_count)
+    ):
         key_code = index + min_keycode
 
         # Normalise the keysym list to yield a tuple containing the two groups
@@ -320,9 +324,9 @@ def keyboard_mapping(display):
             for keysym, shift in zip(groups, (False, True)):
                 if not keysym:
                     continue
-                shift_state = 0 \
-                    | (shift_mask if shift else 0) \
-                    | (group_mask if group else 0)
+                shift_state = (
+                    0 | (shift_mask if shift else 0) | (group_mask if group else 0)
+                )
 
                 # Prefer already known lesser shift states
                 if keysym in mapping and mapping[keysym][1] < shift_state:
@@ -347,7 +351,7 @@ def symbol_to_keysym(symbol):
     # If that fails, try checking a module attribute of Xlib.keysymdef.xkb
     if not keysym:
         try:
-            return getattr(Xlib.keysymdef.xkb, 'XK_' + symbol, 0)
+            return getattr(Xlib.keysymdef.xkb, "XK_" + symbol, 0)
         except AttributeError:
             return SYMBOLS.get(symbol, (0,))[0]
 
@@ -358,6 +362,7 @@ class ListenerMixin(object):
     Subclasses should set a value for :attr:`_EVENTS` and implement
     :meth:`_handle`.
     """
+
     #: The events for which to listen
     _EVENTS = tuple()
 
@@ -371,16 +376,20 @@ class ListenerMixin(object):
             self._context = dm.record_create_context(
                 0,
                 [Xlib.ext.record.AllClients],
-                [{
-                    'core_requests': (0, 0),
-                    'core_replies': (0, 0),
-                    'ext_requests': (0, 0, 0, 0),
-                    'ext_replies': (0, 0, 0, 0),
-                    'delivered_events': (0, 0),
-                    'device_events': self._EVENTS,
-                    'errors': (0, 0),
-                    'client_started': False,
-                    'client_died': False}])
+                [
+                    {
+                        "core_requests": (0, 0),
+                        "core_replies": (0, 0),
+                        "ext_requests": (0, 0, 0, 0),
+                        "ext_replies": (0, 0, 0, 0),
+                        "delivered_events": (0, 0),
+                        "device_events": self._EVENTS,
+                        "errors": (0, 0),
+                        "client_started": False,
+                        "client_died": False,
+                    }
+                ],
+            )
 
         # pylint: disable=W0702; we want to silence errors
         try:
@@ -389,8 +398,7 @@ class ListenerMixin(object):
             if self.suppress:
                 with display_manager(self._display_record) as dm:
                     self._suppress_start(dm)
-            self._display_record.record_enable_context(
-                self._context, self._handler)
+            self._display_record.record_enable_context(self._context, self._handler)
         except Exception:
             # This exception will have been passed to the main thread
             pass
@@ -404,7 +412,7 @@ class ListenerMixin(object):
         # pylint: enable=W0702
 
     def _stop_platform(self):
-        if not hasattr(self, '_context'):
+        if not hasattr(self, "_context"):
             self.wait()
         # pylint: disable=W0702; we must ignore errors
         try:
@@ -452,7 +460,8 @@ class ListenerMixin(object):
 
         while data and len(data):
             event, data = self._EVENT_PARSER.parse_binary_value(
-                data, self._display_record.display, None, None)
+                data, self._display_record.display, None, None
+            )
             self._handle(self._display_stop, event)
 
     def _initialize(self, display):

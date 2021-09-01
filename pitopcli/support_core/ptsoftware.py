@@ -1,4 +1,4 @@
-from os import listdir, walk, path
+from os import listdir, path, walk
 from re import search
 from subprocess import check_output
 
@@ -76,7 +76,7 @@ class PitopSoftware:
                     path_to_source = path.join(root, file)
                     StdoutFormat.print_line(path_to_source)
 
-                    with open(path_to_source, 'r') as f:
+                    with open(path_to_source, "r") as f:
                         lines = f.readlines()
 
                     for line in lines:

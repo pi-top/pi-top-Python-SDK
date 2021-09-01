@@ -1,8 +1,9 @@
 from enum import Enum
 from threading import Lock
 
-from .capture_actions import CaptureActions
 from pitop.pma.common import type_check
+
+from .capture_actions import CaptureActions
 
 
 class FrameHandler:
@@ -85,7 +86,10 @@ class FrameHandler:
 
         :return: list
         """
-        return [action.name if isinstance(action, Enum) else action for action in self.__capture_actions.keys()]
+        return [
+            action.name if isinstance(action, Enum) else action
+            for action in self.__capture_actions.keys()
+        ]
 
     @type_check
     def is_running_action(self, action: CaptureActions) -> bool:

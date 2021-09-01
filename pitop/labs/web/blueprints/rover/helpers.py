@@ -16,27 +16,27 @@ def calculate_direction(degree):
 
 
 def calculate_pan_tilt_angle(data):
-    angle = data.get('angle', {})
-    degree = angle.get('degree', 0)
-    distance = data.get('distance', 0)
+    angle = data.get("angle", {})
+    degree = angle.get("degree", 0)
+    distance = data.get("distance", 0)
     magnitude = distance * MAX_SERVO_ANGLE / 100.0
     direction = calculate_direction(degree)
 
     return {
-        'y': -math.cos(direction * math.pi / 180) * magnitude,
-        'z': math.sin(direction * math.pi / 180) * magnitude,
+        "y": -math.cos(direction * math.pi / 180) * magnitude,
+        "z": math.sin(direction * math.pi / 180) * magnitude,
     }
 
 
 def calculate_velocity_twist(data):
-    angle = data.get('angle', {})
-    degree = angle.get('degree', 0)
-    distance = data.get('distance', 0)
+    angle = data.get("angle", {})
+    degree = angle.get("degree", 0)
+    distance = data.get("distance", 0)
     linear_speed = distance * MAX_LINEAR_SPEED / 100.0
     angular_speed = distance * MAX_ANGULAR_SPEED / 100.0
     direction = calculate_direction(degree)
 
     return {
-        'linear': math.cos(direction * math.pi / 180) * linear_speed,
-        'angular': math.sin(direction * math.pi / 180) * angular_speed,
+        "linear": math.cos(direction * math.pi / 180) * linear_speed,
+        "angular": math.sin(direction * math.pi / 180) * angular_speed,
     }

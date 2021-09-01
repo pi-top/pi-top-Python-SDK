@@ -1,8 +1,10 @@
 from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
+
 from numpy import asarray
 
 from pitop.processing.core.vision_functions import import_opencv
+
 from .capture_action_base import CaptureActionBase
 
 
@@ -19,7 +21,7 @@ class MotionDetector(CaptureActionBase):
         self.cv2 = import_opencv()
 
         self.__motion_detect_previous_frame = None
-        self.__motion_detect_threshold = moving_object_minimum_area**2
+        self.__motion_detect_threshold = moving_object_minimum_area ** 2
         self.__motion_detect_callback = callback_on_motion
         self.__event_executor = ThreadPoolExecutor()
 
@@ -39,10 +41,16 @@ class MotionDetector(CaptureActionBase):
             self.__motion_detect_previous_frame = gray
         else:
             diff_frame = self.cv2.absdiff(self.__motion_detect_previous_frame, gray)
-            threshold_frame = self.cv2.threshold(diff_frame, 30, 255, self.cv2.THRESH_BINARY)[1]
+            threshold_frame = self.cv2.threshold(
+                diff_frame, 30, 255, self.cv2.THRESH_BINARY
+            )[1]
             threshold_frame = self.cv2.dilate(threshold_frame, None, iterations=2)
 
-            contour_data = self.cv2.findContours(threshold_frame.copy(), self.cv2.RETR_EXTERNAL, self.cv2.CHAIN_APPROX_SIMPLE)
+            contour_data = self.cv2.findContours(
+                threshold_frame.copy(),
+                self.cv2.RETR_EXTERNAL,
+                self.cv2.CHAIN_APPROX_SIMPLE,
+            )
             if len(contour_data) == 2:
                 # opencv 2
                 detected_contours = contour_data[0]
@@ -55,7 +63,9 @@ class MotionDetector(CaptureActionBase):
 
                 if area > self.__motion_detect_threshold:
                     if self.callback_has_argument:
-                        self.__event_executor.submit(self.__motion_detect_callback, frame)
+                        self.__event_executor.submit(
+                            self.__motion_detect_callback, frame
+                        )
                     else:
                         self.__event_executor.submit(self.__motion_detect_callback)
                     break

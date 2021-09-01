@@ -1,20 +1,22 @@
 from os import listdir
+
 from PIL import Image
 
-from pitop.core.import_opencv import import_opencv
 from pitop.core.ImageFunctions import convert
-
+from pitop.core.import_opencv import import_opencv
 
 valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
 
 
 class UsbCamera:
-    def __init__(self,
-                 index: int = None,
-                 resolution=None,
-                 rotate_angle: int = 0,
-                 flip_top_bottom: bool = False,
-                 flip_left_right: bool = False):
+    def __init__(
+        self,
+        index: int = None,
+        resolution=None,
+        rotate_angle: int = 0,
+        flip_top_bottom: bool = False,
+        flip_left_right: bool = False,
+    ):
 
         VideoCapture = import_opencv().VideoCapture
 
@@ -25,9 +27,11 @@ class UsbCamera:
         self._flip_left_right = flip_left_right
 
         if rotate_angle not in valid_rotate_angles:
-            raise ValueError(f"Rotate angle must be one of "
-                             f"{', '.join([str(x) for x in valid_rotate_angles[:-1]])} or "
-                             f"{str(valid_rotate_angles[-1])}")
+            raise ValueError(
+                f"Rotate angle must be one of "
+                f"{', '.join([str(x) for x in valid_rotate_angles[:-1]])} or "
+                f"{str(valid_rotate_angles[-1])}"
+            )
         else:
             self._rotate_angle = rotate_angle
 
@@ -41,7 +45,9 @@ class UsbCamera:
         self.__camera = create_camera_object(self.index, resolution)
         if not self.is_opened():
             self.__camera = None
-            raise IOError("Error opening camera. Make sure it's correctly connected via USB.") from None
+            raise IOError(
+                "Error opening camera. Make sure it's correctly connected via USB."
+            ) from None
 
     def __del__(self):
         try:
@@ -60,8 +66,7 @@ class UsbCamera:
             raise ValueError("Couldn't grab frame from camera")
 
         # Always PIL format
-        pil_image = convert(frame, "PIL").rotate(angle=self._rotate_angle,
-                                                 expand=True)
+        pil_image = convert(frame, "PIL").rotate(angle=self._rotate_angle, expand=True)
 
         if self._flip_top_bottom:
             pil_image = pil_image.transpose(method=Image.FLIP_TOP_BOTTOM)
@@ -80,7 +85,7 @@ class UsbCamera:
 
         # find "video" device indexes in /dev
         device_names = [name for name in listdir("/dev") if "video" in name]
-        device_indexes = [int(dev[len("video"):]) for dev in device_names]
+        device_indexes = [int(dev[len("video") :]) for dev in device_names]
         # indexes >= 10 are for bcm2835, not useful for us
         camera_indexes = [i for i in device_indexes if i < 10]
         camera_indexes.sort()

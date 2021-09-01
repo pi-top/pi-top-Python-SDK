@@ -1,14 +1,15 @@
-from pitop import Camera
 from time import sleep
+
 import cv2
 
+from pitop import Camera
 
-cam = Camera(format='OpenCV')
+cam = Camera(format="OpenCV")
 
 
 def show_gray_image(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('frame', gray)
+    cv2.imshow("frame", gray)
     cv2.waitKey(1)  # Necessary to show image
 
 
