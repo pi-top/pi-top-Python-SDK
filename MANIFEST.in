@@ -1,3 +1,5 @@
+include pitop/version.txt
+
 recursive-include pitop/robotics/json *.json
 recursive-include pitop/miniscreen/images *.gif
 recursive-include pitop/labs/web/blueprints *.css
