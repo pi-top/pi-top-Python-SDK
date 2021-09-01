@@ -1,3 +1,26 @@
+py-pitop-sdk (0.20.0-1) buster; urgency=medium
+
+  * Vendor some dependencies (for manageability)
+  * Fix Python to Debian dependency mapping
+  * Rework core dependencies
+  * Apply isort and black to project
+  * Add startup animation handling for pt-miniscreen example
+  * Bullseye release: new dependencies
+  * Integrate common library into SDK (#413)
+  * Replace UsbCamera PyV4L2Camera dependency with cv2.VideoCapture (#422)
+  * OpenCV is now a main dependency due to image handling (#434)
+  * Improve import & CLI speed (#381)
+  * Add MCU-based Ultrasonic Sensor readings on ports A1 and A3 (#368)
+  * Prax head shake and nod (#394)
+  * Use new lock file path (#436)
+  * Drop proprietary fonts (#438)
+  * Add OS build info to API (#437)
+  * Add virtual.py needed by `pt-miniscreen` (#440)
+  * Add miniscreen assistant class (#430) (#439)
+  * Refactor setuptools (#443)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 14:21:36 +0000
+
 py-pitop-sdk (0.19.1-1) buster; urgency=medium
 
   * Initial release as quilt package
