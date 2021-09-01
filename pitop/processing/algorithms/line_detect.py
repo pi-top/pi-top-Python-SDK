@@ -1,7 +1,7 @@
 from numpy import array
 
-from pitop.core.data_structures import DotDict
 from pitop.core import ImageFunctions
+from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (
     center_reposition,
     color_mask,
@@ -37,6 +37,7 @@ def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
     from imutils import resize
+
     resized_frame = resize(cv_frame, width=process_image_width)
     hsv_lower, hsv_upper = calculate_blue_limits()
     image_mask = color_mask(resized_frame, hsv_lower, hsv_upper)
@@ -54,17 +55,21 @@ def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
         rectangle_dimensions = bounding_rectangle[2:5]
         angle = get_object_target_lock_control_angle(centroid, resized_frame)
 
-    robot_view_img = robot_view(resized_frame, image_mask, line_contour, scaled_image_centroid)
+    robot_view_img = robot_view(
+        resized_frame, image_mask, line_contour, scaled_image_centroid
+    )
 
-    if image_format.lower() != 'opencv':
+    if image_format.lower() != "opencv":
         robot_view_img = ImageFunctions.convert(robot_view_img, format="PIL")
 
-    return DotDict({
-        "line_center": centroid,
-        "robot_view": robot_view_img,
-        "rectangle_dimensions": rectangle_dimensions,
-        "angle": angle,
-    })
+    return DotDict(
+        {
+            "line_center": centroid,
+            "robot_view": robot_view_img,
+            "rectangle_dimensions": rectangle_dimensions,
+            "angle": angle,
+        }
+    )
 
 
 def robot_view(frame, image_mask, line_contour, centroid):
@@ -77,13 +82,15 @@ def robot_view(frame, image_mask, line_contour, centroid):
         draw_contour_bound(masked_image, line_contour)
 
     if centroid:
-        cv2.drawMarker(masked_image,
-                       (centroid[0], centroid[1]),
-                       (100, 60, 240),
-                       markerType=cv2.MARKER_CROSS,
-                       markerSize=20,
-                       thickness=4,
-                       line_type=cv2.FILLED)
+        cv2.drawMarker(
+            masked_image,
+            (centroid[0], centroid[1]),
+            (100, 60, 240),
+            markerType=cv2.MARKER_CROSS,
+            markerSize=20,
+            thickness=4,
+            line_type=cv2.FILLED,
+        )
     return masked_image
 
 

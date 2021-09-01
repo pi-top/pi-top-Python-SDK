@@ -1,5 +1,6 @@
-from pitop.core import ImageFunctions
 import os
+
+from pitop.core import ImageFunctions
 
 
 class FsImage:
@@ -19,7 +20,9 @@ class FileSystemCamera:
     :param str file_ends_with: filter images from the given path to use only the ones that end with the given string
     """
 
-    def __init__(self, path: str = "/tmp", file_starts_with: str = "", file_ends_with: str = ""):
+    def __init__(
+        self, path: str = "/tmp", file_starts_with: str = "", file_ends_with: str = ""
+    ):
         if not os.path.isdir(path):
             raise FileExistsError(f"Provided path {path} doesn't exist")
 
@@ -39,7 +42,10 @@ class FileSystemCamera:
 
         with os.scandir(self.path) as it:
             for file_path in it:
-                if not(file_path.name.startswith(self.__file_starts_with) or file_path.name.endswith(self.__file_ends_with)):
+                if not (
+                    file_path.name.startswith(self.__file_starts_with)
+                    or file_path.name.endswith(self.__file_ends_with)
+                ):
                     continue
 
                 try:

@@ -1,6 +1,6 @@
-from pitop import Pitop
 from time import sleep
 
+from pitop import Pitop
 
 pitop = Pitop()
 miniscreen = pitop.miniscreen

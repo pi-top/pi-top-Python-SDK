@@ -1,7 +1,7 @@
-from pitop import Pitop
 from signal import pause
 from time import sleep
 
+from pitop import Pitop
 
 pitop = Pitop()
 display = pitop.display

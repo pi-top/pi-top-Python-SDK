@@ -1,11 +1,8 @@
 import time
 
-from pitop.core.mixins import (
-    Stateful,
-    Recreatable,
-)
-from pitop.pma.plate_interface import PlateInterface
+from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
+from pitop.pma.plate_interface import PlateInterface
 
 
 class ADCBase(Stateful, Recreatable):
@@ -30,15 +27,19 @@ class ADCBase(Stateful, Recreatable):
         self.__adc_device = PlateInterface().get_device_mcu()
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name,  "pin_number": pin_number, "name": self.name})
+        Recreatable.__init__(
+            self, {"port_name": port_name, "pin_number": pin_number, "name": self.name}
+        )
 
     @property
     def own_state(self):
         return {
-            'value': lambda: self.value,
+            "value": lambda: self.value,
         }
 
-    def read(self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False):
+    def read(
+        self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False
+    ):
         """Take a reading from the chosen ADC channel, or get an average value
         over multiple reads.
 

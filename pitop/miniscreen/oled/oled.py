@@ -1,32 +1,14 @@
-from pitop.core import ImageFunctions
-from .assistant import MiniscreenAssistant
-from .core import (
-    FPS_Regulator,
-    OledDeviceController,
-)
-
-
 from atexit import register
-from PIL import (
-    ImageChops,
-    ImageDraw,
-    ImageFont,
-    ImageOps,
-    ImageSequence,
-)
-from pyinotify import (
-    IN_CLOSE_WRITE,
-    IN_OPEN,
-    Notifier,
-    ProcessEvent,
-    WatchManager,
-)
-from threading import (
-    Thread,
-    current_thread,
-    main_thread,
-)
+from threading import Thread, current_thread, main_thread
 from time import sleep
+
+from PIL import ImageChops, ImageDraw, ImageFont, ImageOps, ImageSequence
+from pyinotify import IN_CLOSE_WRITE, IN_OPEN, Notifier, ProcessEvent, WatchManager
+
+from pitop.core import ImageFunctions
+
+from .assistant import MiniscreenAssistant
+from .core import FPS_Regulator, OledDeviceController
 
 
 class OLED:
@@ -79,8 +61,10 @@ class OLED:
         if image_to_display is None:
             image_to_display = self._image
 
-        return self.image is None or \
-            ImageChops.difference(self.image, image_to_display).getbbox()
+        return (
+            self.image is None
+            or ImageChops.difference(self.image, image_to_display).getbbox()
+        )
 
     @property
     def spi_bus(self):
@@ -311,19 +295,18 @@ class OLED:
         ImageDraw.Draw(image).text(
             xy,
             str(text),
-            font=ImageFont.truetype(
-                font,
-                size=font_size
-            ),
+            font=ImageFont.truetype(font, size=font_size),
             fill=1,
             spacing=0,
-            align="left"
+            align="left",
         )
 
         # Display image
         self.display_image(image, invert=invert)
 
-    def display_multiline_text(self, text, xy=None, font_size=None, font=None, invert=False):
+    def display_multiline_text(
+        self, text, xy=None, font_size=None, font=None, invert=False
+    ):
         """Renders multi-lined text to the screen at a given position and size.
         Text that is too long for the screen will automatically wrap to the
         next line.
@@ -341,6 +324,7 @@ class OLED:
             If not provided or passed as `None`, the default font will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
+
         def format_multiline_text(text):
             def get_text_size(text):
                 return ImageDraw.Draw(self.assistant.empty_image).textsize(
@@ -388,13 +372,10 @@ class OLED:
         ImageDraw.Draw(image).multiline_text(
             xy,
             str(text),
-            font=ImageFont.truetype(
-                font,
-                size=font_size
-            ),
+            font=ImageFont.truetype(font, size=font_size),
             fill=1,
             spacing=0,
-            align="left"
+            align="left",
         )
 
         # Display image
@@ -404,9 +385,9 @@ class OLED:
         self.stop_animated_image()
 
         if invert:
-            image_to_display = ImageOps.invert(
-                image_to_display.convert('L')
-            ).convert('1')
+            image_to_display = ImageOps.invert(image_to_display.convert("L")).convert(
+                "1"
+            )
 
         self.__fps_regulator.stop_timer()
 
@@ -442,7 +423,9 @@ class OLED:
         self.stop_animated_image()
         self.__kill_thread = False
         if background is True:
-            self.__auto_play_thread = Thread(target=self.__auto_play, args=(image, loop))
+            self.__auto_play_thread = Thread(
+                target=self.__auto_play, args=(image, loop)
+            )
             self.__auto_play_thread.start()
         else:
             self.__auto_play(image, loop)
@@ -477,10 +460,7 @@ class OLED:
         :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.width / 2,
-            self.height / 2
-        )
+        return (self.width / 2, self.height / 2)
 
     @property
     def top_left(self):
@@ -489,10 +469,7 @@ class OLED:
         :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[0],
-            self.bounding_box[1]
-        )
+        return (self.bounding_box[0], self.bounding_box[1])
 
     @property
     def top_right(self):
@@ -501,10 +478,7 @@ class OLED:
         :return: The coordinates of the top right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[2],
-            self.bounding_box[1]
-        )
+        return (self.bounding_box[2], self.bounding_box[1])
 
     @property
     def bottom_left(self):
@@ -513,10 +487,7 @@ class OLED:
         :return: The coordinates of the bottom left of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[0],
-            self.bounding_box[3]
-        )
+        return (self.bounding_box[0], self.bounding_box[3])
 
     @property
     def bottom_right(self):
@@ -525,10 +496,7 @@ class OLED:
         :return: The coordinates of the bottom right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[2],
-            self.bounding_box[3]
-        )
+        return (self.bounding_box[2], self.bounding_box[3])
 
     #######################
     # Deprecation support #
@@ -545,7 +513,9 @@ class OLED:
         the *canvas* object to draw composite objects and then render them
         to screen in a single frame.
         """
-        print("'display()' is now deprecated. You will need to handle your own images in future.")
+        print(
+            "'display()' is now deprecated. You will need to handle your own images in future."
+        )
         self.__display(self._image, force=force)
 
     def draw(self):
@@ -601,9 +571,7 @@ class OLED:
 
                 self.display_image(frame)
                 # Wait for animated image's frame length
-                sleep(
-                    float(frame.info["duration"] / 1000)  # ms to s
-                )
+                sleep(float(frame.info["duration"] / 1000))  # ms to s
 
             if self.__kill_thread or not loop:
                 self.reset()
@@ -636,12 +604,13 @@ class OLED:
         self.__start_lockfile_monitoring_thread()
 
     def __start_lockfile_monitoring_thread(self):
-
         def start_lockfile_monitoring():
             eh = ProcessEvent()
             events_to_watch = 0
             if self.__when_user_stops_using_oled:
-                eh.process_IN_CLOSE_WRITE = lambda event: self.__when_user_stops_using_oled()
+                eh.process_IN_CLOSE_WRITE = (
+                    lambda event: self.__when_user_stops_using_oled()
+                )
                 events_to_watch = events_to_watch | IN_CLOSE_WRITE
             if self.__when_user_starts_using_oled:
                 eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
@@ -659,5 +628,8 @@ class OLED:
 
     def __cleanup(self):
         self.stop_animated_image()
-        if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
+        if (
+            self.__file_monitor_thread is not None
+            and self.__file_monitor_thread.is_alive()
+        ):
             self.__file_monitor_thread.join(0)

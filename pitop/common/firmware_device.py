@@ -1,8 +1,8 @@
-from pitop.common.i2c_device import I2CDevice
-from pitop.common.common_ids import FirmwareDeviceID
-
-from math import ceil
 from datetime import datetime
+from math import ceil
+
+from pitop.common.common_ids import FirmwareDeviceID
+from pitop.common.i2c_device import I2CDevice
 
 
 class PTInvalidFirmwareDeviceException(Exception):
@@ -43,23 +43,16 @@ def int_to_date_unix(value):
 
 class FirmwareDevice(object):
     device_info = {
-        FirmwareDeviceID.pt4_hub: {
-            "part_name": 0x0607,
-            "i2c_addr": 0x11
-        },
-        FirmwareDeviceID.pt4_foundation_plate: {
-            "part_name": 0x1111,
-            "i2c_addr": 0x04
-        },
-        FirmwareDeviceID.pt4_expansion_plate: {
-            "part_name": 0x2222,
-            "i2c_addr": 0x04
-        }
+        FirmwareDeviceID.pt4_hub: {"part_name": 0x0607, "i2c_addr": 0x11},
+        FirmwareDeviceID.pt4_foundation_plate: {"part_name": 0x1111, "i2c_addr": 0x04},
+        FirmwareDeviceID.pt4_expansion_plate: {"part_name": 0x2222, "i2c_addr": 0x04},
     }
 
-    def __init__(self, id: FirmwareDeviceID, send_packet_interval: float = None) -> None:
+    def __init__(
+        self, id: FirmwareDeviceID, send_packet_interval: float = None
+    ) -> None:
         if id not in self.device_info.keys():
-            raise AttributeError('Invalid device Id')
+            raise AttributeError("Invalid device Id")
 
         self.str_name = id.name
         self.addr = self.device_info[id]["i2c_addr"]
@@ -67,8 +60,7 @@ class FirmwareDevice(object):
         self._i2c_device = I2CDevice("/dev/i2c-1", self.addr)
 
         if send_packet_interval:
-            self._i2c_device.set_delays(
-                send_packet_interval, send_packet_interval)
+            self._i2c_device.set_delays(send_packet_interval, send_packet_interval)
 
         try:
             self._i2c_device.connect()
@@ -77,7 +69,10 @@ class FirmwareDevice(object):
 
         if self.part_name != self.get_part_name():
             raise PTInvalidFirmwareDeviceException(
-                "Part name provided does not match. {} != {}".format(hex(self.part_name), hex(self.get_part_name())))
+                "Part name provided does not match. {} != {}".format(
+                    hex(self.part_name), hex(self.get_part_name())
+                )
+            )
 
     @classmethod
     def valid_device_ids(self) -> list:
@@ -101,7 +96,9 @@ class FirmwareDevice(object):
         return self._i2c_device.read_unsigned_byte(DeviceInfo.ID__MCU_SOFT_VERS_MINOR)
 
     def get_fw_version_update_schema(self) -> int:
-        resp = self._i2c_device.read_n_unsigned_bytes(DeviceInfo.FW_UPDATE_SCHEMA_VER, 3)
+        resp = self._i2c_device.read_n_unsigned_bytes(
+            DeviceInfo.FW_UPDATE_SCHEMA_VER, 3
+        )
         # First 2 bytes for verification: 0x55, 0xAA
         # Range is 55AA00 - 55AAFF
         if resp > 0x55AA00 and resp <= 0x55AAFF:
@@ -116,15 +113,19 @@ class FirmwareDevice(object):
         if self.has_extended_build_info():
             return None
         else:
-            result = self._i2c_device.read_unsigned_byte(DeviceInfo.ID__IS_RELEASE_BUILD)
-            return (result == 1)
+            result = self._i2c_device.read_unsigned_byte(
+                DeviceInfo.ID__IS_RELEASE_BUILD
+            )
+            return result == 1
 
     def get_git_commit_hash(self) -> int:
         if self.has_extended_build_info():
             return None
         else:
             return int_to_hex(
-                self._i2c_device.read_n_unsigned_bytes(DeviceInfo.ID__GIT_COMMIT_HASH, 4)
+                self._i2c_device.read_n_unsigned_bytes(
+                    DeviceInfo.ID__GIT_COMMIT_HASH, 4
+                )
             )
 
     def get_ci_build_no(self) -> int:
@@ -134,14 +135,18 @@ class FirmwareDevice(object):
             return self._i2c_device.read_unsigned_word(DeviceInfo.ID__CI_BUILD_NO)
 
     def get_raw_build_timestamp(self) -> str:
-        return self._i2c_device.read_n_unsigned_bytes(DeviceInfo.ID__BUILD_UNIX_TIMESTAMP, 4)
+        return self._i2c_device.read_n_unsigned_bytes(
+            DeviceInfo.ID__BUILD_UNIX_TIMESTAMP, 4
+        )
 
     def get_build_timestamp(self) -> str:
         if self.has_extended_build_info():
             return None
         else:
             return int_to_date_unix(
-                self._i2c_device.read_n_unsigned_bytes(DeviceInfo.ID__BUILD_UNIX_TIMESTAMP, 4)
+                self._i2c_device.read_n_unsigned_bytes(
+                    DeviceInfo.ID__BUILD_UNIX_TIMESTAMP, 4
+                )
             )
 
     def send_packet(self, hardware_reg, packet) -> None:
@@ -158,5 +163,5 @@ class FirmwareDevice(object):
     def str_name_to_device_id(cls, str_name: str) -> FirmwareDeviceID:
         devices = cls.valid_device_ids()
         if str_name not in [d.name for d in devices]:
-            raise AttributeError('Invalid device name')
+            raise AttributeError("Invalid device name")
         return FirmwareDeviceID[str_name]

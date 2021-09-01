@@ -1,7 +1,7 @@
 import atexit
 
-from pitop.miniscreen.oled.core.contrib.luma.core import mixin
 import pitop.miniscreen.oled.core.contrib.luma.core.const
+from pitop.miniscreen.oled.core.contrib.luma.core import mixin
 
 
 class device(mixin.capabilities):

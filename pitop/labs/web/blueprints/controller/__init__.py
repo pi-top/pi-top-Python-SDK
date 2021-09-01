@@ -1,9 +1,9 @@
 from flask import Blueprint
 
 from pitop.labs.web.blueprints.base import BaseBlueprint
-from pitop.labs.web.blueprints.webcomponents import WebComponentsBlueprint
 from pitop.labs.web.blueprints.messaging import MessagingBlueprint
 from pitop.labs.web.blueprints.video import VideoBlueprint
+from pitop.labs.web.blueprints.webcomponents import WebComponentsBlueprint
 
 
 class ControllerBlueprint(Blueprint):
@@ -20,8 +20,7 @@ class ControllerBlueprint(Blueprint):
         self.base_blueprint = BaseBlueprint()
         self.components_blueprint = WebComponentsBlueprint()
         self.video_blueprint = VideoBlueprint(get_frame=get_frame)
-        self.messaging_blueprint = MessagingBlueprint(
-            message_handlers=message_handlers)
+        self.messaging_blueprint = MessagingBlueprint(message_handlers=message_handlers)
 
     def register(self, app, options, *args, **kwargs):
         # register child blueprints

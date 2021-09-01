@@ -1,9 +1,6 @@
-from pitop.pulse import (
-    ledmatrix,
-    microphone
-)
-
 from time import sleep
+
+from pitop.pulse import ledmatrix, microphone
 
 
 def set_bit_rate_to_unsigned_8():

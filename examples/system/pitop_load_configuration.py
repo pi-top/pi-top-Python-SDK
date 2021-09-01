@@ -1,6 +1,6 @@
-from pitop import Pitop
 from time import sleep
 
+from pitop import Pitop
 
 # Load configuration from a previous session
 pitop = Pitop.from_file("/home/pi/my_custom_config.json")

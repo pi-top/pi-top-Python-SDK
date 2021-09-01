@@ -1,5 +1,6 @@
-from pitop import LED
 from time import sleep
+
+from pitop import LED
 
 led = LED("D2")
 

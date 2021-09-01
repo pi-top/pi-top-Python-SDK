@@ -28,28 +28,24 @@ import threading
 import Xlib.display
 import Xlib.ext
 import Xlib.ext.xtest
+import Xlib.keysymdef.xkb
+import Xlib.protocol
 import Xlib.X
 import Xlib.XK
-import Xlib.protocol
-import Xlib.keysymdef.xkb
-
 from pynput._util import NotifierMixin
 from pynput._util.xorg import (
-    alt_mask,
+    ListenerMixin,
     alt_gr_mask,
+    alt_mask,
     display_manager,
     index_to_shift,
     keyboard_mapping,
-    ListenerMixin,
     numlock_mask,
     shift_to_index,
-    symbol_to_keysym)
-from pynput._util.xorg_keysyms import (
-    CHARS,
-    DEAD_KEYS,
-    KEYPAD_KEYS,
-    KEYSYMS,
-    SYMBOLS)
+    symbol_to_keysym,
+)
+from pynput._util.xorg_keysyms import CHARS, DEAD_KEYS, KEYPAD_KEYS, KEYSYMS, SYMBOLS
+
 from . import _base
 
 
@@ -72,72 +68,70 @@ class KeyCode(_base.KeyCode):
             # pylint: disable=W0702; we want to ignore errors
             try:
                 return cls.from_vk(
-                    getattr(Xlib.keysymdef.xkb, 'XK_' + symbol, 0),
-                    **kwargs)
+                    getattr(Xlib.keysymdef.xkb, "XK_" + symbol, 0), **kwargs
+                )
             except Exception:
-                return cls.from_vk(
-                    SYMBOLS.get(symbol, (0,))[0],
-                    **kwargs)
+                return cls.from_vk(SYMBOLS.get(symbol, (0,))[0], **kwargs)
             # pylint: enable=W0702
 
 
 class Key(enum.Enum):
     # Default keys
-    alt = KeyCode._from_symbol('Alt_L')
-    alt_l = KeyCode._from_symbol('Alt_L')
-    alt_r = KeyCode._from_symbol('Alt_R')
-    alt_gr = KeyCode._from_symbol('Mode_switch')
-    backspace = KeyCode._from_symbol('BackSpace')
-    caps_lock = KeyCode._from_symbol('Caps_Lock')
-    cmd = KeyCode._from_symbol('Super_L')
-    cmd_l = KeyCode._from_symbol('Super_L')
-    cmd_r = KeyCode._from_symbol('Super_R')
-    ctrl = KeyCode._from_symbol('Control_L')
-    ctrl_l = KeyCode._from_symbol('Control_L')
-    ctrl_r = KeyCode._from_symbol('Control_R')
-    delete = KeyCode._from_symbol('Delete')
-    down = KeyCode._from_symbol('Down')
-    end = KeyCode._from_symbol('End')
-    enter = KeyCode._from_symbol('Return')
-    esc = KeyCode._from_symbol('Escape')
-    f1 = KeyCode._from_symbol('F1')
-    f2 = KeyCode._from_symbol('F2')
-    f3 = KeyCode._from_symbol('F3')
-    f4 = KeyCode._from_symbol('F4')
-    f5 = KeyCode._from_symbol('F5')
-    f6 = KeyCode._from_symbol('F6')
-    f7 = KeyCode._from_symbol('F7')
-    f8 = KeyCode._from_symbol('F8')
-    f9 = KeyCode._from_symbol('F9')
-    f10 = KeyCode._from_symbol('F10')
-    f11 = KeyCode._from_symbol('F11')
-    f12 = KeyCode._from_symbol('F12')
-    f13 = KeyCode._from_symbol('F13')
-    f14 = KeyCode._from_symbol('F14')
-    f15 = KeyCode._from_symbol('F15')
-    f16 = KeyCode._from_symbol('F16')
-    f17 = KeyCode._from_symbol('F17')
-    f18 = KeyCode._from_symbol('F18')
-    f19 = KeyCode._from_symbol('F19')
-    f20 = KeyCode._from_symbol('F20')
-    home = KeyCode._from_symbol('Home')
-    left = KeyCode._from_symbol('Left')
-    page_down = KeyCode._from_symbol('Page_Down')
-    page_up = KeyCode._from_symbol('Page_Up')
-    right = KeyCode._from_symbol('Right')
-    shift = KeyCode._from_symbol('Shift_L')
-    shift_l = KeyCode._from_symbol('Shift_L')
-    shift_r = KeyCode._from_symbol('Shift_R')
-    space = KeyCode._from_symbol('space', char=' ')
-    tab = KeyCode._from_symbol('Tab')
-    up = KeyCode._from_symbol('Up')
+    alt = KeyCode._from_symbol("Alt_L")
+    alt_l = KeyCode._from_symbol("Alt_L")
+    alt_r = KeyCode._from_symbol("Alt_R")
+    alt_gr = KeyCode._from_symbol("Mode_switch")
+    backspace = KeyCode._from_symbol("BackSpace")
+    caps_lock = KeyCode._from_symbol("Caps_Lock")
+    cmd = KeyCode._from_symbol("Super_L")
+    cmd_l = KeyCode._from_symbol("Super_L")
+    cmd_r = KeyCode._from_symbol("Super_R")
+    ctrl = KeyCode._from_symbol("Control_L")
+    ctrl_l = KeyCode._from_symbol("Control_L")
+    ctrl_r = KeyCode._from_symbol("Control_R")
+    delete = KeyCode._from_symbol("Delete")
+    down = KeyCode._from_symbol("Down")
+    end = KeyCode._from_symbol("End")
+    enter = KeyCode._from_symbol("Return")
+    esc = KeyCode._from_symbol("Escape")
+    f1 = KeyCode._from_symbol("F1")
+    f2 = KeyCode._from_symbol("F2")
+    f3 = KeyCode._from_symbol("F3")
+    f4 = KeyCode._from_symbol("F4")
+    f5 = KeyCode._from_symbol("F5")
+    f6 = KeyCode._from_symbol("F6")
+    f7 = KeyCode._from_symbol("F7")
+    f8 = KeyCode._from_symbol("F8")
+    f9 = KeyCode._from_symbol("F9")
+    f10 = KeyCode._from_symbol("F10")
+    f11 = KeyCode._from_symbol("F11")
+    f12 = KeyCode._from_symbol("F12")
+    f13 = KeyCode._from_symbol("F13")
+    f14 = KeyCode._from_symbol("F14")
+    f15 = KeyCode._from_symbol("F15")
+    f16 = KeyCode._from_symbol("F16")
+    f17 = KeyCode._from_symbol("F17")
+    f18 = KeyCode._from_symbol("F18")
+    f19 = KeyCode._from_symbol("F19")
+    f20 = KeyCode._from_symbol("F20")
+    home = KeyCode._from_symbol("Home")
+    left = KeyCode._from_symbol("Left")
+    page_down = KeyCode._from_symbol("Page_Down")
+    page_up = KeyCode._from_symbol("Page_Up")
+    right = KeyCode._from_symbol("Right")
+    shift = KeyCode._from_symbol("Shift_L")
+    shift_l = KeyCode._from_symbol("Shift_L")
+    shift_r = KeyCode._from_symbol("Shift_R")
+    space = KeyCode._from_symbol("space", char=" ")
+    tab = KeyCode._from_symbol("Tab")
+    up = KeyCode._from_symbol("Up")
 
-    insert = KeyCode._from_symbol('Insert')
-    menu = KeyCode._from_symbol('Menu')
-    num_lock = KeyCode._from_symbol('Num_Lock')
-    pause = KeyCode._from_symbol('Pause')
-    print_screen = KeyCode._from_symbol('Print')
-    scroll_lock = KeyCode._from_symbol('Scroll_Lock')
+    insert = KeyCode._from_symbol("Insert")
+    menu = KeyCode._from_symbol("Menu")
+    num_lock = KeyCode._from_symbol("Num_Lock")
+    pause = KeyCode._from_symbol("Pause")
+    print_screen = KeyCode._from_symbol("Print")
+    scroll_lock = KeyCode._from_symbol("Scroll_Lock")
 
 
 class Controller(NotifierMixin, _base.Controller):
@@ -186,8 +180,9 @@ class Controller(NotifierMixin, _base.Controller):
 
         :param int keysym: The keysym to handle.
         """
-        event = Xlib.display.event.KeyPress if is_press \
-            else Xlib.display.event.KeyRelease
+        event = (
+            Xlib.display.event.KeyPress if is_press else Xlib.display.event.KeyRelease
+        )
         keysym = self._keysym(key)
 
         # Make sure to verify that the key was resolved
@@ -202,7 +197,8 @@ class Controller(NotifierMixin, _base.Controller):
                 Xlib.ext.xtest.fake_input(
                     dm,
                     Xlib.X.KeyPress if is_press else Xlib.X.KeyRelease,
-                    dm.keysym_to_keycode(key.vk))
+                    dm.keysym_to_keycode(key.vk),
+                )
 
         # Otherwise use XSendEvent; we need to use this in the general case to
         # work around problems with keyboard layouts
@@ -214,26 +210,27 @@ class Controller(NotifierMixin, _base.Controller):
             except KeyError:
                 with self._borrow_lock:
                     keycode, index, count = self._borrows[keysym]
-                    self._send_key(
-                        event,
-                        keycode,
-                        index_to_shift(self._display, index))
+                    self._send_key(event, keycode, index_to_shift(self._display, index))
                     count += 1 if is_press else -1
                     self._borrows[keysym] = (keycode, index, count)
 
         # Notify any running listeners
-        self._emit('_on_fake_event', key, is_press)
+        self._emit("_on_fake_event", key, is_press)
 
     def _keysym(self, key):
         """Converts a key to a *keysym*.
 
         :param KeyCode key: The key code to convert.
         """
-        return self._resolve_dead(key) if key.is_dead else None \
-            or self._resolve_special(key) \
-            or self._resolve_normal(key) \
-            or self._resolve_borrowed(key) \
+        return (
+            self._resolve_dead(key)
+            if key.is_dead
+            else None
+            or self._resolve_special(key)
+            or self._resolve_normal(key)
+            or self._resolve_borrowed(key)
             or self._resolve_borrowing(key)
+        )
 
     def _send_key(self, event, keycode, shift_state):
         """Sends a single keyboard event.
@@ -250,18 +247,23 @@ class Controller(NotifierMixin, _base.Controller):
             # the value returned by dm.get_input_focus is an int
             window = dm.get_input_focus().focus
             send_event = getattr(
-                window,
-                'send_event',
-                lambda event: dm.send_event(window, event))
-            send_event(event(
-                detail=keycode,
-                state=shift_state | self._shift_mask(modifiers),
-                time=0,
-                root=dm.screen().root,
-                window=window,
-                same_screen=0,
-                child=Xlib.X.NONE,
-                root_x=0, root_y=0, event_x=0, event_y=0))
+                window, "send_event", lambda event: dm.send_event(window, event)
+            )
+            send_event(
+                event(
+                    detail=keycode,
+                    state=shift_state | self._shift_mask(modifiers),
+                    time=0,
+                    root=dm.screen().root,
+                    window=window,
+                    same_screen=0,
+                    child=Xlib.X.NONE,
+                    root_x=0,
+                    root_y=0,
+                    event_x=0,
+                    event_y=0,
+                )
+            )
 
     def _resolve_dead(self, key):
         """Tries to resolve a dead key.
@@ -374,19 +376,14 @@ class Controller(NotifierMixin, _base.Controller):
         def register(dm, keycode, index):
             i = kc2i(keycode)
             mapping[i][index] = keysym
-            dm.change_keyboard_mapping(
-                keycode,
-                mapping[i:i + 1])
+            dm.change_keyboard_mapping(keycode, mapping[i : i + 1])
             self._borrows[keysym] = (keycode, index, 0)
 
         try:
             with display_manager(self._display) as dm, self._borrow_lock as _:
                 # First try an already used keycode, then try a new one, and
                 # fall back on reusing one that is not currently pressed
-                register(dm, *(
-                    reuse() or
-                    borrow() or
-                    overwrite()))
+                register(dm, *(reuse() or borrow() or overwrite()))
             return keysym
 
         except TypeError:
@@ -422,17 +419,11 @@ class Controller(NotifierMixin, _base.Controller):
         """
         return (
             0
-            | (self.ALT_MASK
-               if Key.alt in modifiers else 0)
-
-            | (self.ALT_GR_MASK
-               if Key.alt_gr in modifiers else 0)
-
-            | (self.CTRL_MASK
-               if Key.ctrl in modifiers else 0)
-
-            | (self.SHIFT_MASK
-               if Key.shift in modifiers else 0))
+            | (self.ALT_MASK if Key.alt in modifiers else 0)
+            | (self.ALT_GR_MASK if Key.alt_gr in modifiers else 0)
+            | (self.CTRL_MASK if Key.ctrl in modifiers else 0)
+            | (self.SHIFT_MASK if Key.shift in modifiers else 0)
+        )
 
     def _update_keyboard_mapping(self):
         """Updates the keyboard mapping."""
@@ -442,50 +433,47 @@ class Controller(NotifierMixin, _base.Controller):
 
 @Controller._receiver
 class Listener(ListenerMixin, _base.Listener):
-    _EVENTS = (
-        Xlib.X.KeyPress,
-        Xlib.X.KeyRelease)
+    _EVENTS = (Xlib.X.KeyPress, Xlib.X.KeyRelease)
 
     #: A mapping from keysym to special key
-    _SPECIAL_KEYS = {
-        key.value.vk: key
-        for key in Key}
+    _SPECIAL_KEYS = {key.value.vk: key for key in Key}
 
     #: A mapping from numeric keypad keys to keys
     _KEYPAD_KEYS = {
-        KEYPAD_KEYS['KP_0']: KeyCode.from_char('0'),
-        KEYPAD_KEYS['KP_1']: KeyCode.from_char('1'),
-        KEYPAD_KEYS['KP_2']: KeyCode.from_char('2'),
-        KEYPAD_KEYS['KP_3']: KeyCode.from_char('3'),
-        KEYPAD_KEYS['KP_4']: KeyCode.from_char('4'),
-        KEYPAD_KEYS['KP_5']: KeyCode.from_char('5'),
-        KEYPAD_KEYS['KP_6']: KeyCode.from_char('6'),
-        KEYPAD_KEYS['KP_7']: KeyCode.from_char('7'),
-        KEYPAD_KEYS['KP_8']: KeyCode.from_char('8'),
-        KEYPAD_KEYS['KP_9']: KeyCode.from_char('9'),
-        KEYPAD_KEYS['KP_Add']: KeyCode.from_char('+'),
-        KEYPAD_KEYS['KP_Decimal']: KeyCode.from_char(','),
-        KEYPAD_KEYS['KP_Delete']: Key.delete,
-        KEYPAD_KEYS['KP_Divide']: KeyCode.from_char('/'),
-        KEYPAD_KEYS['KP_Down']: Key.down,
-        KEYPAD_KEYS['KP_End']: Key.end,
-        KEYPAD_KEYS['KP_Enter']: Key.enter,
-        KEYPAD_KEYS['KP_Equal']: KeyCode.from_char('='),
-        KEYPAD_KEYS['KP_F1']: Key.f1,
-        KEYPAD_KEYS['KP_F2']: Key.f2,
-        KEYPAD_KEYS['KP_F3']: Key.f3,
-        KEYPAD_KEYS['KP_F4']: Key.f4,
-        KEYPAD_KEYS['KP_Home']: Key.home,
-        KEYPAD_KEYS['KP_Insert']: Key.insert,
-        KEYPAD_KEYS['KP_Left']: Key.left,
-        KEYPAD_KEYS['KP_Multiply']: KeyCode.from_char('*'),
-        KEYPAD_KEYS['KP_Page_Down']: Key.page_down,
-        KEYPAD_KEYS['KP_Page_Up']: Key.page_up,
-        KEYPAD_KEYS['KP_Right']: Key.right,
-        KEYPAD_KEYS['KP_Space']: Key.space,
-        KEYPAD_KEYS['KP_Subtract']: KeyCode.from_char('-'),
-        KEYPAD_KEYS['KP_Tab']: Key.tab,
-        KEYPAD_KEYS['KP_Up']: Key.up}
+        KEYPAD_KEYS["KP_0"]: KeyCode.from_char("0"),
+        KEYPAD_KEYS["KP_1"]: KeyCode.from_char("1"),
+        KEYPAD_KEYS["KP_2"]: KeyCode.from_char("2"),
+        KEYPAD_KEYS["KP_3"]: KeyCode.from_char("3"),
+        KEYPAD_KEYS["KP_4"]: KeyCode.from_char("4"),
+        KEYPAD_KEYS["KP_5"]: KeyCode.from_char("5"),
+        KEYPAD_KEYS["KP_6"]: KeyCode.from_char("6"),
+        KEYPAD_KEYS["KP_7"]: KeyCode.from_char("7"),
+        KEYPAD_KEYS["KP_8"]: KeyCode.from_char("8"),
+        KEYPAD_KEYS["KP_9"]: KeyCode.from_char("9"),
+        KEYPAD_KEYS["KP_Add"]: KeyCode.from_char("+"),
+        KEYPAD_KEYS["KP_Decimal"]: KeyCode.from_char(","),
+        KEYPAD_KEYS["KP_Delete"]: Key.delete,
+        KEYPAD_KEYS["KP_Divide"]: KeyCode.from_char("/"),
+        KEYPAD_KEYS["KP_Down"]: Key.down,
+        KEYPAD_KEYS["KP_End"]: Key.end,
+        KEYPAD_KEYS["KP_Enter"]: Key.enter,
+        KEYPAD_KEYS["KP_Equal"]: KeyCode.from_char("="),
+        KEYPAD_KEYS["KP_F1"]: Key.f1,
+        KEYPAD_KEYS["KP_F2"]: Key.f2,
+        KEYPAD_KEYS["KP_F3"]: Key.f3,
+        KEYPAD_KEYS["KP_F4"]: Key.f4,
+        KEYPAD_KEYS["KP_Home"]: Key.home,
+        KEYPAD_KEYS["KP_Insert"]: Key.insert,
+        KEYPAD_KEYS["KP_Left"]: Key.left,
+        KEYPAD_KEYS["KP_Multiply"]: KeyCode.from_char("*"),
+        KEYPAD_KEYS["KP_Page_Down"]: Key.page_down,
+        KEYPAD_KEYS["KP_Page_Up"]: Key.page_up,
+        KEYPAD_KEYS["KP_Right"]: Key.right,
+        KEYPAD_KEYS["KP_Space"]: Key.space,
+        KEYPAD_KEYS["KP_Subtract"]: KeyCode.from_char("-"),
+        KEYPAD_KEYS["KP_Tab"]: Key.tab,
+        KEYPAD_KEYS["KP_Up"]: Key.up,
+    }
 
     def __init__(self, *args, **kwargs):
         super(Listener, self).__init__(*args, **kwargs)
@@ -501,7 +489,8 @@ class Listener(ListenerMixin, _base.Listener):
         min_keycode = display.display.info.min_keycode
         keycode_count = display.display.info.max_keycode - min_keycode + 1
         self._keyboard_mapping = display.get_keyboard_mapping(
-            min_keycode, keycode_count)
+            min_keycode, keycode_count
+        )
 
     def _handle(self, display, event):
         # Convert the event to a KeyCode; this may fail, and in that case we
@@ -519,8 +508,11 @@ class Listener(ListenerMixin, _base.Listener):
 
     def _suppress_start(self, display):
         display.screen().root.grab_keyboard(
-            self._event_mask, Xlib.X.GrabModeAsync, Xlib.X.GrabModeAsync,
-            Xlib.X.CurrentTime)
+            self._event_mask,
+            Xlib.X.GrabModeAsync,
+            Xlib.X.GrabModeAsync,
+            Xlib.X.CurrentTime,
+        )
 
     def _suppress_stop(self, display):
         display.ungrab_keyboard(Xlib.X.CurrentTime)
@@ -533,7 +525,8 @@ class Listener(ListenerMixin, _base.Listener):
         :param bool is_press: Whether this is a press event.
         """
         (self.on_press if is_press else self.on_release)(
-            self._SPECIAL_KEYS.get(key.vk, key))
+            self._SPECIAL_KEYS.get(key.vk, key)
+        )
 
     def _keycode_to_keysym(self, display, keycode, index):
         """Converts a keycode and shift state index to a keysym.
@@ -584,9 +577,9 @@ class Listener(ListenerMixin, _base.Listener):
             try:
                 return self._KEYPAD_KEYS[
                     self._keycode_to_keysym(
-                        display,
-                        keycode,
-                        bool(event.state & numlock_mask(display)))]
+                        display, keycode, bool(event.state & numlock_mask(display))
+                    )
+                ]
             except KeyError:
                 # Since we recalculated the key, this may happen
                 pass

@@ -7,14 +7,10 @@ This example is for usage with the Prax robot configuration. The example does th
 Note: make sure to connect the Ultrasonic Sensor to port A1.
 """
 
-from pitop import (
-    Pitop,
-    TiltRollHeadController,
-    Camera,
-    UltrasonicSensor,
-)
-from pitop.processing.algorithms.faces import FaceDetector
 from time import sleep
+
+from pitop import Camera, Pitop, TiltRollHeadController, UltrasonicSensor
+from pitop.processing.algorithms.faces import FaceDetector
 
 
 def assemble_robot():
@@ -23,9 +19,7 @@ def assemble_robot():
     pitop.add_component(TiltRollHeadController())
     pitop.head.calibrate()
 
-    pitop.add_component(Camera(resolution=(640, 480),
-                               flip_top_bottom=True)
-                        )
+    pitop.add_component(Camera(resolution=(640, 480), flip_top_bottom=True))
 
     pitop.add_component(UltrasonicSensor("A1"))
 

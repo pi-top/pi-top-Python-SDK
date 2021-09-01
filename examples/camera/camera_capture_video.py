@@ -1,5 +1,6 @@
-from pitop import Camera
 from time import sleep
+
+from pitop import Camera
 
 # Record a 10s video to ~/Camera/
 
