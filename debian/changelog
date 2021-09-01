@@ -54,7 +54,7 @@ py-pitop-sdk (0.20.0-2) bullseye; urgency=medium
   * Update distribution to bullseye
   * Updated master workflow files
 
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:47:33 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:48:33 +0000
 
 py-pitop-sdk (0.20.0-1) bullseye; urgency=medium
 
