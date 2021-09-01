@@ -39,6 +39,10 @@ jobs:
             ${{ env. COMMIT_MESSAGE_PREFIX }}
             \[pre-commit.ci\]
 
+      - name: Fix .git permissions
+        # Fix "error: insufficient permission for adding an object to repository database .git/objects"
+        run: sudo chmod -R ugo+rwX .git
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
