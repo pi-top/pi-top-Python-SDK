@@ -4,27 +4,33 @@
 # list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+import importlib.util
+import os
+
 # -- Path setup --------------------------------------------------------------
+
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-
 HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
 
-sys.path.insert(0, PARENT)
-import setup as _setup  # noqa: E402
-
 # -- Project information -----------------------------------------------------
 
-project = _setup.__project__
-author = _setup.__author__
-release = _setup.__version__
-copyright = "pi-top 2020"
+# Get package version directly from file
+#
+# Importing 'pitop' requires all core dependencies to be installed
+# which is impractical for building docs
+spec = importlib.util.spec_from_file_location("version", f"{PARENT}/pitop/version.py")
+modulevar = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(modulevar)
+
+project = "pitop"
+author = "pi-top (CEED Ltd)"
+release = modulevar.__version__
+copyright = "pi-top 2021"
 
 # -- General configuration ---------------------------------------------------
 
