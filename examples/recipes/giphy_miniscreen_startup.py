@@ -1,6 +1,9 @@
 import json
+from configparser import ConfigParser
+from os import geteuid
 from random import randint
 from signal import pause
+from sys import exit
 from time import sleep
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -10,9 +13,22 @@ from requests.models import PreparedRequest
 
 from pitop.miniscreen import Miniscreen
 
+
+def is_root():
+    return geteuid() == 0
+
+
+if not is_root():
+    print("Admin access required - please run this script with 'sudo'.")
+    exit()
+
 # Define Giphy parameters
 SEARCH_LIMIT = 10
 SEARCH_TERM = "Monochrome"
+
+CONFIG_FILE_PATH = "/etc/pt-miniscreen/settings.ini"
+STARTUP_GIF_PATH = "/home/pi/miniscreen-startup.gif"
+
 
 API_KEY = "<MY GIPHY KEY>"
 
@@ -85,11 +101,22 @@ def play_random_gif():
 
 
 def save_gif_as_startup():
-    # Display 'saving' dialog
+    # Display "saving" dialog
     display_saving_dialog()
 
-    # Save file
-    gif.save("/etc/pi-top/pt-sys-oled/startup.gif", save_all=True)
+    # Save file to home directory
+    gif.save(STARTUP_GIF_PATH, save_all=True)
+
+    config = ConfigParser()
+    cfg_section = "Bootsplash"
+
+    if not config.has_section(cfg_section):
+        config.add_section(cfg_section)
+
+    config.set(cfg_section, "Path", STARTUP_GIF_PATH)
+
+    with open(CONFIG_FILE_PATH, "w") as f:
+        config.write(f)
 
     # Go back to the start
     display_instructions_dialog()
