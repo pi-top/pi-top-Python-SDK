@@ -1,14 +1,8 @@
-from pitop.core.mixins import (
-    Stateful,
-    Recreatable,
-)
-from pitop.pma.servo_controller import (
-    ServoController,
-    ServoHardwareSpecs,
-)
-
 import atexit
 from dataclasses import dataclass
+
+from pitop.core.mixins import Recreatable, Stateful
+from pitop.pma.servo_controller import ServoController, ServoHardwareSpecs
 
 
 @dataclass
@@ -32,6 +26,7 @@ class ServoMotor(Stateful, Recreatable):
     :param zero_point:
         A user-defined offset from 'true' zero.
     """
+
     __HARDWARE_MIN_ANGLE = -ServoHardwareSpecs.ANGLE_RANGE / 2
     __HARDWARE_MAX_ANGLE = ServoHardwareSpecs.ANGLE_RANGE / 2
     __DEFAULT_SPEED = 50.0
@@ -53,16 +48,20 @@ class ServoMotor(Stateful, Recreatable):
         atexit.register(self.__cleanup)
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, config_dict={"port_name": port_name,
-                                                "name": name,
-                                                "zero_point": lambda: self.zero_point}
-                             )
+        Recreatable.__init__(
+            self,
+            config_dict={
+                "port_name": port_name,
+                "name": name,
+                "zero_point": lambda: self.zero_point,
+            },
+        )
 
     @property
     def own_state(self):
         return {
-            'angle': self.current_angle,
-            'speed': self.current_speed,
+            "angle": self.current_angle,
+            "speed": self.current_speed,
         }
 
     def __cleanup(self):
@@ -93,9 +92,13 @@ class ServoMotor(Stateful, Recreatable):
 
     @zero_point.setter
     def zero_point(self, zero_position):
-        if not (self.__HARDWARE_MIN_ANGLE <= zero_position <= self.__HARDWARE_MAX_ANGLE):
-            raise ValueError(f"Value must be from {self.__HARDWARE_MIN_ANGLE} to {self.__HARDWARE_MAX_ANGLE} degrees "
-                             f"(inclusive)")
+        if not (
+            self.__HARDWARE_MIN_ANGLE <= zero_position <= self.__HARDWARE_MAX_ANGLE
+        ):
+            raise ValueError(
+                f"Value must be from {self.__HARDWARE_MIN_ANGLE} to {self.__HARDWARE_MAX_ANGLE} degrees "
+                f"(inclusive)"
+            )
 
         self.__zero_point = zero_position
         self.__min_angle = self.__HARDWARE_MIN_ANGLE - self.__zero_point
@@ -153,7 +156,9 @@ class ServoMotor(Stateful, Recreatable):
                 target_setting.speed = 20
                 servo.setting = target_setting
         """
-        self.__controller.set_target_angle(target_state.angle + self.__zero_point, target_state.speed)
+        self.__controller.set_target_angle(
+            target_state.angle + self.__zero_point, target_state.speed
+        )
         self.__has_set_angle = True
 
     @property
@@ -167,8 +172,10 @@ class ServoMotor(Stateful, Recreatable):
         :return: float value of the current angle of the servo motor in degrees.
         """
         if not self.__has_set_angle:
-            raise RuntimeError("Current angle is unknown. "
-                               "Please set a servo angle first to initialise the servo to an angle.")
+            raise RuntimeError(
+                "Current angle is unknown. "
+                "Please set a servo angle first to initialise the servo to an angle."
+            )
         angle, _ = self.__controller.get_current_angle_and_speed()
         return angle - self.zero_point
 
@@ -220,9 +227,13 @@ class ServoMotor(Stateful, Recreatable):
         :param angle: target servo motor angle.
         """
         if not (self.__min_angle <= angle <= self.__max_angle):
-            raise ValueError(f"Angle value must be from {self.__min_angle} to {self.__max_angle} degrees (inclusive)")
+            raise ValueError(
+                f"Angle value must be from {self.__min_angle} to {self.__max_angle} degrees (inclusive)"
+            )
         self.__target_angle = angle
-        self.__controller.set_target_angle(self.__target_angle + self.__zero_point, self.__target_speed)
+        self.__controller.set_target_angle(
+            self.__target_angle + self.__zero_point, self.__target_speed
+        )
         self.__has_set_angle = True
 
     @property
@@ -246,8 +257,12 @@ class ServoMotor(Stateful, Recreatable):
         :param speed:
             The target speed at which to move the servo horn, from -100 to 100 deg/s.
         """
-        if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
-            raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
+        if not (
+            -ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE
+        ):
+            raise ValueError(
+                f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)"
+            )
         self.__target_speed = speed
 
     def sweep(self, speed=None):
@@ -268,8 +283,12 @@ class ServoMotor(Stateful, Recreatable):
             The target speed at which to move the servo horn, from -100 to 100 deg/s.
         """
         speed = self.target_speed if speed is None else speed
-        if not (-ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE):
-            raise ValueError(f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)")
+        if not (
+            -ServoHardwareSpecs.SPEED_RANGE <= speed <= ServoHardwareSpecs.SPEED_RANGE
+        ):
+            raise ValueError(
+                f"Speed value must be from {ServoHardwareSpecs.SPEED_RANGE} to {ServoHardwareSpecs.SPEED_RANGE} deg/s (inclusive)"
+            )
 
         angle = self.__min_angle if speed < 0 else self.__max_angle
         self.__controller.set_target_angle(angle + self.__zero_point, speed)

@@ -5,13 +5,13 @@ class UltrasonicRegisterTypes:
 
 UltrasonicA1 = {
     UltrasonicRegisterTypes.CONFIG: 0x0C,
-    UltrasonicRegisterTypes.DATA: 0x0E
+    UltrasonicRegisterTypes.DATA: 0x0E,
 }
 
 
 UltrasonicA3 = {
     UltrasonicRegisterTypes.CONFIG: 0x0D,
-    UltrasonicRegisterTypes.DATA: 0x0F
+    UltrasonicRegisterTypes.DATA: 0x0F,
 }
 
 UltrasonicRegisters = {

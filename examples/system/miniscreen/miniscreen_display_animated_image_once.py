@@ -1,5 +1,6 @@
-from pitop import Pitop
 from PIL import Image, ImageSequence
+
+from pitop import Pitop
 
 pitop = Pitop()
 miniscreen = pitop.miniscreen

@@ -3,10 +3,10 @@ from os import get_terminal_size
 
 class StdoutFormat:
     BLUE = "\033[94m"
-    BOLD = '\033[1m'
+    BOLD = "\033[1m"
     DIM = "\033[2m"
-    ENDC = '\033[0m'
-    GREEN = '\033[92m'
+    ENDC = "\033[0m"
+    GREEN = "\033[92m"
     RED = "\033[91m"
     UNDERLINE = "\033[4m"
     WHITE = "\033[97m"
@@ -32,15 +32,19 @@ class StdoutFormat:
 
     @classmethod
     def print_section(cls, section):
-        print(f"= {cls.dim(section)} {'='*(get_terminal_size().columns - len(section) - 3)}")
+        print(
+            f"= {cls.dim(section)} {'='*(get_terminal_size().columns - len(section) - 3)}"
+        )
 
     @classmethod
     def print_subsection(cls, section):
-        print(f"- {cls.dim(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}")
+        print(
+            f"- {cls.dim(section)} {'-'*(get_terminal_size().columns - len(section) - 3)}"
+        )
 
     @classmethod
     def print_line(cls, content, level=1):
-        indentation_level = "  "*level
+        indentation_level = "  " * level
         print(f"{indentation_level}{cls.DIM}└{cls.ENDC} {content}")
 
     @classmethod
@@ -50,7 +54,10 @@ class StdoutFormat:
     @classmethod
     def print_checkbox_line(cls, title, text, url, status):
         print(f"[ {cls.GREEN}{'✓' if status else ' '}{cls.ENDC} ]", end=" ")
-        print(f"{cls.bold(title)}: {text}\n\t{cls.clickable_text(url, url) if status else url}", end=" ")
+        print(
+            f"{cls.bold(title)}: {text}\n\t{cls.clickable_text(url, url) if status else url}",
+            end=" ",
+        )
         print("")
 
 

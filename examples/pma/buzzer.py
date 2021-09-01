@@ -1,5 +1,6 @@
-from pitop import Buzzer
 from time import sleep
+
+from pitop import Buzzer
 
 buzzer = Buzzer("D0")
 

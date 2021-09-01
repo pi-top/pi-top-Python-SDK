@@ -1,11 +1,16 @@
-import numpy as np
 from os import environ
+
+import numpy as np
+
 from pitop.common.current_session_info import get_first_display
-if not environ.get('DISPLAY'):
+
+if not environ.get("DISPLAY"):
     environ["DISPLAY"] = str(get_first_display())
 
 
-def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='b', cageAlpha=0.2):
+def plot_ellipsoid(
+    center, radii, rotation, ax=None, plotAxes=False, cageColor="b", cageAlpha=0.2
+):
     """Plot an ellipsoid."""
     u = np.linspace(0.0, 2.0 * np.pi, 100)
     v = np.linspace(0.0, np.pi, 100)
@@ -17,13 +22,15 @@ def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='
     # rotate accordingly
     for i in range(len(x)):
         for j in range(len(x)):
-            [x[i, j], y[i, j], z[i, j]] = np.dot([x[i, j], y[i, j], z[i, j]], rotation) + center
+            [x[i, j], y[i, j], z[i, j]] = (
+                np.dot([x[i, j], y[i, j], z[i, j]], rotation) + center
+            )
 
     if plotAxes:
         # make some purdy axes
-        axes = np.array([[radii[0], 0.0, 0.0],
-                         [0.0, radii[1], 0.0],
-                         [0.0, 0.0, radii[2]]])
+        axes = np.array(
+            [[radii[0], 0.0, 0.0], [0.0, radii[1], 0.0], [0.0, 0.0, radii[2]]]
+        )
         # rotate accordingly
         for i in range(len(axes)):
             axes[i] = np.dot(axes[i], rotation)
@@ -37,7 +44,9 @@ def plot_ellipsoid(center, radii, rotation, ax=None, plotAxes=False, cageColor='
 
     # plot ellipsoid
     if ax:
-        ax.plot_wireframe(x, y, z, rstride=4, cstride=4, color=cageColor, alpha=cageAlpha)
+        ax.plot_wireframe(
+            x, y, z, rstride=4, cstride=4, color=cageColor, alpha=cageAlpha
+        )
 
 
 def least_squares_ellipsoid_fit(magX, magY, magZ):
@@ -57,12 +66,16 @@ def least_squares_ellipsoid_fit(magX, magY, magZ):
     D = np.array([a1, a2, a3, a4, a5, a6, a7, a8, a9, a10])
 
     # Eqn 7, k = 4
-    C1 = np.array([[-1, 1, 1, 0, 0, 0],
-                   [1, -1, 1, 0, 0, 0],
-                   [1, 1, -1, 0, 0, 0],
-                   [0, 0, 0, -4, 0, 0],
-                   [0, 0, 0, 0, -4, 0],
-                   [0, 0, 0, 0, 0, -4]])
+    C1 = np.array(
+        [
+            [-1, 1, 1, 0, 0, 0],
+            [1, -1, 1, 0, 0, 0],
+            [1, 1, -1, 0, 0, 0],
+            [0, 0, 0, -4, 0, 0],
+            [0, 0, 0, 0, -4, 0],
+            [0, 0, 0, 0, 0, -4],
+        ]
+    )
 
     # Eqn 11
     S = np.matmul(D, D.T)
@@ -73,7 +86,9 @@ def least_squares_ellipsoid_fit(magX, magY, magZ):
 
     # Eqn 15, find eigenvalue and vector
     # Since S is symmetric, S12.T = S21
-    tmp = np.matmul(np.linalg.inv(C1), S11 - np.matmul(S12, np.matmul(np.linalg.inv(S22), S21)))
+    tmp = np.matmul(
+        np.linalg.inv(C1), S11 - np.matmul(S12, np.matmul(np.linalg.inv(S22), S21))
+    )
     eigenValue, eigenVector = np.linalg.eig(tmp)
     u1 = eigenVector[:, np.argmax(eigenValue)]
 
@@ -83,13 +98,9 @@ def least_squares_ellipsoid_fit(magX, magY, magZ):
     # Total solution
     u = np.concatenate([u1, u2]).T
 
-    M = np.array([[u[0], u[5], u[4]],
-                  [u[5], u[1], u[3]],
-                  [u[4], u[3], u[2]]])
+    M = np.array([[u[0], u[5], u[4]], [u[5], u[1], u[3]], [u[4], u[3], u[2]]])
 
-    n = np.array([[u[6]],
-                  [u[7]],
-                  [u[8]]])
+    n = np.array([[u[6]], [u[7]], [u[8]]])
 
     d = u[9]
 
@@ -108,14 +119,7 @@ def get_ellipsoid_geometric_params(M, n, d):
     q = n[1][0]
     r = n[2][0]
 
-    Q = np.array(
-        [
-            [a, h, g, p],
-            [h, b, f, q],
-            [g, f, c, r],
-            [p, q, r, d]
-        ]
-    )
+    Q = np.array([[a, h, g, p], [h, b, f, q], [g, f, c, r], [p, q, r, d]])
 
     Minv = np.linalg.inv(M)
     b = -np.dot(Minv, n)
@@ -132,7 +136,9 @@ def get_ellipsoid_geometric_params(M, n, d):
     R3S = R3 / s1
     eigenvalues, eigenvectors = np.linalg.eig(R3S)
 
-    rotation_matrix = np.linalg.inv(eigenvectors)  # inverse is actually the transpose here
+    rotation_matrix = np.linalg.inv(
+        eigenvectors
+    )  # inverse is actually the transpose here
 
     eigen_reciprocal = 1.0 / np.abs(eigenvalues)
     radii = np.sqrt(eigen_reciprocal)

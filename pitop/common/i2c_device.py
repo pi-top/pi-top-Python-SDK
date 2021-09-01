@@ -1,10 +1,10 @@
-from pitop.common.logger import PTLogger
-from pitop.common.lock import PTLock
-from pitop.common.bitwise_ops import get_bits, split_into_bytes, join_bytes
-
-from io import open as iopen
 from fcntl import ioctl
+from io import open as iopen
 from time import sleep
+
+from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
+from pitop.common.lock import PTLock
+from pitop.common.logger import PTLogger
 
 
 class I2CDevice:
@@ -60,8 +60,7 @@ class I2CDevice:
     def write_n_bytes(self, register_address: int, byte_list: list):
         """Base function to write to an I2C device."""
         PTLogger.debug(
-            "I2C: Writing byte/s " +
-            str(byte_list) + " to " + hex(register_address)
+            "I2C: Writing byte/s " + str(byte_list) + " to " + hex(register_address)
         )
         self.__run_transaction([register_address] + byte_list, 0)
 
@@ -74,9 +73,16 @@ class I2CDevice:
 
         self.write_n_bytes(register_address, [byte_value & 0xFF])
 
-    def write_word(self, register_address: int, word_value: int, little_endian: bool = False, signed: bool = False):
+    def write_word(
+        self,
+        register_address: int,
+        word_value: int,
+        little_endian: bool = False,
+        signed: bool = False,
+    ):
         word_to_write = split_into_bytes(
-            word_value, 2, little_endian=little_endian, signed=signed)
+            word_value, 2, little_endian=little_endian, signed=signed
+        )
         if word_to_write is None:
             PTLogger.error(f"Error splitting word into bytes list. Value: {word_value}")
         else:
@@ -103,10 +109,7 @@ class I2CDevice:
         """
 
         # Read from device
-        result_array = self.__run_transaction(
-            [register_address],
-            number_of_bytes
-        )
+        result_array = self.__run_transaction([register_address], number_of_bytes)
 
         # Check response length is correct
         if len(result_array) != number_of_bytes:
@@ -125,8 +128,14 @@ class I2CDevice:
                 result = -(1 << (8 * number_of_bytes)) + result
 
         PTLogger.debug(
-            "I2C: Read " + str(number_of_bytes) + " bytes from " + hex(register_address) + " (" + (
-                "Signed," if signed else "Unsigned,") + ("LE" if little_endian else "BE") + ")"
+            "I2C: Read "
+            + str(number_of_bytes)
+            + " bytes from "
+            + hex(register_address)
+            + " ("
+            + ("Signed," if signed else "Unsigned,")
+            + ("LE" if little_endian else "BE")
+            + ")"
         )
         PTLogger.debug(str(result_array) + " : " + str(result))
 
@@ -169,8 +178,7 @@ class I2CDevice:
         self, bits_to_read: int, addr_to_read: int, no_of_bytes_to_read: int = 1
     ):
         return get_bits(
-            bits_to_read, self.read_n_unsigned_bytes(
-                addr_to_read, no_of_bytes_to_read)
+            bits_to_read, self.read_n_unsigned_bytes(addr_to_read, no_of_bytes_to_read)
         )
 
     ####################

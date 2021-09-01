@@ -2,14 +2,13 @@ import numpy as np
 
 from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.emotion import Emotion
+from pitop.processing.core.load_models import load_emotion_model
+from pitop.processing.core.math_functions import running_mean
 from pitop.processing.core.vision_functions import (
     import_face_utils,
     import_opencv,
     tuple_for_color_by_name,
 )
-from pitop.processing.core.load_models import load_emotion_model
-from pitop.processing.core.math_functions import running_mean
-
 
 cv2 = None
 face_utils = None
@@ -29,23 +28,31 @@ class EmotionClassifier:
     def __init__(self, format: str = "OpenCV", apply_mean_filter=True):
         import_libs()
 
-        self.left_eye_start, self.left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["left_eye"]
-        self.right_eye_start, self.right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS["right_eye"]
+        self.left_eye_start, self.left_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS[
+            "left_eye"
+        ]
+        self.right_eye_start, self.right_eye_end = face_utils.FACIAL_LANDMARKS_68_IDXS[
+            "right_eye"
+        ]
 
         self._format = format
         self._apply_mean_filter = apply_mean_filter
         self._emotion_model = load_emotion_model()
         self._onnx_input_node_name = self._emotion_model.get_inputs()[0].name
-        self.emotion_types = ['Neutral', 'Anger', 'Disgust', 'Happy', 'Sad', 'Surprise']
+        self.emotion_types = ["Neutral", "Anger", "Disgust", "Happy", "Sad", "Surprise"]
         self.emotion = Emotion()
         self.font = cv2.FONT_HERSHEY_PLAIN
         self.font_scale = 2
         self.font_thickness = 3
         if self._apply_mean_filter:
-            self._probability_mean_array = np.zeros((self.__MEAN_N, len(self.emotion_types)), dtype=float)
+            self._probability_mean_array = np.zeros(
+                (self.__MEAN_N, len(self.emotion_types)), dtype=float
+            )
 
     def __call__(self, face):
-        frame = ImageFunctions.convert(face.original_detection_frame.copy(), format='OpenCV')
+        frame = ImageFunctions.convert(
+            face.original_detection_frame.copy(), format="OpenCV"
+        )
 
         if not face.found:
             self.emotion.clear()
@@ -72,6 +79,7 @@ class EmotionClassifier:
 
         :return: Emotion object that was passed into this function.
         """
+
         def get_svc_feature_vector(features, face_angle):
             """The 68 face feature landmark positions need to be put into the
             same format as was used to train the SVC model. The basic process
@@ -104,39 +112,55 @@ class EmotionClassifier:
             :param face_angle: face angle from Face object (found from FaceDetector).
             :return: 1x136 feature vector to put through the onnx SVC model.
             """
-            rotation_matrix = np.array([[np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
-                                        [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))]])
+            rotation_matrix = np.array(
+                [
+                    [np.cos(np.radians(face_angle)), -np.sin(np.radians(face_angle))],
+                    [np.sin(np.radians(face_angle)), np.cos(np.radians(face_angle))],
+                ]
+            )
 
             face_features_rotated = rotation_matrix.dot(features.T).T
             face_feature_mean = face_features_rotated.mean(axis=0)
 
-            left_eye_center = np.mean(face_features_rotated[self.left_eye_start:self.left_eye_end], axis=0)
-            right_eye_center = np.mean(face_features_rotated[self.right_eye_start:self.right_eye_end], axis=0)
+            left_eye_center = np.mean(
+                face_features_rotated[self.left_eye_start : self.left_eye_end], axis=0
+            )
+            right_eye_center = np.mean(
+                face_features_rotated[self.right_eye_start : self.right_eye_end], axis=0
+            )
 
             interpupillary_distance = np.linalg.norm(left_eye_center - right_eye_center)
 
             feature_vector = []
             for landmark in face_features_rotated:
-                relative_vector = (landmark - face_feature_mean) / interpupillary_distance
+                relative_vector = (
+                    landmark - face_feature_mean
+                ) / interpupillary_distance
                 feature_vector.append(relative_vector[0])
                 feature_vector.append(relative_vector[1])
 
             return np.asarray([feature_vector])
 
         if len(face.features) != 68:
-            raise ValueError("This function is only compatible with dlib's 68 landmark feature predictor.")
+            raise ValueError(
+                "This function is only compatible with dlib's 68 landmark feature predictor."
+            )
 
         X = get_svc_feature_vector(face.features, face.angle)
 
         # Run feature vector through onnx model and convert results to a numpy array
         probabilities = np.asarray(
             list(
-                self._emotion_model.run(None, {self._onnx_input_node_name: X.astype(np.float32)})[1][0].values()
+                self._emotion_model.run(
+                    None, {self._onnx_input_node_name: X.astype(np.float32)}
+                )[1][0].values()
             )
         )
 
         if self._apply_mean_filter:
-            self._probability_mean_array, probabilities = running_mean(self._probability_mean_array, probabilities)
+            self._probability_mean_array, probabilities = running_mean(
+                self._probability_mean_array, probabilities
+            )
 
         # Get the index of the most likely emotion type and associate to corresponding emotion string
         max_index = int(np.argmax(probabilities))
@@ -145,7 +169,7 @@ class EmotionClassifier:
 
         emotion.robot_view = ImageFunctions.convert(
             self.__draw_on_frame(frame=frame.copy(), face=face, emotion=self.emotion),
-            format=self._format
+            format=self._format,
         )
 
         return emotion
@@ -154,7 +178,9 @@ class EmotionClassifier:
         x, y, w, h = face.rectangle
 
         text = f"{round(emotion.confidence * 100)}% {emotion.type}"
-        text_size = cv2.getTextSize(text, self.font, self.font_scale, self.font_thickness)[0]
+        text_size = cv2.getTextSize(
+            text, self.font, self.font_scale, self.font_thickness
+        )[0]
 
         text_x = (x + w // 2) - (text_size[0] // 2)
         text_y = y - 5
@@ -166,10 +192,23 @@ class EmotionClassifier:
         else:
             text_colour = tuple_for_color_by_name("springgreen", bgr=True)
 
-        cv2.putText(frame, text, (text_x, text_y), self.font, self.font_scale, text_colour,
-                    thickness=self.font_thickness)
+        cv2.putText(
+            frame,
+            text,
+            (text_x, text_y),
+            self.font,
+            self.font_scale,
+            text_colour,
+            thickness=self.font_thickness,
+        )
 
         for (x, y) in face.features:
-            cv2.circle(frame, (int(x), int(y)), 2, tuple_for_color_by_name("magenta", bgr=True), -1)
+            cv2.circle(
+                frame,
+                (int(x), int(y)),
+                2,
+                tuple_for_color_by_name("magenta", bgr=True),
+                -1,
+            )
 
         return frame

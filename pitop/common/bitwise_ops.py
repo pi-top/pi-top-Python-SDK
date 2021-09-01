@@ -1,8 +1,11 @@
 from math import ceil
+
 from pitop.common.logger import PTLogger
 
 
-def split_into_bytes(data: int, no_of_bytes: int = -1, little_endian: bool = False, signed: bool = False):
+def split_into_bytes(
+    data: int, no_of_bytes: int = -1, little_endian: bool = False, signed: bool = False
+):
     """This function will split a given integer into a integer list
     representing the bytes to be split;
 
@@ -18,15 +21,13 @@ def split_into_bytes(data: int, no_of_bytes: int = -1, little_endian: bool = Fal
         no_of_bytes = ceil(data / 255)
     try:
         byte_string = data.to_bytes(
-            no_of_bytes, byteorder=byteorder_indicator, signed=signed)
+            no_of_bytes, byteorder=byteorder_indicator, signed=signed
+        )
     except OverflowError as e:
         PTLogger.error(e)
         return None
 
-    return [
-        i
-        for i in bytearray(byte_string)
-    ]
+    return [i for i in bytearray(byte_string)]
 
 
 def join_bytes(byte_list: list, little_endian: bool = False, signed: bool = False):
@@ -36,9 +37,7 @@ def join_bytes(byte_list: list, little_endian: bool = False, signed: bool = Fals
     :return: A integer representing the `byte_list`
     """
     return int.from_bytes(
-        byte_list,
-        byteorder="little" if little_endian is True else "big",
-        signed=signed
+        byte_list, byteorder="little" if little_endian is True else "big", signed=signed
     )
 
 

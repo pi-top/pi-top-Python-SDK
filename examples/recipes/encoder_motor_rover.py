@@ -1,10 +1,7 @@
-from pitop import (
-    EncoderMotor,
-    ForwardDirection,
-    BrakingType
-)
 from threading import Thread
 from time import sleep
+
+from pitop import BrakingType, EncoderMotor, ForwardDirection
 
 # Setup the motors for the rover configuration
 
@@ -16,6 +13,7 @@ motor_right.braking_type = BrakingType.COAST
 
 
 # Define some functions for easily controlling the rover
+
 
 def drive(target_rpm: float):
 
@@ -44,12 +42,17 @@ def turn_right(rotation_speed: float):
     motor_right.stop()
     motor_left.set_target_rpm(rotation_speed)
 
+
 # Start a thread to monitor the rover
 
 
 def monitor_rover():
     while True:
-        print("> Rover motor RPM's (L,R):", round(motor_left.current_rpm, 2), round(motor_right.current_rpm, 2))
+        print(
+            "> Rover motor RPM's (L,R):",
+            round(motor_left.current_rpm, 2),
+            round(motor_right.current_rpm, 2),
+        )
         sleep(1)
 
 

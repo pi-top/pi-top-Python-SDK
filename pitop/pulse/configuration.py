@@ -1,4 +1,5 @@
 from math import pow
+
 from pitop.common.i2c_device import I2CDevice
 from pitop.common.logger import PTLogger
 
@@ -52,12 +53,10 @@ def __update_device_state_bit(bit, value):
 
     try:
         current_state = __read_device_state()
-        PTLogger.debug("Current device state: " +
-                       __get_bit_string(current_state))
+        PTLogger.debug("Current device state: " + __get_bit_string(current_state))
 
     except Exception:
-        PTLogger.warning(
-            "Error: There was a problem getting the current device state")
+        PTLogger.warning("Error: There was a problem getting the current device state")
         return False
 
     # Get the bit mask for the new state
@@ -67,7 +66,9 @@ def __update_device_state_bit(bit, value):
         new_state = ~new_state
 
     # Check if there is anything to do
-    if (value == 1 and (new_state & current_state) != 0) or (value == 0 and (~new_state & ~current_state) != 0):
+    if (value == 1 and (new_state & current_state) != 0) or (
+        value == 0 and (~new_state & ~current_state) != 0
+    ):
         PTLogger.debug("Warning: Mode already set, nothing to send")
         return True
 
@@ -92,8 +93,12 @@ def __verify_device_state(expected_state):
         return True
 
     else:
-        PTLogger.warning("Error: Device write verification failed. Expected: " +
-                         __get_bit_string(expected_state) + " Received: " + __get_bit_string(current_state))
+        PTLogger.warning(
+            "Error: Device write verification failed. Expected: "
+            + __get_bit_string(expected_state)
+            + " Received: "
+            + __get_bit_string(current_state)
+        )
         return False
 
 
@@ -108,8 +113,7 @@ def __write_device_state(state):
 
         state_to_send = 0x0F & state
 
-        PTLogger.debug("Writing new state:    " +
-                       __get_bit_string(state_to_send))
+        PTLogger.debug("Writing new state:    " + __get_bit_string(state_to_send))
 
         i2c_device = I2CDevice(_i2c_device_name, _device_addr)
         i2c_device.connect()
@@ -156,8 +160,9 @@ def __reset_device_state(enable):
     """Reset the device state bits to the default enabled or disabled state."""
 
     clean_enable_state = __get_addr_for_bit(_eeprom_bit)
-    clean_disable_state = __get_addr_for_bit(
-        _speaker_bit) | __get_addr_for_bit(_mcu_bit)
+    clean_disable_state = __get_addr_for_bit(_speaker_bit) | __get_addr_for_bit(
+        _mcu_bit
+    )
 
     state_to_send = clean_enable_state if enable else clean_disable_state
     return __write_device_state(state_to_send)
@@ -166,6 +171,7 @@ def __reset_device_state(enable):
 #######################
 # EXTERNAL OPERATIONS #
 #######################
+
 
 def reset_device_state(enable):
     """reset_device_state: Deprecated"""
@@ -205,6 +211,7 @@ def set_microphone_sample_rate_to_22khz():
 
 
 # GET STATE
+
 
 def speaker_enabled():
     """Get whether the speaker is enabled."""

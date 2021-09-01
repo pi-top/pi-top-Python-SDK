@@ -1,8 +1,9 @@
-from pitop import Pitop
-
-from PIL import Image, ImageDraw
 from random import randint, random
 from time import sleep
+
+from PIL import Image, ImageDraw
+
+from pitop import Pitop
 
 # https://en.wikipedia.org/wiki/Maze_generation_algorithm
 
@@ -22,8 +23,8 @@ def draw_pixel(pos):
     drawn_pixels.append(pos)
 
 
-width = ((miniscreen.width // 2) * 2 - 1)
-height = ((miniscreen.height // 2) * 2 - 1)
+width = (miniscreen.width // 2) * 2 - 1
+height = (miniscreen.height // 2) * 2 - 1
 
 while True:
 

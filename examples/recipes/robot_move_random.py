@@ -1,14 +1,12 @@
-from pitop import Pitop
-from pitop.robotics.drive_controller import DriveController
-
 from random import randint
 from time import sleep
 
+from pitop import Pitop
+from pitop.robotics.drive_controller import DriveController
 
 # Create a basic robot
 robot = Pitop()
-drive = DriveController(left_motor_port="M3",
-                        right_motor_port="M0")
+drive = DriveController(left_motor_port="M3", right_motor_port="M0")
 robot.add_component(drive)
 
 

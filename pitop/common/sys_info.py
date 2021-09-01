@@ -1,12 +1,11 @@
 import subprocess
-import netifaces
-from os import uname
-from os import path
 from fractions import Fraction
+from os import path, uname
+
+import netifaces
 from isc_dhcp_leases import IscDhcpLeases
 
 from pitop.common.command_runner import run_command
-
 
 _, _, _, _, machine = uname()
 
@@ -27,7 +26,7 @@ def get_debian_version():
     debian_version_file = "/etc/debian_version"
     if not path.exists(debian_version_file):
         return None
-    with open(debian_version_file, 'r') as reader:
+    with open(debian_version_file, "r") as reader:
         content = reader.read()
     return content.strip()
 
@@ -38,8 +37,7 @@ def get_maj_debian_version():
         for line in f:
             if "VERSION_ID=" in line:
                 quote_wrapped_version = line.split("=")[1]
-                version_str = quote_wrapped_version.replace(
-                    '"', "").replace("\n", "")
+                version_str = quote_wrapped_version.replace('"', "").replace("\n", "")
                 try:
                     version = int(version_str)
                 except ValueError:
@@ -55,13 +53,11 @@ def get_maj_debian_version():
 def get_network_strength(iface):
     strength = -1
     try:
-        response_str = str(subprocess.check_output(
-            ["iwconfig", iface]).decode("utf-8"))
+        response_str = str(subprocess.check_output(["iwconfig", iface]).decode("utf-8"))
         response_lines = response_str.splitlines()
         for line in response_lines:
             if "Link Quality" in line:
-                strength_str = line.lstrip(" ").lstrip(
-                    "Link Quality=").split(" ")[0]
+                strength_str = line.lstrip(" ").lstrip("Link Quality=").split(" ")[0]
                 strength = int(Fraction(strength_str) * 100)
                 break
     except (FileNotFoundError, subprocess.CalledProcessError):
@@ -96,7 +92,7 @@ def get_internal_ip(iface="wlan0"):
         return "Internet Addresses Not Found"
 
     try:
-        internal_ip = inet_addrs['addr']
+        internal_ip = inet_addrs["addr"]
     except Exception:
         return "IP Not Found"
 
@@ -105,21 +101,27 @@ def get_internal_ip(iface="wlan0"):
 
 def start_systemd_service(service_name: str):
     try:
-        run_command(f"systemctl start {service_name}", timeout=20, check=True, log_errors=False)
+        run_command(
+            f"systemctl start {service_name}", timeout=20, check=True, log_errors=False
+        )
     except Exception:
         pass
 
 
 def stop_systemd_service(service_name: str):
     try:
-        run_command(f"systemctl stop {service_name}", timeout=20, check=False, log_errors=False)
+        run_command(
+            f"systemctl stop {service_name}", timeout=20, check=False, log_errors=False
+        )
     except Exception:
         pass
 
 
 def get_systemd_active_state(service_name: str):
     try:
-        state = run_command(f"systemctl is-active {service_name}", timeout=10, log_errors=False)
+        state = run_command(
+            f"systemctl is-active {service_name}", timeout=10, log_errors=False
+        )
         state = str(state.strip())
     except Exception:
         state = "Unknown Error"
@@ -148,8 +150,7 @@ def get_ssh_enabled_state():
 
 
 def get_vnc_enabled_state():
-    vnc_enabled_state = get_systemd_enabled_state(
-        "vncserver-x11-serviced.service")
+    vnc_enabled_state = get_systemd_enabled_state("vncserver-x11-serviced.service")
     return vnc_enabled_state
 
 
@@ -201,14 +202,17 @@ def get_address_for_ptusb_connected_device():
             return False
 
     if interface_is_up("ptusb0"):
-        current_leases = IscDhcpLeases('/var/lib/dhcp/dhcpd.leases').get_current().values()
+        current_leases = (
+            IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
+        )
         current_leases = list(current_leases)
         current_leases.reverse()
 
         for lease in current_leases:
             # Windows machines won't respond to ping requests by default. Using arping
             # helps us on that case, but since it takes ~1.5s, it's used as a fallback
-            if (command_succeeds(f"ping -c1 {lease.ip}", 0.1) or
-                    command_succeeds(f"arping -c1 {lease.ip}", 2)):
+            if command_succeeds(f"ping -c1 {lease.ip}", 0.1) or command_succeeds(
+                f"arping -c1 {lease.ip}", 2
+            ):
                 return lease.ip
     return ""

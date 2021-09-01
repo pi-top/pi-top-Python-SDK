@@ -1,6 +1,6 @@
 from sys import modules
-from unittest.mock import Mock, patch
 from unittest import TestCase
+from unittest.mock import Mock, patch
 
 modules_to_patch = [
     "pitop.camera.camera",
@@ -19,7 +19,6 @@ for patched_module in modules_to_patch:
 
 
 class DriveControllerTestCase(TestCase):
-
     def test_object_has_motorencoder_instances(self):
         """DriveController has a left and right EncoderMotor objects."""
         d = DriveController()
@@ -56,9 +55,9 @@ class DriveControllerTestCase(TestCase):
 
         with patch.object(d, "robot_move") as robot_move_mock:
             d.left(speed_factor, turn_radius=turn_radius)
-            robot_move_mock.assert_called_once_with(expected_linear_speed,
-                                                    expected_angular_speed,
-                                                    turn_radius)
+            robot_move_mock.assert_called_once_with(
+                expected_linear_speed, expected_angular_speed, turn_radius
+            )
 
     def test_turn_right_calls_left_method(self):
         """'right' calls 'left' method with inverted parameters."""
@@ -116,7 +115,15 @@ class DriveControllerTestCase(TestCase):
             [0.275, 0.325, 0.3, 0.3, 0],
             [0.407, 0.447, 0.3, 0.3, 0.8],
         ]
-        for exp_rpm_left, exp_rpm_right, linear_speed, angular_speed, turn_radius in test_values:
-            speed_left, speed_right = d._calculate_motor_speeds(linear_speed, angular_speed, turn_radius)
+        for (
+            exp_rpm_left,
+            exp_rpm_right,
+            linear_speed,
+            angular_speed,
+            turn_radius,
+        ) in test_values:
+            speed_left, speed_right = d._calculate_motor_speeds(
+                linear_speed, angular_speed, turn_radius
+            )
             self.assertEquals(round(speed_left, 3), exp_rpm_left)
             self.assertEquals(round(speed_right, 3), exp_rpm_right)

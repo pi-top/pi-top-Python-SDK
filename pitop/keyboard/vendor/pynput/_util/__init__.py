@@ -28,7 +28,6 @@ import sys
 import threading
 
 import six
-
 from six.moves import queue
 
 
@@ -58,9 +57,11 @@ class AbstractListener(threading.Thread):
 
         Any callback that is falsy will be ignored.
     """
+
     class StopException(Exception):
         """If an event listener callback raises this exception, the current
         listener is stopped."""
+
         pass
 
     #: Exceptions that are handled outside of the emitter and should thus not be
@@ -74,6 +75,7 @@ class AbstractListener(threading.Thread):
             def inner(*args):
                 if f(*args) is False:
                     raise self.StopException()
+
             return inner
 
         self._suppress = suppress
@@ -148,6 +150,7 @@ class AbstractListener(threading.Thread):
         gracefully. If any other exception is caught, it will be propagated to
         the thread calling :meth:`join` and reraised there.
         """
+
         @functools.wraps(f)
         def inner(self, *args, **kwargs):
             # pylint: disable=W0702; we want to catch all exception
@@ -156,11 +159,10 @@ class AbstractListener(threading.Thread):
             except Exception as e:
                 if not isinstance(e, self._HANDLED_EXCEPTIONS):
                     if not isinstance(e, AbstractListener.StopException):
-                        self._log.exception(
-                            'Unhandled exception in listener callback')
+                        self._log.exception("Unhandled exception in listener callback")
                     self._queue.put(
-                        None if isinstance(e, cls.StopException)
-                        else sys.exc_info())
+                        None if isinstance(e, cls.StopException) else sys.exc_info()
+                    )
                     self.stop()
                 raise
             # pylint: enable=W0702
@@ -240,6 +242,7 @@ class NotifierMixin(object):
         :meth:`_emit` will invoke the named method in the listener instance
         while the block is active.
         """
+
         @contextlib.contextmanager
         def receive(self):
             """Executes a code block with this listener instance registered as
@@ -254,7 +257,7 @@ class NotifierMixin(object):
         listener_class._controller_class = cls
 
         # Make sure this class has the necessary attributes
-        if not hasattr(cls, '_listener_cache'):
+        if not hasattr(cls, "_listener_cache"):
             cls._listener_cache = set()
             cls._listener_lock = threading.Lock()
 

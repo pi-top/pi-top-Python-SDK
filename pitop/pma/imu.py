@@ -1,21 +1,33 @@
-from .imu_controller import ImuController
-import math
-from dataclasses import astuple, dataclass, fields
-from abc import ABC
 import atexit
+import math
+from abc import ABC
+from dataclasses import astuple, dataclass, fields
+
+from .imu_controller import ImuController
 
 
 @dataclass
 class BaseDataType(ABC):
-
     def __add__(self, other):
-        return self.__class__(*(getattr(self, dim.name) + getattr(other, dim.name) for dim in fields(self)))
+        return self.__class__(
+            *(
+                getattr(self, dim.name) + getattr(other, dim.name)
+                for dim in fields(self)
+            )
+        )
 
     def __sub__(self, other):
-        return self.__class__(*(getattr(self, dim.name) - getattr(other, dim.name) for dim in fields(self)))
+        return self.__class__(
+            *(
+                getattr(self, dim.name) - getattr(other, dim.name)
+                for dim in fields(self)
+            )
+        )
 
     def __mul__(self, other):
-        return self.__class__(*(getattr(self, dim.name) * other for dim in fields(self)))
+        return self.__class__(
+            *(getattr(self, dim.name) * other for dim in fields(self))
+        )
 
     def __rmul__(self, other):
         return self.__mul__(other)

@@ -9,5 +9,5 @@ Last-Update: 2021-09-05
 -from smbus2 import SMBus
 +from smbus import SMBus
  
+ from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
  from pitop.common.logger import PTLogger
- from pitop.common.bitwise_ops import get_bits, split_into_bytes, join_bytes

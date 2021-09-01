@@ -1,14 +1,14 @@
 from threading import Lock, Thread
 from time import sleep
 
-from pitop.common.smbus_device import SMBusDevice
 from pitop.common.logger import PTLogger
 from pitop.common.singleton import Singleton
+from pitop.common.smbus_device import SMBusDevice
+
 from .common.plate_registers import PlateRegisters
 
 
 class PlateInterface(metaclass=Singleton):
-
     def __init__(self):
 
         self.__device_mcu = None
@@ -41,7 +41,9 @@ class PlateInterface(metaclass=Singleton):
             self.__disconnect_mcu()
             raise
 
-        self.__heartbeat_thread = Thread(target=self.__heartbeat_thread_loop, daemon=True)
+        self.__heartbeat_thread = Thread(
+            target=self.__heartbeat_thread_loop, daemon=True
+        )
         self.__heartbeat_thread.start()
 
     def __disconnect_mcu(self):
@@ -62,11 +64,15 @@ class PlateInterface(metaclass=Singleton):
     def __send_heartbeat(self):
         PTLogger.debug("Sending heartbeat")
         try:
-            self.__device_mcu.write_byte(PlateRegisters.REGISTER_HEARTBEAT,
-                                         PlateRegisters.HEARTBEAT_SECONDS_BEFORE_SHUTDOWN)
+            self.__device_mcu.write_byte(
+                PlateRegisters.REGISTER_HEARTBEAT,
+                PlateRegisters.HEARTBEAT_SECONDS_BEFORE_SHUTDOWN,
+            )
         except OSError:
             self.__mcu_connected = False
-            raise IOError("Error communicating with Foundation/Expansion plate. Make sure it's connected to your pi-top.") from None
+            raise IOError(
+                "Error communicating with Foundation/Expansion plate. Make sure it's connected to your pi-top."
+            ) from None
 
     def __heartbeat_thread_loop(self):
         while self.__mcu_connected:

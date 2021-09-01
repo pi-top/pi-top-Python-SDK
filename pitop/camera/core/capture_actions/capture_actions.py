@@ -1,9 +1,9 @@
 from enum import Enum
 
+from .generic_action import GenericAction
+from .motion_detector import MotionDetector
 from .store_frame import StoreFrame
 from .video_capture import VideoCapture
-from .motion_detector import MotionDetector
-from .generic_action import GenericAction
 
 
 class CaptureActions(Enum):

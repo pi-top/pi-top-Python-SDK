@@ -1,15 +1,9 @@
 from os import environ
 from shlex import split
-from subprocess import (
-    run,
-    Popen,
-    CalledProcessError,
-    TimeoutExpired,
-    DEVNULL,
-)
+from subprocess import DEVNULL, CalledProcessError, Popen, TimeoutExpired, run
 
-from pitop.common.logger import PTLogger
 from pitop.common.current_session_info import get_first_display
+from pitop.common.logger import PTLogger
 
 
 def __get_env():
@@ -21,19 +15,27 @@ def __get_env():
 
 
 def run_command_background(command_str: str, print_output=False) -> Popen:
-    PTLogger.debug(
-        "Function: run_command_background(command_str=%s)" % command_str)
+    PTLogger.debug("Function: run_command_background(command_str=%s)" % command_str)
 
-    return Popen(split(command_str),
-                 env=__get_env(),
-                 stderr=None if print_output else DEVNULL,
-                 stdout=None if print_output else DEVNULL)
+    return Popen(
+        split(command_str),
+        env=__get_env(),
+        stderr=None if print_output else DEVNULL,
+        stdout=None if print_output else DEVNULL,
+    )
 
 
-def run_command(command_str: str, timeout: int, check: bool = True, capture_output: bool = True, log_errors: bool = True) -> str:
+def run_command(
+    command_str: str,
+    timeout: int,
+    check: bool = True,
+    capture_output: bool = True,
+    log_errors: bool = True,
+) -> str:
     PTLogger.debug(
         f"Function: run_command(command_str={command_str}, timeout={timeout}, check={check}, capture_output={capture_output}, \
-         log_errors={log_errors})")
+         log_errors={log_errors})"
+    )
 
     resp_stdout = None
 
@@ -43,12 +45,12 @@ def run_command(command_str: str, timeout: int, check: bool = True, capture_outp
             check=check,
             capture_output=capture_output,
             timeout=timeout,
-            env=__get_env()
+            env=__get_env(),
         )
 
         if capture_output:
-            resp_stdout = str(resp.stdout, 'utf8')
-            resp_stderr = str(resp.stderr, 'utf8')
+            resp_stdout = str(resp.stdout, "utf8")
+            resp_stderr = str(resp.stderr, "utf8")
 
             PTLogger.debug(
                 f"run_command("

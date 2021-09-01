@@ -1,11 +1,7 @@
-from pitop.common.logger import PTLogger
-from pitop.common.ptdm import (
-    PTDMRequestClient,
-    PTDMSubscribeClient,
-    Message,
-)
-
 import atexit
+
+from pitop.common.logger import PTLogger
+from pitop.common.ptdm import Message, PTDMRequestClient, PTDMSubscribeClient
 
 
 class Battery:
@@ -54,11 +50,13 @@ class Battery:
                 func()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise({
-            Message.PUB_LOW_BATTERY_WARNING: lambda: self.when_low,
-            Message.PUB_CRITICAL_BATTERY_WARNING: lambda: self.when_critical,
-            Message.PUB_BATTERY_STATE_CHANGED: on_state_changed,
-        })
+        self.__ptdm_subscribe_client.initialise(
+            {
+                Message.PUB_LOW_BATTERY_WARNING: lambda: self.when_low,
+                Message.PUB_CRITICAL_BATTERY_WARNING: lambda: self.when_critical,
+                Message.PUB_BATTERY_STATE_CHANGED: on_state_changed,
+            }
+        )
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):

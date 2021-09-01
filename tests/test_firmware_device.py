@@ -1,6 +1,7 @@
-from unittest import TestCase
 from sys import modules
+from unittest import TestCase
 from unittest.mock import Mock
+
 from parameterized import parameterized
 
 mock_logger = modules["pitop.common.logger"] = Mock()
@@ -9,9 +10,7 @@ mock_i2c_device = modules["pitop.common.i2c_device"] = Mock()
 # import after applying mocks
 from pitop.common.common_ids import FirmwareDeviceID  # noqa: E402
 from pitop.common.firmware_device import FirmwareDevice  # noqa: E402
-from pitop.common.firmware_device import (  # noqa: E402
-    PTInvalidFirmwareDeviceException
-)
+from pitop.common.firmware_device import PTInvalidFirmwareDeviceException  # noqa: E402
 
 
 class FirmwareDeviceTestCase(TestCase):
@@ -32,7 +31,7 @@ class FirmwareDeviceTestCase(TestCase):
     @parameterized.expand(
         [
             [FirmwareDeviceID.pt4_foundation_plate, 0x1111],
-            [FirmwareDeviceID.pt4_expansion_plate, 0x2222]
+            [FirmwareDeviceID.pt4_expansion_plate, 0x2222],
         ]
     )
     def test_constructor_same_device_name(self, dev_id, part_name):
@@ -44,7 +43,7 @@ class FirmwareDeviceTestCase(TestCase):
     @parameterized.expand(
         [
             [FirmwareDeviceID.pt4_foundation_plate, 0x2222],
-            [FirmwareDeviceID.pt4_expansion_plate, 0x1111]
+            [FirmwareDeviceID.pt4_expansion_plate, 0x1111],
         ]
     )
     def test_constructor_different_device_name(self, dev_id, part_name):
@@ -69,9 +68,7 @@ class FirmwareDeviceTestCase(TestCase):
         valid_ids = [
             FirmwareDeviceID.pt4_hub,
             FirmwareDeviceID.pt4_foundation_plate,
-            FirmwareDeviceID.pt4_expansion_plate
+            FirmwareDeviceID.pt4_expansion_plate,
         ]
 
-        self.assertEqual(
-            set(valid_ids),
-            set(FirmwareDevice.valid_device_ids()))
+        self.assertEqual(set(valid_ids), set(FirmwareDevice.valid_device_ids()))

@@ -1,9 +1,6 @@
-from pitop.common.ptdm import (
-    PTDMRequestClient,
-    PTDMSubscribeClient,
-    Message,
-)
 import atexit
+
+from pitop.common.ptdm import Message, PTDMRequestClient, PTDMSubscribeClient
 
 
 class Display:
@@ -21,28 +18,40 @@ class Display:
 
     def __setup_subscribe_client(self):
         def on_brightness_changed(parameters):
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_brightness_changed, parameters[0])
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                self.when_brightness_changed, parameters[0]
+            )
 
         def on_screen_blanked():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_screen_blanked)
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                self.when_screen_blanked
+            )
 
         def on_screen_unblanked():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_screen_unblanked)
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                self.when_screen_unblanked
+            )
 
         def on_lid_closed():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_lid_closed)
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                self.when_lid_closed
+            )
 
         def on_lid_opened():
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(self.when_lid_opened)
+            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+                self.when_lid_opened
+            )
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise({
-            Message.PUB_BRIGHTNESS_CHANGED: on_brightness_changed,
-            Message.PUB_SCREEN_BLANKED: on_screen_blanked,
-            Message.PUB_SCREEN_UNBLANKED: on_screen_unblanked,
-            Message.PUB_LID_CLOSED: on_lid_closed,
-            Message.PUB_LID_OPENED: on_lid_opened,
-        })
+        self.__ptdm_subscribe_client.initialise(
+            {
+                Message.PUB_BRIGHTNESS_CHANGED: on_brightness_changed,
+                Message.PUB_SCREEN_BLANKED: on_screen_blanked,
+                Message.PUB_SCREEN_UNBLANKED: on_screen_unblanked,
+                Message.PUB_LID_CLOSED: on_lid_closed,
+                Message.PUB_LID_OPENED: on_lid_opened,
+            }
+        )
 
         self.__ptdm_subscribe_client.start_listening()
 
@@ -63,23 +72,13 @@ class Display:
         state_str,
         message_id,
     ):
-        response = self.__do_transaction(
-            Message.from_parts(message_id, []),
-            state_str
-        )
+        response = self.__do_transaction(Message.from_parts(message_id, []), state_str)
 
         return response.parameters[0]
 
-    def __set_state(
-        self,
-        state_str,
-        message_id,
-        value=None
-    ):
+    def __set_state(self, state_str, message_id, value=None):
         parameters = list() if value is None else [str(value)]
-        self.__do_transaction(Message.from_parts(message_id, parameters),
-                              state_str
-                              )
+        self.__do_transaction(Message.from_parts(message_id, parameters), state_str)
         return True
 
     @property
@@ -96,7 +95,7 @@ class Display:
         return self.__set_state(
             state_str="set pi-top display brightness",
             message_id=Message.REQ_SET_BRIGHTNESS,
-            value=value
+            value=value,
         )
 
     def increment_brightness(self):
@@ -143,17 +142,20 @@ class Display:
         return self.__set_state(
             state_str="set pi-top display blanking timeout",
             message_id=Message.REQ_SET_SCREEN_BLANKING_TIMEOUT,
-            value=value
+            value=value,
         )
 
     @property
     def backlight(self):
-        return int(
-            self.__get_state(
-                state_str="get pi-top display backlight state",
-                message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
+        return (
+            int(
+                self.__get_state(
+                    state_str="get pi-top display backlight state",
+                    message_id=Message.REQ_GET_SCREEN_BACKLIGHT_STATE,
+                )
             )
-        ) == 1
+            == 1
+        )
 
     @backlight.setter
     def backlight(self, value):
@@ -167,9 +169,12 @@ class Display:
 
     @property
     def lid_is_open(self):
-        return int(
-            self.__get_state(
-                state_str="get pi-top display lid open state",
-                message_id=Message.REQ_GET_LID_OPEN_STATE,
+        return (
+            int(
+                self.__get_state(
+                    state_str="get pi-top display lid open state",
+                    message_id=Message.REQ_GET_LID_OPEN_STATE,
+                )
             )
-        ) == 1
+            == 1
+        )

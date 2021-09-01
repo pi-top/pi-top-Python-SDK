@@ -2,7 +2,7 @@ from pitop.common.command_runner import run_command
 from pitop.common.common_ids import FirmwareDeviceID, PeripheralID
 from pitop.common.common_names import PeripheralName
 from pitop.common.firmware_device import FirmwareDevice
-from pitop.common.ptdm import PTDMRequestClient, Message
+from pitop.common.ptdm import Message, PTDMRequestClient
 
 
 def legacy_pitop_peripherals():
@@ -20,29 +20,26 @@ def legacy_pitop_peripherals():
         peripheral_id = peripheral_enum.value
         human_readable_name = PeripheralName[peripheral_enum.name].value
 
-        message = Message.from_parts(Message.REQ_GET_PERIPHERAL_ENABLED, [peripheral_id])
+        message = Message.from_parts(
+            Message.REQ_GET_PERIPHERAL_ENABLED, [peripheral_id]
+        )
 
         with PTDMRequestClient() as request_client:
             response = request_client.send_message(message)
 
-        p_enabled = (int(response.parameters[0]) == 1)
-        peripherals.append({
-            "name": human_readable_name,
-            "connected": p_enabled})
+        p_enabled = int(response.parameters[0]) == 1
+        peripherals.append({"name": human_readable_name, "connected": p_enabled})
 
     return peripherals
 
 
 def __get_fw_device_status(device_enum):
     """Returns a dictionary with the status of the given device enum."""
-    human_readable_name = device_enum.name.replace(
-        "_", " ").title().replace("Pt4", "pi-top [4]")
+    human_readable_name = (
+        device_enum.name.replace("_", " ").title().replace("Pt4", "pi-top [4]")
+    )
 
-    peripheral = {
-        "name": human_readable_name,
-        "fw_version": None,
-        "connected": False
-    }
+    peripheral = {"name": human_readable_name, "fw_version": None, "connected": False}
 
     try:
         fw_device = FirmwareDevice(device_enum)
@@ -76,7 +73,10 @@ def connected_plate():
     Returns:
         FirmwareDeviceID: device ID of the connected plate. None if not detected
     """
-    for plate_id in (FirmwareDeviceID.pt4_foundation_plate, FirmwareDeviceID.pt4_expansion_plate):
+    for plate_id in (
+        FirmwareDeviceID.pt4_foundation_plate,
+        FirmwareDeviceID.pt4_expansion_plate,
+    ):
         status = __get_fw_device_status(plate_id)
         if status.get("connected") is True:
             return plate_id
@@ -89,8 +89,10 @@ def usb_pitop_peripherals():
     Returns:
         list: list of dictionaries with the status of USB peripherals
     """
-    return [{'name': 'pi-top Touchscreen', 'connected': touchscreen_is_connected()},
-            {'name': 'pi-top Keyboard', 'connected': pitop_keyboard_is_connected()}]
+    return [
+        {"name": "pi-top Touchscreen", "connected": touchscreen_is_connected()},
+        {"name": "pi-top Keyboard", "connected": pitop_keyboard_is_connected()},
+    ]
 
 
 def touchscreen_is_connected():
@@ -127,4 +129,8 @@ def pitop_peripherals():
     Returns:
         list: list of dictionaries with the status of pi-top peripherals
     """
-    return upgradable_pitop_peripherals() + usb_pitop_peripherals() + legacy_pitop_peripherals()
+    return (
+        upgradable_pitop_peripherals()
+        + usb_pitop_peripherals()
+        + legacy_pitop_peripherals()
+    )

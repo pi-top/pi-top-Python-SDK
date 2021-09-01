@@ -1,5 +1,6 @@
-from pitop import TiltRollHeadController
 from time import sleep
+
+from pitop import TiltRollHeadController
 
 # Create a head controller object
 head = TiltRollHeadController()

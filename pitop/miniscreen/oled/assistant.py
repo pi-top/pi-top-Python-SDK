@@ -1,7 +1,4 @@
-from PIL import (
-    Image,
-    ImageFont,
-)
+from PIL import Image, ImageFont
 
 
 class MiniscreenAssistant:
@@ -17,15 +14,10 @@ class MiniscreenAssistant:
             if image.mode != self.image_mode:
                 image = image.convert(self.image_mode)
         else:
-            image = Image.new(
-                self.image_mode,
-                self.image_size,
-                "black"
-            )
+            image = Image.new(self.image_mode, self.image_size, "black")
             image.paste(
                 image_to_process.resize(
-                    self.image_size,
-                    resample=self.resize_resampling_filter
+                    self.image_size, resample=self.resize_resampling_filter
                 )
             )
 
@@ -61,11 +53,7 @@ class MiniscreenAssistant:
 
     @property
     def empty_image(self):
-        return Image.new(
-            self.image_mode,
-            self.image_size,
-            "black"
-        )
+        return Image.new(self.image_mode, self.image_size, "black")
 
     @property
     def bounding_box(self):
@@ -85,10 +73,7 @@ class MiniscreenAssistant:
         :return: coordinates of the corner
         :rtype: tuple
         """
-        return (
-            self.bounding_box[pos1],
-            self.bounding_box[pos2]
-        )
+        return (self.bounding_box[pos1], self.bounding_box[pos2])
 
     def top_left(self):
         """Gets the top left corner of the pi-top OLED display.

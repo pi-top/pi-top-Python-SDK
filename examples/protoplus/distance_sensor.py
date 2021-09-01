@@ -1,5 +1,6 @@
-from pitop.protoplus import DistanceSensor
 from time import sleep
+
+from pitop.protoplus import DistanceSensor
 
 ultrasonic = DistanceSensor()
 
