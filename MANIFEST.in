@@ -1,8 +1,12 @@
-include pitop/robotics/json/*.json
-include pitop/miniscreen/images/*.gif
-include pitop/labs/web/blueprints/**/**/*.css
-include pitop/labs/web/blueprints/**/**/*.html
-include pitop/labs/web/blueprints/**/**/*.js
-include pitop/labs/web/blueprints/**/**/**/*.css
-include pitop/labs/web/blueprints/**/**/**/*.html
-include pitop/labs/web/blueprints/**/**/**/*.js
+recursive-include pitop/robotics/json *.json
+recursive-include pitop/miniscreen/images *.gif
+recursive-include pitop/labs/web/blueprints *.css
+recursive-include pitop/labs/web/blueprints *.html
+recursive-include pitop/labs/web/blueprints *.js
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * *~
+recursive-exclude * .coverage
+recursive-exclude * .DS_Store
+recursive-exclude * .ropeproject
