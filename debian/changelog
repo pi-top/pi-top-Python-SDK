@@ -1,4 +1,4 @@
-py-pitop-sdk (0.20.0-1) buster; urgency=medium
+py-pitop-sdk (0.20.0-1) bullseye; urgency=medium
 
   * Vendor some dependencies (for manageability)
   * Fix Python to Debian dependency mapping
