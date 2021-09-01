@@ -1,9 +1,5 @@
 import importlib
-from json import (
-    dump,
-    dumps,
-    load,
-)
+from json import dump, dumps, load
 
 
 class Recreatable:
@@ -24,9 +20,13 @@ class Recreatable:
         if not isinstance(config_dict, dict):
             raise TypeError("Argument must be a dictionary")
 
-        config_dict.update({"classname": self.__class__.__name__,
-                            "module": self.__module__,
-                            "version": "0.17.0"})
+        config_dict.update(
+            {
+                "classname": self.__class__.__name__,
+                "module": self.__module__,
+                "version": "0.17.0",
+            }
+        )
         for k, v in config_dict.items():
             config_dict.update({k: v})
 

@@ -1,55 +1,60 @@
-from pitop.core.mixins import (
-    Stateful,
-    Recreatable,
-)
+from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common.utils import Port
-from .ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
 
+from .ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
 
 valid_analog_ports = ["A1", "A3"]
 
 
 class UltrasonicSensor(Stateful, Recreatable):
-    def __init__(self,
-                 port_name,
-                 queue_len=5,
-                 max_distance=3,
-                 threshold_distance=0.3,
-                 partial=False,
-                 name="ultrasonic"
-                 ):
+    def __init__(
+        self,
+        port_name,
+        queue_len=5,
+        max_distance=3,
+        threshold_distance=0.3,
+        partial=False,
+        name="ultrasonic",
+    ):
 
-        assert (port_name in Port)
+        assert port_name in Port
         self._pma_port = port_name
         self.name = name
 
         if port_name in valid_analog_ports:
-            self.__ultrasonic_device = UltrasonicSensorMCU(port_name=port_name,
-                                                           queue_len=queue_len,
-                                                           max_distance=max_distance,
-                                                           threshold_distance=threshold_distance,
-                                                           partial=partial,
-                                                           name=name
-                                                           )
+            self.__ultrasonic_device = UltrasonicSensorMCU(
+                port_name=port_name,
+                queue_len=queue_len,
+                max_distance=max_distance,
+                threshold_distance=threshold_distance,
+                partial=partial,
+                name=name,
+            )
         else:
-            self.__ultrasonic_device = UltrasonicSensorRPI(port_name=port_name,
-                                                           queue_len=queue_len,
-                                                           max_distance=max_distance,
-                                                           threshold_distance=threshold_distance,
-                                                           partial=partial,
-                                                           name=name
-                                                           )
+            self.__ultrasonic_device = UltrasonicSensorRPI(
+                port_name=port_name,
+                queue_len=queue_len,
+                max_distance=max_distance,
+                threshold_distance=threshold_distance,
+                partial=partial,
+                name=name,
+            )
 
         self._in_range_function = None
         self._out_of_range_function = None
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name,
-                                    "queue_len": queue_len,
-                                    "partial": partial,
-                                    "name": self.name,
-                                    "max_distance": lambda: self.max_distance,
-                                    "threshold_distance": lambda: self.threshold_distance})
+        Recreatable.__init__(
+            self,
+            {
+                "port_name": port_name,
+                "queue_len": queue_len,
+                "partial": partial,
+                "name": self.name,
+                "max_distance": lambda: self.max_distance,
+                "threshold_distance": lambda: self.threshold_distance,
+            },
+        )
 
     def __enter__(self):
         return self
@@ -60,7 +65,7 @@ class UltrasonicSensor(Stateful, Recreatable):
     @property
     def own_state(self):
         return {
-            'distance': self.distance,
+            "distance": self.distance,
         }
 
     @property

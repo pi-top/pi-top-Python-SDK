@@ -1,7 +1,6 @@
+import os
 from sys import modules
 from unittest.mock import Mock
-import os
-
 
 modules_to_patch = [
     "imageio",
@@ -15,32 +14,45 @@ for patched_module in modules_to_patch:
     del modules[patched_module]
 
 from unittest import TestCase
-import numpy as np
+
 import cv2
-from pitop.processing.algorithms.faces import (
-    FaceDetector,
-    EmotionClassifier,
-)
-from imutils import rotate, resize
+import numpy as np
+from imutils import resize, rotate
 
+from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
 
-face_image_dir = 'assets/face_images'
+face_image_dir = "assets/face_images"
 script_dir = os.path.dirname(os.path.realpath(__file__))
 abs_file_path = os.path.join(script_dir, face_image_dir)
 
 # emotion_data is [Expected Emotion, Minimum Confidence]
-emotion_data = [['Neutral', 0.4], ['Anger', 0.7], ['Disgust', 0.7], ['Happy', 0.9], ['Sad', 0.9], ['Surprise', 0.9]]
-face_filenames = ["neutral.jpg", "anger.jpg", "disgust.jpg", "happy.jpg", "sad.jpg", "surprise.jpg"]
+emotion_data = [
+    ["Neutral", 0.4],
+    ["Anger", 0.7],
+    ["Disgust", 0.7],
+    ["Happy", 0.9],
+    ["Sad", 0.9],
+    ["Surprise", 0.9],
+]
+face_filenames = [
+    "neutral.jpg",
+    "anger.jpg",
+    "disgust.jpg",
+    "happy.jpg",
+    "sad.jpg",
+    "surprise.jpg",
+]
 
 
 class TestFaceAndEmotionDetector(TestCase):
-
     def setUp(self):
         self._height = 480
         self._width = 640
         self._image_processing_width = 320
         self._frame_scaler = self._width / self._image_processing_width
-        self._MAX_FACE_CENTER_DIFFERENCE = self._height // 8  # will ensure center not off by processing scale factor
+        self._MAX_FACE_CENTER_DIFFERENCE = (
+            self._height // 8
+        )  # will ensure center not off by processing scale factor
         self._MAX_FACE_ANGLE_DIFFERENCE = 3
         self._face_rotate_angle = 7.5
         self._blank_cv_frame = np.ones((self._height, self._width, 3), np.uint8) * 255
@@ -57,7 +69,11 @@ class TestFaceAndEmotionDetector(TestCase):
             merged_image = self._blank_cv_frame.copy()
             x_offset = (self._width - face_image_width) // 2
             y_offset = (self._height - face_image_height) // 2
-            merged_image[y_offset:y_offset + face_image_height, x_offset:x_offset + face_image_width, :] = face_image
+            merged_image[
+                y_offset : y_offset + face_image_height,
+                x_offset : x_offset + face_image_width,
+                :,
+            ] = face_image
 
             self._face_image_data.append([merged_image, face_image_width])
 
@@ -65,7 +81,9 @@ class TestFaceAndEmotionDetector(TestCase):
             counterclockwise_image = rotate(merged_image, self._face_rotate_angle)
 
             self._face_images_cw_rotate_data.append([clockwise_image, face_image_width])
-            self._face_images_ccw_rotate_data.append([counterclockwise_image, face_image_width])
+            self._face_images_ccw_rotate_data.append(
+                [counterclockwise_image, face_image_width]
+            )
 
     def test_detect_face(self):
         self.detections(self._face_image_data)
@@ -131,15 +149,21 @@ class TestFaceAndEmotionDetector(TestCase):
 
         for i, (frame, width) in enumerate(face_data):
             face = face_detector(frame)
-            self.face_assertions(face=face, expected_rotation_angle=expected_rotation_angle, width=width)
+            self.face_assertions(
+                face=face, expected_rotation_angle=expected_rotation_angle, width=width
+            )
             emotion = emotion_classifier(face)
-            self.emotion_assertions(emotion=emotion, expected_emotion_data=emotion_data[i], frame=frame)
+            self.emotion_assertions(
+                emotion=emotion, expected_emotion_data=emotion_data[i], frame=frame
+            )
 
     def face_assertions(self, face, expected_rotation_angle, width):
         self.assertTrue(face.found)
         for u, v in zip(face.center, (0, 0)):
             self.assertAlmostEqual(u, v, delta=self._MAX_FACE_CENTER_DIFFERENCE)
-        self.assertAlmostEqual(face.angle, expected_rotation_angle, delta=self._MAX_FACE_ANGLE_DIFFERENCE)
+        self.assertAlmostEqual(
+            face.angle, expected_rotation_angle, delta=self._MAX_FACE_ANGLE_DIFFERENCE
+        )
         self.assertIsInstance(face.robot_view, np.ndarray)
         self.assertEqual(face.robot_view.shape[0], self._height)
         self.assertEqual(face.robot_view.shape[1], self._width)
@@ -201,8 +225,10 @@ class TestFaceAndEmotionDetector(TestCase):
         self.assertAlmostEqual(y, 272, delta=3)
 
     def test_calculated_face_data_5_landmark(self):
-        face_detector = FaceDetector(dlib_landmark_predictor_filename="shape_predictor_5_face_landmarks.dat",
-                                     enable_tracking=False)
+        face_detector = FaceDetector(
+            dlib_landmark_predictor_filename="shape_predictor_5_face_landmarks.dat",
+            enable_tracking=False,
+        )
         # for test image set this needs to be zero, in normal use it doesn't matter because of filtering
         face_detector._FACE_DETECTOR_PYRAMID_LAYERS = 0
 

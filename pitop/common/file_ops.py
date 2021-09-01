@@ -1,10 +1,7 @@
-from os import close
-from os import utime
+from os import close, utime
 from re import compile
-from shutil import copystat
-from shutil import move
-from tempfile import mkstemp
-from tempfile import NamedTemporaryFile
+from shutil import copystat, move
+from tempfile import NamedTemporaryFile, mkstemp
 
 
 def sed_inplace(filename, pattern, repl):

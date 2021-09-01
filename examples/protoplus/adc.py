@@ -1,6 +1,6 @@
-from pitop.protoplus import ADCProbe
 from time import sleep
 
+from pitop.protoplus import ADCProbe
 
 temp_sensor = ADCProbe()
 

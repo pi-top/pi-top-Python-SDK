@@ -1,4 +1,5 @@
 from time import sleep
+
 try:
     from time import monotonic
 except ImportError:

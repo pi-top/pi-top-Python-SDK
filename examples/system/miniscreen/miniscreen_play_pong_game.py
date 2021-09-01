@@ -1,8 +1,9 @@
-from pitop import Pitop
-from PIL import Image, ImageDraw, ImageFont
 from random import randrange
 from time import sleep
 
+from PIL import Image, ImageDraw, ImageFont
+
+from pitop import Pitop
 
 # Game variables
 BALL_RADIUS = 2
@@ -50,7 +51,10 @@ class Ball:
 
     @property
     def is_touching_vertical_walls(self):
-        return self.y_pos <= BALL_RADIUS or self.y_pos >= miniscreen.height + 1 - BALL_RADIUS
+        return (
+            self.y_pos <= BALL_RADIUS
+            or self.y_pos >= miniscreen.height + 1 - BALL_RADIUS
+        )
 
     def change_direction(self, change_x=False, change_y=False, speed_factor=1.0):
         x_vel = -self.vel[0] if change_x else self.vel[0]
@@ -129,7 +133,7 @@ class Paddle:
             self.x_pos,
             self.y_pos - PADDLE_SIZE[1] // 2,
             self.x_pos,
-            self.y_pos + PADDLE_SIZE[1] // 2
+            self.y_pos + PADDLE_SIZE[1] // 2,
         )
 
 
@@ -192,22 +196,26 @@ def draw(wait=False):
     canvas.ellipse(ball.bounding_box, fill=1)
 
     # Draw paddles
-    canvas.line(
-        l_paddle.bounding_box,
-        fill=1,
-        width=PADDLE_SIZE[0]
-    )
+    canvas.line(l_paddle.bounding_box, fill=1, width=PADDLE_SIZE[0])
 
-    canvas.line(
-        r_paddle.bounding_box,
-        fill=1,
-        width=PADDLE_SIZE[0]
-    )
+    canvas.line(r_paddle.bounding_box, fill=1, width=PADDLE_SIZE[0])
 
     # Draw score
     font = ImageFont.truetype("VeraMono.ttf", size=12)
-    canvas.multiline_text((1 * miniscreen.width // 3, 2), str(l_paddle.score), fill=1, font=font, align="center")
-    canvas.multiline_text((2 * miniscreen.width // 3, 2), str(r_paddle.score), fill=1, font=font, align="center")
+    canvas.multiline_text(
+        (1 * miniscreen.width // 3, 2),
+        str(l_paddle.score),
+        fill=1,
+        font=font,
+        align="center",
+    )
+    canvas.multiline_text(
+        (2 * miniscreen.width // 3, 2),
+        str(r_paddle.score),
+        fill=1,
+        font=font,
+        align="center",
+    )
 
     # Display image
     miniscreen.display_image(image)

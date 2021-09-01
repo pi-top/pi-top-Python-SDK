@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
-from pitop.common.logger import PTLogger
 from pitop.common.command_runner import run_command
+from pitop.common.logger import PTLogger
 
 
 class NotificationAction:
@@ -36,15 +36,16 @@ class NotificationUrgencyLevel(Enum):
 
 
 def send_notification(
-        title: str,
-        text: str,
-        icon_name: str = "",
-        timeout: int = 0,
-        app_name: str = "",
-        notification_id: int = -1,
-        actions_manager: NotificationActionManager = None,
-        urgency_level: NotificationUrgencyLevel = None,
-        capture_notification_id: bool = True) -> str:
+    title: str,
+    text: str,
+    icon_name: str = "",
+    timeout: int = 0,
+    app_name: str = "",
+    notification_id: int = -1,
+    actions_manager: NotificationActionManager = None,
+    urgency_level: NotificationUrgencyLevel = None,
+    capture_notification_id: bool = True,
+) -> str:
 
     # TODO: check that `pt-notify-send` is available, as it's not a hard dependency of the package
 
@@ -60,11 +61,18 @@ def send_notification(
 
     if actions_manager is not None:
         for action in actions_manager.actions:
-            cmd += "--action=\"" + action.call_to_action_text + \
-                ":" + action.command_str + "\" "
+            cmd += (
+                '--action="'
+                + action.call_to_action_text
+                + ":"
+                + action.command_str
+                + '" '
+            )
 
         if actions_manager.default_action is not None:
-            cmd += "--default-action=" + actions_manager.default_action.command_str + " "
+            cmd += (
+                "--default-action=" + actions_manager.default_action.command_str + " "
+            )
 
         if actions_manager.close_action is not None:
             cmd += "--close-action=" + actions_manager.close_action.command_str + " "
@@ -75,14 +83,13 @@ def send_notification(
     if urgency_level is not None:
         cmd += "--urgency=" + urgency_level.name + " "
 
-    cmd += " \"" + title + "\" "
-    cmd += "\"" + text + "\""
+    cmd += ' "' + title + '" '
+    cmd += '"' + text + '"'
 
     PTLogger.info("pt-notify-send command: {}".format(cmd))
 
     try:
-        resp_stdout = run_command(
-            cmd, 2000, capture_output=capture_notification_id)
+        resp_stdout = run_command(cmd, 2000, capture_output=capture_notification_id)
     except Exception as e:
         PTLogger.warning("Failed to show message: {}".format(e))
         raise

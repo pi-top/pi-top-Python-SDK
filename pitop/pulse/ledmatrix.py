@@ -1,24 +1,15 @@
-from pitop.pulse import configuration
+import signal
+from copy import deepcopy
+from math import ceil, cos, radians, sin
+from os import path
+from sys import exit
+from threading import Timer
+from time import sleep
+
+from serial import Serial, serialutil
 
 from pitop.common.logger import PTLogger
-
-from copy import deepcopy
-from math import (
-    ceil,
-    radians,
-    sin,
-    cos,
-)
-from os import path
-from serial import (
-    serialutil,
-    Serial
-)
-import signal
-from sys import exit
-from time import sleep
-from threading import Timer
-
+from pitop.pulse import configuration
 
 _initialised = False
 
@@ -34,60 +25,266 @@ _running = False
 _show_enabled = True
 
 _gamma_correction_arr = [
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1,
-    1, 2, 2, 2, 2, 2, 2, 2,
-    2, 3, 3, 3, 3, 3, 3, 3,
-    4, 4, 4, 4, 4, 5, 5, 5,
-    5, 6, 6, 6, 6, 7, 7, 7,
-    7, 8, 8, 8, 9, 9, 9, 10,
-    10, 10, 11, 11, 11, 12, 12, 13,
-    13, 13, 14, 14, 15, 15, 16, 16,
-    17, 17, 18, 18, 19, 19, 20, 20,
-    21, 21, 22, 22, 23, 24, 24, 25,
-    25, 26, 27, 27, 28, 29, 29, 30,
-    31, 32, 32, 33, 34, 35, 35, 36,
-    37, 38, 39, 39, 40, 41, 42, 43,
-    44, 45, 46, 47, 48, 49, 50, 50,
-    51, 52, 54, 55, 56, 57, 58, 59,
-    60, 61, 62, 63, 64, 66, 67, 68,
-    69, 70, 72, 73, 74, 75, 77, 78,
-    79, 81, 82, 83, 85, 86, 87, 89,
-    90, 92, 93, 95, 96, 98, 99, 101,
-    102, 104, 105, 107, 109, 110, 112, 114,
-    115, 117, 119, 120, 122, 124, 126, 127,
-    129, 131, 133, 135, 137, 138, 140, 142,
-    144, 146, 148, 150, 152, 154, 156, 158,
-    160, 162, 164, 167, 169, 171, 173, 175,
-    177, 180, 182, 184, 186, 189, 191, 193,
-    196, 198, 200, 203, 205, 208, 210, 213,
-    215, 218, 220, 223, 225, 228, 231, 233,
-    236, 239, 241, 244, 247, 249, 252, 255
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    4,
+    4,
+    4,
+    4,
+    4,
+    5,
+    5,
+    5,
+    5,
+    6,
+    6,
+    6,
+    6,
+    7,
+    7,
+    7,
+    7,
+    8,
+    8,
+    8,
+    9,
+    9,
+    9,
+    10,
+    10,
+    10,
+    11,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+    13,
+    14,
+    14,
+    15,
+    15,
+    16,
+    16,
+    17,
+    17,
+    18,
+    18,
+    19,
+    19,
+    20,
+    20,
+    21,
+    21,
+    22,
+    22,
+    23,
+    24,
+    24,
+    25,
+    25,
+    26,
+    27,
+    27,
+    28,
+    29,
+    29,
+    30,
+    31,
+    32,
+    32,
+    33,
+    34,
+    35,
+    35,
+    36,
+    37,
+    38,
+    39,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    50,
+    51,
+    52,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    66,
+    67,
+    68,
+    69,
+    70,
+    72,
+    73,
+    74,
+    75,
+    77,
+    78,
+    79,
+    81,
+    82,
+    83,
+    85,
+    86,
+    87,
+    89,
+    90,
+    92,
+    93,
+    95,
+    96,
+    98,
+    99,
+    101,
+    102,
+    104,
+    105,
+    107,
+    109,
+    110,
+    112,
+    114,
+    115,
+    117,
+    119,
+    120,
+    122,
+    124,
+    126,
+    127,
+    129,
+    131,
+    133,
+    135,
+    137,
+    138,
+    140,
+    142,
+    144,
+    146,
+    148,
+    150,
+    152,
+    154,
+    156,
+    158,
+    160,
+    162,
+    164,
+    167,
+    169,
+    171,
+    173,
+    175,
+    177,
+    180,
+    182,
+    184,
+    186,
+    189,
+    191,
+    193,
+    196,
+    198,
+    200,
+    203,
+    205,
+    208,
+    210,
+    213,
+    215,
+    218,
+    220,
+    223,
+    225,
+    228,
+    231,
+    233,
+    236,
+    239,
+    241,
+    244,
+    247,
+    249,
+    252,
+    255,
 ]
 
 _sync = bytearray(
-    [
-        7,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127,
-        127
-    ]
+    [7, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127]
 )
 
 _empty = [0, 0, 0]
@@ -99,7 +296,7 @@ _empty_map = [
     [_empty, _empty, _empty, _empty, _empty, _empty, _empty],
     [_empty, _empty, _empty, _empty, _empty, _empty, _empty],
     [_empty, _empty, _empty, _empty, _empty, _empty, _empty],
-    [_empty, _empty, _empty, _empty, _empty, _empty, _empty]
+    [_empty, _empty, _empty, _empty, _empty, _empty, _empty],
 ]
 
 _pixel_map = deepcopy(_empty_map)
@@ -121,7 +318,7 @@ def __initialise():
 
     if not _initialised:
         if configuration.mcu_enabled():
-            if not path.exists('/dev/serial0'):
+            if not path.exists("/dev/serial0"):
                 err_str = "Could not find serial port - are you sure it's enabled?"
                 raise serialutil.SerialException(err_str)
 
@@ -179,8 +376,21 @@ def __write(data):
     Write data to the matrix.
     """
 
-    PTLogger.debug('{s0:<4}{s1:<4}{s2:<4}{s3:<4}{s4:<4}{s5:<4}{s6:<4}{s7:<4}{s8:<4}{s9:<4}{s10:<4}'.format(
-        s0=data[0], s1=data[1], s2=data[2], s3=data[3], s4=data[4], s5=data[5], s6=data[6], s7=data[7], s8=data[8], s9=data[9], s10=data[10]))
+    PTLogger.debug(
+        "{s0:<4}{s1:<4}{s2:<4}{s3:<4}{s4:<4}{s5:<4}{s6:<4}{s7:<4}{s8:<4}{s9:<4}{s10:<4}".format(
+            s0=data[0],
+            s1=data[1],
+            s2=data[2],
+            s3=data[3],
+            s4=data[4],
+            s5=data[5],
+            s6=data[6],
+            s7=data[7],
+            s8=data[8],
+            s9=data[9],
+            s10=data[10],
+        )
+    )
     _serial_device.write(data)
     sleep(0.002)
 
@@ -220,8 +430,8 @@ def __get_rotated_pixel_map():
     # Some fancy maths to rotate pixel map so that
     # 0,0 (x,y) - with rotation 0 - is the bottom left LED
     scaled_rotation = int(_rotation / 90)
-    adjusted_scaled_rotation = (scaled_rotation + 1)
-    modulo_adjusted_scaled_rotation = (adjusted_scaled_rotation % 4)
+    adjusted_scaled_rotation = scaled_rotation + 1
+    modulo_adjusted_scaled_rotation = adjusted_scaled_rotation % 4
     count = (6 - modulo_adjusted_scaled_rotation) % 4
 
     for x in range(count):
@@ -322,7 +532,7 @@ def __flip(direction):
             elif direction == "v":
                 flipped_pixel_map[x][y] = _pixel_map[x][(_h - 1) - y]
             else:
-                err = 'Flip direction must be [h]orizontal or [v]ertical only'
+                err = "Flip direction must be [h]orizontal or [v]ertical only"
                 raise ValueError(err)
 
     _pixel_map = flipped_pixel_map
@@ -355,6 +565,7 @@ def __disable_show_state():
 # EXTERNAL OPERATIONS #
 #######################
 
+
 def set_debug_print_state(debug_enable):
     """Enable/disable debug prints."""
 
@@ -371,7 +582,7 @@ def brightness(new_brightness):
     global _brightness
 
     if new_brightness > 1 or new_brightness < 0:
-        raise ValueError('Brightness level must be between 0 and 1')
+        raise ValueError("Brightness level must be between 0 and 1")
     _brightness = new_brightness
 
 
@@ -396,7 +607,7 @@ def rotation(new_rotation=0):
         _rotation = new_rotation
         return True
     else:
-        raise ValueError('Rotation: 0, 90, 180 or 270 degrees only')
+        raise ValueError("Rotation: 0, 90, 180 or 270 degrees only")
 
 
 def flip_h():
@@ -452,8 +663,7 @@ def set_all(r, g, b):
 
     for x in range(_w):
         for y in range(_h):
-            new_r, new_g, new_b = __adjust_r_g_b_for_brightness_correction(
-                r, g, b)
+            new_r, new_g, new_b = __adjust_r_g_b_for_brightness_correction(r, g, b)
             _pixel_map[x][y][0] = new_r
             _pixel_map[x][y][1] = new_g
             _pixel_map[x][y][2] = new_b
@@ -470,8 +680,7 @@ def show():
 
     attempt_to_show_early = not _show_enabled
     if attempt_to_show_early:
-        PTLogger.info(
-            "Can't update pi-topPULSE LEDs more than 50/s. Waiting...")
+        PTLogger.info("Can't update pi-topPULSE LEDs more than 50/s. Waiting...")
 
     pause_length = 0.001
 
@@ -515,7 +724,7 @@ def show():
             pixel_map_buffer += chr(byte1)
 
         # Write col to LED matrix
-        arr = bytearray(pixel_map_buffer, 'Latin_1')
+        arr = bytearray(pixel_map_buffer, "Latin_1")
         __write(arr)
 
         # Prevent another write if it's too fast
@@ -575,8 +784,13 @@ def run_tests():
         for c in range(3):
             for x in range(_w):
                 for y in range(_h):
-                    set_pixel(x, y, 255 if c == 0 else 0, 255 if c ==
-                              1 else 0, 255 if c == 2 else 0)
+                    set_pixel(
+                        x,
+                        y,
+                        255 if c == 0 else 0,
+                        255 if c == 1 else 0,
+                        255 if c == 2 else 0,
+                    )
 
                 show()
                 sleep(0.05)
@@ -636,13 +850,15 @@ def run_tests():
 
     start(0.1)
 
-    life_map = [[0, 0, 0, 0, 0, 0, 0],
-                [0, 1, 0, 0, 0, 0, 0],
-                [0, 0, 1, 0, 0, 0, 0],
-                [1, 1, 1, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0]]
+    life_map = [
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0],
+    ]
 
     for r in range(40):
         temp_map = deepcopy(life_map)
@@ -663,12 +879,12 @@ def run_tests():
                 if current_cell == 1 and (neighbours < 2 or neighbours > 3):
                     life_map[x][y] = 0
 
-                if (current_cell == 0 and neighbours == 3):
+                if current_cell == 0 and neighbours == 3:
                     life_map[x][y] = 1
 
         for x in range(_w):
             for y in range(_h):
-                if (life_map[x][y] == 1):
+                if life_map[x][y] == 1:
                     set_pixel(x, y, 255, 255, 0)
                 else:
                     set_pixel(x, y, 0, 128, 0)
@@ -687,7 +903,7 @@ def start(new_update_rate=0.1):
     global _auto_refresh_timer
 
     if new_update_rate < (1 / _max_freq):
-        _update_rate = (1 / _max_freq)
+        _update_rate = 1 / _max_freq
     else:
         _update_rate = new_update_rate
 

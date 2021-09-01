@@ -1,26 +1,16 @@
-from pitop.pulse import configuration
-
-from pitop.common.logger import PTLogger
-
-from binascii import (
-    hexlify,
-    unhexlify
-)
-from tempfile import mkstemp
-from os import (
-    close,
-    path,
-    remove,
-    rename,
-    stat,
-)
-import serial
 import signal
+from binascii import hexlify, unhexlify
+from os import close, path, remove, rename, stat
 from struct import pack
 from sys import exit
+from tempfile import mkstemp
 from threading import Thread
 from time import sleep
 
+import serial
+
+from pitop.common.logger import PTLogger
+from pitop.pulse import configuration
 
 _bitrate = 8
 _continue_writing = False
@@ -78,20 +68,20 @@ def __space_separated_little_endian(integer_value, byte_len):
     """
 
     if byte_len <= 1:
-        pack_type = '<B'
+        pack_type = "<B"
     elif byte_len <= 2:
-        pack_type = '<H'
+        pack_type = "<H"
     elif byte_len <= 4:
-        pack_type = '<I'
+        pack_type = "<I"
     elif byte_len <= 8:
-        pack_type = '<Q'
+        pack_type = "<Q"
     else:
         PTLogger.info("Value cannot be represented in 8 bytes - exiting")
         exit()
 
     hex_string = pack(pack_type, integer_value)
     temp = hexlify(hex_string).decode()
-    return ' '.join([temp[i:i + 2] for i in range(0, len(temp), 2)])
+    return " ".join([temp[i : i + 2] for i in range(0, len(temp), 2)])
 
 
 def __init_header_information():
@@ -122,8 +112,7 @@ def __init_header_information():
     header += __from_hex(__space_separated_little_endian(16, 4))
     # AudioFormat   (PCM = 1)
     header += __from_hex(__space_separated_little_endian(1, 2))
-    header += __from_hex(__space_separated_little_endian(1, 2)
-                         )                   # NumChannels
+    header += __from_hex(__space_separated_little_endian(1, 2))  # NumChannels
     # SampleRate
     header += __from_hex(__space_separated_little_endian(capture_sample_rate, 4))
     # ByteRate (Same as SampleRate due to 1 channel, 1 byte per sample)
@@ -147,7 +136,7 @@ def __update_header_in_file(file, position, value):
     """
 
     hex_value = __space_separated_little_endian(value, 4)
-    data = unhexlify(''.join(hex_value.split()))
+    data = unhexlify("".join(hex_value.split()))
 
     file.seek(position)
     file.write(data)
@@ -165,7 +154,7 @@ def __finalise_wav_file(file_path):
         PTLogger.info("Error: No data was recorded!")
         remove(file_path)
     else:
-        with open(file_path, 'rb+') as file:
+        with open(file_path, "rb+") as file:
 
             PTLogger.debug("Updating header information...")
 
@@ -194,12 +183,18 @@ def __record_audio():
     close(temp_file_tuple[0])
     _temp_file_path = temp_file_tuple[1]
 
-    if path.exists('/dev/serial0'):
+    if path.exists("/dev/serial0"):
 
         PTLogger.debug("Opening serial device...")
 
-        serial_device = serial.Serial(port='/dev/serial0', timeout=1, baudrate=250000,
-                                      parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS)
+        serial_device = serial.Serial(
+            port="/dev/serial0",
+            timeout=1,
+            baudrate=250000,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+        )
         serial_device_open = serial_device.isOpen()
 
         if serial_device_open is True:
@@ -207,14 +202,13 @@ def __record_audio():
             try:
                 PTLogger.debug("Start recording")
 
-                with open(_temp_file_path, 'wb') as file:
+                with open(_temp_file_path, "wb") as file:
 
                     PTLogger.debug("WRITING: initial header information")
                     file.write(__init_header_information())
 
                     if serial_device.inWaiting():
-                        PTLogger.debug(
-                            "Flushing input and starting from scratch")
+                        PTLogger.debug("Flushing input and starting from scratch")
                         serial_device.flushInput()
 
                     PTLogger.debug("WRITING: wave data")
@@ -223,8 +217,7 @@ def __record_audio():
                         while not serial_device.inWaiting():
                             sleep(0.01)
 
-                        audio_output = serial_device.read(
-                            serial_device.inWaiting())
+                        audio_output = serial_device.read(serial_device.inWaiting())
                         bytes_to_write = bytearray()
 
                         for pcm_data_block in audio_output:
@@ -235,13 +228,15 @@ def __record_audio():
                                 pcm_data_int = pcm_data_block
                                 scaled_val = int((pcm_data_int * 32768) / 255)
                                 bytes_to_write += __from_hex(
-                                    __space_separated_little_endian(scaled_val, 2))
+                                    __space_separated_little_endian(scaled_val, 2)
+                                )
 
                             else:
 
                                 pcm_data_int = pcm_data_block
                                 bytes_to_write += __from_hex(
-                                    __space_separated_little_endian(pcm_data_int, 1))
+                                    __space_separated_little_endian(pcm_data_int, 1)
+                                )
 
                         file.write(bytes_to_write)
 
@@ -258,13 +253,13 @@ def __record_audio():
             PTLogger.info("Error: Serial port failed to open")
 
     else:
-        PTLogger.info(
-            "Error: Could not find serial port - are you sure it's enabled?")
+        PTLogger.info("Error: Could not find serial port - are you sure it's enabled?")
 
 
 #######################
 # EXTERNAL OPERATIONS #
 #######################
+
 
 def record():
     """Start recording on the pi-topPULSE microphone."""

@@ -18,7 +18,7 @@ EncoderMotorM0 = {
     MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS: 0x6C,
     MotorRegisterTypes.BRAKE_TYPE: 0x70,
     MotorRegisterTypes.TACHOMETER: 0x75,
-    MotorRegisterTypes.ODOMETER: 0x7A
+    MotorRegisterTypes.ODOMETER: 0x7A,
 }
 
 
@@ -29,7 +29,7 @@ EncoderMotorM1 = {
     MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS: 0x6D,
     MotorRegisterTypes.BRAKE_TYPE: 0x71,
     MotorRegisterTypes.TACHOMETER: 0x76,
-    MotorRegisterTypes.ODOMETER: 0x7B
+    MotorRegisterTypes.ODOMETER: 0x7B,
 }
 
 
@@ -40,7 +40,7 @@ EncoderMotorM2 = {
     MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS: 0x6E,
     MotorRegisterTypes.BRAKE_TYPE: 0x72,
     MotorRegisterTypes.TACHOMETER: 0x77,
-    MotorRegisterTypes.ODOMETER: 0x7C
+    MotorRegisterTypes.ODOMETER: 0x7C,
 }
 
 
@@ -51,7 +51,7 @@ EncoderMotorM3 = {
     MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS: 0x6F,
     MotorRegisterTypes.BRAKE_TYPE: 0x73,
     MotorRegisterTypes.TACHOMETER: 0x78,
-    MotorRegisterTypes.ODOMETER: 0x7D
+    MotorRegisterTypes.ODOMETER: 0x7D,
 }
 
 

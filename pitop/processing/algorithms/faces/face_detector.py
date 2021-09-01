@@ -15,7 +15,6 @@ from pitop.processing.core.vision_functions import (
     tuple_for_color_by_name,
 )
 
-
 cv2 = None
 dlib = None
 imutils = None
@@ -23,14 +22,17 @@ face_utils = None
 
 
 class FaceDetector:
-    _FACE_DETECTOR_PYRAMID_LAYERS = 1  # set higher to detect smaller faces. Cost: large reduction in detection FPS.
+    _FACE_DETECTOR_PYRAMID_LAYERS = (
+        1  # set higher to detect smaller faces. Cost: large reduction in detection FPS.
+    )
 
-    def __init__(self,
-                 image_processing_width: Union[int, None] = 320,
-                 format: str = "OpenCV",
-                 enable_tracking: bool = True,
-                 dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat"
-                 ):
+    def __init__(
+        self,
+        image_processing_width: Union[int, None] = 320,
+        format: str = "OpenCV",
+        enable_tracking: bool = True,
+        dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat",
+    ):
         """
         :param Union[int, None] image_processing_width: image width to scale to for image processing, set to None for
         no scaling.
@@ -45,7 +47,9 @@ class FaceDetector:
         self._image_processing_width = image_processing_width
         self._format = format
         self._face_rectangle_detector = dlib.get_frontal_face_detector()
-        self._predictor = load_face_landmark_predictor(model_filename=dlib_landmark_predictor_filename)
+        self._predictor = load_face_landmark_predictor(
+            model_filename=dlib_landmark_predictor_filename
+        )
         self._clahe_filter = cv2.createCLAHE(clipLimit=5)
         self._frame_scaler = None
         self.face = Face()
@@ -65,33 +69,45 @@ class FaceDetector:
         :return: Face object containing data about the detected face.
         """
         self.__import_libs()
-        frame = ImageFunctions.convert(frame, format='OpenCV')
+        frame = ImageFunctions.convert(frame, format="OpenCV")
 
         if self._frame_scaler is None:
             _, width = frame.shape[0:2]
-            self._frame_scaler = width / self._image_processing_width if self._image_processing_width is not None else 1
+            self._frame_scaler = (
+                width / self._image_processing_width
+                if self._image_processing_width is not None
+                else 1
+            )
 
         frame_to_process = self.__get_frame_to_process(frame=frame)
 
         if self._face_tracker is None:
             # if the face tracker has not been started, we first need to use face detection to find a face
-            face_rectangle, face_center, face_features = self.__detect_largest_face(frame=frame_to_process)
+            face_rectangle, face_center, face_features = self.__detect_largest_face(
+                frame=frame_to_process
+            )
             if face_center is not None and self._enable_tracking:
                 # Face found, enable dlib correlation tracker for subsequent calls
                 self.__start_tracker(frame=frame_to_process, rectangle=face_rectangle)
         else:
             # We are in face tracking mode, use dlib correlation tracker to track the face
-            face_rectangle, face_center, face_features = self.__track_face(frame=frame_to_process)
+            face_rectangle, face_center, face_features = self.__track_face(
+                frame=frame_to_process
+            )
             if face_center is None:
                 self.__stop_tracker()
                 # attempt to detect face since tracker has failed
-                face_rectangle, face_center, face_features = self.__detect_largest_face(frame=frame_to_process)
+                face_rectangle, face_center, face_features = self.__detect_largest_face(
+                    frame=frame_to_process
+                )
 
-        self.face = self.__prepare_face_data(frame=frame,
-                                             face=self.face,
-                                             rectangle=face_rectangle,
-                                             center=face_center,
-                                             features=face_features)
+        self.face = self.__prepare_face_data(
+            frame=frame,
+            face=self.face,
+            rectangle=face_rectangle,
+            center=face_center,
+            features=face_features,
+        )
         if self._print_fps:
             self._fps.update()
 
@@ -119,7 +135,7 @@ class FaceDetector:
         return self._clahe_filter.apply(
             cv2.cvtColor(
                 imutils.resize(frame, width=self._image_processing_width),
-                cv2.COLOR_BGR2GRAY
+                cv2.COLOR_BGR2GRAY,
             )
         )
 
@@ -132,7 +148,7 @@ class FaceDetector:
         """
         face_rectangle, face_center, face_features = self.__process_detected_rectangles(
             frame,
-            self._face_rectangle_detector(frame, self._FACE_DETECTOR_PYRAMID_LAYERS)
+            self._face_rectangle_detector(frame, self._FACE_DETECTOR_PYRAMID_LAYERS),
         )
 
         return face_rectangle, face_center, face_features
@@ -178,14 +194,15 @@ class FaceDetector:
 
     def __start_tracker(self, frame, rectangle):
         self._face_tracker = dlib.correlation_tracker()
-        self._face_tracker.start_track(frame,
-                                       dlib.rectangle(
-                                           rectangle[0],
-                                           rectangle[1],
-                                           rectangle[0] + rectangle[2],
-                                           rectangle[1] + rectangle[3]
-                                       )
-                                       )
+        self._face_tracker.start_track(
+            frame,
+            dlib.rectangle(
+                rectangle[0],
+                rectangle[1],
+                rectangle[0] + rectangle[2],
+                rectangle[1] + rectangle[3],
+            ),
+        )
 
     def __stop_tracker(self):
         self._face_tracker = None
@@ -197,6 +214,7 @@ class FaceDetector:
         :param frame: OpenCV frame to use for processing
         :return: Face data
         """
+
         def convert_dlib_rect_to_int_type(rectangle):
             x_start = int(round(rectangle.left()))
             y_start = int(round(rectangle.top()))
@@ -211,12 +229,16 @@ class FaceDetector:
             # Treat as failed attempt to track face and return
             return None, None, None
 
-        rectangle_dlib = convert_dlib_rect_to_int_type(self._face_tracker.get_position())
+        rectangle_dlib = convert_dlib_rect_to_int_type(
+            self._face_tracker.get_position()
+        )
         face_features = self.__get_dlib_face_features(frame, rectangle_dlib)
 
         face_rectangle = face_utils.rect_to_bb(rectangle_dlib)
-        face_center = (face_rectangle[0] + int(round(face_rectangle[2] / 2)),
-                       face_rectangle[1] + int(round(face_rectangle[3] / 2)))
+        face_center = (
+            face_rectangle[0] + int(round(face_rectangle[2] / 2)),
+            face_rectangle[1] + int(round(face_rectangle[3] / 2)),
+        )
 
         return face_rectangle, face_center, face_features
 
@@ -234,18 +256,30 @@ class FaceDetector:
         face.features = (features * self._frame_scaler).astype("int")
 
         face.robot_view = ImageFunctions.convert(
-            self.__draw_on_frame(frame=frame.copy(), face=face),
-            format=self._format
+            self.__draw_on_frame(frame=frame.copy(), face=face), format=self._format
         )
         return face
 
     @staticmethod
     def __draw_on_frame(frame, face):
         x, y, w, h = face.rectangle
-        cv2.rectangle(frame, (x, y), (x + w, y + h), tuple_for_color_by_name("dodgerblue", bgr=True), 2)
+        cv2.rectangle(
+            frame,
+            (x, y),
+            (x + w, y + h),
+            tuple_for_color_by_name("dodgerblue", bgr=True),
+            2,
+        )
 
-        cv2.drawMarker(frame, face.center_default, tuple_for_color_by_name("orangered", bgr=True),
-                       markerType=cv2.MARKER_CROSS, markerSize=10, thickness=3, line_type=cv2.FILLED)
+        cv2.drawMarker(
+            frame,
+            face.center_default,
+            tuple_for_color_by_name("orangered", bgr=True),
+            markerType=cv2.MARKER_CROSS,
+            markerSize=10,
+            thickness=3,
+            line_type=cv2.FILLED,
+        )
 
         return frame
 

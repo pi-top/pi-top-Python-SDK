@@ -1,6 +1,7 @@
-from unittest import TestCase, skip
 from sys import modules
+from unittest import TestCase, skip
 from unittest.mock import Mock
+
 from parameterized import parameterized
 
 mock_io = modules["io"] = Mock()
@@ -49,15 +50,14 @@ class I2CDeviceTestCase(TestCase):
 
     def test_initialisation_creates_lock_file(self):
         mock_lock.PTLock.assert_called_once_with(
-            "i2c_" + hex(self._dummy_device_address))
+            "i2c_" + hex(self._dummy_device_address)
+        )
 
     def test_connect_opens_device_file_for_rw(self):
         self._i2c_device.connect(read_test=True)
 
-        mock_io.open.assert_any_call(
-            self._dummy_device_path, "rb", buffering=0)
-        mock_io.open.assert_any_call(
-            self._dummy_device_path, "wb", buffering=0)
+        mock_io.open.assert_any_call(self._dummy_device_path, "rb", buffering=0)
+        mock_io.open.assert_any_call(self._dummy_device_path, "wb", buffering=0)
 
         mock_fcntl.ioctl.assert_any_call(
             self._mock_read_device,
@@ -100,12 +100,10 @@ class I2CDeviceTestCase(TestCase):
 
     def test_write_n_bytes_sleeps_after_write(self):
         self._i2c_device.connect(read_test=False)
-        self._i2c_device.write_n_bytes(
-            self._dummy_register, [0x01, 0x02, 0x03])
+        self._i2c_device.write_n_bytes(self._dummy_register, [0x01, 0x02, 0x03])
         self._i2c_device.disconnect()
 
-        mock_time.sleep.assert_called_once_with(
-            self._i2c_device._post_write_delay)
+        mock_time.sleep.assert_called_once_with(self._i2c_device._post_write_delay)
 
     @parameterized.expand([[[0x01], 0x01], [[0x08], 0x08], [[0xAF], 0xAF]])
     def test_read_unsigned_byte(self, read_value, expected_value):
@@ -285,7 +283,9 @@ class I2CDeviceTestCase(TestCase):
         self._mock_lock.release.assert_not_called()
 
     @parameterized.expand([[[0x01], 1, 0x01]])
-    def test_read_n_unsigned_bytes_acquires_and_releases_lock(self, read_value, no_bytes_to_read, expected_value):
+    def test_read_n_unsigned_bytes_acquires_and_releases_lock(
+        self, read_value, no_bytes_to_read, expected_value
+    ):
         self._mock_read_device.read.return_value = read_value
         self._i2c_device.connect(read_test=False)
         read_value = self._i2c_device.read_n_unsigned_bytes(

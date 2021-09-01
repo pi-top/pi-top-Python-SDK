@@ -1,7 +1,9 @@
+from signal import pause
+
+import cv2
+
 from pitop import Camera
 from pitop.processing.algorithms.faces import FaceDetector
-from signal import pause
-import cv2
 
 
 def find_faces(frame):
@@ -12,9 +14,11 @@ def find_faces(frame):
     cv2.waitKey(1)
 
     if face.found:
-        print(f"Face angle: {face.angle} \n"
-              f"Face center: {face.center} \n"
-              f"Face rectangle: {face.rectangle} \n")
+        print(
+            f"Face angle: {face.angle} \n"
+            f"Face center: {face.center} \n"
+            f"Face rectangle: {face.rectangle} \n"
+        )
     else:
         print("Cannot find face!")
 

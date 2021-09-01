@@ -36,8 +36,7 @@ class LoggerSingleton:
             return self._instance
 
     def __call__(self):
-        raise TypeError(
-            "LoggerSingleton must be accessed through `get_instance()`.")
+        raise TypeError("LoggerSingleton must be accessed through `get_instance()`.")
 
     def __instancecheck__(self, inst):
         return isinstance(inst, self._decorated)

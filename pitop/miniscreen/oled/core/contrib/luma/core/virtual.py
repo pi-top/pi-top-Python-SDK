@@ -1,4 +1,5 @@
 from time import perf_counter
+
 from PIL import Image, ImageDraw
 
 from . import mixin

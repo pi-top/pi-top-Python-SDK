@@ -6,6 +6,7 @@ from sys import exit, stderr
 
 class dotdict(dict):
     """dot.notation access to dictionary attributes."""
+
     __getattr__ = dict.get
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
@@ -31,9 +32,11 @@ def run(cli_cls):
     cli_name = cli_cls.cli_name
     print(
         f"Note: Use of 'pt-{cli_name}' is now deprecated. "
-        f"Please use 'pi-top {cli_name}' instead.", file=stderr)
+        f"Please use 'pi-top {cli_name}' instead.",
+        file=stderr,
+    )
 
-    parser = ArgumentParser(prog=f'pt-{cli_name}', description=cli_cls.parser_help)
+    parser = ArgumentParser(prog=f"pt-{cli_name}", description=cli_cls.parser_help)
     cli_cls.add_parser_arguments(parser)
     args = parser.parse_args()
     __run(cli_cls, args)
@@ -52,5 +55,7 @@ def run_with_args(cli_cls, old_command, new_command, args_dict):
     """
     print(
         f"Note: Use of '{old_command}' is now deprecated. "
-        f"Please use '{new_command}' instead.", file=stderr)
+        f"Please use '{new_command}' instead.",
+        file=stderr,
+    )
     __run(cli_cls, dotdict(args_dict))
