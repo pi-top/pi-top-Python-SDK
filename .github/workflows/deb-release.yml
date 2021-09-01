@@ -8,6 +8,9 @@ on:
 env:
   DEB_BUILD_DOCKER_IMAGE: "pitop/pi-top-os-deb-build"
   DEB_BUILD_DOCKER_TAG: "latest"
+  PACKAGECLOUD_REPO: "pi-top-os-unstable"
+  OS: "debian"
+  DISTRO: "bullseye"
 
 jobs:
   release:
@@ -15,6 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
 
       - id: version
         uses: docker://lpenz/ghaction-version-gen:0.3
@@ -65,3 +70,19 @@ jobs:
           files: ./artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Upload build
+      # debs
+      - uses: docker://lpenz/ghaction-packagecloud:v0.3
+        with:
+          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+
+      # dsc
+      - uses: docker://lpenz/ghaction-packagecloud:v0.3
+        with:
+          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+          files: ./artifacts/${{ env.ARTIFACT_PREFIX }}.dsc
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
