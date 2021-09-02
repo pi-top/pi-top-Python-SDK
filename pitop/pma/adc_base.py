@@ -1,5 +1,5 @@
-import time
 import re
+import time
 
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
@@ -25,11 +25,15 @@ class ADCBase(Stateful, Recreatable):
 
         # For the sake of a helpful error message, first check if the port is actually a valid port of any kind
         if not re.search("^D[0-7]$|^A[0-3]$", self._pma_port):
-            raise ValueError(f"{self._pma_port} is not a valid port name. An example of a valid port name is A0")
+            raise ValueError(
+                f"{self._pma_port} is not a valid port name. An example of a valid port name is A0"
+            )
 
         # Then, in this case, verify the port is analog not digital
         if re.search("^D[0-7]$", self._pma_port):
-            raise ValueError(f"Can't use digital port {self._pma_port} for analog component. Try using an analog port, such as A0")
+            raise ValueError(
+                f"Can't use digital port {self._pma_port} for analog component. Try using an analog port, such as A0"
+            )
 
         self.is_current = False
         self.channel = get_pin_for_port(self._pma_port, pin_number)

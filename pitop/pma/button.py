@@ -1,5 +1,6 @@
 from gpiozero import Button as gpiozero_Button
-from pitop.core.mixins import Recreatable, Stateful, DigitalComponentChecks
+
+from pitop.core.mixins import DigitalComponentChecks, Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 

@@ -4,6 +4,7 @@ from pitop import Button
 
 button = Button("D5")
 
+
 def on_button_pressed():
     print("Pressed!")
 

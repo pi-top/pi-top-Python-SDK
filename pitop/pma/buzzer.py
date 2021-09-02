@@ -1,5 +1,6 @@
 from gpiozero import Buzzer as gpiozero_Buzzer
-from pitop.core.mixins import Recreatable, Stateful, DigitalComponentChecks
+
+from pitop.core.mixins import DigitalComponentChecks, Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 from pitop.pma.common.utils import Port
 

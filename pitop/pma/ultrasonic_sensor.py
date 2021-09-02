@@ -1,8 +1,8 @@
 import re
+
 from pitop.core.mixins import Recreatable, Stateful
 
 from .ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
-
 
 
 class UltrasonicSensor(Stateful, Recreatable):
@@ -21,12 +21,16 @@ class UltrasonicSensor(Stateful, Recreatable):
 
         # For the sake of a helpful error message, first check if the port is actually a valid port of any kind
         if not re.search("^D[0-7]$|^A[0-3]$", self._pma_port):
-            raise ValueError(f"{self._pma_port} is not a valid port name. An example of a valid port name is D0")
+            raise ValueError(
+                f"{self._pma_port} is not a valid port name. An example of a valid port name is D0"
+            )
 
         # Then, verify it's a valid port for the Ultrasonic sensor specifically
         if not re.search("^D[0-7]$|^A1$|^A3$", self._pma_port):
-            raise ValueError(f"Can't use port {self._pma_port} for ultrasonic sensor. Try A1, A3 or a digital port "
-                             f"such as D0")
+            raise ValueError(
+                f"Can't use port {self._pma_port} for ultrasonic sensor. Try A1, A3 or a digital port "
+                f"such as D0"
+            )
 
         # If port name is a valid analog port
         if re.search("^A[0-3]$", self._pma_port):
