@@ -24,14 +24,16 @@ jobs:
       - id: version
         uses: docker://lpenz/ghaction-version-gen:0.3
 
-      - name: Determine current and last tagged versions
-        run: |
-          sudo apt install -y dpkg-dev
-          echo "CURRENT_VERSION=$(dpkg-parsechangelog -Sversion)" >> $GITHUB_ENV
-
+      # TODO: move this to a new action
+      # (use Docker for pre-installing 'dpkg-dev')
       - name: Confirm version is higher than last tagged version
-        if: steps.version.outputs.tag_latest != ""
-        run: dpkg --compare-versions ${{ env.CURRENT_VERSION }} gt ${{ steps.version.outputs.tag_latest }}
+        run: |
+          set -x
+          sudo apt install -y dpkg-dev
+          latest_tag=${{ steps.version.outputs.tag_latest }}
+          latest_version=$(dpkg-parsechangelog -Sversion)
+          dpkg --compare-versions ${latest_version} gt ${latest_tag#v}
+          echo "CURRENT_VERSION=${latest_version}" >> $GITHUB_ENV
 
       - name: Determine architecture to use from package info
         # If architecture is 'all', then it can be compiled on host architecture
@@ -60,6 +62,15 @@ jobs:
           name: "dsc"
           path: "./artifacts"
 
+      - uses: pi-top/ghaction-packagecloud@main
+        with:
+          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+          files: |
+            ./artifacts/*.dsc
+            ./artifacts/*.deb
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -70,19 +81,3 @@ jobs:
           files: ./artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Upload build
-      # debs
-      - uses: docker://lpenz/ghaction-packagecloud:v0.3
-        with:
-          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-
-      # dsc
-      - uses: docker://lpenz/ghaction-packagecloud:v0.3
-        with:
-          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
-          files: ./artifacts/${{ env.ARTIFACT_PREFIX }}.dsc
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
