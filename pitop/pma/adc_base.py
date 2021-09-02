@@ -1,4 +1,5 @@
 import time
+import re
 
 from pitop.core.mixins import (
     Stateful,
@@ -6,7 +7,6 @@ from pitop.core.mixins import (
 )
 from pitop.pma.plate_interface import PlateInterface
 from pitop.pma.common import get_pin_for_port
-from pitop.pma.common.utils import Port
 
 
 class ADCBase(Stateful, Recreatable):
@@ -23,14 +23,16 @@ class ADCBase(Stateful, Recreatable):
     """
 
     def __init__(self, port_name, pin_number=1, name="adcbase"):
-        if port_name not in Port.keys():
-            raise ValueError(f"{port_name} is not a valid port name. An example of a valid port name is A0")
-
-        if not port_name.startswith("A"):
-            raise ValueError(f"{port_name} is not a valid port type for an analog component. Try using an analog port, such as A0")
-
         self._pma_port = port_name
         self.name = name
+
+        # For the sake of a helpful error message, first check if the port is actually a valid port of any kind
+        if not re.search("^D[0-7]$|^A[0-3]$", self._pma_port):
+            raise ValueError(f"{self._pma_port} is not a valid port name. An example of a valid port name is A0")
+
+        # Then, in this case, verify the port is analog not digital
+        if re.search("^D[0-7]$", self._pma_port):
+            raise ValueError(f"Can't use digital port {self._pma_port} for analog component. Try using an analog port, such as A0")
 
         self.is_current = False
         self.channel = get_pin_for_port(self._pma_port, pin_number)

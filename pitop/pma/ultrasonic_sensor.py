@@ -1,14 +1,9 @@
+import re
 from pitop.core.mixins import (
     Stateful,
     Recreatable,
 )
-from pitop.pma.common.utils import Port
 from .ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
-
-
-valid_analog_ports = ["A1", "A3"]
-invalid_analog_ports = ["A0", "A2"]
-
 
 class UltrasonicSensor(Stateful, Recreatable):
     def __init__(self,
@@ -23,14 +18,17 @@ class UltrasonicSensor(Stateful, Recreatable):
         self._pma_port = port_name
         self.name = name
 
-        if port_name not in Port.keys():
-            raise ValueError(f"{port_name} is not a valid port name. An example of a valid port name is D0 or A1")
+        # For the sake of a helpful error message, first check if the port is actually a valid port of any kind
+        if not re.search("^D[0-7]$|^A[0-3]$", self._pma_port):
+            raise ValueError(f"{self._pma_port} is not a valid port name. An example of a valid port name is D0")
 
-        if port_name in invalid_analog_ports:
-            raise ValueError(f"Cannot use analog port {port_name} for ultrasonic sensor. Try A1, A3 or a digital port "
+        # Then, verify it's a valid port for the Ultrasonic sensor specifically
+        if not re.search("^D[0-7]$|^A1$|^A3$", self._pma_port):
+            raise ValueError(f"Can't use port {self._pma_port} for ultrasonic sensor. Try A1, A3 or a digital port "
                              f"such as D0")
 
-        if port_name in valid_analog_ports:
+        #If port name is a valid analog port
+        if re.search("^A[0-3]$", self._pma_port):
             self.__ultrasonic_device = UltrasonicSensorMCU(port_name=port_name,
                                                            queue_len=queue_len,
                                                            max_distance=max_distance,

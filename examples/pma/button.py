@@ -1,8 +1,7 @@
 from pitop import Button
 from time import sleep
 
-button = Button("D8")
-
+button = Button("D5")
 
 def on_button_pressed():
     print("Pressed!")
