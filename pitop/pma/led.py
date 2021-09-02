@@ -2,7 +2,6 @@ from gpiozero import LED as gpiozero_LED
 
 from pitop.core.mixins import DigitalComponentChecks, Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
-from pitop.pma.common.utils import Port
 
 
 class LED(Stateful, Recreatable, DigitalComponentChecks, gpiozero_LED):
