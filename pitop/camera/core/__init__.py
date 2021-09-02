@@ -1,17 +1,13 @@
 # camera devices
-from .cameras import (
-    UsbCamera,
-    FileSystemCamera,
-    CameraTypes
-)
+from .cameras import CameraTypes, FileSystemCamera, UsbCamera
+
 # classes to perform actions with frames
 from .capture_actions import (
-    CaptureActions,
     CaptureActionBase,
+    CaptureActions,
+    GenericAction,
+    MotionDetector,
     StoreFrame,
     VideoCapture,
-    MotionDetector,
-    GenericAction
 )
-
 from .frame_handler import FrameHandler

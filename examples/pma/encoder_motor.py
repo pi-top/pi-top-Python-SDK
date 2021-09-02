@@ -1,9 +1,6 @@
-from pitop import (
-    EncoderMotor,
-    ForwardDirection,
-    BrakingType
-)
 from time import sleep
+
+from pitop import BrakingType, EncoderMotor, ForwardDirection
 
 # Setup the motor
 

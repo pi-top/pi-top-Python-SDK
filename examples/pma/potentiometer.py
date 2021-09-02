@@ -1,5 +1,6 @@
-from pitop import Potentiometer
 from time import sleep
+
+from pitop import Potentiometer
 
 potentiometer = Potentiometer("A3")
 

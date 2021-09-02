@@ -35,7 +35,9 @@ class SystemdService:
             elif "SubState=" in line:
                 service.sub_state = line.replace("SubState=", "")
             elif "ActiveEnterTimestamp=" in line:
-                service.active_enter_timestamp = line.replace("ActiveEnterTimestamp=", "")
+                service.active_enter_timestamp = line.replace(
+                    "ActiveEnterTimestamp=", ""
+                )
         return service
 
     @property
@@ -126,11 +128,18 @@ class SystemdService:
     def format_service(cls, input_string):
         if input_string.strip(" \t\n\r") in ("loaded", "active", "enabled", "running"):
             return StdoutFormat.GREEN + input_string + StdoutFormat.ENDC
-        elif input_string.strip(" \t\n\r") in ("inactive", "disabled", "exited", "dead"):
+        elif input_string.strip(" \t\n\r") in (
+            "inactive",
+            "disabled",
+            "exited",
+            "dead",
+        ):
             return StdoutFormat.DIM + input_string + StdoutFormat.ENDC
         return StdoutFormat.RED + input_string + StdoutFormat.ENDC
 
     def print(self):
-        StdoutFormat.print_line(f"{StdoutFormat.bold(self.name)} ({self.description})", level=2)
+        StdoutFormat.print_line(
+            f"{StdoutFormat.bold(self.name)} ({self.description})", level=2
+        )
         StdoutFormat.print_line(self.____get_loaded_line(), level=3)
         StdoutFormat.print_line(self.__get_active_line(), level=3)

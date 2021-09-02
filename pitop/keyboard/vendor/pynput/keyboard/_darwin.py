@@ -25,11 +25,12 @@
 import enum
 
 import Quartz
-
 from pynput._util.darwin import (
+    ListenerMixin,
     get_unicode_to_keycode_map,
     keycode_context,
-    ListenerMixin)
+)
+
 from . import _base
 
 
@@ -51,21 +52,14 @@ class KeyCode(_base.KeyCode):
         Quartz.CGEventSetFlags(
             result,
             0
-            | (Quartz.kCGEventFlagMaskAlternate
-               if Key.alt in modifiers else 0)
-
-            | (Quartz.kCGEventFlagMaskCommand
-               if Key.cmd in modifiers else 0)
-
-            | (Quartz.kCGEventFlagMaskControl
-               if Key.ctrl in modifiers else 0)
-
-            | (Quartz.kCGEventFlagMaskShift
-               if Key.shift in modifiers else 0))
+            | (Quartz.kCGEventFlagMaskAlternate if Key.alt in modifiers else 0)
+            | (Quartz.kCGEventFlagMaskCommand if Key.cmd in modifiers else 0)
+            | (Quartz.kCGEventFlagMaskControl if Key.ctrl in modifiers else 0)
+            | (Quartz.kCGEventFlagMaskShift if Key.shift in modifiers else 0),
+        )
 
         if vk is None and self.char is not None:
-            Quartz.CGEventKeyboardSetUnicodeString(
-                result, len(self.char), self.char)
+            Quartz.CGEventKeyboardSetUnicodeString(result, len(self.char), self.char)
 
         return result
 
@@ -117,7 +111,7 @@ class Key(enum.Enum):
     shift = KeyCode.from_vk(0x38)
     shift_l = KeyCode.from_vk(0x38)
     shift_r = KeyCode.from_vk(0x3C)
-    space = KeyCode.from_vk(0x31, char=' ')
+    space = KeyCode.from_vk(0x31, char=" ")
     tab = KeyCode.from_vk(0x30)
     up = KeyCode.from_vk(0x7E)
 
@@ -135,20 +129,21 @@ class Controller(_base.Controller):
             Quartz.CGEventPost(
                 Quartz.kCGHIDEventTap,
                 (key if key not in Key else key.value)._event(
-                    modifiers, self._mapping, is_press))
+                    modifiers, self._mapping, is_press
+                ),
+            )
 
 
 class Listener(ListenerMixin, _base.Listener):
     #: The events that we listen to
     _EVENTS = (
-        Quartz.CGEventMaskBit(Quartz.kCGEventKeyDown) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventKeyUp) |
-        Quartz.CGEventMaskBit(Quartz.kCGEventFlagsChanged))
+        Quartz.CGEventMaskBit(Quartz.kCGEventKeyDown)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventKeyUp)
+        | Quartz.CGEventMaskBit(Quartz.kCGEventFlagsChanged)
+    )
 
     #: A mapping from keysym to special key
-    _SPECIAL_KEYS = {
-        key.value.vk: key
-        for key in Key}
+    _SPECIAL_KEYS = {key.value.vk: key for key in Key}
 
     #: The event flags set for the various modifier keys
     _MODIFIER_FLAGS = {
@@ -163,15 +158,14 @@ class Listener(ListenerMixin, _base.Listener):
         Key.ctrl_r: Quartz.kCGEventFlagMaskControl,
         Key.shift: Quartz.kCGEventFlagMaskShift,
         Key.shift_l: Quartz.kCGEventFlagMaskShift,
-        Key.shift_r: Quartz.kCGEventFlagMaskShift}
+        Key.shift_r: Quartz.kCGEventFlagMaskShift,
+    }
 
     def __init__(self, *args, **kwargs):
         super(Listener, self).__init__(*args, **kwargs)
         self._flags = 0
         self._context = None
-        self._intercept = self._options.get(
-            'intercept',
-            None)
+        self._intercept = self._options.get("intercept", None)
 
     def _run(self):
         with keycode_context() as context:
@@ -229,16 +223,14 @@ class Listener(ListenerMixin, _base.Listener):
 
         :raises IndexError: if the key code is invalid
         """
-        vk = Quartz.CGEventGetIntegerValueField(
-            event, Quartz.kCGKeyboardEventKeycode)
+        vk = Quartz.CGEventGetIntegerValueField(event, Quartz.kCGKeyboardEventKeycode)
 
         # First try special keys...
         if vk in self._SPECIAL_KEYS:
             return self._SPECIAL_KEYS[vk]
 
         # ...then try characters...
-        length, chars = Quartz.CGEventKeyboardGetUnicodeString(
-            event, 100, None, None)
+        length, chars = Quartz.CGEventKeyboardGetUnicodeString(event, 100, None, None)
         if length > 0:
             return KeyCode.from_char(chars, vk=vk)
 

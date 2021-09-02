@@ -1,9 +1,8 @@
-from pitop.common.common_ids import DeviceID
-from pitop.common.ptdm import PTDMRequestClient, Message
-from pitop.common.firmware_device import FirmwareDevice
-from pitop.common.common_ids import FirmwareDeviceID
-
 from subprocess import getstatusoutput
+
+from pitop.common.common_ids import DeviceID, FirmwareDeviceID
+from pitop.common.firmware_device import FirmwareDevice
+from pitop.common.ptdm import Message, PTDMRequestClient
 
 
 def __device_id():
@@ -34,10 +33,7 @@ def device_type():
 
 def device_info():
     device_id = __device_id()
-    return {
-        "name": __device_name(device_id),
-        "fw_version": device_firmware(device_id)
-    }
+    return {"name": __device_name(device_id), "fw_version": device_firmware(device_id)}
 
 
 def device_firmware(device_id):

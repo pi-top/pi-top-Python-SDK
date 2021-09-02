@@ -1,5 +1,6 @@
-from pitop.pulse import ledmatrix
 import time
+
+from pitop.pulse import ledmatrix
 
 
 def show_map(r, g, b):
@@ -20,7 +21,7 @@ ledmatrix.clear()
 for r in range(0, 2):
     for g in range(0, 2):
         for b in range(2):
-            if (r + g + b > 0):
+            if r + g + b > 0:
                 rr = 255 * r
                 gg = 255 * g
                 bb = 255 * b

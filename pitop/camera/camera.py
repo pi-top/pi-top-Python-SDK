@@ -1,20 +1,13 @@
-from .core import UsbCamera
-from .core import FileSystemCamera
-from .core import (
-    FrameHandler,
-    CameraTypes)
-from .core.capture_actions import CaptureActions
-from pitop.core import ImageFunctions
-from pitop.core.mixins import (
-    Stateful,
-    Recreatable,
-)
-
-from pitop.pma.common import type_check
-
 from enum import Enum
 from inspect import signature
-from threading import Thread, Event
+from threading import Event, Thread
+
+from pitop.core import ImageFunctions
+from pitop.core.mixins import Recreatable, Stateful
+from pitop.pma.common import type_check
+
+from .core import CameraTypes, FileSystemCamera, FrameHandler, UsbCamera
+from .core.capture_actions import CaptureActions
 
 
 class Camera(Stateful, Recreatable):
@@ -28,19 +21,21 @@ class Camera(Stateful, Recreatable):
         Passing `None` will cause the backend to autodetect the
         available video capture devices and attempt to use them.
     """
-    __VALID_FORMATS = ('opencv', 'pil')
 
-    def __init__(self,
-                 index=None,
-                 resolution=(640, 480),
-                 camera_type=CameraTypes.USB_CAMERA,
-                 path_to_images="",
-                 format='PIL',
-                 flip_top_bottom: bool = False,
-                 flip_left_right: bool = False,
-                 rotate_angle=0,
-                 name="camera"
-                 ):
+    __VALID_FORMATS = ("opencv", "pil")
+
+    def __init__(
+        self,
+        index=None,
+        resolution=(640, 480),
+        camera_type=CameraTypes.USB_CAMERA,
+        path_to_images="",
+        format="PIL",
+        flip_top_bottom: bool = False,
+        flip_left_right: bool = False,
+        rotate_angle=0,
+        name="camera",
+    ):
         # Initialise private variables
         self._resolution = resolution
         self._format = None
@@ -60,11 +55,13 @@ class Camera(Stateful, Recreatable):
         self._flip_left_right = flip_left_right
 
         if self._camera_type == CameraTypes.USB_CAMERA:
-            self.__camera = UsbCamera(index=self._index,
-                                      resolution=self._resolution,
-                                      flip_top_bottom=flip_top_bottom,
-                                      flip_left_right=flip_left_right,
-                                      rotate_angle=self._rotate_angle)
+            self.__camera = UsbCamera(
+                index=self._index,
+                resolution=self._resolution,
+                flip_top_bottom=flip_top_bottom,
+                flip_left_right=flip_left_right,
+                rotate_angle=self._rotate_angle,
+            )
 
         elif self._camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
             self.__camera = FileSystemCamera(self._path_to_images)
@@ -72,22 +69,29 @@ class Camera(Stateful, Recreatable):
         self.__continue_processing = True
         self.__frame_handler = FrameHandler()
         self.__new_frame_event = Event()
-        self.__process_image_thread = Thread(target=self.__process_camera_output, daemon=True)
+        self.__process_image_thread = Thread(
+            target=self.__process_camera_output, daemon=True
+        )
         self.__process_image_thread.start()
 
         self.name = name
         Stateful.__init__(self)
-        Recreatable.__init__(self, config_dict={
-            "index": index,
-            "resolution": resolution,
-            "camera_type": camera_type.value if isinstance(camera_type, Enum) else camera_type,
-            "path_to_images": path_to_images,
-            "format": format,
-            "name": self.name,
-            "flip_top_bottom": self._flip_top_bottom,
-            "flip_left_right": self._flip_left_right,
-            "rotate_angle": self._rotate_angle,
-        })
+        Recreatable.__init__(
+            self,
+            config_dict={
+                "index": index,
+                "resolution": resolution,
+                "camera_type": camera_type.value
+                if isinstance(camera_type, Enum)
+                else camera_type,
+                "path_to_images": path_to_images,
+                "format": format,
+                "name": self.name,
+                "flip_top_bottom": self._flip_top_bottom,
+                "flip_left_right": self._flip_left_right,
+                "rotate_angle": self._rotate_angle,
+            },
+        )
 
     @property
     def own_state(self):
@@ -100,7 +104,9 @@ class Camera(Stateful, Recreatable):
     def from_file_system(cls, path_to_images: str):
         """Alternative classmethod to create an instance of a :class:`Camera`
         object using a :data:`FileSystemCamera`"""
-        return cls(camera_type=CameraTypes.FILE_SYSTEM_CAMERA, path_to_images=path_to_images)
+        return cls(
+            camera_type=CameraTypes.FILE_SYSTEM_CAMERA, path_to_images=path_to_images
+        )
 
     @property
     def format(self):
@@ -126,7 +132,9 @@ class Camera(Stateful, Recreatable):
     def is_recording(self):
         """Returns True if recording mode is enabled."""
 
-        return self.__frame_handler.is_running_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
+        return self.__frame_handler.is_running_action(
+            CaptureActions.CAPTURE_VIDEO_TO_FILE
+        )
 
     def is_detecting_motion(self):
         """Returns True if motion detection mode is enabled."""
@@ -145,7 +153,9 @@ class Camera(Stateful, Recreatable):
             The filename into which to write the image.
         """
 
-        self.__frame_handler.register_action(CaptureActions.CAPTURE_SINGLE_FRAME, {"output_file_name": output_file_name})
+        self.__frame_handler.register_action(
+            CaptureActions.CAPTURE_SINGLE_FRAME, {"output_file_name": output_file_name}
+        )
 
     @type_check
     def start_video_capture(self, output_file_name="", fps=20.0, resolution=None):
@@ -168,7 +178,7 @@ class Camera(Stateful, Recreatable):
         args = {
             "output_file_name": output_file_name,
             "fps": fps,
-            "resolution": resolution
+            "resolution": resolution,
         }
         self.__frame_handler.register_action(CaptureActions.CAPTURE_VIDEO_TO_FILE, args)
 
@@ -182,7 +192,9 @@ class Camera(Stateful, Recreatable):
         self.__frame_handler.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
 
     @type_check
-    def start_detecting_motion(self, callback_on_motion, moving_object_minimum_area=300):
+    def start_detecting_motion(
+        self, callback_on_motion, moving_object_minimum_area=300
+    ):
         """Begin processing image data from the camera, attempting to detect
         motion. When motion is detected, call the function passed in.
 
@@ -205,7 +217,9 @@ class Camera(Stateful, Recreatable):
         }
         callback_signature = signature(callback_on_motion)
         if len(callback_signature.parameters) > 1:
-            raise ValueError("Invalid callback signature: it should receive at most one argument.")
+            raise ValueError(
+                "Invalid callback signature: it should receive at most one argument."
+            )
         self.__frame_handler.register_action(CaptureActions.DETECT_MOTION, args)
 
     def stop_detecting_motion(self):
@@ -239,8 +253,10 @@ class Camera(Stateful, Recreatable):
             DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
         """
         if format is not None:
-            print("'format' is no longer supported in this function. "
-                  "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
+            print(
+                "'format' is no longer supported in this function. "
+                "Please set the 'camera.format' property directly, and call this function without 'format' parameter."
+            )
         args = {
             "callback_on_frame": callback_on_frame,
             "frame_interval": frame_interval,
@@ -248,7 +264,9 @@ class Camera(Stateful, Recreatable):
         }
         callback_signature = signature(callback_on_frame)
         if len(callback_signature.parameters) == 0:
-            raise ValueError("Invalid callback signature: it should receive at least one argument.")
+            raise ValueError(
+                "Invalid callback signature: it should receive at least one argument."
+            )
         self.__frame_handler.register_action(CaptureActions.HANDLE_FRAME, args)
 
     def stop_handling_frames(self):
@@ -292,8 +310,10 @@ class Camera(Stateful, Recreatable):
             DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
         """
         if format is not None:
-            print("'format' is no longer supported in this function. "
-                  "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
+            print(
+                "'format' is no longer supported in this function. "
+                "Please set the 'camera.format' property directly, and call this function without 'format' parameter."
+            )
 
         return self.__get_processed_current_frame()
 
@@ -306,8 +326,10 @@ class Camera(Stateful, Recreatable):
             DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
         """
         if format is not None:
-            print("'format' is no longer supported in this function. "
-                  "Please set the 'camera.format' property directly, and call this function without 'format' parameter.")
+            print(
+                "'format' is no longer supported in this function. "
+                "Please set the 'camera.format' property directly, and call this function without 'format' parameter."
+            )
 
         self.__new_frame_event.wait()
         self.__new_frame_event.clear()

@@ -1,8 +1,6 @@
 from json import load
 from pathlib import Path
 
-from pitop import Pitop
-
 
 def __load_json(filename):
     path = __robotics_directory() / "json" / filename
@@ -22,9 +20,13 @@ bobbie_config = __load_json("bobbie.json")
 
 class AlexRobot:
     def __init__(self, *args, **kwargs):
-        print("AlexRobot class is deprecated. Please use Pitop.from_config(alex_config)")
+        print(
+            "AlexRobot class is deprecated. Please use Pitop.from_config(alex_config)"
+        )
 
     def __new__(cls, *args, **kwargs):
+        from pitop import Pitop
+
         obj = Pitop.from_config(alex_config)
         obj.__class__ = cls
         return obj

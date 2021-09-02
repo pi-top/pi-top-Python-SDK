@@ -26,31 +26,23 @@ repos:
         "--ignore-directives", "autoclass,automodule",
       ]
 
--   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.5.7
+-   repo: https://github.com/pycqa/isort
+    rev: 5.9.3
     hooks:
-    - id: autopep8
-      name: autopep8 - all checks, no tests
-      args: [
-        "-i",
-        "--max-line-length=150",
-        "--exclude", "tests/*"
-      ]
+    - id: isort
 
--   repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v1.5.7
+-   repo: https://github.com/psf/black
+    rev: 21.7b0
     hooks:
-    - id: autopep8
-      # Default: E226,E24,W50,W690
-      name: autopep8 - ignore import checks, include tests
-      args: [
-        "-i",
-        "--max-line-length=150",
-        "--ignore", "E226,E24,W50,W690,E402"
-      ]
+    - id: black
 
 -   repo: https://github.com/PyCQA/flake8
     rev: 3.9.2
     hooks:
     - id: flake8
-      args: ["--max-line-length=150"]
+
+# -   repo: https://github.com/pre-commit/mirrors-mypy
+#     rev: v0.910
+#     hooks:
+#     -   id: mypy
+#         additional_dependencies: [types-all]

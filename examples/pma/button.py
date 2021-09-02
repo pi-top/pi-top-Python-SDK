@@ -1,5 +1,6 @@
-from pitop import Button
 from time import sleep
+
+from pitop import Button
 
 button = Button("D5")
 

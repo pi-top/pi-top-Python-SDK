@@ -1,6 +1,6 @@
-from pitop import Camera
 from PIL import ImageDraw
 
+from pitop import Camera
 
 cam = Camera()
 

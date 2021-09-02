@@ -1,15 +1,15 @@
-from pitop.pulse import ledmatrix
-
 import colorsys
 import math
+
+from pitop.pulse import ledmatrix
 
 s_width, s_height = ledmatrix.get_shape()
 
 
 # twisty swirly goodness
 def swirl(x, y, step):
-    x -= (s_width / 2)
-    y -= (s_height / 2)
+    x -= s_width / 2
+    y -= s_height / 2
 
     dist = math.sqrt(pow(x, 2) + pow(y, 2)) / 2.0
     angle = (step / 10.0) + (dist * 1.5)
@@ -25,14 +25,15 @@ def swirl(x, y, step):
 
     return (r, r + (s * 130), r + (c * 130))
 
+
 # roto-zooming checker board
 
 
 def checker(x, y, step):
-    x -= (s_width / 2)
-    y -= (s_height / 2)
+    x -= s_width / 2
+    y -= s_height / 2
 
-    angle = (step / 10.0)
+    angle = step / 10.0
     s = math.sin(angle)
     c = math.cos(angle)
 
@@ -51,30 +52,37 @@ def checker(x, y, step):
 
     xo = abs(xs) - int(abs(xs))
     yo = abs(ys) - int(abs(ys))
-    val = 0 if (math.floor(xs) + math.floor(ys)
-                ) % 2 else 1 if xo > .1 and yo > .1 else .5
+    val = (
+        0
+        if (math.floor(xs) + math.floor(ys)) % 2
+        else 1
+        if xo > 0.1 and yo > 0.1
+        else 0.5
+    )
 
     r, g, b = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, val)
 
     return (r * 255, g * 255, b * 255)
 
+
 # weeee waaaah
 
 
 def blues_and_twos(x, y, step):
-    x -= (s_width / 2)
-    y -= (s_height / 2)
+    x -= s_width / 2
+    y -= s_height / 2
 
     scale = math.sin(step / 6.0) / 1.5
     r = math.sin((x * scale) / 1.0) + math.cos((y * scale) / 1.0)
     b = math.sin(x * scale / 2.0) + math.cos(y * scale / 2.0)
-    g = r - .8
+    g = r - 0.8
     g = 0 if g < 0 else g
 
     b -= r
     b /= 1.4
 
     return (r * 255, (b + g) * 255, g * 255)
+
 
 # rainbow search spotlights
 
@@ -90,14 +98,15 @@ def rainbow_search(x, y, step):
 
     return (r * 255, g * 255, b * 255)
 
+
 # zoom tunnel
 
 
 def tunnel(x, y, step):
 
     speed = step / 100.0
-    x -= (s_width / 2)
-    y -= (s_height / 2)
+    x -= s_width / 2
+    y -= s_height / 2
 
     xo = math.sin(step / 27.0) * 2
     yo = math.cos(step / 18.0) * 2
@@ -109,7 +118,7 @@ def tunnel(x, y, step):
         if x < 0:
             angle = -(math.pi / 2)
         else:
-            angle = (math.pi / 2)
+            angle = math.pi / 2
     else:
         angle = math.atan(x / y)
 
@@ -124,12 +133,12 @@ def tunnel(x, y, step):
     angle += speed
     depth = speed + (math.sqrt(math.pow(x, 2) + math.pow(y, 2)) / 10)
 
-    col1 = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, .8)
-    col2 = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, .3)
+    col1 = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, 0.8)
+    col2 = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, 0.3)
 
     col = col1 if int(abs(angle * 6.0)) % 2 == 0 else col2
 
-    td = .3 if int(abs(depth * 3.0)) % 2 == 0 else 0
+    td = 0.3 if int(abs(depth * 3.0)) % 2 == 0 else 0
 
     col = (col[0] + td, col[1] + td, col[2] + td)
 

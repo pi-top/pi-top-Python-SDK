@@ -11,6 +11,7 @@ class PitopCliInvalidArgument(Exception):
 
 class CliBaseClass(ABC):
     """Abstract class, used to create CLI commands."""
+
     @abstractmethod
     def __init__(self, args):
         """Class constructor.

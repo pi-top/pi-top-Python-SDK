@@ -1,15 +1,14 @@
-from pitop.core.mixins import (
-    Stateful,
-    Recreatable,
-)
-from pitop.pma import ServoMotor
-from pitop.robotics.two_servo_assembly_calibrator import TwoServoAssemblyCalibrator
-from .simple_pid import PID
+import time
+from dataclasses import dataclass
 from threading import Thread
 from time import sleep
-from dataclasses import dataclass
 from typing import Optional
-import time
+
+from pitop.core.mixins import Recreatable, Stateful
+from pitop.pma import ServoMotor
+from pitop.robotics.two_servo_assembly_calibrator import TwoServoAssemblyCalibrator
+
+from .simple_pid import PID
 
 
 @dataclass
@@ -37,22 +36,23 @@ class TiltRollHeadController(Stateful, Recreatable):
         self._roll_servo = ServoMotor(servo_roll_port)
         self._tilt_servo = ServoMotor(servo_tilt_port)
 
-        self._head_roll_pid = PID(Kp=3.0,
-                                  Ki=1.5,
-                                  Kd=0.25,
-                                  setpoint=0,
-                                  output_limits=(-100, 100)
-                                  )
+        self._head_roll_pid = PID(
+            Kp=3.0, Ki=1.5, Kd=0.25, setpoint=0, output_limits=(-100, 100)
+        )
 
         self.timeout = 5  # s
         self.__shake_thread_control = ThreadControl()
         self.__nod_thread_control = ThreadControl()
 
-        Stateful.__init__(self, children=['_roll_servo', '_tilt_servo'])
-        Recreatable.__init__(self, config_dict={'servo_roll_port': servo_roll_port,
-                                                'servo_tilt_port': servo_tilt_port,
-                                                'name': name}
-                             )
+        Stateful.__init__(self, children=["_roll_servo", "_tilt_servo"])
+        Recreatable.__init__(
+            self,
+            config_dict={
+                "servo_roll_port": servo_roll_port,
+                "servo_tilt_port": servo_tilt_port,
+                "name": name,
+            },
+        )
 
     @property
     def roll(self) -> ServoMotor:
@@ -66,7 +66,9 @@ class TiltRollHeadController(Stateful, Recreatable):
         self.tilt.sweep(speed=0)
         self.roll.sweep(speed=0)
 
-    def shake(self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True) -> None:
+    def shake(
+        self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True
+    ) -> None:
         """Shakes the head by rotating the roll servo back and forth between
         :data:`-angle` and :data:`+angle` from current angle position.
 
@@ -76,15 +78,17 @@ class TiltRollHeadController(Stateful, Recreatable):
         :param bool block: if `True`, function call will block program execution until finished
         :return: None
         """
-        oscillate_request = OscillateRequest(servo=self._roll_servo,
-                                             times=times,
-                                             angle=angle,
-                                             speed=speed,
-                                             block=block)
+        oscillate_request = OscillateRequest(
+            servo=self._roll_servo, times=times, angle=angle, speed=speed, block=block
+        )
 
-        self.__start_servo_oscillation(oscillate_request, thread_control=self.__shake_thread_control)
+        self.__start_servo_oscillation(
+            oscillate_request, thread_control=self.__shake_thread_control
+        )
 
-    def nod(self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True) -> None:
+    def nod(
+        self, times: int = 4, angle: int = 5, speed: int = 100, block: bool = True
+    ) -> None:
         """Nod the head by rotating the tilt servo back and forth between
         :data:`-angle` and :data:`+angle` from current angle position.
 
@@ -94,15 +98,17 @@ class TiltRollHeadController(Stateful, Recreatable):
         :param bool block: if `True`, function call will block program execution until finished
         :return: None
         """
-        oscillate_request = OscillateRequest(servo=self._tilt_servo,
-                                             times=times,
-                                             angle=angle,
-                                             speed=speed,
-                                             block=block)
+        oscillate_request = OscillateRequest(
+            servo=self._tilt_servo, times=times, angle=angle, speed=speed, block=block
+        )
 
-        self.__start_servo_oscillation(oscillate_request, thread_control=self.__nod_thread_control)
+        self.__start_servo_oscillation(
+            oscillate_request, thread_control=self.__nod_thread_control
+        )
 
-    def __start_servo_oscillation(self, oscillate_request: OscillateRequest, thread_control: ThreadControl):
+    def __start_servo_oscillation(
+        self, oscillate_request: OscillateRequest, thread_control: ThreadControl
+    ):
 
         if thread_control.thread.is_alive():
             thread_control.cancel = True
@@ -110,18 +116,28 @@ class TiltRollHeadController(Stateful, Recreatable):
             thread_control.cancel = False
 
         if oscillate_request.block:
-            self.__oscillate_servo(oscillate_request=oscillate_request, thread_control=thread_control)
+            self.__oscillate_servo(
+                oscillate_request=oscillate_request, thread_control=thread_control
+            )
         else:
-            thread_control.thread = Thread(target=self.__oscillate_servo,
-                                           kwargs={"oscillate_request": oscillate_request,
-                                                   "thread_control": thread_control},
-                                           daemon=True)
+            thread_control.thread = Thread(
+                target=self.__oscillate_servo,
+                kwargs={
+                    "oscillate_request": oscillate_request,
+                    "thread_control": thread_control,
+                },
+                daemon=True,
+            )
             thread_control.thread.start()
 
-    def __oscillate_servo(self, oscillate_request: OscillateRequest, thread_control: ThreadControl) -> None:
+    def __oscillate_servo(
+        self, oscillate_request: OscillateRequest, thread_control: ThreadControl
+    ) -> None:
         def reset_servo_state():
             oscillate_request.servo.target_speed = previous_target_speed
-            self.__set_angle_until_reached(servo=oscillate_request.servo, angle=starting_angle)
+            self.__set_angle_until_reached(
+                servo=oscillate_request.servo, angle=starting_angle
+            )
 
         previous_target_speed = oscillate_request.servo.target_speed
         oscillate_request.servo.target_speed = oscillate_request.speed
@@ -135,24 +151,32 @@ class TiltRollHeadController(Stateful, Recreatable):
                 reset_servo_state()
                 return
 
-            self.__set_angle_until_reached(servo=oscillate_request.servo,
-                                           angle=angle_start,
-                                           thread_control=thread_control)
-            self.__set_angle_until_reached(servo=oscillate_request.servo,
-                                           angle=angle_end,
-                                           thread_control=thread_control)
+            self.__set_angle_until_reached(
+                servo=oscillate_request.servo,
+                angle=angle_start,
+                thread_control=thread_control,
+            )
+            self.__set_angle_until_reached(
+                servo=oscillate_request.servo,
+                angle=angle_end,
+                thread_control=thread_control,
+            )
 
         reset_servo_state()
 
-    def __set_angle_until_reached(self,
-                                  servo: ServoMotor,
-                                  angle: int,
-                                  thread_control: Optional[ThreadControl] = None):
+    def __set_angle_until_reached(
+        self,
+        servo: ServoMotor,
+        angle: int,
+        thread_control: Optional[ThreadControl] = None,
+    ):
         def cancelled():
             if time.time() - start_time > self.timeout:
                 servo.stop()
                 thread_control.cancel = True
-                print(f"Head nod/shake cancelled because time exceeded {self.timeout} seconds. Try a higher speed.")
+                print(
+                    f"Head nod/shake cancelled because time exceeded {self.timeout} seconds. Try a higher speed."
+                )
                 return True
             if thread_control is not None:
                 return thread_control.cancel
@@ -195,6 +219,9 @@ class TiltRollHeadController(Stateful, Recreatable):
         calibration_object = TwoServoAssemblyCalibrator(
             filename=self.CALIBRATION_FILE_NAME,
             section_name="TILT_ROLL",
-            servo_lookup_dict={"roll_zero_point": self.roll, "tilt_zero_point": self.tilt}
+            servo_lookup_dict={
+                "roll_zero_point": self.roll,
+                "tilt_zero_point": self.tilt,
+            },
         )
         calibration_object.calibrate(save, reset)

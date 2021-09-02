@@ -1,5 +1,6 @@
-from pitop import LightSensor
 from time import sleep
+
+from pitop import LightSensor
 
 light_sensor = LightSensor("A1")
 

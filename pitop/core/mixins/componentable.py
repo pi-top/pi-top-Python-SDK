@@ -57,7 +57,9 @@ class Componentable(Stateful, Recreatable):
 
         component_name = component.name if is_recreatable else name
         if component_name in self.children:
-            raise AttributeError(f"There's already a component with the name '{component_name}' registered.")
+            raise AttributeError(
+                f"There's already a component with the name '{component_name}' registered."
+            )
 
         self.children.append(component_name)
         setattr(self, component_name, component)

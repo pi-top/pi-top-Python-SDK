@@ -1,25 +1,20 @@
+from sys import modules
+from threading import Thread
+from time import perf_counter, sleep
+from unittest import TestCase, skip
+from unittest.mock import Mock
+
 from pitop.camera import Camera
 from pitop.camera.core import (
-    FrameHandler,
+    CameraTypes,
     CaptureActions,
-    UsbCamera,
     FileSystemCamera,
-    CameraTypes
+    FrameHandler,
+    UsbCamera,
 )
-from threading import Thread
-from unittest import (
-    TestCase,
-    skip
-)
-from sys import modules
-from unittest.mock import Mock
-from time import sleep, perf_counter
 
 modules["io"] = Mock()
 modules["cv2"] = Mock()
-modules["PyV4L2Camera"] = Mock()
-modules["PyV4L2Camera.camera"] = Mock()
-modules["PyV4L2Camera.exceptions"] = Mock()
 modules["imageio"] = Mock()
 modules["PIL"] = Mock()
 
@@ -66,7 +61,7 @@ class CameraTestCase(TestCase):
 
     def test_current_frame_opencv(self):
         c = Camera(4)
-        frame = c.current_frame(format='OpenCV')
+        frame = c.current_frame(format="OpenCV")
         self.assertIsInstance(frame, Mock)
 
     def test_current_frame_does_not_block(self):
@@ -89,41 +84,54 @@ class CameraTestCase(TestCase):
     def test_capture_image_registers_action_on_frame_handler(self):
         c = Camera()
         c.capture_image()
-        self.assertTrue(c._frame_handler.is_running_action(CaptureActions.CAPTURE_SINGLE_FRAME))
+        self.assertTrue(
+            c._frame_handler.is_running_action(CaptureActions.CAPTURE_SINGLE_FRAME)
+        )
 
     def test_start_video_capture_registers_action_on_frame_handler(self):
         c = Camera()
         c.start_video_capture()
-        self.assertTrue(c._frame_handler.is_running_action(CaptureActions.CAPTURE_VIDEO_TO_FILE))
+        self.assertTrue(
+            c._frame_handler.is_running_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
+        )
 
     def test_stop_video_capture_removes_action_on_frame_handler(self):
         c = Camera()
         c.start_video_capture()
         c.stop_video_capture()
-        self.assertFalse(c._frame_handler.is_running_action(CaptureActions.CAPTURE_VIDEO_TO_FILE))
+        self.assertFalse(
+            c._frame_handler.is_running_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
+        )
 
     def test_start_detecting_motion_registers_action_on_frame_handler(self):
         c = Camera()
 
         def callback(frame):
             return
+
         c.start_detecting_motion(callback)
-        self.assertTrue(c._frame_handler.is_running_action(CaptureActions.DETECT_MOTION))
+        self.assertTrue(
+            c._frame_handler.is_running_action(CaptureActions.DETECT_MOTION)
+        )
 
     def test_stop_detecting_motion_removes_action_on_frame_handler(self):
         c = Camera()
 
         def callback(frame):
             return
+
         c.start_detecting_motion(callback)
         c.stop_detecting_motion()
-        self.assertFalse(c._frame_handler.is_running_action(CaptureActions.DETECT_MOTION))
+        self.assertFalse(
+            c._frame_handler.is_running_action(CaptureActions.DETECT_MOTION)
+        )
 
     def test_start_detecting_motion_fails_when_using_incorrect_callback(self):
         c = Camera()
 
         def callback(a, b):
             return
+
         with self.assertRaises(ValueError):
             c.start_detecting_motion(callback)
 
@@ -132,6 +140,7 @@ class CameraTestCase(TestCase):
 
         def callback(frame):
             return
+
         c.start_handling_frames(callback)
         self.assertTrue(c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME))
 
@@ -140,14 +149,18 @@ class CameraTestCase(TestCase):
 
         def callback(frame):
             return
+
         c.start_handling_frames(callback)
         c.stop_handling_frames()
-        self.assertFalse(c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME))
+        self.assertFalse(
+            c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME)
+        )
 
     def test_start_handling_frames_fails_when_using_incorrect_callback(self):
         c = Camera()
 
         def callback(a, b):
             return
+
         with self.assertRaises(ValueError):
             c.start_handling_frames(callback)

@@ -1,4 +1,4 @@
-from numpy import cumsum, insert, append, shape, delete
+from numpy import append, cumsum, delete, insert, shape
 
 
 def running_mean(old_array, new_value):
@@ -10,6 +10,7 @@ def running_mean(old_array, new_value):
     will be a 1d numpy array that has m values, where N is the number of samples to average over.
     :return: tuple where index 0 is the new array and index 1 is the new mean.
     """
+
     def calculate_mean(x, N):
         cum_sum = cumsum(insert(x, 0, 0, axis=0), axis=0)
         return (cum_sum[N:] - cum_sum[:-N]) / float(N)
@@ -34,8 +35,12 @@ def remap_range(old_value, old_range, new_range, invert_direction=False):
     new_range_magnitude = abs(new_max - new_min)
 
     if not invert_direction:
-        new_value = (((old_value - old_min) * new_range_magnitude) / old_range_magnitude) + new_min
+        new_value = (
+            ((old_value - old_min) * new_range_magnitude) / old_range_magnitude
+        ) + new_min
     else:
-        new_value = new_max - (((old_value - old_min) * new_range_magnitude) / old_range_magnitude)
+        new_value = new_max - (
+            ((old_value - old_min) * new_range_magnitude) / old_range_magnitude
+        )
 
     return new_value

@@ -1,3 +1,84 @@
+py-pitop-sdk (0.20.0-2) bullseye; urgency=medium
+
+  * New workflows (#407)
+  * Update master workflow files
+  * Drop pip from build deps
+  * Update master workflow files
+  * Vendor simple_pid (#410)
+  * Vendor luma.oled and luma.core (#409)
+  * Add missing pyserial dependency override
+  * Revert "Add missing pyserial dependency override"
+  * Make onnxruntime optional (#417)
+  * Remove scikit-learn dependency (#416)
+  * Add dependency versions for optional deps
+  * Add buster dependency versions for optional deps
+  * Integrate common library into SDK (#413)
+  * Vendor `pynput` (#415)
+  * Add ZMQ to Python dependencies (#420)
+  * Add .pc to gitignore
+  * Replace UsbCamera PyV4L2Camera dependency with cv2.VideoCapture (#422)
+  * Make opencv core dependency
+  * Patch `smbus2` import for using `python-smbus` in Debian (#419)
+  * Improve import & CLI speed (#381)
+  * Add MCU-based Ultrasonic Sensor readings on ports A1 and A3 (#368)
+  * Prax head shake and nod (#394)
+  * Add debian/watch
+  * Update patch
+  * Comment out trailing whitespace
+  * Use vendored simple_pid
+  * Changed all D4 examples to D0 (#427)
+  * Use new lock file path (#436)
+  * Drop FSMe (#438)
+  * Drop onnxruntime as core dependency (#435)
+  * OpenCV is now a main dependency due to image handling (#434)
+  * Add OS build info to API (#437)
+  * Add virtual.py needed by `pt-miniscreen` (#440)
+  * Add miniscreen assistant class (#430) (#439)
+  * Re-add OpenCV dist override
+  * Fix smbus patch
+  * Drop v4l-utils build dependency
+  * Drop unused dpkg trigger
+  * Add comment
+  * Rename miniscreen lock
+  * Rename pt-miniscreen in docs
+  * Drop __LOCK_FILE_PATH
+  * Drop V4L mocks
+  * Update build dependencies (#441)
+  * Refactor setuptools (#443)
+  * Add startup animation handling for pt-miniscreen
+  * Drop setup.py shebang
+  * Add headers to dependencies
+  * Bullseye release (#442)
+  * Update extra dependencies for Bullseye versions
+  * New changelog entry: v0.20.0-1 (#412)
+  * Update distribution to bullseye
+  * Updated master workflow files
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 20:48:33 +0000
+
+py-pitop-sdk (0.20.0-1) bullseye; urgency=medium
+
+  * Vendor some dependencies (for manageability)
+  * Fix Python to Debian dependency mapping
+  * Rework core dependencies
+  * Apply isort and black to project
+  * Add startup animation handling for pt-miniscreen example
+  * Bullseye release: new dependencies
+  * Integrate common library into SDK (#413)
+  * Replace UsbCamera PyV4L2Camera dependency with cv2.VideoCapture (#422)
+  * OpenCV is now a main dependency due to image handling (#434)
+  * Improve import & CLI speed (#381)
+  * Add MCU-based Ultrasonic Sensor readings on ports A1 and A3 (#368)
+  * Prax head shake and nod (#394)
+  * Use new lock file path (#436)
+  * Drop proprietary fonts (#438)
+  * Add OS build info to API (#437)
+  * Add virtual.py needed by `pt-miniscreen` (#440)
+  * Add miniscreen assistant class (#430) (#439)
+  * Refactor setuptools (#443)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 14:21:36 +0000
+
 py-pitop-sdk (0.19.1-1) buster; urgency=medium
 
   * Initial release as quilt package

@@ -1,9 +1,7 @@
-from pitop import (
-    Camera,
-    Buzzer,
-)
-from pitop.processing.algorithms.faces import FaceDetector
 from signal import pause
+
+from pitop import Buzzer, Camera
+from pitop.processing.algorithms.faces import FaceDetector
 
 
 def alert_on():

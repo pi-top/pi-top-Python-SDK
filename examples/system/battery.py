@@ -1,6 +1,5 @@
 from pitop import Pitop
 
-
 battery = Pitop().battery
 
 print(f"Battery capacity: {battery.capacity}")

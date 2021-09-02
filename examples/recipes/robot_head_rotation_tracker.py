@@ -1,8 +1,9 @@
-from pitop import Camera
-from pitop.processing.algorithms.faces import FaceDetector
-from pitop import Pitop, TiltRollHeadController
 from signal import pause
+
 import cv2
+
+from pitop import Camera, Pitop, TiltRollHeadController
+from pitop.processing.algorithms.faces import FaceDetector
 
 
 def track_face(frame):

@@ -1,12 +1,10 @@
-from PIL import Image
-from numpy import (
-    asarray,
-    ndarray,
-)
 from urllib.request import urlopen
 
-from pitop.core.import_opencv import import_opencv
+from numpy import asarray, ndarray
+from PIL import Image
+
 from pitop.common.formatting import is_url
+from pitop.core.import_opencv import import_opencv
 
 
 def image_format_check(format):
@@ -21,10 +19,12 @@ def convert(image, format="PIL"):
     format = format.lower()
 
     # Image type is already correct - return image
-    if any([
-        isinstance(image, Image.Image) and format == "pil",
-        isinstance(image, ndarray) and format == "opencv"
-    ]):
+    if any(
+        [
+            isinstance(image, Image.Image) and format == "pil",
+            isinstance(image, ndarray) and format == "opencv",
+        ]
+    ):
         return image
     elif isinstance(image, Image.Image) and format == "opencv":
         # Convert PIL to OpenCV

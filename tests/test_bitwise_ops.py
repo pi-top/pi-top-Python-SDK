@@ -1,7 +1,8 @@
-from unittest import TestCase
-from parameterized import parameterized
 from sys import modules
+from unittest import TestCase
 from unittest.mock import Mock
+
+from parameterized import parameterized
 
 mock_logger = modules["pitop.common.logger"] = Mock()
 
@@ -39,7 +40,9 @@ class BitwiseOpsTestCase(TestCase):
             [0, -1, []],
         ]
     )
-    def test_split_into_bytes_unsigned(self, data: int, no_of_bytes: int, expected_list):
+    def test_split_into_bytes_unsigned(
+        self, data: int, no_of_bytes: int, expected_list
+    ):
 
         test_bytes_list = bitwise.split_into_bytes(data, no_of_bytes)
         self.assertEqual(expected_list, test_bytes_list)
@@ -59,8 +62,7 @@ class BitwiseOpsTestCase(TestCase):
     )
     def test_split_into_bytes_signed(self, data: int, no_of_bytes: int, expected_list):
 
-        test_bytes_list = bitwise.split_into_bytes(
-            data, no_of_bytes, signed=True)
+        test_bytes_list = bitwise.split_into_bytes(data, no_of_bytes, signed=True)
         self.assertEqual(expected_list, test_bytes_list)
 
     """

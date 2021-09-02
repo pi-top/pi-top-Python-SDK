@@ -1,9 +1,5 @@
 import configparser
-from os.path import (
-    exists,
-    isdir,
-    join,
-)
+from os.path import exists, isdir, join
 from pathlib import Path
 
 
@@ -14,7 +10,9 @@ class TwoServoAssemblyCalibrator:
         self.calibration_file_name = filename
         self.section_name = section_name
         self.servo_lookup_dict = servo_lookup_dict
-        self.__calibration_file_path = join(str(Path.home()), self.CALIBRATION_FILE_DIR, self.calibration_file_name)
+        self.__calibration_file_path = join(
+            str(Path.home()), self.CALIBRATION_FILE_DIR, self.calibration_file_name
+        )
 
     def calibrate(self, save=True, reset=False):
         """Calibrates the assembly to work in optimal conditions. Based on the
@@ -36,7 +34,9 @@ class TwoServoAssemblyCalibrator:
             servo_obj.zero_point = 0
             value = self.__calibrate_servo(servo_name, servo_obj)
             if save and value is not None:
-                self.__save_calibration(section=self.section_name, values_dict={servo_name: value})
+                self.__save_calibration(
+                    section=self.section_name, values_dict={servo_name: value}
+                )
 
         print("Calibration finished.")
 
@@ -49,9 +49,13 @@ class TwoServoAssemblyCalibrator:
             user_zero_setting = input("Value: ")
             try:
                 user_zero_setting = int(user_zero_setting)
-                if user_zero_setting < int(servo_obj.angle_range[0]) or user_zero_setting > int(servo_obj.angle_range[1]):
-                    print(f"Invalid angle value {user_zero_setting}. "
-                          f" Please enter a value in the range {servo_obj.angle_range}")
+                if user_zero_setting < int(
+                    servo_obj.angle_range[0]
+                ) or user_zero_setting > int(servo_obj.angle_range[1]):
+                    print(
+                        f"Invalid angle value {user_zero_setting}. "
+                        f" Please enter a value in the range {servo_obj.angle_range}"
+                    )
                     continue
             except ValueError:
                 print("Please, enter a valid value")
@@ -60,11 +64,13 @@ class TwoServoAssemblyCalibrator:
             servo_obj.target_angle = user_zero_setting
 
             print("Is the servo horn aligned with the body?")
-            finished_calibration = str(input("'y' to accept, 'n' to try again, 'e' to exit: "))
-            if finished_calibration.upper() == 'Y':
+            finished_calibration = str(
+                input("'y' to accept, 'n' to try again, 'e' to exit: ")
+            )
+            if finished_calibration.upper() == "Y":
                 servo_obj.zero_point = user_zero_setting
                 return user_zero_setting
-            elif finished_calibration.upper() == 'E':
+            elif finished_calibration.upper() == "E":
                 return None
 
     def __load_calibration(self):
@@ -95,5 +101,5 @@ class TwoServoAssemblyCalibrator:
             config[section] = {}
 
         config[section].update({k: str(v) for k, v in values_dict.items()})
-        with open(self.__calibration_file_path, 'w') as configfile:
+        with open(self.__calibration_file_path, "w") as configfile:
             config.write(configfile)

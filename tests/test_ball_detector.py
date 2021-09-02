@@ -1,7 +1,6 @@
 from sys import modules
 from unittest.mock import Mock
 
-
 modules_to_patch = [
     "imageio",
     "pitop.common",
@@ -11,30 +10,25 @@ for module in modules_to_patch:
 
 
 from unittest import TestCase
-from pitop.processing.algorithms.ball_detect import BallDetector
+
 from pitop.core.ImageFunctions import convert
+from pitop.processing.algorithms.ball_detect import BallDetector
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
 )
 
-
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
     del modules[patched_module]
 
-import numpy as np
 import cv2
+import numpy as np
 
-color = {
-    'red': (0, 0, 255),
-    'green': (0, 255, 0),
-    'blue': (255, 0, 0)
-}
+color = {"red": (0, 0, 255), "green": (0, 255, 0), "blue": (255, 0, 0)}
 
 
 class TestBallDetector(TestCase):
-
     def setUp(self):
         self._height = 480
         self._width = 640
@@ -48,7 +42,7 @@ class TestBallDetector(TestCase):
         ball_radius = 80
 
         red_ball_center = (self._width // 4, self._height // 2)
-        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color["red"], -1)
         red_ball_center = center_reposition(red_ball_center, cv_frame)
         red_ball_angle = get_object_target_lock_control_angle(red_ball_center, cv_frame)
 
@@ -64,10 +58,14 @@ class TestBallDetector(TestCase):
             self.assertAlmostEqual(u, v, delta=self._MAX_DIMENSION_DIFFERENCE)
 
         # Check ball radii
-        self.assertAlmostEqual(red_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
+        self.assertAlmostEqual(
+            red_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
 
         # Check angle
-        self.assertAlmostEqual(red_ball.angle, red_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
+        self.assertAlmostEqual(
+            red_ball.angle, red_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
 
         # Check center points deque has been appended
         self.assertEqual(len(red_ball.center_points), 1)
@@ -83,27 +81,31 @@ class TestBallDetector(TestCase):
         ball_radius = 80
 
         red_ball_center = (self._width // 4, self._height // 2)
-        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color["red"], -1)
         red_ball_center = center_reposition(red_ball_center, cv_frame)
         red_ball_angle = get_object_target_lock_control_angle(red_ball_center, cv_frame)
 
         green_ball_center = (self._width // 2, self._height // 2)
-        cv2.circle(cv_frame, green_ball_center, ball_radius, color['green'], -1)
+        cv2.circle(cv_frame, green_ball_center, ball_radius, color["green"], -1)
         green_ball_center = center_reposition(green_ball_center, cv_frame)
-        green_ball_angle = get_object_target_lock_control_angle(green_ball_center, cv_frame)
+        green_ball_angle = get_object_target_lock_control_angle(
+            green_ball_center, cv_frame
+        )
 
         blue_ball_center = (3 * self._width // 4, self._height // 2)
-        cv2.circle(cv_frame, blue_ball_center, ball_radius, color['blue'], -1)
+        cv2.circle(cv_frame, blue_ball_center, ball_radius, color["blue"], -1)
         blue_ball_center = center_reposition(blue_ball_center, cv_frame)
-        blue_ball_angle = get_object_target_lock_control_angle(blue_ball_center, cv_frame)
+        blue_ball_angle = get_object_target_lock_control_angle(
+            blue_ball_center, cv_frame
+        )
 
         # insert random colour artifacts to ensure center points deque does not get incremented by them
         red_artifact_center = (self._width // 4, 0)
-        cv2.circle(cv_frame, red_artifact_center, 20, color['blue'], -1)
+        cv2.circle(cv_frame, red_artifact_center, 20, color["blue"], -1)
         green_artifact_center = (self._width // 2, 0)
-        cv2.circle(cv_frame, green_artifact_center, 20, color['blue'], -1)
+        cv2.circle(cv_frame, green_artifact_center, 20, color["blue"], -1)
         blue_artifact_center = (3 * self._width // 4, 0)
-        cv2.circle(cv_frame, blue_artifact_center, 20, color['blue'], -1)
+        cv2.circle(cv_frame, blue_artifact_center, 20, color["blue"], -1)
 
         pil_frame = convert(cv_frame, "PIL")
 
@@ -127,14 +129,26 @@ class TestBallDetector(TestCase):
             self.assertAlmostEqual(u, v, delta=self._MAX_DIMENSION_DIFFERENCE)
 
         # Check ball radii
-        self.assertAlmostEqual(red_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
-        self.assertAlmostEqual(green_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
-        self.assertAlmostEqual(blue_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE)
+        self.assertAlmostEqual(
+            red_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
+        self.assertAlmostEqual(
+            green_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
+        self.assertAlmostEqual(
+            blue_ball.radius, ball_radius, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
 
         # Check angle
-        self.assertAlmostEqual(red_ball.angle, red_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
-        self.assertAlmostEqual(green_ball.angle, green_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
-        self.assertAlmostEqual(blue_ball.angle, blue_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE)
+        self.assertAlmostEqual(
+            red_ball.angle, red_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
+        self.assertAlmostEqual(
+            green_ball.angle, green_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
+        self.assertAlmostEqual(
+            blue_ball.angle, blue_ball_angle, delta=self._MAX_DIMENSION_DIFFERENCE
+        )
 
         # Check only one center point has been appended to deque
         self.assertEqual(len(red_ball.center_points), 1)
@@ -216,7 +230,7 @@ class TestBallDetector(TestCase):
         ball_radius = self._width // 2
 
         red_ball_center = (self._width // 2, self._height)
-        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color["red"], -1)
 
         balls = ball_detector(cv_frame, color="red")
         red_ball = balls.red
@@ -231,7 +245,7 @@ class TestBallDetector(TestCase):
         ball_radius = 9
 
         red_ball_center = (self._width // 2, self._height // 2)
-        cv2.circle(cv_frame, red_ball_center, ball_radius, color['red'], -1)
+        cv2.circle(cv_frame, red_ball_center, ball_radius, color["red"], -1)
 
         balls = ball_detector(cv_frame, color="red")
         red_ball = balls.red
@@ -246,7 +260,9 @@ class TestBallDetector(TestCase):
         cv_frame = self._blank_cv_frame.copy()
         pil_frame = convert(cv_frame, "PIL")
         self.assertRaises(ValueError, ball_detector, pil_frame, color="rainbow")
-        self.assertRaises(ValueError, ball_detector, pil_frame, color=["rainbow", "red"])
+        self.assertRaises(
+            ValueError, ball_detector, pil_frame, color=["rainbow", "red"]
+        )
         self.assertRaises(ValueError, ball_detector, pil_frame, color=[0, 1])
 
 
