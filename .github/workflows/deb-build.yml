@@ -69,19 +69,19 @@ jobs:
         run: |
           echo "ARTIFACT_PREFIX=$(basename -s .dsc "$(find . -name "*.dsc")")" >> $GITHUB_ENV
 
-      - name: Upload artifacts
+      - name: Upload binary package artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_PREFIX }}.deb
           path: ./artifacts/*.deb
 
-      - name: Upload artifacts
+      - name: Upload source package artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_PREFIX }}.deb-src
           path: ./artifacts/*.tar.xz
 
-      - name: Upload artifacts
+      - name: Upload package build metadata artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.ARTIFACT_PREFIX }}.metadata
@@ -90,20 +90,12 @@ jobs:
             !./artifacts/*.deb
             !./artifacts/*.tar.xz
 
-      # Upload experimental build
-      # debs
-      - uses: docker://lpenz/ghaction-packagecloud:v0.3
+      - uses: pi-top/ghaction-packagecloud@main
+        if: github.ref == 'refs/heads/master'
         with:
           repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+          files: |
+            ./artifacts/*.dsc
+            ./artifacts/*.deb
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-        if: github.ref == 'refs/heads/master'
-
-      # dsc
-      - uses: docker://lpenz/ghaction-packagecloud:v0.3
-        with:
-          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
-          files: ./artifacts/${{ env.ARTIFACT_PREFIX }}.dsc
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
-        if: github.ref == 'refs/heads/master'
