@@ -16,4 +16,4 @@ pitop.red_led.off()
 pitop.drive.stop()
 
 # Check the state of all the components attached to the Pitop object
-print(pitop.component_state)
+pitop.print_state()
