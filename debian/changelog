@@ -1,3 +1,50 @@
+py-pitop-sdk (0.20.0-1) buster; urgency=medium
+
+  * Drop pip from build deps
+  * Vendor simple_pid (#410)
+  * Vendor luma.oled and luma.core (#409)
+  * Make onnxruntime optional (#417)
+  * Remove scikit-learn dependency (#416)
+  * Add dependency versions for optional deps
+  * Add buster dependency versions for optional deps
+  * Integrate common library into SDK (#413)
+  * Vendor `pynput` (#415)
+  * Add ZMQ to Python dependencies (#420)
+  * Add .pc to gitignore
+  * Replace UsbCamera PyV4L2Camera dependency with cv2.VideoCapture (#422)
+  * Make opencv core dependency
+  * Patch `smbus2` import for using `python-smbus` in Debian (#419)
+  * Improve import & CLI speed (#381)
+  * Add MCU-based Ultrasonic Sensor readings on ports A1 and A3 (#368)
+  * Prax head shake and nod (#394)
+  * Add debian/watch
+  * Update patch
+  * Comment out trailing whitespace
+  * Use vendored simple_pid
+  * Changed all D4 examples to D0 (#427)
+  * Use new lock file path (#436)
+  * Drop FSMe (#438)
+  * Drop onnxruntime as core dependency (#435)
+  * OpenCV is now a main dependency due to image handling (#434)
+  * Add OS build info to API (#437)
+  * Add virtual.py needed by `pt-miniscreen` (#440)
+  * Add miniscreen assistant class (#430) (#439)
+  * Re-add OpenCV dist override
+  * Fix smbus patch
+  * Drop v4l-utils build dependency
+  * Drop unused dpkg trigger
+  * Rename miniscreen lock
+  * Rename pt-miniscreen in docs
+  * Drop __LOCK_FILE_PATH
+  * Drop V4L mocks
+  * Update build dependencies (#441)
+  * Refactor setuptools (#443)
+  * Add startup animation handling for pt-miniscreen
+  * Drop setup.py shebang
+  * Add headers to dependencies
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 06 Sep 2021 09:21:41 -0300
+
 py-pitop-sdk (0.19.1-1) buster; urgency=medium
 
   * Initial release as quilt package
