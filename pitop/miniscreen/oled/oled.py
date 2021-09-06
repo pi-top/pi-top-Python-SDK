@@ -325,11 +325,11 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
 
-        def format_multiline_text(text):
+        def format_multiline_text(text, font, font_size):
             def get_text_size(text):
                 return ImageDraw.Draw(self.assistant.empty_image).textsize(
                     text=str(text),
-                    font=font,
+                    font=ImageFont.truetype(font, size=font_size),
                     spacing=0,
                 )
 
@@ -353,9 +353,6 @@ class OLED:
                     remaining = remaining - (word_width + space_width)
             return "\n".join(output_text)
 
-        # Format text
-        text = format_multiline_text(text)
-
         if xy is None:
             xy = self.assistant.get_recommended_text_pos()
 
@@ -364,6 +361,9 @@ class OLED:
 
         if font is None:
             font = self.assistant.get_recommended_font_path(font_size)
+
+        # Format text
+        text = format_multiline_text(text, font, font_size)
 
         # Create empty image
         image = self.assistant.empty_image
