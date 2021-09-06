@@ -39,10 +39,10 @@ def display_gif_and_exit():
     keep_running = False
 
 
-pitop.select_button.when_pressed = display_gif_and_exit
-pitop.cancel_button.when_pressed = display_gif_and_exit
-pitop.up_button.when_pressed = display_gif_and_exit
-pitop.down_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.select_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.cancel_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.up_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.down_button.when_pressed = display_gif_and_exit
 
 pitop.miniscreen.display_multiline_text("Press any button...", font_size=25)
 
