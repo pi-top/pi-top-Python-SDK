@@ -6,7 +6,7 @@ from pitop import Pitop
 pitop = Pitop.from_file("/home/pi/my_custom_config.json")
 
 # Check the loaded configuration
-print(pitop.component_config)
+print(pitop.config)
 
 # Do something with your device
 pitop.red_led.on()
