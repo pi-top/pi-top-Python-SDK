@@ -24,7 +24,7 @@ class MiniscreenAssistant:
         return image
 
     def get_recommended_text_pos(self):
-        return self.top_left
+        return self.top_left()
 
     def get_recommended_font_size(self):
         return 30
