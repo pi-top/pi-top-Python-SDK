@@ -1,4 +1,4 @@
-py-pitop-sdk (0.20.1-2) bullseye; urgency=medium
+pi-top-python-sdk (0.20.1-2) bullseye; urgency=medium
 
   * Remove unused ${python3:Depends} from '-full' package
   * Fix version.txt
