@@ -1,3 +1,9 @@
+py-pitop-sdk (0.20.1-1) bullseye; urgency=medium
+
+  * Fix miniscreen issues (#452)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:22:23 +0000
+
 py-pitop-sdk (0.20.0-2) bullseye; urgency=medium
 
   * New workflows (#407)
