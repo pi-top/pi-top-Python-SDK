@@ -1,3 +1,13 @@
+py-pitop-sdk (0.20.0-3) bullseye; urgency=medium
+
+  * Updated master workflow files
+  * Updated master workflow files
+  * [pre-commit.ci] pre-commit autoupdate (#451)
+  * Fix miniscreen issues (#452)
+  * Use RELEASE_PUBLISH_PAT
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:22:23 +0000
+
 py-pitop-sdk (0.20.0-2) bullseye; urgency=medium
 
   * New workflows (#407)
