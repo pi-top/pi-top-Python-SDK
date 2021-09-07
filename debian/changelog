@@ -1,3 +1,12 @@
+py-pitop-sdk (0.20.1-2) bullseye; urgency=medium
+
+  * Remove unused ${python3:Depends} from '-full' package
+  * Fix version.txt
+  * Updated master workflow files
+  * Updated master workflow files
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:46:24 +0000
+
 py-pitop-sdk (0.20.1-1) bullseye; urgency=medium
 
   * Fix miniscreen issues (#452)
