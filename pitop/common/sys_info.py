@@ -192,7 +192,7 @@ def interface_is_up(interface_name):
     return "up" in contents
 
 
-def get_address_for_ptusb_connected_device():
+def get_address_for_connected_device():
     def command_succeeds(cmd, timeout):
         try:
             run_command(cmd, timeout=timeout, check=True, log_errors=False)
@@ -200,18 +200,30 @@ def get_address_for_ptusb_connected_device():
         except Exception:
             return False
 
-    if interface_is_up("ptusb0"):
-        current_leases = (
-            IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
-        )
-        current_leases = list(current_leases)
-        current_leases.reverse()
+    current_leases = IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
+    current_leases = list(current_leases)
+    current_leases.reverse()
 
-        for lease in current_leases:
-            # Windows machines won't respond to ping requests by default. Using arping
-            # helps us on that case, but since it takes ~1.5s, it's used as a fallback
-            if command_succeeds(f"ping -c1 {lease.ip}", 0.1) or command_succeeds(
-                f"arping -c1 {lease.ip}", 2
-            ):
-                return lease.ip
+    for lease in current_leases:
+        # Windows machines won't respond to ping requests by default. Using arping
+        # helps us on that case, but since it takes ~1.5s, it's used as a fallback
+        if command_succeeds(f"ping -c1 {lease.ip}", 0.1) or command_succeeds(
+            f"arping -c1 {lease.ip}", 2
+        ):
+            return lease.ip
+
     return ""
+
+
+def get_address_for_ptusb_connected_device():
+    if interface_is_up("ptusb0"):
+        return get_address_for_connected_device()
+    return ""
+
+
+def is_connected_to_internet() -> bool:
+    try:
+        run_command("ping -c1 8.8.8.8", timeout=2, check=True, log_errors=False)
+        return True
+    except Exception:
+        return False
