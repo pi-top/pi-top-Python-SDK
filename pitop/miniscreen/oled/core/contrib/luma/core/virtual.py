@@ -5,11 +5,12 @@
 from textwrap import TextWrapper
 from time import perf_counter, sleep
 
-from luma.core import ansi_color, mixin
-from luma.core.render import canvas
-from luma.core.threadpool import threadpool
-from luma.core.util import mutable_string, observable
 from PIL import Image, ImageDraw, ImageFont
+
+from . import ansi_color, mixin
+from .render import canvas
+from .threadpool import threadpool
+from .util import mutable_string, observable
 
 pool = threadpool(4)
 
@@ -117,7 +118,6 @@ class viewport(mixin.capabilities):
             im = im.convert(self._device.mode)
 
         self._device.display(im)
-        del im
 
     def _crop_box(self):
         (left, top) = self._position
