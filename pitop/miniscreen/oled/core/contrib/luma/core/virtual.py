@@ -3,40 +3,34 @@
 # See LICENSE.rst for details.
 
 from textwrap import TextWrapper
-from time import sleep, perf_counter
+from time import perf_counter, sleep
 
-from PIL import Image, ImageDraw, ImageFont
-
-from luma.core import mixin, ansi_color
-from luma.core.threadpool import threadpool
+from luma.core import ansi_color, mixin
 from luma.core.render import canvas
+from luma.core.threadpool import threadpool
 from luma.core.util import mutable_string, observable
-
+from PIL import Image, ImageDraw, ImageFont
 
 pool = threadpool(4)
 
 
 def calc_bounds(xy, entity):
-    """
-    For an entity with width and height attributes, determine
-    the bounding box if were positioned at ``(x, y)``.
-    """
+    """For an entity with width and height attributes, determine the bounding
+    box if were positioned at ``(x, y)``."""
     left, top = xy
     right, bottom = left + entity.width, top + entity.height
     return [left, top, right, bottom]
 
 
 def range_overlap(a_min, a_max, b_min, b_max):
-    """
-    Neither range is completely greater than the other.
-    """
+    """Neither range is completely greater than the other."""
     return (a_min < b_max) and (b_min < a_max)
 
 
 class viewport(mixin.capabilities):
-    """
-    The viewport offers a positionable window into a larger resolution pseudo-display,
-    that also supports the concept of hotspots (which act like live displays).
+    """The viewport offers a positionable window into a larger resolution
+    pseudo-display, that also supports the concept of hotspots (which act like
+    live displays).
 
     :param device: The device to project the enlarged pseudo-display viewport onto.
     :param width: The number of horizontal pixels.
@@ -53,6 +47,7 @@ class viewport(mixin.capabilities):
         colors at the expense of resolution.
     :type dither: bool
     """
+
     def __init__(self, device, width, height, mode=None, dither=False):
         self.capabilities(width, height, rotate=0, mode=mode or device.mode)
         if hasattr(device, "segment_mapper"):
@@ -64,8 +59,8 @@ class viewport(mixin.capabilities):
         self._dither = dither
 
     def display(self, image):
-        assert(image.mode == self.mode)
-        assert(image.size == self.size)
+        assert image.mode == self.mode
+        assert image.size == self.size
 
         self._backing_image.paste(image)
         self.refresh()
@@ -75,37 +70,34 @@ class viewport(mixin.capabilities):
         self.refresh()
 
     def add_hotspot(self, hotspot, xy):
-        """
-        Add the hotspot at ``(x, y)``. The hotspot must fit inside the bounds
-        of the virtual device. If it does not then an ``AssertError`` is
-        raised.
+        """Add the hotspot at ``(x, y)``.
+
+        The hotspot must fit inside the bounds of the virtual device. If
+        it does not then an ``AssertError`` is raised.
         """
         (x, y) = xy
-        assert(0 <= x <= self.width - hotspot.width)
-        assert(0 <= y <= self.height - hotspot.height)
+        assert 0 <= x <= self.width - hotspot.width
+        assert 0 <= y <= self.height - hotspot.height
 
         # TODO: should it check to see whether hotspots overlap each other?
         # Is sensible to _allow_ them to overlap?
         self._hotspots.append((hotspot, xy))
 
     def remove_hotspot(self, hotspot, xy):
-        """
-        Remove the hotspot at ``(x, y)``: Any previously rendered image where
-        the hotspot was placed is erased from the backing image, and will be
-        "undrawn" the next time the virtual device is refreshed. If the
-        specified hotspot is not found for ``(x, y)``, a ``ValueError`` is
-        raised.
+        """Remove the hotspot at ``(x, y)``: Any previously rendered image
+        where the hotspot was placed is erased from the backing image, and will
+        be "undrawn" the next time the virtual device is refreshed.
+
+        If the specified hotspot is not found for ``(x, y)``, a
+        ``ValueError`` is raised.
         """
         self._hotspots.remove((hotspot, xy))
         eraser = Image.new(self.mode, hotspot.size)
         self._backing_image.paste(eraser, xy)
 
     def is_overlapping_viewport(self, hotspot, xy):
-        """
-        Checks to see if the hotspot at position ``(x, y)``
-        is (at least partially) visible according to the
-        position of the viewport.
-        """
+        """Checks to see if the hotspot at position ``(x, y)`` is (at least
+        partially) visible according to the position of the viewport."""
         l1, t1, r1, b1 = calc_bounds(xy, hotspot)
         l2, t2, r2, b2 = calc_bounds(self._position, self._device)
         return range_overlap(l1, r1, l2, r2) and range_overlap(t1, b1, t2, b2)
@@ -132,15 +124,16 @@ class viewport(mixin.capabilities):
         right = left + self._device.width
         bottom = top + self._device.height
 
-        assert(0 <= left <= right <= self.width)
-        assert(0 <= top <= bottom <= self.height)
+        assert 0 <= left <= right <= self.width
+        assert 0 <= top <= bottom <= self.height
 
         return (left, top, right, bottom)
 
 
 class hotspot(mixin.capabilities):
-    """
-    A hotspot (`a place of more than usual interest, activity, or popularity`)
+    """A hotspot (`a place of more than usual interest, activity, or
+    popularity`)
+
     is a live display which may be added to a virtual viewport - if the hotspot
     and the viewport are overlapping, then the :func:`update` method will be
     automatically invoked when the viewport is being refreshed or its position
@@ -158,6 +151,7 @@ class hotspot(mixin.capabilities):
           values where it is not necessary to update every refresh cycle, or
           your implementation is stateful.
     """
+
     def __init__(self, width, height, draw_fn=None):
         self.capabilities(width, height, rotate=0)  # TODO: set mode?
         self._fn = draw_fn
@@ -171,11 +165,9 @@ class hotspot(mixin.capabilities):
         del im
 
     def should_redraw(self):
-        """
-        Override this method to return true or false on some condition
+        """Override this method to return true or false on some condition
         (possibly on last updated member variable) so that for slow changing
-        hotspots they are not updated too frequently.
-        """
+        hotspots they are not updated too frequently."""
         return True
 
     def update(self, draw):
@@ -184,11 +176,10 @@ class hotspot(mixin.capabilities):
 
 
 class snapshot(hotspot):
-    """
-    A snapshot is a `type of` hotspot, but only updates once in a given
+    """A snapshot is a `type of` hotspot, but only updates once in a given
     interval, usually much less frequently than the viewport requests refresh
-    updates.
-    """
+    updates."""
+
     def __init__(self, width, height, draw_fn=None, interval=1.0):
         assert interval > 0
         super(snapshot, self).__init__(width, height, draw_fn)
@@ -196,9 +187,7 @@ class snapshot(hotspot):
         self.last_updated = -interval
 
     def should_redraw(self):
-        """
-        Only requests a redraw after ``interval`` seconds have elapsed.
-        """
+        """Only requests a redraw after ``interval`` seconds have elapsed."""
         return perf_counter() - self.last_updated > self.interval
 
     def paste_into(self, image, xy):
@@ -207,12 +196,20 @@ class snapshot(hotspot):
 
 
 class terminal(object):
-    """
-    Provides a terminal-like interface to a device (or a device-like object
-    that has :class:`mixin.capabilities` characteristics).
-    """
-    def __init__(self, device, font=None, color="white", bgcolor="black",
-                 tabstop=4, line_height=None, animate=True, word_wrap=False):
+    """Provides a terminal-like interface to a device (or a device-like object
+    that has :class:`mixin.capabilities` characteristics)."""
+
+    def __init__(
+        self,
+        device,
+        font=None,
+        color="white",
+        bgcolor="black",
+        tabstop=4,
+        line_height=None,
+        animate=True,
+        word_wrap=False,
+    ):
         self._device = device
         self.font = font or ImageFont.load_default()
         self.default_fgcolor = color
@@ -232,8 +229,9 @@ class terminal(object):
         self.height = device.height // self._ch
         self.size = (self.width, self.height)
         self.reset()
-        self._backing_image = Image.new(self._device.mode, self._device.size,
-            self._bgcolor)
+        self._backing_image = Image.new(
+            self._device.mode, self._device.size, self._bgcolor
+        )
         self._canvas = ImageDraw.Draw(self._backing_image)
         self.clear()
 
@@ -246,17 +244,13 @@ class terminal(object):
             self.tw.break_long_words = True
 
     def clear(self):
-        """
-        Clears the display and resets the cursor position to ``(0, 0)``.
-        """
+        """Clears the display and resets the cursor position to ``(0, 0)``."""
         self._cx, self._cy = (0, 0)
-        self._canvas.rectangle(self._device.bounding_box,
-                               fill=self.default_bgcolor)
+        self._canvas.rectangle(self._device.bounding_box, fill=self.default_bgcolor)
         self.flush()
 
     def println(self, text=""):
-        """
-        Prints the supplied text to the device, scrolling where necessary.
+        """Prints the supplied text to the device, scrolling where necessary.
         The text is always followed by a newline.
 
         :param text: The text to print.
@@ -289,10 +283,9 @@ class terminal(object):
             self.newline()
 
     def puts(self, text):
-        """
-        Prints the supplied text, handling special character codes for carriage
-        return (\\r), newline (\\n), backspace (\\b) and tab (\\t). ANSI color
-        codes are also supported.
+        """Prints the supplied text, handling special character codes for
+        carriage return (\\r), newline (\\n), backspace (\\b) and tab (\\t).
+        ANSI color codes are also supported.
 
         If the ``animate`` flag was set to True (default), then each character
         is flushed to the device, giving the effect of 1970's teletype device.
@@ -304,23 +297,22 @@ class terminal(object):
             method(*args)
 
     def putch(self, char):
-        """
-        Prints the specific character, which must be a valid printable ASCII
+        """Prints the specific character, which must be a valid printable ASCII
         value in the range 32..127 only, or one of carriage return (\\r),
         newline (\\n), backspace (\\b) or tab (\\t).
 
         :param char: The character to print.
         """
-        if char == '\r':
+        if char == "\r":
             self.carriage_return()
 
-        elif char == '\n':
+        elif char == "\n":
             self.newline()
 
-        elif char == '\b':
+        elif char == "\b":
             self.backspace()
 
-        elif char == '\t':
+        elif char == "\t":
             self.tab()
 
         else:
@@ -329,45 +321,44 @@ class terminal(object):
                 self.newline()
 
             self.erase()
-            self._canvas.text((self._cx, self._cy),
-                              text=char,
-                              font=self.font,
-                              fill=self._fgcolor)
+            self._canvas.text(
+                (self._cx, self._cy), text=char, font=self.font, fill=self._fgcolor
+            )
 
             self._cx += w
             if self.animate:
                 self.flush()
 
     def carriage_return(self):
-        """
-        Returns the cursor position to the left-hand side without advancing
-        downwards.
-        """
+        """Returns the cursor position to the left-hand side without advancing
+        downwards."""
         self._cx = 0
 
     def tab(self):
-        """
-        Advances the cursor position to the next (soft) tabstop.
-        """
+        """Advances the cursor position to the next (soft) tabstop."""
         soft_tabs = self.tabstop - ((self._cx // self._cw) % self.tabstop)
         for _ in range(soft_tabs):
             self.putch(" ")
 
     def newline(self):
-        """
-        Advances the cursor position ot the left hand side, and to the next
-        line. If the cursor is on the lowest line, the displayed contents are
+        """Advances the cursor position ot the left hand side, and to the next
+        line.
+
+        If the cursor is on the lowest line, the displayed contents are
         scrolled, causing the top line to be lost.
         """
         self.carriage_return()
 
         if self._cy + (2 * self._ch) >= self._device.height:
             # Simulate a vertical scroll
-            copy = self._backing_image.crop((0, self._ch, self._device.width,
-                self._device.height))
+            copy = self._backing_image.crop(
+                (0, self._ch, self._device.width, self._device.height)
+            )
             self._backing_image.paste(copy, (0, 0))
-            self._canvas.rectangle((0, copy.height, self._device.width,
-                self._device.height), fill=self.default_bgcolor)
+            self._canvas.rectangle(
+                (0, copy.height, self._device.width, self._device.height),
+                fill=self.default_bgcolor,
+            )
         else:
             self._cy += self._ch
 
@@ -376,10 +367,10 @@ class terminal(object):
             sleep(0.2)
 
     def backspace(self):
-        """
-        Moves the cursor one place to the left, erasing the character at the
-        current position. Cannot move beyond column zero, nor onto the
-        previous line.
+        """Moves the cursor one place to the left, erasing the character at the
+        current position.
+
+        Cannot move beyond column zero, nor onto the previous line.
         """
         if self._cx + self._cw >= 0:
             self.erase()
@@ -388,22 +379,18 @@ class terminal(object):
         self.flush()
 
     def erase(self):
-        """
-        Erase the contents of the cursor's current position without moving the
-        cursor's position.
-        """
+        """Erase the contents of the cursor's current position without moving
+        the cursor's position."""
         bounds = (self._cx, self._cy, self._cx + self._cw, self._cy + self._ch)
         self._canvas.rectangle(bounds, fill=self._bgcolor)
 
     def flush(self):
-        """
-        Cause the current backing store to be rendered on the nominated device.
-        """
+        """Cause the current backing store to be rendered on the nominated
+        device."""
         self._device.display(self._backing_image)
 
     def foreground_color(self, value):
-        """
-        Sets the foreground color.
+        """Sets the foreground color.
 
         :param value: The new color value, either string name or RGB tuple.
         :type value: str or tuple
@@ -411,8 +398,7 @@ class terminal(object):
         self._fgcolor = value
 
     def background_color(self, value):
-        """
-        Sets the background color.
+        """Sets the background color.
 
         :param value: The new color value, either string name or RGB tuple.
         :type value: str or tuple
@@ -420,32 +406,27 @@ class terminal(object):
         self._bgcolor = value
 
     def reset(self):
-        """
-        Resets the foreground and background color value back to the original
-        when initialised.
-        """
+        """Resets the foreground and background color value back to the
+        original when initialised."""
         self._fgcolor = self.default_fgcolor
         self._bgcolor = self.default_bgcolor
 
     def reverse_colors(self):
-        """
-        Flips the foreground and background colors.
-        """
+        """Flips the foreground and background colors."""
         self._bgcolor, self._fgcolor = self._fgcolor, self._bgcolor
 
 
 class history(mixin.capabilities):
-    """
-    Wraps a device (or emulator) to provide a facility to be able to make a
+    """Wraps a device (or emulator) to provide a facility to be able to make a
     savepoint (a point at which the screen display can be "rolled-back" to).
 
     This is mostly useful for displaying transient error/dialog messages
-    which could be subsequently dismissed, reverting back to the previous
-    display.
+    which could be subsequently dismissed, reverting back to the
+    previous display.
     """
+
     def __init__(self, device):
-        self.capabilities(device.width, device.height, rotate=0,
-            mode=device.mode)
+        self.capabilities(device.width, device.height, rotate=0, mode=device.mode)
         if hasattr(device, "segment_mapper"):
             self.segment_mapper = device.segment_mapper
         self._savepoints = []
@@ -457,23 +438,20 @@ class history(mixin.capabilities):
         self._device.display(image)
 
     def savepoint(self):
-        """
-        Copies the last displayed image.
-        """
+        """Copies the last displayed image."""
         if self._last_image:
             self._savepoints.append(self._last_image)
             self._last_image = None
 
     def restore(self, drop=0):
-        """
-        Restores the last savepoint. If ``drop`` is supplied and greater than
-        zero, then that many savepoints are dropped, and the next savepoint is
-        restored.
+        """Restores the last savepoint. If ``drop`` is supplied and greater
+        than zero, then that many savepoints are dropped, and the next
+        savepoint is restored.
 
         :param drop:
         :type drop: int
         """
-        assert(drop >= 0)
+        assert drop >= 0
         while drop > 0:
             self._savepoints.pop()
             drop -= 1
@@ -482,15 +460,12 @@ class history(mixin.capabilities):
         self.display(img)
 
     def __len__(self):
-        """
-        Indication of the number of savepoints retained.
-        """
+        """Indication of the number of savepoints retained."""
         return len(self._savepoints)
 
 
 class sevensegment(object):
-    """
-    Abstraction that wraps a device, this class provides a ``text`` property
+    """Abstraction that wraps a device, this class provides a ``text`` property
     which can be used to set and get a text value, which when combined with a
     ``segment_mapper`` sets the correct bit representation for seven-segment
     displays and propagates that onto the underlying device.
@@ -503,6 +478,7 @@ class sevensegment(object):
         character is supplied to the text property.
     :type undefined: char
     """
+
     def __init__(self, device, undefined="_", segment_mapper=None):
         self.device = device
         self.undefined = undefined
@@ -512,35 +488,34 @@ class sevensegment(object):
 
     @property
     def text(self):
-        """
-        Returns the current state of the text buffer. This may not reflect
-        accurately what is displayed on the seven-segment device, as certain
-        alpha-numerics and most punctuation cannot be rendered on the limited
-        display.
+        """Returns the current state of the text buffer.
+
+        This may not reflect accurately what is displayed on the seven-
+        segment device, as certain alpha-numerics and most punctuation
+        cannot be rendered on the limited display.
         """
         return self._text_buffer
 
     @text.setter
     def text(self, value):
-        """
-        Updates the seven-segment display with the given value. If there is not
-        enough space to show the full text, an ``OverflowException`` is raised.
+        """Updates the seven-segment display with the given value. If there is
+        not enough space to show the full text, an ``OverflowException`` is
+        raised.
 
         :param value: The value to render onto the device. Any characters which
             cannot be rendered will be converted into the ``undefined``
             character supplied in the constructor.
         :type value: str
         """
-        self._text_buffer = observable(mutable_string(value),
-            observer=self._flush)
+        self._text_buffer = observable(mutable_string(value), observer=self._flush)
 
     def _flush(self, buf):
-        data = bytearray(self.segment_mapper(buf, notfound=self.undefined)
-            ).ljust(self._bufsize, b'\0')
+        data = bytearray(self.segment_mapper(buf, notfound=self.undefined)).ljust(
+            self._bufsize, b"\0"
+        )
 
         if len(data) > self._bufsize:
-            raise OverflowError(
-                f"Device's capabilities insufficient for value '{buf}'")
+            raise OverflowError(f"Device's capabilities insufficient for value '{buf}'")
 
         with canvas(self.device) as draw:
             for x, byte in enumerate(reversed(data)):
@@ -551,10 +526,9 @@ class sevensegment(object):
 
 
 class character(object):
-    """
-    Abstraction that wraps a device, this class provides a ``text`` property
+    """Abstraction that wraps a device, this class provides a ``text`` property
     which can be used to set and get a text value allowing the device to be
-    treated as a character style display such as the HD44780 LCD
+    treated as a character style display such as the HD44780 LCD.
 
     If the device is actually a character style device, be careful to provide
     a font that adheres to the pixel dimensions of the display.
@@ -575,23 +549,22 @@ class character(object):
         self.device = device
         self._undefined = undefined
 
-        self.font = font if font else device.font if hasattr(device, 'font') else None
-        assert self.font, 'No font available'
-        self.text = ''
+        self.font = font if font else device.font if hasattr(device, "font") else None
+        assert self.font, "No font available"
+        self.text = ""
 
     @property
     def text(self):
-        """
-        Returns the current state of the text buffer. This may not reflect
-        accurately what is displayed on the device if the font does
-        not have a symbol for a requested text value.
+        """Returns the current state of the text buffer.
+
+        This may not reflect accurately what is displayed on the device
+        if the font does not have a symbol for a requested text value.
         """
         return self._text_buffer
 
     @text.setter
     def text(self, value):
-        """
-        Updates the display with the given value.
+        """Updates the display with the given value.
 
         :param value: The value to render onto the device. Any characters which
             cannot be rendered will be converted into the ``undefined``
@@ -599,14 +572,18 @@ class character(object):
             as expected but no other control characters (e.g. \r) are honored.
         :type value: str
         """
-        self._text_buffer = observable(mutable_string(value),
-            observer=self._flush)
+        self._text_buffer = observable(mutable_string(value), observer=self._flush)
 
     def _flush(self, buf):
         # Replace any characters that are not in the font with the undefined character
-        buf = ''.join([i if i == '\n' or self.font.getsize(i)[0] > 0 else self._undefined for i in buf])
+        buf = "".join(
+            [
+                i if i == "\n" or self.font.getsize(i)[0] > 0 else self._undefined
+                for i in buf
+            ]
+        )
 
         # Draw text onto display's image using the provided font
         with canvas(self.device) as draw:
             # Place text
-            draw.text((0, 0), buf, fill='white', font=self.font, spacing=0)
+            draw.text((0, 0), buf, fill="white", font=self.font, spacing=0)
