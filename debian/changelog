@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.20.3-2) bullseye; urgency=medium
+
+  * Fix version.txt
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 14 Sep 2021 18:56:11 +0000
+
 pi-top-python-sdk (0.20.3-1) bullseye; urgency=medium
 
   * Add additional sys info functions used by web portal (#456)
