@@ -1,3 +1,13 @@
+pi-top-python-sdk (0.20.3-1) bullseye; urgency=medium
+
+  * Add additional sys info functions used by web portal (#456)
+  * CLI uses is_connected_to_internet from SDK
+  * Add support for 'nice' command (#457)
+  * Update virtual.py (#458)
+  * Don't cap dependency versions if not needed
+
+ -- pi-top <deb-maintainers@pi-top.com>  Sat, 11 Sep 2021 14:24:09 +0000
+
 pi-top-python-sdk (0.20.2-1) bullseye; urgency=medium
 
   * Remove unused ${python3:Depends} from '-full' package
