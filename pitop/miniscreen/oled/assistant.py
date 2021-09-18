@@ -24,25 +24,29 @@ class MiniscreenAssistant:
         return image
 
     def get_recommended_text_pos(self):
-        return self.top_left()
+        return (self.width / 2, self.height / 2)
+
+    def get_recommended_anchor(self):
+        # Centered text
+        return "mm"
 
     def get_recommended_font_size(self):
-        return 30
+        return 14
 
-    def get_recommended_font(self, size=15):
+    def get_recommended_font(self, size=14):
         return ImageFont.truetype(self.get_recommended_font_path(size), size=size)
 
-    def get_recommended_font_path(self, size=15):
+    def get_recommended_font_path(self, size=14):
         font_path = self.get_regular_font_path()
         if size < 12:
             font_path = self.get_mono_font()
 
         return font_path
 
-    def get_regular_font(self, size=15):
+    def get_regular_font(self, size=14):
         return ImageFont.truetype(self.get_regular_font_path(), size=size)
 
-    def get_regular_font_path(self, size=15):
+    def get_regular_font_path(self, size=14):
         return "Roboto-Regular.ttf"
 
     def get_mono_font(self, size=11):
