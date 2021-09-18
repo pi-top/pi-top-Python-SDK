@@ -262,7 +262,16 @@ class OLED:
             invert=invert,
         )
 
-    def display_text(self, text, xy=None, font_size=None, font=None, invert=False):
+    def display_text(
+        self,
+        text,
+        xy=None,
+        font_size=None,
+        font=None,
+        invert=False,
+        align=None,
+        anchor=None,
+    ):
         """Renders a single line of text to the screen at a given position and
         size.
 
@@ -278,6 +287,8 @@ class OLED:
         :param string font: A filename or path of a TrueType or OpenType font.
             If not provided or passed as `None`, the default font will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
+        :param str align: PIL ImageDraw alignment to use
+        :param str anchor: PIL ImageDraw text anchor to use
         """
         if xy is None:
             xy = self.assistant.get_recommended_text_pos()
@@ -287,6 +298,12 @@ class OLED:
 
         if font is None:
             font = self.assistant.get_recommended_font_path(font_size)
+
+        if align is None:
+            align = self.assistant.get_recommended_text_align()
+
+        if anchor is None:
+            anchor = self.assistant.get_recommended_text_anchor()
 
         # Create empty image
         image = self.assistant.empty_image
@@ -298,14 +315,22 @@ class OLED:
             font=ImageFont.truetype(font, size=font_size),
             fill=1,
             spacing=0,
-            align="left",
+            align=align,
+            anchor=anchor,
         )
 
         # Display image
         self.display_image(image, invert=invert)
 
     def display_multiline_text(
-        self, text, xy=None, font_size=None, font=None, invert=False
+        self,
+        text,
+        xy=None,
+        font_size=None,
+        font=None,
+        invert=False,
+        anchor=None,
+        align=None,
     ):
         """Renders multi-lined text to the screen at a given position and size.
         Text that is too long for the screen will automatically wrap to the
@@ -323,6 +348,8 @@ class OLED:
         :param string font: A filename or path of a TrueType or OpenType font.
             If not provided or passed as `None`, the default font will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
+        :param str align: PIL ImageDraw alignment to use
+        :param str anchor: PIL ImageDraw text anchor to use
         """
 
         def format_multiline_text(text, font, font_size):
@@ -362,6 +389,12 @@ class OLED:
         if font is None:
             font = self.assistant.get_recommended_font_path(font_size)
 
+        if align is None:
+            align = self.assistant.get_recommended_text_align()
+
+        if anchor is None:
+            anchor = self.assistant.get_recommended_text_anchor()
+
         # Format text
         text = format_multiline_text(text, font, font_size)
 
@@ -375,7 +408,8 @@ class OLED:
             font=ImageFont.truetype(font, size=font_size),
             fill=1,
             spacing=0,
-            align="left",
+            align=align,
+            anchor=anchor,
         )
 
         # Display image

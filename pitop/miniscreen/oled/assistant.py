@@ -26,9 +26,13 @@ class MiniscreenAssistant:
     def get_recommended_text_pos(self):
         return (self.width / 2, self.height / 2)
 
-    def get_recommended_anchor(self):
+    def get_recommended_text_anchor(self):
         # Centered text
         return "mm"
+
+    def get_recommended_text_align(self):
+        # Centered text
+        return "center"
 
     def get_recommended_font_size(self):
         return 14
