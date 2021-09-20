@@ -1,3 +1,9 @@
+py-pitop-sdk (0.21.0-1) buster; urgency=medium
+
+  * Fix path to default font in OLED assistant
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 20 Sep 2021 15:25:30 -0300
+
 py-pitop-sdk (0.20.0-1) buster; urgency=medium
 
   * Drop pip from build deps
