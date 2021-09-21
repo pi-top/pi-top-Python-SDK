@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from argparse import ArgumentParser
 
 from .cli_base import CliBaseClass, PitopCliException, PitopCliInvalidArgument
