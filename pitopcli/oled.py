@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 from os.path import isdir, isfile, join
 from time import sleep, strftime
 

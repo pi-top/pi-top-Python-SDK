@@ -1,4 +1,3 @@
-#! /usr/bin/python3
 from os import path
 from subprocess import getstatusoutput
 from sys import stderr

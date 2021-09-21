@@ -1,5 +1,3 @@
-#! /usr/bin/python3
-
 import argparse
 from os import get_terminal_size
 from sys import stderr
