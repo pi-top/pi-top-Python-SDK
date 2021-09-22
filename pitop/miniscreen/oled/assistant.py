@@ -24,31 +24,46 @@ class MiniscreenAssistant:
         return image
 
     def get_recommended_text_pos(self):
-        return self.top_left()
+        # Center of display
+        return tuple(x / 2 for x in self.image_size)
+
+    def get_recommended_text_anchor(self):
+        # Centered text
+        return "mm"
+
+    def get_recommended_text_align(self):
+        # Centered text
+        return "center"
 
     def get_recommended_font_size(self):
-        return 30
+        return 14
 
-    def get_recommended_font(self, size=15):
+    def get_recommended_font(self, size=None):
+        if size is None:
+            size = self.get_recommended_font_size()
         return ImageFont.truetype(self.get_recommended_font_path(size), size=size)
 
-    def get_recommended_font_path(self, size=15):
+    def get_recommended_font_path(self, size=None):
+        if size is None:
+            size = self.get_recommended_font_size()
         font_path = self.get_regular_font_path()
         if size < 12:
             font_path = self.get_mono_font_path()
 
         return font_path
 
-    def get_regular_font(self, size=15):
+    def get_regular_font(self, size=None):
+        if size is None:
+            size = self.get_recommended_font_size()
         return ImageFont.truetype(self.get_regular_font_path(), size=size)
 
-    def get_regular_font_path(self, size=15):
+    def get_regular_font_path(self):
         return "Roboto-Regular.ttf"
 
     def get_mono_font(self, size=11):
         return ImageFont.truetype(self.get_mono_font_path(), size=size)
 
-    def get_mono_font_path(self, size=11):
+    def get_mono_font_path(self):
         return "VeraMono.ttf"
 
     @property
