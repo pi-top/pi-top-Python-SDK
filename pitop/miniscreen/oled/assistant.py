@@ -1,4 +1,4 @@
-from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps, ImageSequence
 
 
 class MiniscreenAssistant:
@@ -7,6 +7,9 @@ class MiniscreenAssistant:
     def __init__(self, mode, size):
         self.image_mode = mode
         self.image_size = size
+
+    def get_frame_iterator(self, image):
+        return ImageSequence.Iterator(image)
 
     def images_match(self, image1, image2):
         return ImageChops.difference(image1, image2).getbbox() is not None

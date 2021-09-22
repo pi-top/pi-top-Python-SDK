@@ -2,7 +2,6 @@ from atexit import register
 from threading import Thread, current_thread, main_thread
 from time import sleep
 
-from PIL import ImageSequence
 from pyinotify import IN_CLOSE_WRITE, IN_OPEN, Notifier, ProcessEvent, WatchManager
 
 from pitop.core import ImageFunctions
@@ -523,7 +522,7 @@ class OLED:
     ####################
     def __auto_play(self, image, loop=False):
         while True:
-            for frame in ImageSequence.Iterator(image):
+            for frame in self.assistant.get_frame_iterator(image):
 
                 if self.__kill_thread:
                     break
