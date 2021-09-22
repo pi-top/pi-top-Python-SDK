@@ -608,11 +608,22 @@ class OLED:
                 break
 
     @property
-    def _when_user_starts_using_oled(self):
+    def when_user_controlled(self):
+        """Function to call when user takes control of the miniscreen.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
         return self.lock_file_monitor.when_user_starts_using_oled
 
-    @_when_user_starts_using_oled.setter
-    def _when_user_starts_using_oled(self, callback):
+    @when_user_controlled.setter
+    def when_user_controlled(self, callback):
+        """Setter for function to call when user takes control of the
+        miniscreen.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
         if not callable(callback):
             raise ValueError("Callback must be callable")
 
@@ -621,11 +632,23 @@ class OLED:
         self.lock_file_monitor.start()
 
     @property
-    def _when_user_stops_using_oled(self):
+    def when_system_controlled(self):
+        """Function to call when user gives back control of the miniscreen to
+        the system.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
         return self.lock_file_monitor.when_user_stops_using_oled
 
-    @_when_user_stops_using_oled.setter
-    def _when_user_stops_using_oled(self, callback):
+    @when_system_controlled.setter
+    def when_system_controlled(self, callback):
+        """Setter for function to call when user gives back control of the
+        miniscreen to the system.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
         if not callable(callback):
             raise ValueError("Callback must be callable")
 
