@@ -48,7 +48,7 @@ class MiniscreenAssistant:
             size = self.get_recommended_font_size()
         font_path = self.get_regular_font_path()
         if size < 12:
-            font_path = self.get_mono_font()
+            font_path = self.get_mono_font_path()
 
         return font_path
 
