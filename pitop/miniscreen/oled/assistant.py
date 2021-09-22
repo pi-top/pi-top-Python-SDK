@@ -1,4 +1,4 @@
-from PIL import Image, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps
 
 
 class MiniscreenAssistant:
@@ -7,6 +7,115 @@ class MiniscreenAssistant:
     def __init__(self, mode, size):
         self.image_mode = mode
         self.image_size = size
+
+    def images_match(self, image1, image2):
+        return ImageChops.difference(image1, image2).getbbox() is not None
+
+    def clear(self, image):
+        ImageDraw.Draw(image).rectangle(image.getbbox(), fill=0)
+
+    def invert(self, image):
+        image = ImageOps.invert(image.convert("L")).convert("1")
+
+    def render_text(
+        self,
+        image,
+        text,
+        xy=None,
+        font_size=None,
+        font=None,
+        align=None,
+        anchor=None,
+    ):
+        if xy is None:
+            xy = self.assistant.get_recommended_text_pos()
+
+        if font_size is None:
+            font_size = self.assistant.get_recommended_font_size()
+
+        if font is None:
+            font = self.assistant.get_recommended_font_path(font_size)
+
+        if align is None:
+            align = self.assistant.get_recommended_text_align()
+
+        if anchor is None:
+            anchor = self.assistant.get_recommended_text_anchor()
+
+        ImageDraw.Draw(image).text(
+            xy,
+            str(text),
+            font=ImageFont.truetype(font, size=font_size),
+            fill=1,
+            spacing=0,
+            align=align,
+            anchor=anchor,
+        )
+
+    def format_multiline_text(self, text, font, font_size):
+        def get_text_size(text):
+            return ImageDraw.Draw(self.assistant.empty_image).textsize(
+                text=str(text),
+                font=ImageFont.truetype(font, size=font_size),
+                spacing=0,
+            )
+
+        remaining = self.width
+        space_width, _ = get_text_size(" ")
+        # use this list as a stack, push/popping each line
+        output_text = []
+        # split on whitespace...
+        for word in text.split(None):
+            word_width, _ = get_text_size(word)
+            if word_width + space_width > remaining:
+                output_text.append(word)
+                remaining = self.width - word_width
+            else:
+                if not output_text:
+                    output_text.append(word)
+                else:
+                    output = output_text.pop()
+                    output += " %s" % word
+                    output_text.append(output)
+                remaining = remaining - (word_width + space_width)
+        return "\n".join(output_text)
+
+    def render_multiline_text(
+        self,
+        image,
+        text,
+        xy=None,
+        font_size=None,
+        font=None,
+        align=None,
+        anchor=None,
+    ):
+        if xy is None:
+            xy = self.assistant.get_recommended_text_pos()
+
+        if font_size is None:
+            font_size = self.assistant.get_recommended_font_size()
+
+        if font is None:
+            font = self.assistant.get_recommended_font_path(font_size)
+
+        if align is None:
+            align = self.assistant.get_recommended_text_align()
+
+        if anchor is None:
+            anchor = self.assistant.get_recommended_text_anchor()
+
+        text = self.format_multiline_text(text, font, font_size)
+
+        ImageDraw.Draw(image).text(
+            xy,
+            str(text),
+            font=ImageFont.truetype(font, size=font_size),
+            fill=1,
+            spacing=0,
+            align=align,
+            anchor=anchor,
+        )
 
     def process_image(self, image_to_process):
         if image_to_process.size == self.image_size:

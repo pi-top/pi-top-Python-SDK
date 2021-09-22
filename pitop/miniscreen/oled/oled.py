@@ -2,7 +2,7 @@ from atexit import register
 from threading import Thread, current_thread, main_thread
 from time import sleep
 
-from PIL import ImageChops, ImageDraw, ImageFont, ImageOps, ImageSequence
+from PIL import ImageSequence
 from pyinotify import IN_CLOSE_WRITE, IN_OPEN, Notifier, ProcessEvent, WatchManager
 
 from pitop.core import ImageFunctions
@@ -61,9 +61,8 @@ class OLED:
         if image_to_display is None:
             image_to_display = self._image
 
-        return (
-            self.image is None
-            or ImageChops.difference(self.image, image_to_display).getbbox()
+        return self.image is None or self.assistant.images_match(
+            self.image, image_to_display
         )
 
     @property
@@ -196,7 +195,7 @@ class OLED:
 
     def clear(self):
         """Clears any content displayed in the miniscreen display."""
-        ImageDraw.Draw(self._image).rectangle(self.bounding_box, fill=0)
+        self.assistant.clear(self._image)
         self.__display(self._image, force=True)
 
     # TODO: evaluate dropping this 'redraw last image' function at v1.0.0
@@ -290,36 +289,16 @@ class OLED:
         :param str align: PIL ImageDraw alignment to use
         :param str anchor: PIL ImageDraw text anchor to use
         """
-        if xy is None:
-            xy = self.assistant.get_recommended_text_pos()
-
-        if font_size is None:
-            font_size = self.assistant.get_recommended_font_size()
-
-        if font is None:
-            font = self.assistant.get_recommended_font_path(font_size)
-
-        if align is None:
-            align = self.assistant.get_recommended_text_align()
-
-        if anchor is None:
-            anchor = self.assistant.get_recommended_text_anchor()
-
-        # Create empty image
         image = self.assistant.empty_image
-
-        # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).text(
+        self.assistant.render_text(
+            image,
+            text,
             xy,
-            str(text),
-            font=ImageFont.truetype(font, size=font_size),
-            fill=1,
-            spacing=0,
-            align=align,
-            anchor=anchor,
+            font_size,
+            font,
+            align,
+            anchor,
         )
-
-        # Display image
         self.display_image(image, invert=invert)
 
     def display_multiline_text(
@@ -351,77 +330,23 @@ class OLED:
         :param str align: PIL ImageDraw alignment to use
         :param str anchor: PIL ImageDraw text anchor to use
         """
-
-        def format_multiline_text(text, font, font_size):
-            def get_text_size(text):
-                return ImageDraw.Draw(self.assistant.empty_image).textsize(
-                    text=str(text),
-                    font=ImageFont.truetype(font, size=font_size),
-                    spacing=0,
-                )
-
-            remaining = self.width
-            space_width, _ = get_text_size(" ")
-            # use this list as a stack, push/popping each line
-            output_text = []
-            # split on whitespace...
-            for word in text.split(None):
-                word_width, _ = get_text_size(word)
-                if word_width + space_width > remaining:
-                    output_text.append(word)
-                    remaining = self.width - word_width
-                else:
-                    if not output_text:
-                        output_text.append(word)
-                    else:
-                        output = output_text.pop()
-                        output += " %s" % word
-                        output_text.append(output)
-                    remaining = remaining - (word_width + space_width)
-            return "\n".join(output_text)
-
-        if xy is None:
-            xy = self.assistant.get_recommended_text_pos()
-
-        if font_size is None:
-            font_size = self.assistant.get_recommended_font_size()
-
-        if font is None:
-            font = self.assistant.get_recommended_font_path(font_size)
-
-        if align is None:
-            align = self.assistant.get_recommended_text_align()
-
-        if anchor is None:
-            anchor = self.assistant.get_recommended_text_anchor()
-
-        # Format text
-        text = format_multiline_text(text, font, font_size)
-
-        # Create empty image
         image = self.assistant.empty_image
-
-        # 'Draw' text to empty image, using desired font and size
-        ImageDraw.Draw(image).multiline_text(
+        self.assistant.render_multiline_text(
+            image,
+            text,
             xy,
-            str(text),
-            font=ImageFont.truetype(font, size=font_size),
-            fill=1,
-            spacing=0,
-            align=align,
-            anchor=anchor,
+            font_size,
+            font,
+            align,
+            anchor,
         )
-
-        # Display image
         self.display_image(image, invert=invert)
 
     def __display(self, image_to_display, force=False, invert=False):
         self.stop_animated_image()
 
         if invert:
-            image_to_display = ImageOps.invert(image_to_display.convert("L")).convert(
-                "1"
-            )
+            self.assistant.invert(image_to_display)
 
         self.__fps_regulator.stop_timer()
 
