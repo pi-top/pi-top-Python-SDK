@@ -3,12 +3,11 @@ from threading import Thread, current_thread, main_thread
 from time import sleep
 
 from PIL import ImageChops, ImageDraw, ImageFont, ImageOps, ImageSequence
-from pyinotify import IN_CLOSE_WRITE, IN_OPEN, Notifier, ProcessEvent, WatchManager
 
 from pitop.core import ImageFunctions
 
 from .assistant import MiniscreenAssistant
-from .core import FPS_Regulator, OledDeviceController
+from .core import FPS_Regulator, MiniscreenLockFileMonitor, OledDeviceController
 
 
 class OLED:
@@ -28,10 +27,7 @@ class OLED:
         self.__visible = False
         self.__auto_play_thread = None
 
-        # Lock file monitoring - used by pt-miniscreen
-        self.__file_monitor_thread = None
-        self.__when_user_stops_using_oled = None
-        self.__when_user_starts_using_oled = None
+        self.lock_file_monitor = MiniscreenLockFileMonitor()
 
         self.reset()
 
@@ -613,57 +609,30 @@ class OLED:
 
     @property
     def _when_user_starts_using_oled(self):
-        return self.__when_user_starts_using_oled
+        return self.lock_file_monitor.when_user_starts_using_oled
 
     @_when_user_starts_using_oled.setter
     def _when_user_starts_using_oled(self, callback):
         if not callable(callback):
             raise ValueError("Callback must be callable")
 
-        self.__when_user_starts_using_oled = callback
+        self.lock_file_monitor.when_user_starts_using_oled = callback
         # Lockfile thread needs to be restarted to get updated callback reference
-        self.__start_lockfile_monitoring_thread()
+        self.lock_file_monitor.start()
 
     @property
     def _when_user_stops_using_oled(self):
-        return self.__when_user_stops_using_oled
+        return self.lock_file_monitor.when_user_stops_using_oled
 
     @_when_user_stops_using_oled.setter
     def _when_user_stops_using_oled(self, callback):
         if not callable(callback):
             raise ValueError("Callback must be callable")
 
-        self.__when_user_stops_using_oled = callback
+        self.lock_file_monitor.when_user_stops_using_oled = callback
         # Lockfile thread needs to be restarted to get updated callback reference
-        self.__start_lockfile_monitoring_thread()
-
-    def __start_lockfile_monitoring_thread(self):
-        def start_lockfile_monitoring():
-            eh = ProcessEvent()
-            events_to_watch = 0
-            if self.__when_user_stops_using_oled:
-                eh.process_IN_CLOSE_WRITE = (
-                    lambda event: self.__when_user_stops_using_oled()
-                )
-                events_to_watch = events_to_watch | IN_CLOSE_WRITE
-            if self.__when_user_starts_using_oled:
-                eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
-                events_to_watch = events_to_watch | IN_OPEN
-
-            wm = WatchManager()
-            wm.add_watch(self.__controller.lock.path, events_to_watch)
-            notifier = Notifier(wm, eh)
-            notifier.loop()
-
-        self.__cleanup()
-        self.__file_monitor_thread = Thread(target=start_lockfile_monitoring)
-        self.__file_monitor_thread.daemon = True
-        self.__file_monitor_thread.start()
+        self.lock_file_monitor.start()
 
     def __cleanup(self):
         self.stop_animated_image()
-        if (
-            self.__file_monitor_thread is not None
-            and self.__file_monitor_thread.is_alive()
-        ):
-            self.__file_monitor_thread.join(0)
+        self.lock_file_monitor.stop()
