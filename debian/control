@@ -50,7 +50,7 @@ Depends:
 # 'ping' command
  iputils-ping,
 # Required for hub communication; such as getting case button state
- pi-topd,
+ pi-topd | pt-device-manager,
 # ZMQ for messaging
  python3-zmq,
  raspi-config,
