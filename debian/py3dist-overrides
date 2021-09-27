@@ -12,13 +12,13 @@ isc_dhcp_leases python3-isc-dhcp-leases; PEP386
 matplotlib python3-matplotlib; PEP386
 netifaces python3-netifaces; PEP386
 # Numpy in Debian has epoch version 1
-numpy python3-numpy
+numpy python3-numpy; s/^/1:/
 opencv python3-opencv; PEP386
 pyinotify python3-pyinotify; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
 # smbus2 is a pure Python implementation of the python-smbus package
-# Versions do not match so ignore PEP386
+# Versions do not match so ignore version matching
 smbus2 python3-smbus
 spidev python3-spidev; PEP386
 systemd_python python3-systemd; PEP386
