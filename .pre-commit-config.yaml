@@ -4,8 +4,9 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
-    # debian/patches needs whitespace at end of line
-    # - id: trailing-whitespace
+    - id: trailing-whitespace
+      # debian/patches needs whitespace at end of line
+      exclude: ^debian/patches/smbus2-to-smbus.patch
     - id: end-of-file-fixer
     - id: check-yaml
     - id: check-symlinks
