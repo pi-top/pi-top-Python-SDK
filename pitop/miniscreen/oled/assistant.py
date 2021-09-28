@@ -15,7 +15,7 @@ class MiniscreenAssistant:
         return ImageChops.difference(image1, image2).getbbox() is not None
 
     def clear(self, image):
-        ImageDraw.Draw(image).rectangle(image.getbbox(), fill=0)
+        ImageDraw.Draw(image).rectangle(((0, 0), image.size), fill=0)
 
     def invert(self, image):
         return ImageOps.invert(image.convert("L")).convert("1")
