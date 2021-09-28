@@ -14,6 +14,7 @@ class OLED:
 
     def __init__(self):
         self.__controller = OledDeviceController(self._redraw_last_image)
+        self.lock_file_monitor = MiniscreenLockFileMonitor(self.__controller.lock.path)
 
         self.assistant = MiniscreenAssistant(self.mode, self.size)
 
@@ -24,8 +25,6 @@ class OLED:
 
         self.__visible = False
         self.__auto_play_thread = None
-
-        self.lock_file_monitor = MiniscreenLockFileMonitor()
 
         self.reset()
 
@@ -587,7 +586,7 @@ class OLED:
     @_when_user_starts_using_oled.setter
     def _when_user_starts_using_oled(self, callback):
         """Deprecated function."""
-        self.when_user_controlled(callback)
+        self.when_user_controlled = callback
 
     @property
     def _when_user_stops_using_oled(self):
@@ -597,7 +596,7 @@ class OLED:
     @_when_user_stops_using_oled.setter
     def _when_user_stops_using_oled(self, callback):
         """Deprecated function."""
-        self.when_system_controlled(callback)
+        self.when_system_controlled = callback
 
     def __cleanup(self):
         self.stop_animated_image()
