@@ -18,7 +18,7 @@ class MiniscreenAssistant:
         ImageDraw.Draw(image).rectangle(image.getbbox(), fill=0)
 
     def invert(self, image):
-        image = ImageOps.invert(image.convert("L")).convert("1")
+        return ImageOps.invert(image.convert("L")).convert("1")
 
     def render_text(
         self,
