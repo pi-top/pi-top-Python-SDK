@@ -83,7 +83,7 @@ pi-top laptops (Original pi-top and pi-top [3]) support the following API device
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
-pi-topSPEAKER support is provided automagically by pt-device-manager, and so there is no exposed API for this.
+pi-topSPEAKER support is provided automagically by pi-topd, and so there is no exposed API for this.
 
 pi-top laptops does not support the following API devices/components:
 
@@ -119,7 +119,7 @@ pi-topCEED supports the following API devices/components for use with peripheral
 
 Note that the USB camera library works with any pi-top with a USB camera connected. This was designed for pi-top [4] usage, but due to its general purpose functionality, it can technically be used if desired.
 
-pi-topSPEAKER support is provided automagically by pt-device-manager, and so there is no exposed API for this.
+pi-topSPEAKER support is provided automagically by pi-topd, and so there is no exposed API for this.
 
 pi-topCEED does not support the following API devices/components:
 

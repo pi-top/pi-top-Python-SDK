@@ -334,7 +334,7 @@ def __initialise():
 
             _initialised = True
         else:
-            PTLogger.error("Error: pi-topPULSE not initialised by pt-device-manager")
+            PTLogger.error("Error: pi-topPULSE not initialised by pi-topd")
 
 
 def __signal_handler(signal, frame):

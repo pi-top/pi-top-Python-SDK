@@ -18,7 +18,7 @@ The following Debian packages are required for this library to work:
     +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
     | ``i2c-tools``             | Communicate with pi-top I2C devices.                                                                                  |
     +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
-    | ``pt-device-manager``     | Allows communication with pi-top's hub; such as getting battery state.                                                |
+    | ``pi-topd``               | Allows communication with pi-top's hub; such as getting battery state.                                                |
     |                           | This package installs a ``systemd`` service that needs to be running for this library to work properly                |
     +---------------------------+-----------------------------------------------------------------------------------------------------------------------+
     | ``raspi-config``          | Required to communicate and set parameters to the Raspberry Pi.                                                       |
