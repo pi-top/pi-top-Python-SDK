@@ -4,10 +4,11 @@ from pyinotify import IN_CLOSE_WRITE, IN_OPEN, Notifier, ProcessEvent, WatchMana
 
 
 class MiniscreenLockFileMonitor:
-    def __init__(self):
+    def __init__(self, lock_path):
         self.thread = Thread(target=self._monitor_lockfile)
         self.when_user_stops_using_oled = None
         self.when_user_starts_using_oled = None
+        self.lock_path = lock_path
 
     def _monitor_lockfile(self):
         eh = ProcessEvent()
@@ -20,7 +21,7 @@ class MiniscreenLockFileMonitor:
             events_to_watch = events_to_watch | IN_OPEN
 
         wm = WatchManager()
-        wm.add_watch(self.__controller.lock.path, events_to_watch)
+        wm.add_watch(self.lock_path, events_to_watch)
         notifier = Notifier(wm, eh)
         notifier.loop()
 
