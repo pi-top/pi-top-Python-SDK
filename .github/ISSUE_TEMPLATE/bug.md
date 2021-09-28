@@ -61,7 +61,7 @@ about: Report a bug with this project. Make sure you've read "Contributing to pi
 [3]: (http://knowledgebase.pi-top.com/knowledge/collecting-and-reviewing-system-information)
 -->
 
-| OS version | `pitop` version | `pt-device-manager` version | Python version | Pi model | pi-top model |
+| OS version | `pitop` version | `pi-topd` version | Python version | Pi model | pi-top model |
 | -------------------- | ----- | ----- | ----- | -- | ------- |
 | pi-topOS Sirius C000 | 0.0.0 | 0.0.0 | 0.0.0 | 0A | pi-top0 |
 
