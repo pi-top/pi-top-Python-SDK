@@ -656,6 +656,26 @@ class OLED:
         # Lockfile thread needs to be restarted to get updated callback reference
         self.lock_file_monitor.start()
 
+    @property
+    def _when_user_starts_using_oled(self):
+        """Deprecated function."""
+        return self.when_user_controlled
+
+    @_when_user_starts_using_oled.setter
+    def _when_user_starts_using_oled(self, callback):
+        """Deprecated function."""
+        self.when_user_controlled(callback)
+
+    @property
+    def _when_user_stops_using_oled(self):
+        """Deprecated function."""
+        return self.when_system_controlled
+
+    @_when_user_stops_using_oled.setter
+    def _when_user_stops_using_oled(self, callback):
+        """Deprecated function."""
+        self.when_system_controlled(callback)
+
     def __cleanup(self):
         self.stop_animated_image()
         self.lock_file_monitor.stop()
