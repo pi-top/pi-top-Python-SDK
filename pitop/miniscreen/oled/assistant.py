@@ -18,11 +18,7 @@ class MiniscreenAssistant:
         ImageDraw.Draw(image).rectangle(image.getbbox(), fill=0)
 
     def invert(self, image):
-        # Assigning before returning will invert the original image in
-        # the same way that 'clear' function will update the image that
-        # the variable is a reference to
-        image = ImageOps.invert(image.convert("L")).convert("1")
-        return image
+        return ImageOps.invert(image.convert("L")).convert("1")
 
     def render_text(
         self,

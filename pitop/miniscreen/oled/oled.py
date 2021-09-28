@@ -340,7 +340,7 @@ class OLED:
         self.stop_animated_image()
 
         if invert:
-            self.assistant.invert(image_to_display)
+            image_to_display = self.assistant.invert(image_to_display)
 
         self.__fps_regulator.stop_timer()
 
