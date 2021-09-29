@@ -13,7 +13,7 @@ matplotlib python3-matplotlib; PEP386
 netifaces python3-netifaces; PEP386
 # Numpy in Debian has epoch version 1
 numpy python3-numpy; s/^/1:/
-opencv python3-opencv; PEP386
+opencv-python python3-opencv; PEP386
 pyinotify python3-pyinotify; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
