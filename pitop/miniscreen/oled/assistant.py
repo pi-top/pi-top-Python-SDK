@@ -1,4 +1,9 @@
-import PIL
+import PIL.Image
+import PIL.ImageChops
+import PIL.ImageDraw
+import PIL.ImageFont
+import PIL.ImageOps
+import PIL.ImageSequence
 
 
 class MiniscreenAssistant:
@@ -7,6 +12,10 @@ class MiniscreenAssistant:
     def __init__(self, mode, size):
         self.image_mode = mode
         self.image_size = size
+
+    @property
+    def _width(self):
+        return self.image_size[0]
 
     def get_frame_iterator(self, image):
         return PIL.ImageSequence.Iterator(image)
@@ -20,55 +29,15 @@ class MiniscreenAssistant:
     def invert(self, image):
         return PIL.ImageOps.invert(image.convert("L")).convert("1")
 
-    def render_text(
-        self,
-        image,
-        text,
-        xy=None,
-        font_size=None,
-        font=None,
-        align=None,
-        anchor=None,
-    ):
-        if type(image) is PIL.Image.Image:
-            draw = PIL.ImageDraw.Draw(image)
-        else:
-            draw = image
-
-        if xy is None:
-            xy = self.assistant.get_recommended_text_pos()
-
-        if font_size is None:
-            font_size = self.assistant.get_recommended_font_size()
-
-        if font is None:
-            font = self.assistant.get_recommended_font_path(font_size)
-
-        if align is None:
-            align = self.assistant.get_recommended_text_align()
-
-        if anchor is None:
-            anchor = self.assistant.get_recommended_text_anchor()
-
-        draw.text(
-            xy,
-            str(text),
-            font=PIL.ImageFont.truetype(font, size=font_size),
-            fill=1,
-            spacing=0,
-            align=align,
-            anchor=anchor,
-        )
-
-    def format_multiline_text(self, text, font, font_size):
+    def _multiline_split(self, text, font, font_size):
         def get_text_size(text):
-            return PIL.ImageDraw.Draw(self.assistant.empty_image).textsize(
+            return PIL.ImageDraw.Draw(self.empty_image).textsize(
                 text=str(text),
                 font=PIL.ImageFont.truetype(font, size=font_size),
                 spacing=0,
             )
 
-        remaining = self.width
+        remaining = self._width
         space_width, _ = get_text_size(" ")
         # use this list as a stack, push/popping each line
         output_text = []
@@ -77,7 +46,7 @@ class MiniscreenAssistant:
             word_width, _ = get_text_size(word)
             if word_width + space_width > remaining:
                 output_text.append(word)
-                remaining = self.width - word_width
+                remaining = self._width - word_width
             else:
                 if not output_text:
                     output_text.append(word)
@@ -88,10 +57,11 @@ class MiniscreenAssistant:
                 remaining = remaining - (word_width + space_width)
         return "\n".join(output_text)
 
-    def render_multiline_text(
+    def render_text(
         self,
         image,
         text,
+        wrap=True,
         xy=None,
         font_size=None,
         font=None,
@@ -104,23 +74,27 @@ class MiniscreenAssistant:
             draw = image
 
         if xy is None:
-            xy = self.assistant.get_recommended_text_pos()
+            xy = self.get_recommended_text_pos()
 
         if font_size is None:
-            font_size = self.assistant.get_recommended_font_size()
+            font_size = self.get_recommended_font_size()
 
         if font is None:
-            font = self.assistant.get_recommended_font_path(font_size)
+            font = self.get_recommended_font_path(font_size)
 
         if align is None:
-            align = self.assistant.get_recommended_text_align()
+            align = self.get_recommended_text_align()
 
         if anchor is None:
-            anchor = self.assistant.get_recommended_text_anchor()
+            anchor = self.get_recommended_text_anchor()
 
-        text = self.format_multiline_text(text, font, font_size)
+        if wrap:
+            text = self._multiline_split(text, font, font_size)
+            cmd = draw.text
+        else:
+            cmd = draw.multiline_text
 
-        draw.text(
+        cmd(
             xy,
             str(text),
             font=PIL.ImageFont.truetype(font, size=font_size),
