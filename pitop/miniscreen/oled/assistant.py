@@ -1,24 +1,24 @@
-from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageOps, ImageSequence
+import PIL
 
 
 class MiniscreenAssistant:
-    resize_resampling_filter = Image.NEAREST
+    resize_resampling_filter = PIL.Image.NEAREST
 
     def __init__(self, mode, size):
         self.image_mode = mode
         self.image_size = size
 
     def get_frame_iterator(self, image):
-        return ImageSequence.Iterator(image)
+        return PIL.ImageSequence.Iterator(image)
 
     def images_match(self, image1, image2):
-        return ImageChops.difference(image1, image2).getbbox() is not None
+        return PIL.ImageChops.difference(image1, image2).getbbox() is not None
 
     def clear(self, image):
-        ImageDraw.Draw(image).rectangle(((0, 0), image.size), fill=0)
+        PIL.ImageDraw.Draw(image).rectangle(((0, 0), image.size), fill=0)
 
     def invert(self, image):
-        return ImageOps.invert(image.convert("L")).convert("1")
+        return PIL.ImageOps.invert(image.convert("L")).convert("1")
 
     def render_text(
         self,
@@ -30,6 +30,11 @@ class MiniscreenAssistant:
         align=None,
         anchor=None,
     ):
+        if type(image) is PIL.Image.Image:
+            draw = PIL.ImageDraw.Draw(image)
+        else:
+            draw = image
+
         if xy is None:
             xy = self.assistant.get_recommended_text_pos()
 
@@ -45,10 +50,10 @@ class MiniscreenAssistant:
         if anchor is None:
             anchor = self.assistant.get_recommended_text_anchor()
 
-        ImageDraw.Draw(image).text(
+        draw.text(
             xy,
             str(text),
-            font=ImageFont.truetype(font, size=font_size),
+            font=PIL.ImageFont.truetype(font, size=font_size),
             fill=1,
             spacing=0,
             align=align,
@@ -57,9 +62,9 @@ class MiniscreenAssistant:
 
     def format_multiline_text(self, text, font, font_size):
         def get_text_size(text):
-            return ImageDraw.Draw(self.assistant.empty_image).textsize(
+            return PIL.ImageDraw.Draw(self.assistant.empty_image).textsize(
                 text=str(text),
-                font=ImageFont.truetype(font, size=font_size),
+                font=PIL.ImageFont.truetype(font, size=font_size),
                 spacing=0,
             )
 
@@ -93,6 +98,11 @@ class MiniscreenAssistant:
         align=None,
         anchor=None,
     ):
+        if type(image) is PIL.Image.Image:
+            draw = PIL.ImageDraw.Draw(image)
+        else:
+            draw = image
+
         if xy is None:
             xy = self.assistant.get_recommended_text_pos()
 
@@ -110,10 +120,10 @@ class MiniscreenAssistant:
 
         text = self.format_multiline_text(text, font, font_size)
 
-        ImageDraw.Draw(image).text(
+        draw.text(
             xy,
             str(text),
-            font=ImageFont.truetype(font, size=font_size),
+            font=PIL.ImageFont.truetype(font, size=font_size),
             fill=1,
             spacing=0,
             align=align,
@@ -126,7 +136,7 @@ class MiniscreenAssistant:
             if image.mode != self.image_mode:
                 image = image.convert(self.image_mode)
         else:
-            image = Image.new(self.image_mode, self.image_size, "black")
+            image = PIL.Image.new(self.image_mode, self.image_size, "black")
             image.paste(
                 image_to_process.resize(
                     self.image_size, resample=self.resize_resampling_filter
@@ -153,7 +163,7 @@ class MiniscreenAssistant:
     def get_recommended_font(self, size=None):
         if size is None:
             size = self.get_recommended_font_size()
-        return ImageFont.truetype(self.get_recommended_font_path(size), size=size)
+        return PIL.ImageFont.truetype(self.get_recommended_font_path(size), size=size)
 
     def get_recommended_font_path(self, size=None):
         if size is None:
@@ -167,20 +177,20 @@ class MiniscreenAssistant:
     def get_regular_font(self, size=None):
         if size is None:
             size = self.get_recommended_font_size()
-        return ImageFont.truetype(self.get_regular_font_path(), size=size)
+        return PIL.ImageFont.truetype(self.get_regular_font_path(), size=size)
 
     def get_regular_font_path(self):
         return "Roboto-Regular.ttf"
 
     def get_mono_font(self, size=11):
-        return ImageFont.truetype(self.get_mono_font_path(), size=size)
+        return PIL.ImageFont.truetype(self.get_mono_font_path(), size=size)
 
     def get_mono_font_path(self):
         return "VeraMono.ttf"
 
     @property
     def empty_image(self):
-        return Image.new(self.image_mode, self.image_size, "black")
+        return PIL.Image.new(self.image_mode, self.image_size, "black")
 
     @property
     def bounding_box(self):
