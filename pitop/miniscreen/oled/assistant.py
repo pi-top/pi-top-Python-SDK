@@ -185,7 +185,16 @@ class MiniscreenAssistant:
     def get_mono_font(self, size=11):
         return PIL.ImageFont.truetype(self.get_mono_font_path(), size=size)
 
-    def get_mono_font_path(self):
+    def get_mono_font_path(self, bold=False, italics=False):
+        if bold and not italics:
+            return "VeraMoBd.ttf"
+
+        if not bold and italics:
+            return "VeraMoIt.ttf"
+
+        if bold and italics:
+            return "VeraMoBI.ttf"
+
         return "VeraMono.ttf"
 
     @property
