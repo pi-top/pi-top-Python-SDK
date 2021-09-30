@@ -29,12 +29,12 @@ class MiniscreenAssistant:
     def invert(self, image):
         return PIL.ImageOps.invert(image.convert("L")).convert("1")
 
-    def _multiline_split(self, text, font, font_size):
+    def _multiline_split(self, text, font, font_size, spacing):
         def get_text_size(text):
             return PIL.ImageDraw.Draw(self.empty_image).textsize(
                 text=str(text),
                 font=PIL.ImageFont.truetype(font, size=font_size),
-                spacing=0,
+                spacing=spacing,
             )
 
         remaining = self._width
@@ -67,6 +67,8 @@ class MiniscreenAssistant:
         font=None,
         align=None,
         anchor=None,
+        fill=1,
+        spacing=0,
     ):
         if type(image) is PIL.Image.Image:
             draw = PIL.ImageDraw.Draw(image)
@@ -89,7 +91,7 @@ class MiniscreenAssistant:
             anchor = self.get_recommended_text_anchor()
 
         if wrap:
-            text = self._multiline_split(text, font, font_size)
+            text = self._multiline_split(text, font, font_size, spacing)
             cmd = draw.text
         else:
             cmd = draw.multiline_text
@@ -98,8 +100,8 @@ class MiniscreenAssistant:
             xy,
             str(text),
             font=PIL.ImageFont.truetype(font, size=font_size),
-            fill=1,
-            spacing=0,
+            fill=fill,
+            spacing=spacing,
             align=align,
             anchor=anchor,
         )
