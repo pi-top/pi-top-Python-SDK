@@ -7,11 +7,16 @@ from pitop.common.logger import PTLogger
 
 
 def __get_env():
-    env_plus_display = environ.copy()
+    env = environ.copy()
+
+    # TODO: check that this is available
+    env["LANG"] = "en_US.UTF-8"
+
     first_display = get_first_display()
     if first_display is not None:
-        env_plus_display["DISPLAY"] = first_display
-    return env_plus_display
+        env["DISPLAY"] = first_display
+
+    return env
 
 
 def run_command_background(command_str: str, print_output=False) -> Popen:
