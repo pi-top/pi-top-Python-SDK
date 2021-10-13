@@ -142,7 +142,7 @@ The `Motor` component included in the Robotics Kits are:
 
 More Information
 ----------------
-For more information about pi-top Maker Architecture, check out the pi-top `Knowledge Base <https://knowledgebase.pi-top.com/knowledge/pma>`_.
+For more information about pi-top Maker Architecture, check out the pi-top `Knowledge Base <https://pi-top.com/pi-top-os-pma>`_.
 
 
 pi-top [4] Miniscreen
