@@ -48,11 +48,11 @@ repos:
 #     -   id: mypy
 #         additional_dependencies: [types-all]
 
--   repo: local
-    hooks:
-    -   id: wily
-        name: wily
-        entry: wily build
-        verbose: true
-        language: python
-        additional_dependencies: [wily]
+# -   repo: local
+#     hooks:
+#     -   id: wily
+#         name: wily
+#         entry: wily diff
+#         verbose: true
+#         language: python
+#         additional_dependencies: [wily]
