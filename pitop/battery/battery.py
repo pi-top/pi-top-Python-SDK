@@ -22,9 +22,7 @@ class Battery:
         (
             self.__previous_charging_state,
             self.__previous_capacity,
-            _,
-            _,
-        ) = Battery.get_full_state()
+        ) = [int(p) for p in Battery.get_full_state()[:2]]
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -33,7 +31,7 @@ class Battery:
 
     def __setup_subscribe_client(self):
         def on_state_changed(parameters):
-            charging_state, capacity, _, _ = parameters
+            charging_state, capacity = [int(p) for p in parameters[:2]]
 
             if self.__previous_capacity != capacity:
                 if callable(self.on_capacity_change):
