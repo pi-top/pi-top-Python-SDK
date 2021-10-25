@@ -29,16 +29,27 @@ jobs:
 
       - name: Build wily
         run: |
-          wily build generator/ test/ .
-          wily diff generator/ -r master
+          wily build pitop/ pitopcli/ .
 
-      - name: Show wily report
+      - name: Print config, list all analysed revisions and operators used
         run: |
-          wily report generator/generator.py
-          wily report test/test_generator.py
+          wily index
+
+      - name: Show metrics differences since master
+        # Useful for PRs
+        run: |
+          wily diff --detail --revision master .
+
+      - name: Show wily report for all files
+        # Useful for overall review
+        run: |
+          for f in $(find . -name "*.py"); do
+            file="${f#"./"}"
+            dir="$(dirname ${file})"
+            mkdir -p "reports/${dir}"
+            wily report "${file}" -o reports/"${file%".py"}.html"
+          done
 
       - name: Show wily rank
         run: |
-          wily rank generator/
-          wily rank test/
           wily rank .
