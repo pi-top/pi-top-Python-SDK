@@ -17,7 +17,14 @@ class Battery:
         self.when_charging = None
         self.when_discharging = None
 
-        self.__previous_charging_state = Battery.get_full_state()[0]
+        self.on_capacity_change = None
+
+        (
+            self.__previous_charging_state,
+            self.__previous_capacity,
+            _,
+            _,
+        ) = Battery.get_full_state()
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -26,7 +33,13 @@ class Battery:
 
     def __setup_subscribe_client(self):
         def on_state_changed(parameters):
-            charging_state = int(parameters[0])
+            charging_state, capacity, _, _ = parameters
+
+            if self.__previous_capacity != capacity:
+                if callable(self.on_capacity_change):
+                    self.on_capacity_change(capacity)
+
+                self.__previous_capacity = capacity
 
             if charging_state not in range(0, 3):
                 PTLogger.warning("Invalid charging state from pi-top device manager")
