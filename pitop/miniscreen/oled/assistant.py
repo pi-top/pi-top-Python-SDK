@@ -158,8 +158,8 @@ class MiniscreenAssistant:
     def get_regular_font_path(self):
         return "Roboto-Regular.ttf"
 
-    def get_mono_font(self, size=11):
-        return PIL.ImageFont.truetype(self.get_mono_font_path(), size=size)
+    def get_mono_font(self, size=11, bold=False, italics=False):
+        return PIL.ImageFont.truetype(self.get_mono_font_path(bold, italics), size=size)
 
     def get_mono_font_path(self, bold=False, italics=False):
         if bold and not italics:
