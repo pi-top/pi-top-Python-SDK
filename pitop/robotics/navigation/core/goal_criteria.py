@@ -2,7 +2,11 @@ import math
 
 
 class GoalCriteria:
-    def __init__(self, full_speed_distance_error: float = 0.02, full_speed_angle_error: float = 3.0):
+    def __init__(
+        self,
+        full_speed_distance_error: float = 0.02,
+        full_speed_angle_error: float = 3.0,
+    ):
         self._full_speed_distance_error = full_speed_distance_error
         self._full_speed_angle_error = math.radians(full_speed_angle_error)
 

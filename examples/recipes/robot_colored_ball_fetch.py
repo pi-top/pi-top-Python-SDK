@@ -1,7 +1,8 @@
-from pitop import Pitop, DriveController, PincerController, Camera, NavigationController
-from pitop.processing.algorithms import BallDetector
 from signal import pause
 from time import sleep
+
+from pitop import Camera, DriveController, NavigationController, PincerController, Pitop
+from pitop.processing.algorithms import BallDetector
 
 
 def assemble_robot():
@@ -10,7 +11,9 @@ def assemble_robot():
     robot.add_component(Camera(resolution=(640, 480), rotate_angle=90))
     robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
     robot.add_component(PincerController())
-    robot.add_component(NavigationController(drive_controller=robot.drive), name="navigate")
+    robot.add_component(
+        NavigationController(drive_controller=robot.drive), name="navigate"
+    )
 
     return robot
 

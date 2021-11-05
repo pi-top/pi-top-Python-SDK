@@ -1,8 +1,10 @@
-import numpy as np
 import math
-from filterpy.kalman import KalmanFilter
-from enum import IntEnum
 from collections import deque
+from enum import IntEnum
+
+import numpy as np
+from filterpy.kalman import KalmanFilter
+
 from pitop.core.mixins import Stateful
 from pitop.robotics.navigation.core.utils import normalize_angle
 
@@ -18,6 +20,7 @@ class State(IntEnum):
 class VelocityType(IntEnum):
     """Helper class to ensure v and w values are accessed at the correct
     position in various vectors and matrices."""
+
     v = 0
     w = 1
 
@@ -33,7 +36,9 @@ class StateFilter(Stateful):
     def __init__(self, measurement_frequency, wheel_separation):
         self._kalman_filter = KalmanFilter(dim_x=len(State), dim_z=2, dim_u=2)
         self._velocities = deque(maxlen=2)
-        self._velocities.append(np.zeros((len(VelocityType), 1), dtype=float))  # [v, w].
+        self._velocities.append(
+            np.zeros((len(VelocityType), 1), dtype=float)
+        )  # [v, w].
 
         # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0] with 0 velocity
         self._kalman_filter.P = np.eye(5) * 1e-6
@@ -46,13 +51,18 @@ class StateFilter(Stateful):
         linear_velocity_sigma = 0.005
 
         # the Q matrix is the covariance of the expected state change over the time interval dt
-        Q_sigma = linear_velocity_sigma / (self._sigma_default_dt * measurement_frequency)
-        self._kalman_filter.Q = np.diag([Q_sigma ** 2,
-                                         Q_sigma ** 2,
-                                         math.radians(Q_sigma),
-                                         Q_sigma ** 2,
-                                         Q_sigma ** 2]
-                                        )
+        Q_sigma = linear_velocity_sigma / (
+            self._sigma_default_dt * measurement_frequency
+        )
+        self._kalman_filter.Q = np.diag(
+            [
+                Q_sigma ** 2,
+                Q_sigma ** 2,
+                math.radians(Q_sigma),
+                Q_sigma ** 2,
+                Q_sigma ** 2,
+            ]
+        )
 
         # State transition function for x1 = Fx0 + Bu0
         self._kalman_filter.F = np.diag([1, 1, 1, 0, 0])
@@ -60,7 +70,9 @@ class StateFilter(Stateful):
         self._odom_linear_velocity_variance = linear_velocity_sigma ** 2
         # angular velocity is calculated from motor velocities, maximum error is 0.005 * 2 across both wheel speeds
         # divide by wheel separation to get resulting standard deviation for angular velocity
-        self._odom_angular_velocity_variance = (linear_velocity_sigma * 2 / wheel_separation) ** 2
+        self._odom_angular_velocity_variance = (
+            linear_velocity_sigma * 2 / wheel_separation
+        ) ** 2
 
         # Gyroscope resolution from datasheet is 1/131 = 0.0076 degrees/second +/- 1.5%
         # Measure variance from stationary IMU is sigma**2 = 0.0018 over approx 200 samples
@@ -71,13 +83,15 @@ class StateFilter(Stateful):
         Stateful.__init__(self, children=[])
 
     def __str__(self):
-        degree_symbol = u'\N{DEGREE SIGN}'
-        return f"               x = {self.x:.3} m (+/- {self.x_tolerance:.3})\n" \
-               f"               y = {self.y:.3} m (+/- {self.y_tolerance:.3})\n" \
-               f"           Angle = {self.angle:.3}{degree_symbol} (+/- {self.angle_tolerance:.3})\n" \
-               f"        Velocity = {self.v:.3} m/s (+/- {self.v_tolerance:.3})\n" \
-               f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s " \
-               f"(+/- {math.degrees(self.w_tolerance):.3})\n"
+        degree_symbol = "\N{DEGREE SIGN}"
+        return (
+            f"               x = {self.x:.3} m (+/- {self.x_tolerance:.3})\n"
+            f"               y = {self.y:.3} m (+/- {self.y_tolerance:.3})\n"
+            f"           Angle = {self.angle:.3}{degree_symbol} (+/- {self.angle_tolerance:.3})\n"
+            f"        Velocity = {self.v:.3} m/s (+/- {self.v_tolerance:.3})\n"
+            f"Angular velocity = {math.degrees(self.w):.3} {degree_symbol}/s "
+            f"(+/- {math.degrees(self.w_tolerance):.3})\n"
+        )
 
     def own_state(self):
         return {
@@ -85,7 +99,7 @@ class StateFilter(Stateful):
             "y_position": self.y,
             "angle_position": self.angle,
             "linear_velocity": self.v,
-            "angular_velocity": self.w
+            "angular_velocity": self.w,
         }
 
     def add_measurements(self, odom_measurements, dt, imu_measurements=None):
@@ -114,12 +128,15 @@ class StateFilter(Stateful):
         predictor than the actual control command sent to the Expansion Plate MCU (this is very commonly done).
         :param dt: time difference between measurements.
         """
-        B = np.array([[dt * math.cos(self.angle_rad + 0.5 * dt * self.w), 0],
-                      [dt * math.sin(self.angle_rad + 0.5 * dt * self.w), 0],
-                      [0., dt],
-                      [1., 0.],
-                      [0., 1.]]
-                     )
+        B = np.array(
+            [
+                [dt * math.cos(self.angle_rad + 0.5 * dt * self.w), 0],
+                [dt * math.sin(self.angle_rad + 0.5 * dt * self.w), 0],
+                [0.0, dt],
+                [1.0, 0.0],
+                [0.0, 1.0],
+            ]
+        )
         self._kalman_filter.predict(u=u, B=B)
 
     def __kalman_update(self, z_imu):
