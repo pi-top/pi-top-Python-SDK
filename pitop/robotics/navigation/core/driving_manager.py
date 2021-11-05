@@ -1,6 +1,6 @@
 import math
 
-from simple_pid import PID
+from ...simple_pid import PID
 
 
 class DrivingManager:
