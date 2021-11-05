@@ -51,7 +51,7 @@ class DriveController(Stateful, Recreatable):
 
         # Motor syncing
         self.__mcu_device = PlateInterface().get_device_mcu()
-        self.__set_sync_motor_config()
+        self._set_synchronous_motor_movement_mode()
 
         Stateful.__init__(self, children=["left_motor", "right_motor"])
         Recreatable.__init__(
@@ -63,12 +63,15 @@ class DriveController(Stateful, Recreatable):
             },
         )
 
-    def __set_sync_motor_config(self):
+    def _set_synchronous_motor_movement_mode(self):
         sync_config = (
             MotorSyncBits[self.left_motor_port].value
             | MotorSyncBits[self.right_motor_port].value
         )
         self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, sync_config)
+
+    def _start_synchronous_motor_movement(self):
+        self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
 
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -97,10 +100,7 @@ class DriveController(Stateful, Recreatable):
         )
         self.left_motor.set_target_speed(target_speed=speed_left)
         self.right_motor.set_target_speed(target_speed=speed_right)
-        self.__sync_start()
-
-    def __sync_start(self):
-        self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
+        self._start_synchronous_motor_movement()
 
     def forward(self, speed_factor, hold=False):
         """Move the robot forward.
