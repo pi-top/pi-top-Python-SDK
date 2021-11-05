@@ -1,7 +1,7 @@
-from os import mkdir, path
-from time import strftime
-from pathlib import Path
 from abc import ABC, abstractmethod
+from os import mkdir, path
+from pathlib import Path
+from time import strftime
 
 
 class CaptureActionBase(ABC):
@@ -17,7 +17,9 @@ class CaptureActionBase(ABC):
         pass
 
     def _get_output_filename(self, directory, extension):
-        return path.join(directory, "output_" + strftime("%Y-%m-%d-%H-%M-%S") + "." + extension)
+        return path.join(
+            directory, "output_" + strftime("%Y-%m-%d-%H-%M-%S") + "." + extension
+        )
 
     def _create_output_directory(self):
         output_directory = path.join(str(Path.home()), "Camera")

@@ -4,28 +4,34 @@ from pitop.core.import_opencv import import_opencv
 def import_imutils():
     try:
         import imutils
+
         return imutils
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
-            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
+            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'."
+        ) from None
 
 
 def import_face_utils():
     try:
         import imutils.face_utils
+
         return imutils.face_utils
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
-            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'.") from None
+            "imutils Python library is not installed. You can install it by running 'sudo apt install python3-imutils'."
+        ) from None
 
 
 def import_dlib():
     try:
         import dlib
+
         return dlib
     except (ImportError, ModuleNotFoundError):
         raise ModuleNotFoundError(
-            "dlib Python library is not installed. You can install it by running 'sudo apt install python3-dlib'.") from None
+            "dlib Python library is not installed. You can install it by running 'sudo apt install python3-dlib'."
+        ) from None
 
 
 def color_mask(frame, hsv_lower, hsv_upper):
@@ -46,7 +52,10 @@ def find_largest_contour(frame):
     cv2 = import_opencv()
     # Find the contours of the frame. RETR_EXTERNAL: retrieves only the extreme outer contours
     from imutils import grab_contours
-    contours = grab_contours(cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE))
+
+    contours = grab_contours(
+        cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    )
 
     # Find the biggest contour (if detected)
     if len(contours) > 0:
@@ -64,8 +73,8 @@ def find_centroid(contour):
     if contour is not None:
         moments = cv2.moments(contour)
         # add 1e-5 to avoid division by zero (standard docs.opencv.org practice apparently)
-        centroid_x = int(moments['m10'] / (moments['m00'] + 1e-5))
-        centroid_y = int(moments['m01'] / (moments['m00'] + 1e-5))
+        centroid_x = int(moments["m10"] / (moments["m00"] + 1e-5))
+        centroid_y = int(moments["m01"] / (moments["m00"] + 1e-5))
     else:
         # no centroid found, set to none and deal with this case as necessary
         centroid_x = None
@@ -121,8 +130,10 @@ def get_object_target_lock_control_angle(center, frame):
             the frame.
     :return float angle: Angle in degrees to 1 decimal place
     """
-    from numpy import arctan
     from math import degrees
+
+    from numpy import arctan
+
     if center is None:
         return None
     # physically, this represents an approximation between chassis rotation center and camera
@@ -152,6 +163,7 @@ def tuple_for_color_by_name(color_name, bgr=False):
         color_name = "lime"
 
     from matplotlib import colors
+
     values = tuple(int(i * 255) for i in colors.to_rgb(color_name))
     if bgr:
         return values[::-1]

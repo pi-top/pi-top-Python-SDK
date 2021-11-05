@@ -25,8 +25,8 @@ See the documentation for more information.
 import os
 import sys
 
-if os.environ.get('__PYNPUT_GENERATE_DOCUMENTATION') == 'yes':
-    from ._base import KeyCode, Key, Controller, Listener
+if os.environ.get("__PYNPUT_GENERATE_DOCUMENTATION") == "yes":
+    from ._base import Controller, Key, KeyCode, Listener
 else:
     KeyCode = None
     Key = None
@@ -34,18 +34,18 @@ else:
     Listener = None
 
 
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     if not KeyCode and not Key and not Controller and not Listener:
-        from ._darwin import KeyCode, Key, Controller, Listener
+        from ._darwin import Controller, Key, KeyCode, Listener
 
-elif sys.platform == 'win32':
+elif sys.platform == "win32":
     if not KeyCode and not Key and not Controller and not Listener:
-        from ._win32 import KeyCode, Key, Controller, Listener
+        from ._win32 import Controller, Key, KeyCode, Listener
 
 else:
     if not KeyCode and not Key and not Controller and not Listener:
         try:
-            from ._xorg import KeyCode, Key, Controller, Listener
+            from ._xorg import Controller, Key, KeyCode, Listener
         except ImportError:
             # For now, since we only support Xlib anyway, we re-raise these
             # errors to allow users to determine the cause of failures to import
@@ -53,4 +53,4 @@ else:
 
 
 if not KeyCode or not Key or not Controller or not Listener:
-    raise ImportError('this platform is not supported')
+    raise ImportError("this platform is not supported")

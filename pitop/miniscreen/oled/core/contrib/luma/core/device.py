@@ -1,7 +1,7 @@
 import atexit
 
-from pitop.miniscreen.oled.core.contrib.luma.core import mixin
-import pitop.miniscreen.oled.core.contrib.luma.core.const
+from . import const as luma_const
+from . import mixin
 
 
 class device(mixin.capabilities):
@@ -15,7 +15,7 @@ class device(mixin.capabilities):
     """
 
     def __init__(self, const=None, serial_interface=None):
-        self._const = const or pitop.miniscreen.oled.core.contrib.luma.core.const.common
+        self._const = const or luma_const.common
         self._serial_interface = serial_interface
 
         def shutdown_hook():  # pragma: no cover

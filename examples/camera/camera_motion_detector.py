@@ -1,11 +1,7 @@
-from pitop import Camera
-from time import (
-    localtime,
-    sleep,
-    strftime,
-)
-
 from datetime import datetime
+from time import localtime, sleep, strftime
+
+from pitop import Camera
 
 # Example code for Camera
 # Records videos of any motion captured by the camera
@@ -34,7 +30,9 @@ def motion_detected():
 
 
 print("Motion detector starting...")
-cam.start_detecting_motion(callback_on_motion=motion_detected, moving_object_minimum_area=350)
+cam.start_detecting_motion(
+    callback_on_motion=motion_detected, moving_object_minimum_area=350
+)
 
 sleep(60)
 

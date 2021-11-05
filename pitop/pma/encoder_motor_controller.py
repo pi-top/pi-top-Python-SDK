@@ -1,12 +1,14 @@
 from typing import Tuple
 
-from pitop.common.bitwise_ops import split_into_bytes, join_bytes
-from .plate_interface import PlateInterface
+from pitop.common.bitwise_ops import join_bytes, split_into_bytes
+
 from .common import type_check
 from .common.encoder_motor_registers import (
-    MotorRegisterTypes,
+    MotorControlModes,
     MotorControlRegisters,
-    MotorControlModes)
+    MotorRegisterTypes,
+)
+from .plate_interface import PlateInterface
 
 
 class EncoderMotorController:
@@ -23,39 +25,53 @@ class EncoderMotorController:
         self.set_braking_type(braking_type)
 
     def control_mode(self) -> MotorControlModes:
-        reported_control_mode = self._mcu_device.read_unsigned_byte(self.registers[MotorRegisterTypes.CONTROL_MODE])
+        reported_control_mode = self._mcu_device.read_unsigned_byte(
+            self.registers[MotorRegisterTypes.CONTROL_MODE]
+        )
         return MotorControlModes(reported_control_mode)
 
     @type_check
     def set_control_mode(self, mode: MotorControlModes) -> None:
-        self._mcu_device.write_byte(self.registers[MotorRegisterTypes.CONTROL_MODE], mode.value)
+        self._mcu_device.write_byte(
+            self.registers[MotorRegisterTypes.CONTROL_MODE], mode.value
+        )
 
     def braking_type(self) -> int:
-        return self._mcu_device.read_unsigned_byte(self.registers[MotorRegisterTypes.BRAKE_TYPE])
+        return self._mcu_device.read_unsigned_byte(
+            self.registers[MotorRegisterTypes.BRAKE_TYPE]
+        )
 
     @type_check
     def set_braking_type(self, brake_type: int) -> None:
         if brake_type not in (0, 1):
             raise ValueError("Brake type must be 0 or 1")
 
-        self._mcu_device.write_byte(self.registers[MotorRegisterTypes.BRAKE_TYPE], brake_type)
+        self._mcu_device.write_byte(
+            self.registers[MotorRegisterTypes.BRAKE_TYPE], brake_type
+        )
 
     def tachometer(self) -> int:
         tachometer_data = 99999
         while abs(tachometer_data) > self._MAX_DC_MOTOR_RPM:
-            tachometer_data = self._mcu_device.read_signed_word(self.registers[MotorRegisterTypes.TACHOMETER], little_endian=True)
+            tachometer_data = self._mcu_device.read_signed_word(
+                self.registers[MotorRegisterTypes.TACHOMETER], little_endian=True
+            )
 
         return tachometer_data
 
     def odometer(self) -> int:
-        rotation_counter = self._mcu_device.read_n_signed_bytes(self.registers[MotorRegisterTypes.ODOMETER], 4, little_endian=True)
+        rotation_counter = self._mcu_device.read_n_signed_bytes(
+            self.registers[MotorRegisterTypes.ODOMETER], 4, little_endian=True
+        )
 
         return rotation_counter
 
     @type_check
     def set_odometer(self, rotations: int) -> None:
         list_to_send = split_into_bytes(rotations, 4, signed=True, little_endian=True)
-        self._mcu_device.write_n_bytes(self.registers[MotorRegisterTypes.ODOMETER], list_to_send)
+        self._mcu_device.write_n_bytes(
+            self.registers[MotorRegisterTypes.ODOMETER], list_to_send
+        )
 
     def stop(self):
         current_control_mode = self.control_mode()
@@ -74,15 +90,24 @@ class EncoderMotorController:
         if self.control_mode() != MotorControlModes.MODE_0:
             return None
 
-        return self._mcu_device.read_signed_word(self.registers[MotorRegisterTypes.MODE_0_POWER], little_endian=True)
+        return self._mcu_device.read_signed_word(
+            self.registers[MotorRegisterTypes.MODE_0_POWER], little_endian=True
+        )
 
     @type_check
     def set_power(self, power: int) -> None:
         if power < -1000 or power > 1000:
-            raise ValueError("Power value sent to Expansion Plate needs to be from -1000 to +1000")
+            raise ValueError(
+                "Power value sent to Expansion Plate needs to be from -1000 to +1000"
+            )
 
         self.set_control_mode(MotorControlModes.MODE_0)
-        self._mcu_device.write_word(self.registers[MotorRegisterTypes.MODE_0_POWER], power, little_endian=True, signed=True)
+        self._mcu_device.write_word(
+            self.registers[MotorRegisterTypes.MODE_0_POWER],
+            power,
+            little_endian=True,
+            signed=True,
+        )
 
     # -------------------------------------------------------------------------------------------------------------------
     # CONTROL MODE 1
@@ -91,12 +116,19 @@ class EncoderMotorController:
         if self.control_mode() != MotorControlModes.MODE_1:
             return None
 
-        return self._mcu_device.read_signed_word(self.registers[MotorRegisterTypes.MODE_1_RPM], little_endian=True)
+        return self._mcu_device.read_signed_word(
+            self.registers[MotorRegisterTypes.MODE_1_RPM], little_endian=True
+        )
 
     @type_check
     def set_rpm_control(self, rpm: int) -> None:
         self.set_control_mode(MotorControlModes.MODE_1)
-        self._mcu_device.write_word(self.registers[MotorRegisterTypes.MODE_1_RPM], rpm, signed=True, little_endian=True)
+        self._mcu_device.write_word(
+            self.registers[MotorRegisterTypes.MODE_1_RPM],
+            rpm,
+            signed=True,
+            little_endian=True,
+        )
 
     # -------------------------------------------------------------------------------------------------------------------
     # CONTROL MODE 2
@@ -106,7 +138,10 @@ class EncoderMotorController:
             return None
 
         value = self._mcu_device.read_n_unsigned_bytes(
-            self.registers[MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS], 4, little_endian=True)
+            self.registers[MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS],
+            4,
+            little_endian=True,
+        )
         value_in_bytes = split_into_bytes(value, 4, little_endian=True)
 
         speed = join_bytes(value_in_bytes[0:2])
@@ -117,6 +152,9 @@ class EncoderMotorController:
     @type_check
     def set_rpm_with_rotations(self, rpm: int, rotations_to_complete: int) -> None:
         self.set_control_mode(MotorControlModes.MODE_2)
-        list_to_send = split_into_bytes(rotations_to_complete, 2, signed=True, little_endian=True) + \
-            split_into_bytes(rpm, 2, signed=True, little_endian=True)
-        self._mcu_device.write_n_bytes(self.registers[MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS], list_to_send)
+        list_to_send = split_into_bytes(
+            rotations_to_complete, 2, signed=True, little_endian=True
+        ) + split_into_bytes(rpm, 2, signed=True, little_endian=True)
+        self._mcu_device.write_n_bytes(
+            self.registers[MotorRegisterTypes.MODE_2_RPM_WITH_ROTATIONS], list_to_send
+        )

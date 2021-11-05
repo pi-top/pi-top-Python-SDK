@@ -4,19 +4,21 @@ flask-cors python3-flask-cors; PEP386
 flask-sockets python3-flask-sockets; PEP386
 gevent python3-gevent; PEP386
 gevent-websocket python3-gevent-websocket; PEP386
-gpiozero python3-gpiozero; PEP386
+# Bullseye - `Depends: python3-gpiozero (>= 1.6.2) but 1.5.1 is to be installed`
+gpiozero python3-gpiozero
 imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
 isc_dhcp_leases python3-isc-dhcp-leases; PEP386
 matplotlib python3-matplotlib; PEP386
 netifaces python3-netifaces; PEP386
-onnxruntime python3-onnxruntime; PEP386
+# Numpy in Debian has epoch version 1
+numpy python3-numpy; s/^/1:/
+opencv-python python3-opencv; PEP386
 pyinotify python3-pyinotify; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
-simple_pid python3-simple-pid; PEP386
 # smbus2 is a pure Python implementation of the python-smbus package
-# Versions do not match so ignore PEP386
+# Versions do not match so ignore version matching
 smbus2 python3-smbus
 spidev python3-spidev; PEP386
 systemd_python python3-systemd; PEP386

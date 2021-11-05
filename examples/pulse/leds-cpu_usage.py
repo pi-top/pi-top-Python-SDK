@@ -1,6 +1,6 @@
-from pitop.pulse import ledmatrix
-
 import time
+
+from pitop.pulse import ledmatrix
 
 last_work = [0, 0, 0, 0]
 last_idle = [0, 0, 0, 0]

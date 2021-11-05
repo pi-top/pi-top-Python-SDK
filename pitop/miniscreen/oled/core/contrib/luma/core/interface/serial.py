@@ -7,7 +7,7 @@ from time import sleep
 import RPi.GPIO as GPIO
 from spidev import SpiDev
 
-from pitop.miniscreen.oled.core.contrib.luma.core.error import DeviceNotFoundError
+from ..error import DeviceNotFoundError
 
 GPIO.setmode(GPIO.BCM)
 # Suppress serial warnings
@@ -45,7 +45,9 @@ class bitbang(object):
     :type RST: int
     """
 
-    def __init__(self, transfer_size=4096, reset_hold_time=0, reset_release_time=0, **kwargs):
+    def __init__(
+        self, transfer_size=4096, reset_hold_time=0, reset_release_time=0, **kwargs
+    ):
 
         self._transfer_size = transfer_size
 
@@ -94,7 +96,7 @@ class bitbang(object):
         n = len(data)
         tx_sz = self._transfer_size
         while i < n:
-            self._write_bytes(data[i:i + tx_sz])
+            self._write_bytes(data[i : i + tx_sz])
             i += tx_sz
 
     def _write_bytes(self, data):
@@ -113,7 +115,13 @@ class bitbang(object):
 
     def cleanup(self):
         """Clean up GPIO resources."""
-        GPIO.cleanup([pin for pin in [self._SCLK, self._SDA, self._CE, self._DC, self._RST] if pin is not None])
+        GPIO.cleanup(
+            [
+                pin
+                for pin in [self._SCLK, self._SDA, self._CE, self._DC, self._RST]
+                if pin is not None
+            ]
+        )
 
 
 class spi(bitbang):
@@ -149,13 +157,32 @@ class spi(bitbang):
     :raises luma.core.error.UnsupportedPlatform: GPIO access not available.
     """
 
-    def __init__(self, port=0, device=0,
-                 bus_speed_hz=8000000, transfer_size=4096,
-                 gpio_DC=24, gpio_RST=25, spi_mode=None,
-                 reset_hold_time=0, reset_release_time=0, **kwargs):
-        assert(bus_speed_hz in [mhz * 1000000 for mhz in [0.5, 1, 2, 4, 8, 16, 20, 24, 28, 32, 36, 40, 44, 48, 50, 52]])
+    def __init__(
+        self,
+        port=0,
+        device=0,
+        bus_speed_hz=8000000,
+        transfer_size=4096,
+        gpio_DC=24,
+        gpio_RST=25,
+        spi_mode=None,
+        reset_hold_time=0,
+        reset_release_time=0,
+        **kwargs
+    ):
+        assert bus_speed_hz in [
+            mhz * 1000000
+            for mhz in [0.5, 1, 2, 4, 8, 16, 20, 24, 28, 32, 36, 40, 44, 48, 50, 52]
+        ]
 
-        bitbang.__init__(self, transfer_size, reset_hold_time, reset_release_time, DC=gpio_DC, RST=gpio_RST)
+        bitbang.__init__(
+            self,
+            transfer_size,
+            reset_hold_time,
+            reset_release_time,
+            DC=gpio_DC,
+            RST=gpio_RST,
+        )
 
         try:
             self._spi = SpiDev()
@@ -164,13 +191,14 @@ class spi(bitbang):
                 self._spi.mode = spi_mode
             if "cs_high" in kwargs:
                 import warnings
+
                 warnings.warn(
                     "SPI cs_high is no longer supported in kernel 5.4.51 and beyond, so setting parameter cs_high is now ignored!",
-                    RuntimeWarning
+                    RuntimeWarning,
                 )
         except (IOError, OSError) as e:
             if e.errno == errno.ENOENT:
-                raise DeviceNotFoundError('SPI device not found')
+                raise DeviceNotFoundError("SPI device not found")
             else:  # pragma: no cover
                 raise
 

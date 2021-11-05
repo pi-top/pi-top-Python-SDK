@@ -1,5 +1,6 @@
-from pitop import Pitop
 from PIL import Image, ImageDraw, ImageFont
+
+from pitop import Pitop
 
 pitop = Pitop()
 miniscreen = pitop.miniscreen
@@ -23,7 +24,9 @@ clear()
 
 print("Drawing an image")
 # Note: this is an animated file, but this approach will only show the first frame
-demo_image = Image.open("/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif").convert("1")
+demo_image = Image.open(
+    "/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif"
+).convert("1")
 canvas.bitmap((0, 0), demo_image, fill=1)
 miniscreen.display_image(image)
 
@@ -72,10 +75,5 @@ miniscreen.display_image(image)
 clear()
 
 print("Drawing some text")
-canvas.text(
-    (0, 0),
-    "Hello\nWorld!",
-    font=ImageFont.load_default(),
-    fill=1
-)
+canvas.text((0, 0), "Hello\nWorld!", font=ImageFont.load_default(), fill=1)
 miniscreen.display_image(image)

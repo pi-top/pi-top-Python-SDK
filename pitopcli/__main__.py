@@ -1,16 +1,12 @@
-#!/usr/bin/env python3
-
 from argparse import ArgumentParser
 
-from .cli_base import PitopCliException, PitopCliInvalidArgument
-
 from .battery import BatteryCLI
-from .display import DisplayCLI
+from .cli_base import PitopCliException, PitopCliInvalidArgument
 from .devices import DeviceCLI
-from .support import SupportCLI
+from .display import DisplayCLI
 from .imu import ImuCLI
 from .oled import OledCLI
-
+from .support import SupportCLI
 
 lookup_dict = {
     "battery": BatteryCLI,
@@ -18,7 +14,7 @@ lookup_dict = {
     "display": DisplayCLI,
     "support": SupportCLI,
     "imu": ImuCLI,
-    "oled": OledCLI
+    "oled": OledCLI,
 }
 
 
@@ -30,11 +26,13 @@ def get_parser():
     Returns:
         ArgumentParser: parser object
     """
-    parser = ArgumentParser(prog='pi-top')
-    subparsers = parser.add_subparsers(title='Subcommands',
-                                       description='Set of valid subcommands to use to interface with your pi-top',
-                                       help='valid subcommands',
-                                       dest='subcommand')
+    parser = ArgumentParser(prog="pi-top")
+    subparsers = parser.add_subparsers(
+        title="Subcommands",
+        description="Set of valid subcommands to use to interface with your pi-top",
+        help="valid subcommands",
+        dest="subcommand",
+    )
 
     for cli_name, cli_class in lookup_dict.items():
         class_parser = subparsers.add_parser(cli_name, help=cli_class.parser_help)

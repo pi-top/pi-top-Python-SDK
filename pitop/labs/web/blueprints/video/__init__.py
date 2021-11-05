@@ -1,12 +1,13 @@
-import gevent
 from io import BytesIO
-from flask import Response, abort, Blueprint
+
+import gevent
+from flask import Blueprint, Response, abort
 
 
 class VideoResponse(Response):
     def __init__(self, get_frame=None, *args, **kwargs):
         if get_frame is None:
-            abort(500, 'Unable to get frames')
+            abort(500, "Unable to get frames")
 
         def _get_frame():
             try:
@@ -23,15 +24,15 @@ class VideoResponse(Response):
                 # get_frame in thread so it won't block handler greenlets
                 frame_bytes = pool.spawn(_get_frame).get()
                 yield (
-                    b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n'+frame_bytes+b'\r\n'
+                    b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
                 )
 
         Response.__init__(
             self,
             generate_frames(),
-            mimetype='multipart/x-mixed-replace; boundary=frame',
-            **kwargs
+            mimetype="multipart/x-mixed-replace; boundary=frame",
+            **kwargs,
         )
 
 
@@ -43,7 +44,7 @@ class VideoBlueprint(Blueprint):
             __name__,
             static_folder="video",
             template_folder="templates",
-            **kwargs
+            **kwargs,
         )
 
         @self.route(f"/{name}.mjpg")

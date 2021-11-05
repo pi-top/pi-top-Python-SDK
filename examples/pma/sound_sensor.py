@@ -1,5 +1,6 @@
-from pitop import SoundSensor
 from time import sleep
+
+from pitop import SoundSensor
 
 sound_sensor = SoundSensor("A2")
 

@@ -1,21 +1,17 @@
-Source: py-pitop-sdk
+Source: pi-top-python-sdk
 Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
+ dh-sequence-sphinxdoc,
 # Required by pybuild
- dh-python,
- python3-all-dev,
+ python3-all,
  python3-setuptools,
-# Required until we can use dh-sequence-sphinxdoc (Bullseye)
- python3-sphinx,
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
-# Required for autodetecting camera devices
- v4l-utils,
 Standards-Version: 4.5.1
 Homepage: https://pi-top.com
 
@@ -23,11 +19,9 @@ Package: python3-pitop-full
 Architecture: all
 Depends:
  ${misc:Depends},
- ${python3:Depends},
-# Used for drawing emojis
+# Emojis used in emotion recipe
  fonts-symbola,
  python3-onnxruntime,
- python3-opencv,
  python3-pitop (= ${binary:Version}),
  libopenblas-dev,
 # Required for face detection & emotion mapping
@@ -49,39 +43,27 @@ Depends:
  alsa-utils,
 # 'arping' command
  arping,
-# Minimum essential OLED font
- fonts-droid-fallback,
+# Miniscreen fonts
+ fonts-roboto,
+ ttf-bitstream-vera,
  i2c-tools,
 # 'ping' command
  iputils-ping,
 # Required for hub communication; such as getting case button state
- pt-device-manager,
+ pi-topd | pt-device-manager,
 # ZMQ for messaging
  python3-zmq,
  raspi-config,
-Recommends:
-# Preferred OLED font
- fonts-fs-me-pro,
 Suggests:
-# Required for 'pt-notify-send'
- pt-notifications,
-# OLED system menu is optional, but useful for [4] users
- pt-sys-oled,
+# Required for OS notifications
+ notify-send-ng,
+# pi-top [4] miniscreen menu is optional, but useful for [4] users
+ pt-miniscreen | pt-sys-oled,
 # Required to get state about Access Point mode
  wifi-ap-sta,
 # Other SDK packages
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
-Breaks:
-# CLI utils
- pt-device-manager (<< 4.0.0),
-# pt-oled
- python3-pt-oled (<< 3.0.0),
-Replaces:
-# CLI utils
- pt-device-manager (<< 4.0.0),
-# pt-oled
- python3-pt-oled (<< 3.0.0),
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .

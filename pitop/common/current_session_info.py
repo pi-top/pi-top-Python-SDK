@@ -1,5 +1,6 @@
 from glob import glob
 from os import environ
+
 from pitop.common.logger import PTLogger
 
 
@@ -9,17 +10,20 @@ def get_current_user():
     Returns:
             user (str): String representing the user
     """
-    if environ.get('SUDO_USER'):
-        return environ.get('SUDO_USER')
-    elif environ.get('USER'):
-        return environ.get('USER')
+    if environ.get("SUDO_USER"):
+        return environ.get("SUDO_USER")
+    elif environ.get("USER"):
+        return environ.get("USER")
     else:
         return get_user_using_first_display()
 
 
 def get_list_of_displays() -> int:
     display_file_prefix = "/tmp/.X11-unix/X"
-    return [f.replace(display_file_prefix, ":") for f in glob(display_file_prefix + "[0-9]*")]
+    return [
+        f.replace(display_file_prefix, ":")
+        for f in glob(display_file_prefix + "[0-9]*")
+    ]
 
 
 def get_first_display() -> int:
@@ -37,6 +41,7 @@ def get_user_using_display(display_no):
             user (str): String representing the user
     """
     from pitop.common.command_runner import run_command
+
     user = None
     for line in run_command("who", timeout=1).split("\n"):
         if "(%s)" % display_no in line:

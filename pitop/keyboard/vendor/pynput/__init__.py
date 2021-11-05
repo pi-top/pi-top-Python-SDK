@@ -19,8 +19,7 @@
 This module imports ``keyboard`` and ``mouse``.
 """
 
-from . import mouse
-from . import keyboard
+from . import keyboard, mouse
 
 
 def _logger(cls):
@@ -35,6 +34,7 @@ def _logger(cls):
     :return: a logger
     """
     import logging
-    return logging.getLogger('{}.{}'.format(
-        '.'.join(cls.__module__.split('.', 2)[:2]),
-        cls.__name__))
+
+    return logging.getLogger(
+        "{}.{}".format(".".join(cls.__module__.split(".", 2)[:2]), cls.__name__)
+    )

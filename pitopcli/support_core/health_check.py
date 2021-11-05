@@ -1,23 +1,22 @@
-from netifaces import (
-    AF_LINK,
-    AF_INET,
-    AF_INET6,
-    ifaddresses,
-    interfaces,
-)
 from distutils.util import strtobool
-from os import path, uname
+from os import uname
 from time import strftime
 
-
-from ..formatter import StdoutFormat, StdoutTable
-from .ptsoftware import PitopSoftware
-from .hub_communication import HubCommunication
-
-from pitop.system import pitop_peripherals, device_type
+from netifaces import AF_INET, AF_INET6, AF_LINK, ifaddresses, interfaces
 
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
+from pitop.common.pt_os import get_pitopOS_info
+from pitop.common.sys_info import (
+    get_debian_version,
+    get_uname_release,
+    get_uname_version,
+)
+from pitop.system import device_type, pitop_peripherals
+
+from ..formatter import StdoutFormat, StdoutTable
+from .hub_communication import HubCommunication
+from .ptsoftware import PitopSoftware
 
 
 def str_to_bool(value):
@@ -94,9 +93,7 @@ class HealthCheck:
         },
     }
 
-    NETWORK_ENUM_LOOKUP = {AF_LINK: 'LINK LAYER',
-                           AF_INET: 'IPv4',
-                           AF_INET6: 'IPv6'}
+    NETWORK_ENUM_LOOKUP = {AF_LINK: "LINK LAYER", AF_INET: "IPv4", AF_INET6: "IPv6"}
 
     VCGENMOD_SETTINGS = {
         "Throttled state of the system": "vcgencmd get_throttled",
@@ -142,9 +139,18 @@ class HealthCheck:
 
         t = StdoutTable()
         t.add_section("System Information", self.get_system_information())
-        t.add_section("Interfaces (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_INTERFACES))
-        t.add_section("Boot Settings (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_BOOT_SETTINGS))
-        t.add_section("Misc (via raspi-config)", self.get_raspi_config_settings(self.RASPI_CONFIG_MISC))
+        t.add_section(
+            "Interfaces (via raspi-config)",
+            self.get_raspi_config_settings(self.RASPI_CONFIG_INTERFACES),
+        )
+        t.add_section(
+            "Boot Settings (via raspi-config)",
+            self.get_raspi_config_settings(self.RASPI_CONFIG_BOOT_SETTINGS),
+        )
+        t.add_section(
+            "Misc (via raspi-config)",
+            self.get_raspi_config_settings(self.RASPI_CONFIG_MISC),
+        )
         t.print()
         print("")
 
@@ -204,13 +210,13 @@ class HealthCheck:
         t.print()
 
         if device_type() == DeviceName.pi_top_4.value:
-            StdoutFormat.print_subsection('Raspberry Pi 4 Bootloader Configuration')
+            StdoutFormat.print_subsection("Raspberry Pi 4 Bootloader Configuration")
             eeprom_info = run_command("sudo rpi-eeprom-config", timeout=5, check=False)
             print(f"{eeprom_info.strip()}")
-            StdoutFormat.print_subsection('Raspberry Pi 4 EEPROM Information')
+            StdoutFormat.print_subsection("Raspberry Pi 4 EEPROM Information")
             eeprom_info = run_command("sudo rpi-eeprom-update", timeout=5, check=False)
             print(f"{eeprom_info.strip()}")
-            StdoutFormat.print_subsection('VideoCore GPU Detailed Configuration')
+            StdoutFormat.print_subsection("VideoCore GPU Detailed Configuration")
             self.print_vcgenmod_settings()
 
     def print_vcgenmod_settings(self):
@@ -225,43 +231,17 @@ class HealthCheck:
             data_arr.append([description, result])
         t.print_data(data_arr)
 
-    def get_uname_output(self):
-        data_arr = []
-        u = uname()
-        data_arr.append(("Kernel Version", u.release))
-        data_arr.append(("Kernel Release", u.version))
-        return data_arr
-
-    def get_pitopOS_info(self):
-        data_arr = []
-        ptissue_path = "/etc/pt-issue"
-        if not path.exists(ptissue_path):
-            return
-        data = {}
-        with open(ptissue_path, 'r') as reader:
-            for line in reader.readlines():
-                content = line.split(":")
-                if len(content) == 2:
-                    data[content[0].strip()] = content[1].strip()
-        headers_to_skip = ("Build Apt Repo", "Final Apt Repo", "Build Pipeline Commit Hash")
-        for k, v in data.items():
-            if k in headers_to_skip:
-                continue
-            data_arr.append((k, v))
-        return data_arr
-
-    def get_debian_version(self):
-        debian_version_file = "/etc/debian_version"
-        if not path.exists(debian_version_file):
-            return None
-        with open(debian_version_file, 'r') as reader:
-            content = reader.read()
-        return [("Debian Version", content.strip())]
-
     def get_system_information(self):
-        sys_info_arr = self.get_debian_version()
-        sys_info_arr += self.get_uname_output()
-        sys_info_arr += self.get_pitopOS_info()
+        sys_info_arr = [
+            ("Debian Version", get_debian_version()),
+            ("Kernel Version", get_uname_release()),
+            ("Kernel Release", get_uname_version()),
+        ]
+
+        data = get_pitopOS_info()
+        for k, v in data.__dict__.items():
+            sys_info_arr.append((k.replace("_", " ").title(), v))
+
         return sys_info_arr
 
     def get_raspi_config_setting_value(self, setting):
@@ -279,7 +259,7 @@ class HealthCheck:
                 setting_value = setting_dict.get("conversion_func")(setting_value)
             setting_value = str(setting_value)
 
-            data_to_print.append((setting_dict.get('description'), setting_value))
+            data_to_print.append((setting_dict.get("description"), setting_value))
 
         return data_to_print
 
@@ -297,8 +277,9 @@ class HealthCheck:
                 for address_number, address_info in enumerate(interface_info):
                     # An interface can have more than one address associated to it
                     if len(interface_info) > 1:
-                        StdoutFormat.print_line(f"Subaddress #{address_number + 1}",
-                                                level=2)
+                        StdoutFormat.print_line(
+                            f"Subaddress #{address_number + 1}", level=2
+                        )
                     # Print interface attributes & values for the address
                     data_arr = []
                     for addr_attribute, addr_attribute_value in address_info.items():
@@ -308,8 +289,15 @@ class HealthCheck:
                     t.print_data(data_arr)
 
         t = StdoutTable()
-        t.print_data([("Hostname", f"{self.get_raspi_config_setting_value('get_hostname')}"),
-                      ("WiFi Country", f"{self.get_raspi_config_setting_value('get_wifi_country')}")])
+        t.print_data(
+            [
+                ("Hostname", f"{self.get_raspi_config_setting_value('get_hostname')}"),
+                (
+                    "WiFi Country",
+                    f"{self.get_raspi_config_setting_value('get_wifi_country')}",
+                ),
+            ]
+        )
 
         interfaces_list = interfaces()
         # Omit loopback interface

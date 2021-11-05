@@ -1,11 +1,7 @@
-from pitop.common.logger import PTLogger
-from pitop.common.ptdm import (
-    PTDMRequestClient,
-    PTDMSubscribeClient,
-    Message,
-)
-
 import atexit
+
+from pitop.common.logger import PTLogger
+from pitop.common.ptdm import Message, PTDMRequestClient, PTDMSubscribeClient
 
 
 class Battery:
@@ -21,7 +17,12 @@ class Battery:
         self.when_charging = None
         self.when_discharging = None
 
-        self.__previous_charging_state = Battery.get_full_state()[0]
+        self.on_capacity_change = None
+
+        (
+            self.__previous_charging_state,
+            self.__previous_capacity,
+        ) = [int(p) for p in Battery.get_full_state()[:2]]
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -30,7 +31,13 @@ class Battery:
 
     def __setup_subscribe_client(self):
         def on_state_changed(parameters):
-            charging_state = int(parameters[0])
+            charging_state, capacity = [int(p) for p in parameters[:2]]
+
+            if self.__previous_capacity != capacity:
+                if callable(self.on_capacity_change):
+                    self.on_capacity_change(capacity)
+
+                self.__previous_capacity = capacity
 
             if charging_state not in range(0, 3):
                 PTLogger.warning("Invalid charging state from pi-top device manager")
@@ -54,11 +61,13 @@ class Battery:
                 func()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise({
-            Message.PUB_LOW_BATTERY_WARNING: lambda: self.when_low,
-            Message.PUB_CRITICAL_BATTERY_WARNING: lambda: self.when_critical,
-            Message.PUB_BATTERY_STATE_CHANGED: on_state_changed,
-        })
+        self.__ptdm_subscribe_client.initialise(
+            {
+                Message.PUB_LOW_BATTERY_WARNING: lambda: self.when_low,
+                Message.PUB_CRITICAL_BATTERY_WARNING: lambda: self.when_critical,
+                Message.PUB_BATTERY_STATE_CHANGED: on_state_changed,
+            }
+        )
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):

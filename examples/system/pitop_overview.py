@@ -1,8 +1,8 @@
-from PIL import Image
 from time import sleep
 
-from pitop import Pitop
+from PIL import Image
 
+from pitop import Pitop
 
 # Set up pi-top
 pitop = Pitop()
@@ -19,7 +19,8 @@ pitop.miniscreen.display_multiline_text(
     "Battery Status:\n"
     f"-Capacity: {battery_capacity}%\n"
     f"-Charging: {battery_charging}",
-    font_size=15)
+    font_size=15,
+)
 sleep(2)
 
 
@@ -28,7 +29,9 @@ keep_running = True
 
 
 def display_gif_and_exit():
-    image = Image.open("/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif")
+    image = Image.open(
+        "/usr/lib/python3/dist-packages/pitop/miniscreen/images/rocket.gif"
+    )
     pitop.miniscreen.play_animated_image(image)
     pitop.miniscreen.display_text("Bye!")
     sleep(2)
@@ -36,10 +39,10 @@ def display_gif_and_exit():
     keep_running = False
 
 
-pitop.select_button.when_pressed = display_gif_and_exit
-pitop.cancel_button.when_pressed = display_gif_and_exit
-pitop.up_button.when_pressed = display_gif_and_exit
-pitop.down_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.select_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.cancel_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.up_button.when_pressed = display_gif_and_exit
+pitop.miniscreen.down_button.when_pressed = display_gif_and_exit
 
 pitop.miniscreen.display_multiline_text("Press any button...", font_size=25)
 

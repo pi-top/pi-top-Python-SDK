@@ -1,70 +1,34 @@
-from pitop.core import ImageFunctions
-from .core import (
-    Canvas,
-    FPS_Regulator,
-    OledDeviceController,
-)
-
-
 from atexit import register
-from os.path import isfile
-from PIL import (
-    Image,
-    ImageChops,
-    ImageDraw,
-    ImageFont,
-    ImageOps,
-    ImageSequence,
-)
-from pyinotify import (
-    IN_CLOSE_WRITE,
-    IN_OPEN,
-    Notifier,
-    ProcessEvent,
-    WatchManager,
-)
-from threading import (
-    Thread,
-    current_thread,
-    main_thread,
-)
+from threading import Thread, current_thread, main_thread
 from time import sleep
+
+from pitop.core import ImageFunctions
+
+from .assistant import MiniscreenAssistant
+from .core import FPS_Regulator, MiniscreenLockFileMonitor, OledDeviceController
 
 
 class OLED:
     """Provides access to the miniscreen display on the pi-top [4], and exposes
     methods for simple rendering of text or images to the screen."""
 
-    __LOCK_FILE_PATH = "/tmp/pt-oled.lock"
-
     def __init__(self):
         self.__controller = OledDeviceController(self._redraw_last_image)
+        self.lock_file_monitor = MiniscreenLockFileMonitor(self.__controller.lock.path)
 
-        self.image = self.__empty_image
+        self.assistant = MiniscreenAssistant(self.mode, self.size)
 
-        self._image = self.__empty_image
-        self.canvas = Canvas(self._image)
+        self.image = self.assistant.empty_image
+        self._image = self.assistant.empty_image
 
         self.__fps_regulator = FPS_Regulator()
 
         self.__visible = False
         self.__auto_play_thread = None
 
-        # Lock file monitoring - used by pt-sys-oled
-        self.__file_monitor_thread = None
-        self.__when_user_stops_using_oled = None
-        self.__when_user_starts_using_oled = None
-
         self.reset()
 
         register(self.__cleanup)
-
-    @property
-    def __empty_image(self):
-        return Image.new(
-            self.device.mode,
-            self.device.size
-        )
 
     def prepare_image(self, image_to_prepare):
         """Formats the given image into one that can be used directly by the
@@ -74,7 +38,8 @@ class OLED:
         :param image_to_prepare: Image to be formatted.
         :rtype: :class:`PIL.Image.Image`
         """
-        return self.canvas.process_image(image_to_prepare)
+        # TODO: deprecate this function in favour of user handling this directly
+        return self.assistant.process_image(image_to_prepare)
 
     def should_redisplay(self, image_to_display=None):
         """Determines if the miniscreen display needs to be refreshed, based on
@@ -89,8 +54,9 @@ class OLED:
         if image_to_display is None:
             image_to_display = self._image
 
-        return self.image is None or \
-            ImageChops.difference(self.image, image_to_display).getbbox()
+        return self.image is None or self.assistant.images_match(
+            self.image, image_to_display
+        )
 
     @property
     def spi_bus(self):
@@ -222,7 +188,7 @@ class OLED:
 
     def clear(self):
         """Clears any content displayed in the miniscreen display."""
-        self.canvas.rectangle(self.bounding_box, fill=0)
+        self.assistant.clear(self._image)
         self.__display(self._image, force=True)
 
     # TODO: evaluate dropping this 'redraw last image' function at v1.0.0
@@ -284,11 +250,20 @@ class OLED:
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
         """
         self.__display(
-            self.prepare_image(ImageFunctions.convert(image, format="PIL")),
+            self.assistant.process_image(ImageFunctions.convert(image, format="PIL")),
             invert=invert,
         )
 
-    def display_text(self, text, xy=None, font_size=None, font=None, invert=False):
+    def display_text(
+        self,
+        text,
+        xy=None,
+        font_size=None,
+        font=None,
+        invert=False,
+        align=None,
+        anchor=None,
+    ):
         """Renders a single line of text to the screen at a given position and
         size.
 
@@ -304,36 +279,31 @@ class OLED:
         :param string font: A filename or path of a TrueType or OpenType font.
             If not provided or passed as `None`, the default font will be used
         :param bool invert: Set to True to flip the on/off state of each pixel in the image
+        :param str align: PIL ImageDraw alignment to use
+        :param str anchor: PIL ImageDraw text anchor to use
         """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        if font is None:
-            font = self.__font_path()
-
-        # Create empty image
-        image = self.__empty_image
-
-        # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).text(
+        image = self.assistant.empty_image
+        self.assistant.render_text(
+            image,
+            text,
             xy,
-            str(text),
-            font=ImageFont.truetype(
-                font,
-                size=font_size
-            ),
-            fill=1,
-            spacing=0,
-            align="left"
+            font_size,
+            font,
+            align,
+            anchor,
         )
-
-        # Display image
         self.display_image(image, invert=invert)
 
-    def display_multiline_text(self, text, xy=None, font_size=None, font=None):
+    def display_multiline_text(
+        self,
+        text,
+        xy=None,
+        font_size=None,
+        font=None,
+        invert=False,
+        anchor=None,
+        align=None,
+    ):
         """Renders multi-lined text to the screen at a given position and size.
         Text that is too long for the screen will automatically wrap to the
         next line.
@@ -349,76 +319,27 @@ class OLED:
             `None`, the default font size will be used
         :param string font: A filename or path of a TrueType or OpenType font.
             If not provided or passed as `None`, the default font will be used
+        :param bool invert: Set to True to flip the on/off state of each pixel in the image
+        :param str align: PIL ImageDraw alignment to use
+        :param str anchor: PIL ImageDraw text anchor to use
         """
-        if xy is None:
-            xy = self.top_left
-
-        if font_size is None:
-            font_size = 30
-
-        if font is None:
-            font = self.__font_path()
-
-        # Create empty image
-        image = self.__empty_image
-
-        # Create font
-        font = ImageFont.truetype(
-            font,
-            size=font_size
-        )
-
-        def format_multiline_text(text):
-            def get_text_size(text):
-                return ImageDraw.Draw(self.__empty_image).textsize(
-                    text=str(text),
-                    font=font,
-                    spacing=0,
-                )
-
-            remaining = self.width
-            space_width, _ = get_text_size(" ")
-            # use this list as a stack, push/popping each line
-            output_text = []
-            # split on whitespace...
-            for word in text.split(None):
-                word_width, _ = get_text_size(word)
-                if word_width + space_width > remaining:
-                    output_text.append(word)
-                    remaining = self.width - word_width
-                else:
-                    if not output_text:
-                        output_text.append(word)
-                    else:
-                        output = output_text.pop()
-                        output += " %s" % word
-                        output_text.append(output)
-                    remaining = remaining - (word_width + space_width)
-            return "\n".join(output_text)
-
-        # Format text
-        text = format_multiline_text(text)
-
-        # 'Draw' text to empty image, using desired font size
-        ImageDraw.Draw(image).multiline_text(
+        image = self.assistant.empty_image
+        self.assistant.render_multiline_text(
+            image,
+            text,
             xy,
-            str(text),
-            font=font,
-            fill=1,
-            spacing=0,
-            align="left"
+            font_size,
+            font,
+            align,
+            anchor,
         )
-
-        # Display image
-        self.display_image(image)
+        self.display_image(image, invert=invert)
 
     def __display(self, image_to_display, force=False, invert=False):
         self.stop_animated_image()
 
         if invert:
-            image_to_display = ImageOps.invert(
-                image_to_display.convert('L')
-            ).convert('1')
+            image_to_display = self.assistant.invert(image_to_display)
 
         self.__fps_regulator.stop_timer()
 
@@ -454,7 +375,9 @@ class OLED:
         self.stop_animated_image()
         self.__kill_thread = False
         if background is True:
-            self.__auto_play_thread = Thread(target=self.__auto_play, args=(image, loop))
+            self.__auto_play_thread = Thread(
+                target=self.__auto_play, args=(image, loop)
+            )
             self.__auto_play_thread.start()
         else:
             self.__auto_play(image, loop)
@@ -489,10 +412,7 @@ class OLED:
         :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.width / 2,
-            self.height / 2
-        )
+        return (self.width / 2, self.height / 2)
 
     @property
     def top_left(self):
@@ -501,10 +421,7 @@ class OLED:
         :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[0],
-            self.bounding_box[1]
-        )
+        return (self.bounding_box[0], self.bounding_box[1])
 
     @property
     def top_right(self):
@@ -513,10 +430,7 @@ class OLED:
         :return: The coordinates of the top right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[2],
-            self.bounding_box[1]
-        )
+        return (self.bounding_box[2], self.bounding_box[1])
 
     @property
     def bottom_left(self):
@@ -525,10 +439,7 @@ class OLED:
         :return: The coordinates of the bottom left of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[0],
-            self.bounding_box[3]
-        )
+        return (self.bounding_box[0], self.bounding_box[3])
 
     @property
     def bottom_right(self):
@@ -537,10 +448,7 @@ class OLED:
         :return: The coordinates of the bottom right of the display's bounding box as an (x,y) tuple.
         :rtype: tuple
         """
-        return (
-            self.bounding_box[2],
-            self.bounding_box[3]
-        )
+        return (self.bounding_box[2], self.bounding_box[3])
 
     #######################
     # Deprecation support #
@@ -557,7 +465,9 @@ class OLED:
         the *canvas* object to draw composite objects and then render them
         to screen in a single frame.
         """
-        print("'display()' is now deprecated. You will need to handle your own images in future.")
+        print(
+            "'display()' is now deprecated. You will need to handle your own images in future."
+        )
         self.__display(self._image, force=force)
 
     def draw(self):
@@ -606,75 +516,88 @@ class OLED:
     ####################
     def __auto_play(self, image, loop=False):
         while True:
-            for frame in ImageSequence.Iterator(image):
+            for frame in self.assistant.get_frame_iterator(image):
 
                 if self.__kill_thread:
                     break
 
                 self.display_image(frame)
                 # Wait for animated image's frame length
-                sleep(
-                    float(frame.info["duration"] / 1000)  # ms to s
-                )
+                sleep(float(frame.info["duration"] / 1000))  # ms to s
 
             if self.__kill_thread or not loop:
                 self.reset()
                 break
 
     @property
+    def when_user_controlled(self):
+        """Function to call when user takes control of the miniscreen.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        return self.lock_file_monitor.when_user_starts_using_oled
+
+    @when_user_controlled.setter
+    def when_user_controlled(self, callback):
+        """Setter for function to call when user takes control of the
+        miniscreen.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.lock_file_monitor.when_user_starts_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.lock_file_monitor.start()
+
+    @property
+    def when_system_controlled(self):
+        """Function to call when user gives back control of the miniscreen to
+        the system.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        return self.lock_file_monitor.when_user_stops_using_oled
+
+    @when_system_controlled.setter
+    def when_system_controlled(self, callback):
+        """Setter for function to call when user gives back control of the
+        miniscreen to the system.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.lock_file_monitor.when_user_stops_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.lock_file_monitor.start()
+
+    @property
     def _when_user_starts_using_oled(self):
-        return self.__when_user_starts_using_oled
+        """Deprecated function."""
+        return self.when_user_controlled
 
     @_when_user_starts_using_oled.setter
     def _when_user_starts_using_oled(self, callback):
-        if not callable(callback):
-            raise ValueError("Callback must be callable")
-
-        self.__when_user_starts_using_oled = callback
-        # Lockfile thread needs to be restarted to get updated callback reference
-        self.__start_lockfile_monitoring_thread()
+        """Deprecated function."""
+        self.when_user_controlled = callback
 
     @property
     def _when_user_stops_using_oled(self):
-        return self.__when_user_stops_using_oled
+        """Deprecated function."""
+        return self.when_system_controlled
 
     @_when_user_stops_using_oled.setter
     def _when_user_stops_using_oled(self, callback):
-        if not callable(callback):
-            raise ValueError("Callback must be callable")
-
-        self.__when_user_stops_using_oled = callback
-        # Lockfile thread needs to be restarted to get updated callback reference
-        self.__start_lockfile_monitoring_thread()
-
-    def __start_lockfile_monitoring_thread(self):
-
-        def start_lockfile_monitoring():
-            eh = ProcessEvent()
-            events_to_watch = 0
-            if self.__when_user_stops_using_oled:
-                eh.process_IN_CLOSE_WRITE = lambda event: self.__when_user_stops_using_oled()
-                events_to_watch = events_to_watch | IN_CLOSE_WRITE
-            if self.__when_user_starts_using_oled:
-                eh.process_IN_OPEN = lambda event: self.__when_user_starts_using_oled()
-                events_to_watch = events_to_watch | IN_OPEN
-
-            wm = WatchManager()
-            wm.add_watch(self.__LOCK_FILE_PATH, events_to_watch)
-            notifier = Notifier(wm, eh)
-            notifier.loop()
-
-        self.__cleanup()
-        self.__file_monitor_thread = Thread(target=start_lockfile_monitoring)
-        self.__file_monitor_thread.daemon = True
-        self.__file_monitor_thread.start()
+        """Deprecated function."""
+        self.when_system_controlled = callback
 
     def __cleanup(self):
         self.stop_animated_image()
-        if self.__file_monitor_thread is not None and self.__file_monitor_thread.is_alive():
-            self.__file_monitor_thread.join(0)
-
-    def __font_path(self):
-        primary_font_path = "/usr/share/fonts/opentype/FSMePro/FSMePro-Light.otf"
-        fallback_font_path = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
-        return primary_font_path if isfile(primary_font_path) else fallback_font_path
+        self.lock_file_monitor.stop()

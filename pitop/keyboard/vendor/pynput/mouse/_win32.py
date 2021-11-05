@@ -24,24 +24,24 @@
 
 import ctypes
 import enum
-
-from ctypes import (
-    windll,
-    wintypes)
+from ctypes import windll, wintypes
 
 from pynput._util import NotifierMixin
 from pynput._util.win32 import (
     INPUT,
+    MOUSEINPUT,
     INPUT_union,
     ListenerMixin,
-    MOUSEINPUT,
     SendInput,
-    SystemHook)
+    SystemHook,
+)
+
 from . import _base
 
 
 class Button(enum.Enum):
     """The various buttons."""
+
     unknown = None
     left = (MOUSEINPUT.LEFTUP, MOUSEINPUT.LEFTDOWN)
     middle = (MOUSEINPUT.MIDDLEUP, MOUSEINPUT.MIDDLEDOWN)
@@ -65,54 +65,64 @@ class Controller(NotifierMixin, _base.Controller):
     def _position_set(self, pos):
         pos = int(pos[0]), int(pos[1])
         self.__SetCursorPos(*pos)
-        self._emit('on_move', *pos)
+        self._emit("on_move", *pos)
 
     def _scroll(self, dx, dy):
         if dy:
             SendInput(
                 1,
-                ctypes.byref(INPUT(
-                    type=INPUT.MOUSE,
-                    value=INPUT_union(
-                        mi=MOUSEINPUT(
-                            dwFlags=MOUSEINPUT.WHEEL,
-                            mouseData=int(dy))))),
-                ctypes.sizeof(INPUT))
+                ctypes.byref(
+                    INPUT(
+                        type=INPUT.MOUSE,
+                        value=INPUT_union(
+                            mi=MOUSEINPUT(dwFlags=MOUSEINPUT.WHEEL, mouseData=int(dy))
+                        ),
+                    )
+                ),
+                ctypes.sizeof(INPUT),
+            )
 
         if dx:
             SendInput(
                 1,
-                ctypes.byref(INPUT(
-                    type=INPUT.MOUSE,
-                    value=INPUT_union(
-                        mi=MOUSEINPUT(
-                            dwFlags=MOUSEINPUT.HWHEEL,
-                            mouseData=int(dx))))),
-                ctypes.sizeof(INPUT))
+                ctypes.byref(
+                    INPUT(
+                        type=INPUT.MOUSE,
+                        value=INPUT_union(
+                            mi=MOUSEINPUT(dwFlags=MOUSEINPUT.HWHEEL, mouseData=int(dx))
+                        ),
+                    )
+                ),
+                ctypes.sizeof(INPUT),
+            )
 
         if dx or dy:
             px, py = self._position_get()
-            self._emit('on_scroll', px, py, dx, dy)
+            self._emit("on_scroll", px, py, dx, dy)
 
     def _press(self, button):
         SendInput(
             1,
-            ctypes.byref(INPUT(
-                type=INPUT.MOUSE,
-                value=INPUT_union(
-                    mi=MOUSEINPUT(
-                        dwFlags=button.value[1])))),
-            ctypes.sizeof(INPUT))
+            ctypes.byref(
+                INPUT(
+                    type=INPUT.MOUSE,
+                    value=INPUT_union(mi=MOUSEINPUT(dwFlags=button.value[1])),
+                )
+            ),
+            ctypes.sizeof(INPUT),
+        )
 
     def _release(self, button):
         SendInput(
             1,
-            ctypes.byref(INPUT(
-                type=INPUT.MOUSE,
-                value=INPUT_union(
-                    mi=MOUSEINPUT(
-                        dwFlags=button.value[0])))),
-            ctypes.sizeof(INPUT))
+            ctypes.byref(
+                INPUT(
+                    type=INPUT.MOUSE,
+                    value=INPUT_union(mi=MOUSEINPUT(dwFlags=button.value[0])),
+                )
+            ),
+            ctypes.sizeof(INPUT),
+        )
 
 
 @Controller._receiver
@@ -139,34 +149,32 @@ class Listener(ListenerMixin, _base.Listener):
         WM_MBUTTONDOWN: (Button.middle, True),
         WM_MBUTTONUP: (Button.middle, False),
         WM_RBUTTONDOWN: (Button.right, True),
-        WM_RBUTTONUP: (Button.right, False)}
+        WM_RBUTTONUP: (Button.right, False),
+    }
 
     #: A mapping from messages to scroll vectors
-    SCROLL_BUTTONS = {
-        WM_MOUSEWHEEL: (0, 1),
-        WM_MOUSEHWHEEL: (1, 0)}
+    SCROLL_BUTTONS = {WM_MOUSEWHEEL: (0, 1), WM_MOUSEHWHEEL: (1, 0)}
 
-    _HANDLED_EXCEPTIONS = (
-        SystemHook.SuppressException,)
+    _HANDLED_EXCEPTIONS = (SystemHook.SuppressException,)
 
     class _MSLLHOOKSTRUCT(ctypes.Structure):
         """Contains information about a mouse event passed to a ``WH_MOUSE_LL``
         hook procedure, ``MouseProc``."""
+
         _fields_ = [
-            ('pt', wintypes.POINT),
-            ('mouseData', wintypes.DWORD),
-            ('flags', wintypes.DWORD),
-            ('time', wintypes.DWORD),
-            ('dwExtraInfo', ctypes.c_void_p)]
+            ("pt", wintypes.POINT),
+            ("mouseData", wintypes.DWORD),
+            ("flags", wintypes.DWORD),
+            ("time", wintypes.DWORD),
+            ("dwExtraInfo", ctypes.c_void_p),
+        ]
 
     #: A pointer to a :class:`_MSLLHOOKSTRUCT`
     _LPMSLLHOOKSTRUCT = ctypes.POINTER(_MSLLHOOKSTRUCT)
 
     def __init__(self, *args, **kwargs):
         super(Listener, self).__init__(*args, **kwargs)
-        self._event_filter = self._options.get(
-            'event_filter',
-            lambda msg, data: True)
+        self._event_filter = self._options.get("event_filter", lambda msg, data: True)
 
     def _handle(self, code, msg, lpdata):
         if code != SystemHook.HC_ACTION:

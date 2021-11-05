@@ -25,22 +25,22 @@
 import contextlib
 import ctypes
 import enum
-import six
-
 from ctypes import wintypes
 
 import pynput._util.win32_vks as VK
-
+import six
 from pynput._util import AbstractListener
 from pynput._util.win32 import (
     INPUT,
-    INPUT_union,
     KEYBDINPUT,
+    INPUT_union,
     KeyTranslator,
     ListenerMixin,
     SendInput,
     SystemHook,
-    VkKeyScan)
+    VkKeyScan,
+)
+
 from . import _base
 
 
@@ -71,7 +71,8 @@ class KeyCode(_base.KeyCode):
         return dict(
             dwFlags=flags | (KEYBDINPUT.KEYUP if not is_press else 0),
             wVk=vk,
-            wScan=scan)
+            wScan=scan,
+        )
 
 
 class Key(enum.Enum):
@@ -120,7 +121,7 @@ class Key(enum.Enum):
     shift = KeyCode.from_vk(VK.LSHIFT)
     shift_l = KeyCode.from_vk(VK.LSHIFT)
     shift_r = KeyCode.from_vk(VK.RSHIFT)
-    space = KeyCode.from_vk(VK.SPACE, char=' ')
+    space = KeyCode.from_vk(VK.SPACE, char=" ")
     tab = KeyCode.from_vk(VK.TAB)
     up = KeyCode.from_vk(VK.UP)
 
@@ -142,11 +143,14 @@ class Controller(_base.Controller):
     def _handle(self, key, is_press):
         SendInput(
             1,
-            ctypes.byref(INPUT(
-                type=INPUT.KEYBOARD,
-                value=INPUT_union(
-                    ki=KEYBDINPUT(**key._parameters(is_press))))),
-            ctypes.sizeof(INPUT))
+            ctypes.byref(
+                INPUT(
+                    type=INPUT.KEYBOARD,
+                    value=INPUT_union(ki=KEYBDINPUT(**key._parameters(is_press))),
+                )
+            ),
+            ctypes.sizeof(INPUT),
+        )
 
 
 class Listener(ListenerMixin, _base.Listener):
@@ -172,22 +176,21 @@ class Listener(ListenerMixin, _base.Listener):
     _RELEASE_MESSAGES = (_WM_KEYUP, _WM_SYSKEYUP)
 
     #: A mapping from keysym to special key
-    _SPECIAL_KEYS = {
-        key.value.vk: key
-        for key in Key}
+    _SPECIAL_KEYS = {key.value.vk: key for key in Key}
 
-    _HANDLED_EXCEPTIONS = (
-        SystemHook.SuppressException,)
+    _HANDLED_EXCEPTIONS = (SystemHook.SuppressException,)
 
     class _KBDLLHOOKSTRUCT(ctypes.Structure):
         """Contains information about a mouse event passed to a
         ``WH_KEYBOARD_LL`` hook procedure, ``LowLevelKeyboardProc``."""
+
         _fields_ = [
-            ('vkCode', wintypes.DWORD),
-            ('scanCode', wintypes.DWORD),
-            ('flags', wintypes.DWORD),
-            ('time', wintypes.DWORD),
-            ('dwExtraInfo', ctypes.c_void_p)]
+            ("vkCode", wintypes.DWORD),
+            ("scanCode", wintypes.DWORD),
+            ("flags", wintypes.DWORD),
+            ("time", wintypes.DWORD),
+            ("dwExtraInfo", ctypes.c_void_p),
+        ]
 
     #: A pointer to a :class:`KBDLLHOOKSTRUCT`
     _LPKBDLLHOOKSTRUCT = ctypes.POINTER(_KBDLLHOOKSTRUCT)
@@ -195,9 +198,7 @@ class Listener(ListenerMixin, _base.Listener):
     def __init__(self, *args, **kwargs):
         super(Listener, self).__init__(*args, **kwargs)
         self._translator = KeyTranslator()
-        self._event_filter = self._options.get(
-            'event_filter',
-            lambda msg, data: True)
+        self._event_filter = self._options.get("event_filter", lambda msg, data: True)
 
     def _convert(self, code, msg, lpdata):
         if code != SystemHook.HC_ACTION:
@@ -244,6 +245,7 @@ class Listener(ListenerMixin, _base.Listener):
     def _receive(self):
         """An empty context manager; we do not need to fake keyboard events."""
         yield
+
     # pylint: enable=R0201
 
     def _event_to_key(self, msg, vk):
@@ -259,9 +261,7 @@ class Listener(ListenerMixin, _base.Listener):
         """
         # We must always call self._translate to keep the keyboard state up to
         # date
-        key = KeyCode(**self._translate(
-            vk,
-            msg in self._PRESS_MESSAGES))
+        key = KeyCode(**self._translate(vk, msg in self._PRESS_MESSAGES))
 
         # If the virtual key code corresponds to a Key value, we prefer that
         if vk in self._SPECIAL_KEYS:

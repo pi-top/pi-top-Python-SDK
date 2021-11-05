@@ -25,7 +25,7 @@ See the documentation for more information.
 import os
 import sys
 
-if os.environ.get('__PYNPUT_GENERATE_DOCUMENTATION') == 'yes':
+if os.environ.get("__PYNPUT_GENERATE_DOCUMENTATION") == "yes":
     from ._base import Button, Controller, Listener
 else:
     Button = None
@@ -33,11 +33,11 @@ else:
     Listener = None
 
 
-if sys.platform == 'darwin':
+if sys.platform == "darwin":
     if not Button and not Controller and not Listener:
         from ._darwin import Button, Controller, Listener
 
-elif sys.platform == 'win32':
+elif sys.platform == "win32":
     if not Button and not Controller and not Listener:
         from ._win32 import Button, Controller, Listener
 
@@ -52,4 +52,4 @@ else:
 
 
 if not Button or not Controller or not Listener:
-    raise ImportError('this platform is not supported')
+    raise ImportError("this platform is not supported")

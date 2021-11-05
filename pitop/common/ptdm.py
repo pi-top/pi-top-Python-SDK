@@ -1,20 +1,18 @@
-from pitop.common.logger import PTLogger
-from pitop.common.type_helper import TypeHelper
+from atexit import register, unregister
+from inspect import signature
 from threading import Thread
 from time import sleep
-from inspect import signature
 from traceback import format_exc
-import zmq
-from atexit import (
-    register,
-    unregister,
-)
 
+import zmq
+
+from pitop.common.logger import PTLogger
+from pitop.common.type_helper import TypeHelper
 
 _TIMEOUT_MS = 1000
 
 
-# Messages sent to/from pt-device-manager clients
+# Messages sent to/from pi-topd clients (formerly pt-device-manager (ptdm))
 class Message:
     __message_names = dict()
     __param_types = dict()
@@ -341,7 +339,7 @@ class PTDMRequestClient:
 
         try:
             self.__zmq_socket.connect("tcp://127.0.0.1:3782")
-            PTLogger.debug("pt-device-manager request client is ready")
+            PTLogger.debug("pi-topd request client is ready")
 
         except zmq.error.ZMQError as e:
             PTLogger.error("Error starting the request client: " + str(e))
@@ -382,16 +380,20 @@ class PTDMRequestClient:
         # Parse the response
         response_object = Message.from_string(response_string)
 
-        if response_object.message_id() in [Message.RSP_ERR_SERVER,
-                                            Message.RSP_ERR_MALFORMED,
-                                            Message.RSP_ERR_UNSUPPORTED]:
-            raise Exception(f"pt-device-manager reported an error ({response_object.message_id_name()})")
+        if response_object.message_id() in [
+            Message.RSP_ERR_SERVER,
+            Message.RSP_ERR_MALFORMED,
+            Message.RSP_ERR_UNSUPPORTED,
+        ]:
+            raise Exception(
+                f"pi-topd reported an error ({response_object.message_id_name()})"
+            )
 
         # Check response matches initial message (original message value + 100)
         expected_message_id = message.message_id() + 100
         if response_object.message_id() != expected_message_id:
             raise Exception(
-                "Invalid response from pt-device-manager. "
+                "Invalid response from pi-topd. "
                 f"Expected: {Message.name_for_id(expected_message_id)}, "
                 f"Actual: {response_object.message_id_name()}"
             )
@@ -420,7 +422,7 @@ class PTDMSubscribeClient:
 
         try:
             self.__zmq_socket.connect("tcp://127.0.0.1:3781")
-            PTLogger.debug("pt-device-manager subscribe client is ready")
+            PTLogger.debug("pi-topd subscribe client is ready")
 
         except zmq.error.ZMQError as e:
             PTLogger.error("Error starting the subscribe client: " + str(e))
@@ -452,8 +454,7 @@ class PTDMSubscribeClient:
                 id = message.message_id()
                 if id in self.__callback_funcs:
                     self.invoke_callback_func_if_exists(
-                        self.__callback_funcs[id],
-                        message.parameters
+                        self.__callback_funcs[id], message.parameters
                     )
 
     def invoke_callback_func_if_exists(self, func, params=list()):
@@ -462,7 +463,9 @@ class PTDMSubscribeClient:
 
         func_arg_no = len(signature(func).parameters)
         if func_arg_no > 1:
-            raise ValueError("Invalid callback function - it should receive at most one argument.")
+            raise ValueError(
+                "Invalid callback function - it should receive at most one argument."
+            )
 
         if params == list() or func_arg_no == 0:
             func()

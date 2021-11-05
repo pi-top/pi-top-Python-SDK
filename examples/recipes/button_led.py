@@ -1,5 +1,6 @@
-from pitop import Button, LED
 from time import sleep
+
+from pitop import LED, Button
 
 button = Button("D1")
 led = LED("D2")

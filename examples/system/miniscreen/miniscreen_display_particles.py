@@ -1,7 +1,8 @@
-from pitop import Pitop
+from random import randint
 
 from PIL import Image, ImageDraw
-from random import randint
+
+from pitop import Pitop
 
 pitop = Pitop()
 miniscreen = pitop.miniscreen
@@ -25,10 +26,16 @@ class Particle:
         return (self.x, self.y)
 
     def update(self):
-        dx = (self.x - (miniscreen.width / 2)) / speed_factor if self.x < (miniscreen.width /
-                                                                           2) else (self.x - (miniscreen.width / 2)) / speed_factor
-        dy = (self.y - (miniscreen.height / 2)) / speed_factor if self.y < (miniscreen.height /
-                                                                            2) else (self.y - (miniscreen.height / 2)) / speed_factor
+        dx = (
+            (self.x - (miniscreen.width / 2)) / speed_factor
+            if self.x < (miniscreen.width / 2)
+            else (self.x - (miniscreen.width / 2)) / speed_factor
+        )
+        dy = (
+            (self.y - (miniscreen.height / 2)) / speed_factor
+            if self.y < (miniscreen.height / 2)
+            else (self.y - (miniscreen.height / 2)) / speed_factor
+        )
         self.x += dx
         self.y += dy
 

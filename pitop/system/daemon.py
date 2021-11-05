@@ -1,4 +1,4 @@
-from pitop.common.ptdm import PTDMRequestClient, Message
+from pitop.common.ptdm import Message, PTDMRequestClient
 
 
 def ping():

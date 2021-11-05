@@ -1,13 +1,21 @@
-#!/usr/bin/env python3
-
-from .common.imu_registers import ImuRegisters, RegisterTypes, RawRegisterTypes, OrientationRegisterTypes, ScaleMappings
-from .common.imu_registers import MagCalHardTypes, MagCalSoftTypes, MagCalRegisterTypes
-from .plate_interface import PlateInterface
 import numpy as np
+
+from .common.imu_registers import (
+    ImuRegisters,
+    MagCalHardTypes,
+    MagCalRegisterTypes,
+    MagCalSoftTypes,
+    OrientationRegisterTypes,
+    RawRegisterTypes,
+    RegisterTypes,
+    ScaleMappings,
+)
+from .plate_interface import PlateInterface
 
 
 class ImuController:
     """Class used to read/write IMU registers from the Expansion Plate MCU."""
+
     __ORIENTATION_DATA_SCALE = 100.0
     __MAG_SIGNED_RANGE = 4900.0
     __16BIT_SIGNED_RANGE = 2 ** 15
@@ -38,7 +46,12 @@ class ImuController:
         self.orientation_enable = False
 
     def __set_imu_config(self, imu_function: int, enable: bool):
-        self.__mcu_device.write_word(self.__enable_registers[imu_function], int(enable), little_endian=True, signed=False)
+        self.__mcu_device.write_word(
+            self.__enable_registers[imu_function],
+            int(enable),
+            little_endian=True,
+            signed=False,
+        )
 
     @property
     def acc_enable(self):
@@ -78,13 +91,19 @@ class ImuController:
 
     def __data_scale_config_write(self, register_type: int, scaler: int):
         if scaler not in ScaleMappings[register_type].keys():
-            raise ValueError(f"Valid values for scalers are: {list(ScaleMappings[register_type].keys())}")
+            raise ValueError(
+                f"Valid values for scalers are: {list(ScaleMappings[register_type].keys())}"
+            )
         byte = ScaleMappings[register_type][scaler]
         self.__mcu_device.write_byte(self.__config_registers[register_type], byte)
 
     def __data_scale_config_read(self, register_type: int):
-        byte = self.__mcu_device.read_unsigned_byte(self.__config_registers[register_type])
-        scaler = next(key for key, value in ScaleMappings[register_type].items() if value == byte)
+        byte = self.__mcu_device.read_unsigned_byte(
+            self.__config_registers[register_type]
+        )
+        scaler = next(
+            key for key, value in ScaleMappings[register_type].items() if value == byte
+        )
         return scaler
 
     @property
@@ -112,7 +131,12 @@ class ImuController:
 
         imu_acc_raw = self.__get_raw_data(RegisterTypes.ACC)
 
-        imu_acc_scaled = tuple([axis / (self.__16BIT_SIGNED_RANGE / float(self.__acc_scaler)) for axis in imu_acc_raw])
+        imu_acc_scaled = tuple(
+            [
+                axis / (self.__16BIT_SIGNED_RANGE / float(self.__acc_scaler))
+                for axis in imu_acc_raw
+            ]
+        )
 
         return imu_acc_scaled
 
@@ -123,7 +147,12 @@ class ImuController:
 
         imu_gyro_raw = self.__get_raw_data(RegisterTypes.GYRO)
 
-        imu_gyro_scaled = tuple([axis / (self.__16BIT_SIGNED_RANGE / float(self.__gyro_scaler)) for axis in imu_gyro_raw])
+        imu_gyro_scaled = tuple(
+            [
+                axis / (self.__16BIT_SIGNED_RANGE / float(self.__gyro_scaler))
+                for axis in imu_gyro_raw
+            ]
+        )
 
         return imu_gyro_scaled
 
@@ -134,7 +163,10 @@ class ImuController:
 
         mag_raw = self.__get_raw_data(RegisterTypes.MAG)
 
-        mag_raw_scaled = tuple(axis * self.__MAG_SIGNED_RANGE / self.__16BIT_SIGNED_RANGE for axis in mag_raw)
+        mag_raw_scaled = tuple(
+            axis * self.__MAG_SIGNED_RANGE / self.__16BIT_SIGNED_RANGE
+            for axis in mag_raw
+        )
 
         return mag_raw_scaled
 
@@ -143,15 +175,30 @@ class ImuController:
         if not self.orientation_enable:
             self.orientation_enable = True
 
-        roll = self.__read_imu_data(
-            self.__data_registers[
-                RegisterTypes.ORIENTATION][OrientationRegisterTypes.ROLL]) / self.__ORIENTATION_DATA_SCALE
-        pitch = self.__read_imu_data(
-            self.__data_registers[
-                RegisterTypes.ORIENTATION][OrientationRegisterTypes.PITCH]) / self.__ORIENTATION_DATA_SCALE
-        yaw = self.__read_imu_data(
-            self.__data_registers[
-                RegisterTypes.ORIENTATION][OrientationRegisterTypes.YAW]) / self.__ORIENTATION_DATA_SCALE
+        roll = (
+            self.__read_imu_data(
+                self.__data_registers[RegisterTypes.ORIENTATION][
+                    OrientationRegisterTypes.ROLL
+                ]
+            )
+            / self.__ORIENTATION_DATA_SCALE
+        )
+        pitch = (
+            self.__read_imu_data(
+                self.__data_registers[RegisterTypes.ORIENTATION][
+                    OrientationRegisterTypes.PITCH
+                ]
+            )
+            / self.__ORIENTATION_DATA_SCALE
+        )
+        yaw = (
+            self.__read_imu_data(
+                self.__data_registers[RegisterTypes.ORIENTATION][
+                    OrientationRegisterTypes.YAW
+                ]
+            )
+            / self.__ORIENTATION_DATA_SCALE
+        )
 
         return roll, pitch, yaw
 
@@ -159,9 +206,10 @@ class ImuController:
         x, y, z = self.__read_mag_cal_hard()
         hard_iron_offset = np.array([[x, y, z]]).T / self.__HARD_IRON_SCALE_FACTOR
         xx, yy, zz, xy, xz, yz = self.__read_mag_cal_soft()
-        soft_iron_matrix = np.array([[xx, xy, xz],
-                                     [xy, yy, yz],
-                                     [xz, yz, zz]]) / self.__SOFT_IRON_SCALE_FACTOR
+        soft_iron_matrix = (
+            np.array([[xx, xy, xz], [xy, yy, yz], [xz, yz, zz]])
+            / self.__SOFT_IRON_SCALE_FACTOR
+        )
         return hard_iron_offset, soft_iron_matrix
 
     def write_mag_cal_params(self, hard_iron_offset, soft_iron_matrix):
@@ -190,10 +238,20 @@ class ImuController:
 
         # check that the writes were successful
         hard_iron_offset_read, soft_iron_matrix_read = self.read_mag_cal_params()
-        equal_hard = np.allclose(hard_iron_offset_read, hard_iron_offset, atol=1 / self.__HARD_IRON_SCALE_FACTOR)
-        equal_soft = np.allclose(soft_iron_matrix_read, soft_iron_matrix, atol=1 / self.__SOFT_IRON_SCALE_FACTOR)
+        equal_hard = np.allclose(
+            hard_iron_offset_read,
+            hard_iron_offset,
+            atol=1 / self.__HARD_IRON_SCALE_FACTOR,
+        )
+        equal_soft = np.allclose(
+            soft_iron_matrix_read,
+            soft_iron_matrix,
+            atol=1 / self.__SOFT_IRON_SCALE_FACTOR,
+        )
         if not equal_hard or not equal_soft:
-            raise Exception("Cannot write magnetometer calibration settings - try re-docking Expansion Plate to pi-top [4].")
+            raise Exception(
+                "Cannot write magnetometer calibration settings - try re-docking Expansion Plate to pi-top [4]."
+            )
 
     def __read_imu_data(self, data_register: int):
         return self.__mcu_device.read_signed_word(data_register, little_endian=True)
@@ -206,19 +264,31 @@ class ImuController:
         return x, y, z
 
     def __write_mag_cal(self, word, register_type, calibration_type):
-        self.__mcu_device.write_word(self.__mag_cal_registers[register_type][calibration_type], word, little_endian=True,
-                                     signed=True)
+        self.__mcu_device.write_word(
+            self.__mag_cal_registers[register_type][calibration_type],
+            word,
+            little_endian=True,
+            signed=True,
+        )
 
     def __read_mag_cal_hard(self):
         data = []
-        for register_key, register_value in self.__mag_cal_registers[MagCalRegisterTypes.HARD].items():
-            data.append(self.__mcu_device.read_signed_word(register_value, little_endian=True))
+        for register_key, register_value in self.__mag_cal_registers[
+            MagCalRegisterTypes.HARD
+        ].items():
+            data.append(
+                self.__mcu_device.read_signed_word(register_value, little_endian=True)
+            )
         x, y, z = data
         return x, y, z
 
     def __read_mag_cal_soft(self):
         data = []
-        for register_key, register_value in self.__mag_cal_registers[MagCalRegisterTypes.SOFT].items():
-            data.append(self.__mcu_device.read_signed_word(register_value, little_endian=True))
+        for register_key, register_value in self.__mag_cal_registers[
+            MagCalRegisterTypes.SOFT
+        ].items():
+            data.append(
+                self.__mcu_device.read_signed_word(register_value, little_endian=True)
+            )
         xx, yy, zz, xy, xz, yz = data
         return xx, yy, zz, xy, xz, yz

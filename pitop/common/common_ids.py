@@ -89,21 +89,30 @@ class Peripheral:
 
     def config_speaker_l(self):
         self.id = PeripheralID.pi_top_speaker_l
-        self.compatible_ids = [PeripheralID.pi_top_speaker_r, PeripheralID.pi_top_speaker_m]
+        self.compatible_ids = [
+            PeripheralID.pi_top_speaker_r,
+            PeripheralID.pi_top_speaker_m,
+        ]
         self.name = "pi-topSPEAKER-v1-Left"
         self.type = PeripheralType.addon
         self.addr = 0x71
 
     def config_speaker_m(self):
         self.id = PeripheralID.pi_top_speaker_m
-        self.compatible_ids = [PeripheralID.pi_top_speaker_l, PeripheralID.pi_top_speaker_r]
+        self.compatible_ids = [
+            PeripheralID.pi_top_speaker_l,
+            PeripheralID.pi_top_speaker_r,
+        ]
         self.name = "pi-topSPEAKER-v1-Mono"
         self.type = PeripheralType.addon
         self.addr = 0x73
 
     def config_speaker_r(self):
         self.id = PeripheralID.pi_top_speaker_r
-        self.compatible_ids = [PeripheralID.pi_top_speaker_l, PeripheralID.pi_top_speaker_m]
+        self.compatible_ids = [
+            PeripheralID.pi_top_speaker_l,
+            PeripheralID.pi_top_speaker_m,
+        ]
         self.name = "pi-topSPEAKER-v1-Right"
         self.type = PeripheralType.addon
         self.addr = 0x72
@@ -117,7 +126,10 @@ class Peripheral:
 
     def config_proto_plus(self):
         self.id = PeripheralID.pi_top_proto_plus
-        self.compatible_ids = [PeripheralID.pi_top_pulse, PeripheralID.pi_top_speaker_v2]
+        self.compatible_ids = [
+            PeripheralID.pi_top_pulse,
+            PeripheralID.pi_top_speaker_v2,
+        ]
         self.name = "pi-topPROTO+"
         self.type = PeripheralType.addon
         self.addr = 0x2A

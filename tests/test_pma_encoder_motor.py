@@ -1,13 +1,7 @@
-from pitop.pma.parameters import (
-    BrakingType,
-    ForwardDirection,
-    Direction
-)
-from pitop.pma.encoder_motor import EncoderMotor
 from math import pi
 from sys import modules
-from unittest.mock import Mock, patch
 from unittest import TestCase
+from unittest.mock import Mock, patch
 
 modules_to_patch = [
     "pitop.camera.camera",
@@ -18,6 +12,8 @@ modules_to_patch = [
 for module in modules_to_patch:
     modules[module] = Mock()
 
+from pitop.pma.encoder_motor import EncoderMotor
+from pitop.pma.parameters import BrakingType, Direction, ForwardDirection
 
 # Avoid getting the mocked modules in other tests
 for patched_module in modules_to_patch:
@@ -25,13 +21,13 @@ for patched_module in modules_to_patch:
 
 
 class EncoderMotorTestCase(TestCase):
-
     def test_internal_attributes_on_instance(self):
         """Default values of attributes are set when creating object."""
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         self.assertEquals(wheel.wheel_diameter, 0.0718)
         self.assertEquals(round(wheel.wheel_circumference, 3), 0.226)
@@ -45,7 +41,8 @@ class EncoderMotorTestCase(TestCase):
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         self.assertEquals(round(wheel.max_speed, 3), 0.177)
 
@@ -56,7 +53,8 @@ class EncoderMotorTestCase(TestCase):
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         wheel.forward(1)
         mock_set_target_speed.assert_called_once_with(1, Direction.FORWARD, 0.0)
@@ -68,7 +66,8 @@ class EncoderMotorTestCase(TestCase):
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         wheel.backward(1)
         mock_set_target_speed.assert_called_once_with(1, Direction.BACK, 0.0)
@@ -78,7 +77,8 @@ class EncoderMotorTestCase(TestCase):
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         initial_circumference = wheel.wheel_circumference
 
@@ -92,20 +92,24 @@ class EncoderMotorTestCase(TestCase):
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         for invalid_diameter in (-10, 0):
             with self.assertRaises(ValueError):
                 wheel.wheel_diameter = invalid_diameter
 
     @patch("pitop.pma.EncoderMotor.set_target_rpm")
-    def test_set_target_speed_calls_set_target_rpm_with_correct_params(self, set_target_rpm_mock):
+    def test_set_target_speed_calls_set_target_rpm_with_correct_params(
+        self, set_target_rpm_mock
+    ):
         """set_target_speed calls set_target_rpm with correct params."""
 
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         speed_test_data = [
             (0.1, Direction.FORWARD, 1),
@@ -119,16 +123,21 @@ class EncoderMotorTestCase(TestCase):
             target_motor_rotations = distance / wheel.wheel_circumference
 
             wheel.set_target_speed(speed, direction, distance)
-            set_target_rpm_mock.assert_called_with(target_speed_in_rpm, direction, target_motor_rotations)
+            set_target_rpm_mock.assert_called_with(
+                target_speed_in_rpm, direction, target_motor_rotations
+            )
 
     @patch("pitop.pma.EncoderMotor.set_target_rpm")
-    def test_set_target_speed_fails_when_requesting_an_out_of_range_speed(self, set_target_rpm_mock):
+    def test_set_target_speed_fails_when_requesting_an_out_of_range_speed(
+        self, set_target_rpm_mock
+    ):
         """set_target_speed fails if requesting a value out of range."""
 
         wheel = EncoderMotor(
             port_name="M1",
             forward_direction=ForwardDirection.CLOCKWISE,
-            braking_type=BrakingType.COAST)
+            braking_type=BrakingType.COAST,
+        )
 
         speed_test_data = [
             (1, Direction.FORWARD, 1),
@@ -143,4 +152,6 @@ class EncoderMotorTestCase(TestCase):
 
             with self.assertRaises(ValueError):
                 wheel.set_target_speed(speed, direction, distance)
-                set_target_rpm_mock.assert_called_with(target_speed_in_rpm, direction, target_motor_rotations)
+                set_target_rpm_mock.assert_called_with(
+                    target_speed_in_rpm, direction, target_motor_rotations
+                )

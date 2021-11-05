@@ -1,16 +1,34 @@
-from pitop.miniscreen import Miniscreen
 import json
-from PIL import Image
+from configparser import ConfigParser
+from os import geteuid
 from random import randint
-from requests.models import PreparedRequest
 from signal import pause
+from sys import exit
 from time import sleep
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
+from PIL import Image
+from requests.models import PreparedRequest
+
+from pitop.miniscreen import Miniscreen
+
+
+def is_root():
+    return geteuid() == 0
+
+
+if not is_root():
+    print("Admin access required - please run this script with 'sudo'.")
+    exit()
+
 # Define Giphy parameters
 SEARCH_LIMIT = 10
 SEARCH_TERM = "Monochrome"
+
+CONFIG_FILE_PATH = "/etc/pt-miniscreen/settings.ini"
+STARTUP_GIF_PATH = "/home/pi/miniscreen-startup.gif"
+
 
 API_KEY = "<MY GIPHY KEY>"
 
@@ -20,25 +38,25 @@ miniscreen = Miniscreen()
 req = PreparedRequest()
 req.prepare_url(
     "http://api.giphy.com/v1/gifs/search",
-    urlencode({
-        "q": SEARCH_TERM,
-        "api_key": API_KEY,
-        "limit": f"{SEARCH_LIMIT}"
-    })
+    urlencode({"q": SEARCH_TERM, "api_key": API_KEY, "limit": f"{SEARCH_LIMIT}"}),
 )
 
 
 def display_instructions_dialog():
     miniscreen.select_button.when_pressed = play_random_gif
     miniscreen.cancel_button.when_pressed = None
-    miniscreen.display_multiline_text("Press SELECT to load a random GIF!", font_size=18)
+    miniscreen.display_multiline_text(
+        "Press SELECT to load a random GIF!", font_size=18
+    )
 
 
 def display_user_action_select_dialog():
     miniscreen.select_button.when_pressed = save_gif_as_startup
     miniscreen.cancel_button.when_pressed = play_random_gif
-    miniscreen.display_multiline_text("SELECT: save GIF as default startup animation. CANCEL: load new GIF",
-                                      font_size=12)
+    miniscreen.display_multiline_text(
+        "SELECT: save GIF as default startup animation. CANCEL: load new GIF",
+        font_size=12,
+    )
 
 
 def display_loading_dialog():
@@ -50,7 +68,9 @@ def display_loading_dialog():
 def display_saving_dialog():
     miniscreen.select_button.when_pressed = None
     miniscreen.cancel_button.when_pressed = None
-    miniscreen.display_multiline_text("GIF saved as default startup animation!", font_size=18)
+    miniscreen.display_multiline_text(
+        "GIF saved as default startup animation!", font_size=18
+    )
     # Saving is fast, so we need to wait a short while for the message to be seen on the display
     sleep(1)
 
@@ -66,7 +86,9 @@ def play_random_gif():
         data = json.loads(response.read())
 
     # Extract random GIF URL from JSON response
-    gif_url = data['data'][randint(0, SEARCH_LIMIT - 1)]['images']['fixed_height']['url']
+    gif_url = data["data"][randint(0, SEARCH_LIMIT - 1)]["images"]["fixed_height"][
+        "url"
+    ]
 
     # Load GIF from URL
     gif = Image.open(urlopen(gif_url))
@@ -79,11 +101,22 @@ def play_random_gif():
 
 
 def save_gif_as_startup():
-    # Display 'saving' dialog
+    # Display "saving" dialog
     display_saving_dialog()
 
-    # Save file
-    gif.save('/etc/pi-top/pt-sys-oled/startup.gif', save_all=True)
+    # Save file to home directory
+    gif.save(STARTUP_GIF_PATH, save_all=True)
+
+    config = ConfigParser()
+    cfg_section = "Bootsplash"
+
+    if not config.has_section(cfg_section):
+        config.add_section(cfg_section)
+
+    config.set(cfg_section, "Path", STARTUP_GIF_PATH)
+
+    with open(CONFIG_FILE_PATH, "w") as f:
+        config.write(f)
 
     # Go back to the start
     display_instructions_dialog()

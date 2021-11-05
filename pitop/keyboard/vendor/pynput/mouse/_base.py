@@ -25,8 +25,8 @@ implementation is located in a platform dependent module.
 
 import enum
 
-from pynput._util import AbstractListener
 from pynput import _logger
+from pynput._util import AbstractListener
 
 
 class Button(enum.Enum):
@@ -36,6 +36,7 @@ class Button(enum.Enum):
     platforms may have additional buttons, but these are guaranteed to
     be present everywhere.
     """
+
     #: An unknown button was pressed
     unknown = 0
 
@@ -249,15 +250,19 @@ class Listener(AbstractListener):
             system wide.
     """
 
-    def __init__(self, on_move=None, on_click=None, on_scroll=None,
-                 suppress=False, **kwargs):
+    def __init__(
+        self, on_move=None, on_click=None, on_scroll=None, suppress=False, **kwargs
+    ):
         self._log = _logger(self.__class__)
-        prefix = self.__class__.__module__.rsplit('.', 1)[-1][1:] + '_'
+        prefix = self.__class__.__module__.rsplit(".", 1)[-1][1:] + "_"
         self._options = {
-            key[len(prefix):]: value
+            key[len(prefix) :]: value
             for key, value in kwargs.items()
-            if key.startswith(prefix)}
+            if key.startswith(prefix)
+        }
         super(Listener, self).__init__(
-            on_move=on_move, on_click=on_click, on_scroll=on_scroll,
-            suppress=suppress)
+            on_move=on_move, on_click=on_click, on_scroll=on_scroll, suppress=suppress
+        )
+
+
 # pylint: enable=W0223

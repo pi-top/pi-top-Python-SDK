@@ -41,13 +41,10 @@ ImuEnableRegisters = {
     RegisterTypes.ACC: 0x90,
     RegisterTypes.GYRO: 0x91,
     RegisterTypes.MAG: 0x92,
-    RegisterTypes.ORIENTATION: 0x93
+    RegisterTypes.ORIENTATION: 0x93,
 }
 
-ImuConfigRegisters = {
-    RegisterTypes.ACC: 0xA0,
-    RegisterTypes.GYRO: 0xA2
-}
+ImuConfigRegisters = {RegisterTypes.ACC: 0xA0, RegisterTypes.GYRO: 0xA2}
 
 MagCalibrationRegisters = {
     MagCalRegisterTypes.HARD: {
@@ -62,46 +59,35 @@ MagCalibrationRegisters = {
         MagCalSoftTypes.XY: 0xB6,
         MagCalSoftTypes.XZ: 0xB7,
         MagCalSoftTypes.YZ: 0xB8,
-
-    }
+    },
 }
 
 ScaleMappings = {
-    RegisterTypes.ACC: {
-        2: 0x00,
-        4: 0x01,
-        8: 0x02,
-        16: 0x03
-    },
-    RegisterTypes.GYRO: {
-        250: 0x00,
-        500: 0x01,
-        1000: 0x02,
-        2000: 0x03
-    }
+    RegisterTypes.ACC: {2: 0x00, 4: 0x01, 8: 0x02, 16: 0x03},
+    RegisterTypes.GYRO: {250: 0x00, 500: 0x01, 1000: 0x02, 2000: 0x03},
 }
 
 ImuDataRegisters = {
     RegisterTypes.ACC: {
         RawRegisterTypes.X: 0x80,
         RawRegisterTypes.Y: 0x81,
-        RawRegisterTypes.Z: 0x82
+        RawRegisterTypes.Z: 0x82,
     },
     RegisterTypes.GYRO: {
         RawRegisterTypes.X: 0x83,
         RawRegisterTypes.Y: 0x84,
-        RawRegisterTypes.Z: 0x85
+        RawRegisterTypes.Z: 0x85,
     },
     RegisterTypes.MAG: {
         RawRegisterTypes.X: 0x86,
         RawRegisterTypes.Y: 0x87,
-        RawRegisterTypes.Z: 0x88
+        RawRegisterTypes.Z: 0x88,
     },
     RegisterTypes.ORIENTATION: {
         OrientationRegisterTypes.ROLL: 0x89,
         OrientationRegisterTypes.PITCH: 0x8A,
-        OrientationRegisterTypes.YAW: 0x8B
-    }
+        OrientationRegisterTypes.YAW: 0x8B,
+    },
 }
 
 

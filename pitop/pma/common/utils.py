@@ -1,7 +1,6 @@
-from typing import get_type_hints
 from functools import wraps
 from inspect import getfullargspec
-
+from typing import get_type_hints
 
 # Each port has two gpio pins associated with it
 # Default pin for each class is "1"
@@ -23,8 +22,8 @@ Port = {
 
 
 def get_pin_for_port(port_name, pin_number=1):
-    assert(port_name in Port)
-    assert(pin_number in (1, 2))
+    assert port_name in Port
+    assert pin_number in (1, 2)
 
     return Port[port_name][str(pin_number)]
 
@@ -32,11 +31,11 @@ def get_pin_for_port(port_name, pin_number=1):
 def validate_input(obj, **kwargs):
     hints = get_type_hints(obj)
     for attr_name, attr_type in hints.items():
-        if attr_name == 'return':
+        if attr_name == "return":
             continue
 
         attr_type_arr = [attr_type]
-        if hasattr(attr_type, '__args__'):
+        if hasattr(attr_type, "__args__"):
             attr_type_arr = attr_type.__args__
 
         has_errors = True

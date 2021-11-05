@@ -29,9 +29,8 @@ import threading
 import unicodedata
 
 import six
-
-from pynput._util import AbstractListener
 from pynput import _logger
+from pynput._util import AbstractListener
 
 
 class KeyCode(object):
@@ -45,7 +44,8 @@ class KeyCode(object):
 
         if self.is_dead:
             self.combining = unicodedata.lookup(
-                'COMBINING ' + unicodedata.name(self.char))
+                "COMBINING " + unicodedata.name(self.char)
+            )
             if not self.combining:
                 raise KeyError(char)
         else:
@@ -53,11 +53,11 @@ class KeyCode(object):
 
     def __repr__(self):
         if self.is_dead:
-            return '[%s]' % repr(self.char)
+            return "[%s]" % repr(self.char)
         if self.char is not None:
             return repr(self.char)
         else:
-            return '<%d>' % self.vk
+            return "<%d>" % self.vk
 
     def __str__(self):
         return repr(self)
@@ -94,14 +94,12 @@ class KeyCode(object):
 
         # Joining two of the same keycodes, or joining with space, yields the
         # non-dead version of the key
-        if key.char == ' ' or self == key:
+        if key.char == " " or self == key:
             return self.from_char(self.char)
 
         # Otherwise we combine the characters
         if key.char is not None:
-            combined = unicodedata.normalize(
-                'NFC',
-                key.char + self.combining)
+            combined = unicodedata.normalize("NFC", key.char + self.combining)
             if combined:
                 return self.from_char(combined)
 
@@ -150,6 +148,7 @@ class Key(enum.Enum):
     platforms may have additional buttons, but these are guaranteed to
     be present everywhere.
     """
+
     #: A generic Alt key. This is a modifier.
     alt = 0
 
@@ -283,6 +282,7 @@ class Key(enum.Enum):
 
 class Controller(object):
     """A controller for sending virtual keyboard events to the system."""
+
     #: The virtual key codes
     _KeyCode = KeyCode
 
@@ -295,6 +295,7 @@ class Controller(object):
 
         Its first argument is the ``key`` parameter.
         """
+
         pass
 
     class InvalidCharacterException(Exception):
@@ -304,6 +305,7 @@ class Controller(object):
         Its first argument is the index of the character in the string,
         and the second the character.
         """
+
         pass
 
     def __init__(self):
@@ -323,16 +325,14 @@ class Controller(object):
         #: base modifier to use for subsequent modifiers.
         self._MODIFIER_KEYS = (
             (kc.alt_gr, (kc.alt_gr.value,)),
-            (kc.alt,    (kc.alt.value,   kc.alt_l.value,   kc.alt_r.value)),
-            (kc.cmd,    (kc.cmd.value,   kc.cmd_l.value,   kc.cmd_r.value)),
-            (kc.ctrl,   (kc.ctrl.value,  kc.ctrl_l.value,  kc.ctrl_r.value)),
-            (kc.shift,  (kc.shift.value, kc.shift_l.value, kc.shift_r.value)))
+            (kc.alt, (kc.alt.value, kc.alt_l.value, kc.alt_r.value)),
+            (kc.cmd, (kc.cmd.value, kc.cmd_l.value, kc.cmd_r.value)),
+            (kc.ctrl, (kc.ctrl.value, kc.ctrl_l.value, kc.ctrl_r.value)),
+            (kc.shift, (kc.shift.value, kc.shift_l.value, kc.shift_r.value)),
+        )
 
         #: Control codes to transform into key codes when typing
-        self._CONTROL_CODES = {
-            '\n': kc.enter,
-            '\r': kc.enter,
-            '\t': kc.tab}
+        self._CONTROL_CODES = {"\n": kc.enter, "\r": kc.enter, "\t": kc.tab}
         # pylint: enable=C0103,C0326
 
     def press(self, key):
@@ -480,9 +480,7 @@ class Controller(object):
         This ensures that the modifiers cannot be modified by another thread.
         """
         with self._modifiers_lock:
-            yield set(
-                self._as_modifier(modifier)
-                for modifier in self._modifiers)
+            yield set(self._as_modifier(modifier) for modifier in self._modifiers)
 
     @property
     def alt_pressed(self):
@@ -658,14 +656,17 @@ class Listener(AbstractListener):
             system wide.
     """
 
-    def __init__(self, on_press=None, on_release=None, suppress=False,
-                 **kwargs):
+    def __init__(self, on_press=None, on_release=None, suppress=False, **kwargs):
         self._log = _logger(self.__class__)
-        prefix = self.__class__.__module__.rsplit('.', 1)[-1][1:] + '_'
+        prefix = self.__class__.__module__.rsplit(".", 1)[-1][1:] + "_"
         self._options = {
-            key[len(prefix):]: value
+            key[len(prefix) :]: value
             for key, value in kwargs.items()
-            if key.startswith(prefix)}
+            if key.startswith(prefix)
+        }
         super(Listener, self).__init__(
-            on_press=on_press, on_release=on_release, suppress=suppress)
+            on_press=on_press, on_release=on_release, suppress=suppress
+        )
+
+
 # pylint: enable=W0223

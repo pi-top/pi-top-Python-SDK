@@ -1,13 +1,8 @@
 import atexit
+from os import getenv
 
 from pitop.common.lock import PTLock
-from pitop.common.ptdm import (
-    Message,
-    PTDMRequestClient,
-    PTDMSubscribeClient,
-)
-
-from os import getenv
+from pitop.common.ptdm import Message, PTDMRequestClient, PTDMSubscribeClient
 
 from .contrib.luma.core.interface.serial import spi
 from .contrib.luma.oled.device import sh1106
@@ -26,7 +21,7 @@ class OledDeviceController:
         self.__redraw_last_image_func = redraw_last_image_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
         self.__device = None
-        self.lock = PTLock("pt-oled")
+        self.lock = PTLock("miniscreen")
 
         self.__ptdm_subscribe_client = None
         self.__setup_subscribe_client()
@@ -40,9 +35,9 @@ class OledDeviceController:
             self.__redraw_last_image_func()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
-        self.__ptdm_subscribe_client.initialise({
-            Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_bus_changed
-        })
+        self.__ptdm_subscribe_client.initialise(
+            {Message.PUB_OLED_SPI_BUS_CHANGED: on_spi_bus_changed}
+        )
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):
@@ -52,13 +47,15 @@ class OledDeviceController:
             pass
 
     def __set_controls(self, controlled_by_pi):
-        message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))])
+        message = Message.from_parts(
+            Message.REQ_SET_OLED_CONTROL, [str(int(controlled_by_pi))]
+        )
 
         with PTDMRequestClient() as request_client:
             request_client.send_message(message)
 
     def __setup_device(self):
-        if getenv('PT_MINISCREEN_SYSTEM', "0") != "1":
+        if getenv("PT_MINISCREEN_SYSTEM", "0") != "1":
             self.lock.acquire()
             atexit.register(self.reset_device)
 
@@ -71,7 +68,7 @@ class OledDeviceController:
                 gpio_DC=17 if self.__spi_bus == 1 else 7,  # Always use CE1
                 gpio_RST=None,
             ),
-            rotate=0
+            rotate=0,
         )
 
     def __get_spi_bus_from_ptdm(self):
