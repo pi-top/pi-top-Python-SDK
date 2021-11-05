@@ -10,5 +10,4 @@ flask_sockets
 flask_cors
 Pillow
 simple_pid
-filterpy
 wget

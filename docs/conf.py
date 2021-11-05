@@ -126,7 +126,6 @@ autodoc_mock_imports = [
     "smbus2",
     "spidev",
     "zmq",
-    "filterpy",
     "wget",
 ]
 
