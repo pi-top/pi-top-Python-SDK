@@ -66,3 +66,15 @@ class MotorControlModes(Enum):
     MODE_0 = 0
     MODE_1 = 1
     MODE_2 = 2
+
+
+class MotorSyncBits(Enum):
+    M0 = 0b0000001
+    M1 = 0b0000010
+    M2 = 0b0000100
+    M3 = 0b0001000
+
+
+class MotorSyncRegisters(Enum):
+    CONFIG = 0x57
+    START = 0x58

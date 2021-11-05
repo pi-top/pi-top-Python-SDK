@@ -3,19 +3,10 @@ from time import sleep
 
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma import EncoderMotor, ForwardDirection
+from pitop.pma.common.encoder_motor_registers import MotorSyncBits, MotorSyncRegisters
 from pitop.pma.plate_interface import PlateInterface
 
 from .simple_pid import PID
-
-motor_sync_bits = {
-    "M0": 0b0000001,
-    "M1": 0b0000010,
-    "M2": 0b0000100,
-    "M3": 0b0001000,
-}
-
-motor_sync_config_register = 0x57
-motor_sync_start_register = 0x58
 
 
 class DriveController(Stateful, Recreatable):
@@ -74,10 +65,10 @@ class DriveController(Stateful, Recreatable):
 
     def __set_sync_motor_config(self):
         sync_config = (
-            motor_sync_bits[self.left_motor_port]
-            | motor_sync_bits[self.right_motor_port]
+            MotorSyncBits[self.left_motor_port].value
+            | MotorSyncBits[self.right_motor_port].value
         )
-        self.__mcu_device.write_byte(motor_sync_config_register, sync_config)
+        self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, sync_config)
 
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
@@ -109,7 +100,7 @@ class DriveController(Stateful, Recreatable):
         self.__sync_start()
 
     def __sync_start(self):
-        self.__mcu_device.write_byte(motor_sync_start_register, 1)
+        self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
 
     def forward(self, speed_factor, hold=False):
         """Move the robot forward.
