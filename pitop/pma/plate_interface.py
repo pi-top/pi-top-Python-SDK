@@ -1,11 +1,13 @@
+import logging
 from threading import Lock, Thread
 from time import sleep
 
-from pitop.common.logger import PTLogger
 from pitop.common.singleton import Singleton
 from pitop.common.smbus_device import SMBusDevice
 
 from .common.plate_registers import PlateRegisters
+
+logger = logging.getLogger(__name__)
 
 
 class PlateInterface(metaclass=Singleton):
@@ -28,10 +30,10 @@ class PlateInterface(metaclass=Singleton):
 
     def __connect_mcu(self):
         if self.__mcu_connected:
-            PTLogger.debug("Already connected to MCU")
+            logger.debug("Already connected to MCU")
             return
 
-        PTLogger.debug("Connecting to Plate MCU...")
+        logger.debug("Connecting to Plate MCU...")
         try:
             self.__device_mcu = SMBusDevice(1, PlateRegisters.I2C_ADDRESS_PLATE_MCU)
             self.__device_mcu.connect()
@@ -50,7 +52,7 @@ class PlateInterface(metaclass=Singleton):
         if self.__mcu_connected is False:
             return
 
-        PTLogger.debug("Disconnecting from MCU...")
+        logger.debug("Disconnecting from MCU...")
 
         self.__mcu_connected = False
 
@@ -62,7 +64,7 @@ class PlateInterface(metaclass=Singleton):
             self.__device_mcu.disconnect()
 
     def __send_heartbeat(self):
-        PTLogger.debug("Sending heartbeat")
+        logger.debug("Sending heartbeat")
         try:
             self.__device_mcu.write_byte(
                 PlateRegisters.REGISTER_HEARTBEAT,
@@ -85,4 +87,4 @@ class PlateInterface(metaclass=Singleton):
                 if self.__mcu_connected is False:
                     break
 
-        PTLogger.debug("Exiting heartbeat loop")
+        logger.debug("Exiting heartbeat loop")

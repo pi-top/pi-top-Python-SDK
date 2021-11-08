@@ -5,9 +5,9 @@ Last-Update: 2021-09-05
 
 --- a/pitop/common/smbus_device.py
 +++ b/pitop/common/smbus_device.py
-@@ -1,4 +1,4 @@
+@@ -3,6 +3,6 @@
 -from smbus2 import SMBus
 +from smbus import SMBus
  
  from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
- from pitop.common.logger import PTLogger
+ 

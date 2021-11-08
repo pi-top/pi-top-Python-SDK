@@ -1,8 +1,10 @@
+import logging
+
 from numpy import asarray
 
-from pitop.common.logger import PTLogger
-
 from .capture_action_base import CaptureActionBase
+
+logger = logging.getLogger(__name__)
 
 
 class VideoCapture(CaptureActionBase):
@@ -31,9 +33,7 @@ class VideoCapture(CaptureActionBase):
         def fix_dimension(dimension):
             if dimension % 16:
                 dimension = dimension + 16 - dimension % 16
-                PTLogger.warning(
-                    f"Invalid resolution. Setting dimension to {dimension}"
-                )
+                logger.warning(f"Invalid resolution. Setting dimension to {dimension}")
             return dimension
 
         self.__video_resolution = [fix_dimension(x) for x in resolution]
