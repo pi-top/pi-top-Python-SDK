@@ -225,6 +225,10 @@ class NavigationController(DriveController):
         will not be called if this function is called before the
         navigation goal has been reached.
         """
+        self.stop_navigation()
+        self.stop_movement()
+
+    def stop_navigation(self):
         # don't call callback if user has terminated navigation manually
         self._on_finish = None
 
@@ -238,6 +242,8 @@ class NavigationController(DriveController):
         except Exception:
             pass
         self.__navigation_finished()
+
+    def stop_movement(self):
         super().stop()
 
     def __set_course_heading(self, x_goal, y_goal):
@@ -346,7 +352,7 @@ class NavigationController(DriveController):
             self._on_finish()
 
     def __sub_goal_reached(self):
-        self.stop()
+        self.stop_movement()
         self._drive_manager.pid.reset()
 
     def __get_new_pose(self):
