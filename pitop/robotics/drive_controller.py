@@ -76,17 +76,17 @@ class DriveController(Stateful, Recreatable):
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = (
-            linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
+            linear_speed + (turn_radius + self.wheel_separation / 2) * angular_speed
         )
         speed_left = (
-            linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
+            linear_speed + (turn_radius - self.wheel_separation / 2) * angular_speed
         )
 
         if (
-            abs(speed_right) > self._max_motor_speed
-            or abs(speed_left) > self._max_motor_speed
+            abs(speed_right) > self.max_motor_speed
+            or abs(speed_left) > self.max_motor_speed
         ):
-            factor = self._max_motor_speed / max(abs(speed_left), abs(speed_right))
+            factor = self.max_motor_speed / max(abs(speed_left), abs(speed_right))
             speed_right = speed_right * factor
             speed_left = speed_left * factor
 
@@ -141,7 +141,7 @@ class DriveController(Stateful, Recreatable):
 
         self.robot_move(
             self._linear_speed_x_hold,
-            self._max_robot_angular_speed * speed_factor,
+            self.max_robot_angular_speed * speed_factor,
             turn_radius,
         )
 
@@ -176,7 +176,7 @@ class DriveController(Stateful, Recreatable):
         speed_left, speed_right = self._calculate_motor_speeds(
             0, angular_speed, turn_radius=0
         )
-        distance = abs(angle_radians) * self._wheel_separation / 2
+        distance = abs(angle_radians) * self.wheel_separation / 2
         self.left_motor.set_target_speed(
             target_speed=speed_left, distance=distance * speed_left / abs(speed_left)
         )

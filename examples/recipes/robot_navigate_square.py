@@ -7,7 +7,7 @@ during navigation. If one is found, the robot will move onto the next navigation
 
 from time import sleep
 
-from pitop import DriveController, NavigationController, Pitop
+from pitop import NavigationController, Pitop
 from pitop.pma import UltrasonicSensor
 
 
@@ -56,12 +56,7 @@ def main():
 
 goal_reached = False
 robot = Pitop()
-robot.add_component(
-    NavigationController(
-        drive_controller=DriveController(left_motor_port="M3", right_motor_port="M0")
-    ),
-    name="navigate",
-)
+robot.add_component(NavigationController(left_motor_port="M3", right_motor_port="M0"))
 robot.add_component(UltrasonicSensor("D3"))
 
 main()

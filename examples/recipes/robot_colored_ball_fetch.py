@@ -1,7 +1,7 @@
 from signal import pause
 from time import sleep
 
-from pitop import Camera, DriveController, NavigationController, PincerController, Pitop
+from pitop import Camera, NavigationController, PincerController, Pitop
 from pitop.processing.algorithms import BallDetector
 
 
@@ -9,10 +9,9 @@ def assemble_robot():
     robot = Pitop()
 
     robot.add_component(Camera(resolution=(640, 480), rotate_angle=90))
-    robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
     robot.add_component(PincerController())
     robot.add_component(
-        NavigationController(drive_controller=robot.drive), name="navigate"
+        NavigationController(left_motor_port="M3", right_motor_port="M0")
     )
 
     return robot
@@ -49,17 +48,17 @@ def follow_ball(center, radius):
     forward_speed_scaler = 1 - (radius / max_rectangle_width)
     forward_speed = FORWARD_SPEED_MAX * forward_speed_scaler
 
-    robot.drive.forward(forward_speed, hold=True)
+    robot.navigate.forward(forward_speed, hold=True)
 
     turn_speed_scaler = abs(x / x_max)
     turn_speed = TURN_SPEED_MAX * turn_speed_scaler
 
     if x < 0:
-        robot.drive.left(turn_speed)
+        robot.navigate.left(turn_speed)
     elif x > 0:
-        robot.drive.right(turn_speed)
+        robot.navigate.right(turn_speed)
     elif x == 0:
-        robot.drive.stop_rotation()
+        robot.navigate.stop_rotation()
 
 
 def track_ball(frame):
@@ -70,7 +69,7 @@ def track_ball(frame):
     if green_ball.found:
         follow_ball(center=green_ball.center, radius=green_ball.radius)
     else:
-        robot.drive.stop()
+        robot.navigate.stop()
 
 
 robot = assemble_robot()

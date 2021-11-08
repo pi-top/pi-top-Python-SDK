@@ -7,20 +7,20 @@ from typing import Union
 
 import numpy as np
 
-from pitop.core.mixins import Stateful
-
+from ..drive_controller import DriveController
 from .core.driving_manager import DrivingManager
 from .core.goal_criteria import GoalCriteria
 from .core.robot_state import StateFilter
 from .core.utils import normalize_angle
 
 
-class NavigationController(Stateful):
+class NavigationController(DriveController):
     __VALID_ANGLE_RANGE = 180
 
     def __init__(
         self,
-        drive_controller,
+        left_motor_port: str = "M3",
+        right_motor_port: str = "M0",
         linear_speed_factor: float = 0.75,
         angular_speed_factor: float = 0.5,
         name="navigate",
@@ -30,10 +30,11 @@ class NavigationController(Stateful):
         :param linear_speed_factor: value between 0 and 1 for the linear speed
         :param angular_speed_factor: value between 0 and 1 for the angular speed
         """
-        self.name = name
-
-        # User-passed objects
-        self.drive_controller = drive_controller
+        super().__init__(
+            left_motor_port=left_motor_port,
+            right_motor_port=right_motor_port,
+            name=name,
+        )
 
         # callback to call once navigation complete
         self._on_finish = None
@@ -57,19 +58,18 @@ class NavigationController(Stateful):
         # Robot state tracking and driving management
         self.state_tracker = StateFilter(
             measurement_frequency=self._measurement_frequency,
-            wheel_separation=drive_controller.wheel_separation,
+            wheel_separation=self.wheel_separation,
         )
         self._drive_manager = DrivingManager(
-            max_motor_speed=self.drive_controller.max_motor_speed,
-            max_angular_speed=self.drive_controller.max_robot_angular_speed,
+            max_motor_speed=self.max_motor_speed,
+            max_angular_speed=self.max_robot_angular_speed,
         )
         self._goal_criteria = GoalCriteria()
         self._backwards = False
         self.linear_speed_factor = linear_speed_factor
         self.angular_speed_factor = angular_speed_factor
 
-        Stateful.__init__(self, children=["state_tracker"])
-
+    @property
     def own_state(self):
         return {"in_progress": self.in_progress}
 
@@ -104,9 +104,9 @@ class NavigationController(Stateful):
             )
 
         if position is not None:
-            if len(position) != 2 or type(position) is not tuple:
+            if len(position) != 2 or type(position) not in (tuple, list):
                 raise ValueError(
-                    "Position should be a list of size two in the form [x, y]."
+                    f"Position should be a list of size two in the form [x, y]. Received {position}."
                 )
             if not all(isinstance(coordinate, (int, float)) for coordinate in position):
                 raise ValueError("x and y coordinates must be of type int or float.")
@@ -231,14 +231,14 @@ class NavigationController(Stateful):
         self._stop_triggered = True
         try:
             self._sub_goal_nav_thread.join()
-        except RuntimeError:
+        except Exception:
             pass
         try:
             self._nav_thread.join()
-        except RuntimeError:
+        except Exception:
             pass
         self.__navigation_finished()
-        self.drive_controller.stop()
+        super().stop()
 
     def __set_course_heading(self, x_goal, y_goal):
         linear_speed = 0
@@ -258,9 +258,7 @@ class NavigationController(Stateful):
 
             angular_speed = self.__get_angular_speed(angle_error=angle_error)
 
-            self.drive_controller.robot_move(
-                linear_speed=linear_speed, angular_speed=angular_speed
-            )
+            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     def __drive_to_position_goal(self, x_goal, y_goal):
         while not self._stop_triggered:
@@ -287,9 +285,7 @@ class NavigationController(Stateful):
             angular_speed = self.__get_angular_speed(angle_error=angle_error)
             linear_speed = self.__get_linear_speed(distance_error=distance_error)
 
-            self.drive_controller.robot_move(
-                linear_speed=linear_speed, angular_speed=angular_speed
-            )
+            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     def __rotate_to_angle_goal(self, theta_goal):
         linear_speed = 0
@@ -306,9 +302,7 @@ class NavigationController(Stateful):
 
             angular_speed = self.__get_angular_speed(angle_error=angle_error)
 
-            self.drive_controller.robot_move(
-                linear_speed=linear_speed, angular_speed=angular_speed
-            )
+            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
 
     @staticmethod
     def __check_callback(on_finish):
@@ -352,7 +346,7 @@ class NavigationController(Stateful):
             self._on_finish()
 
     def __sub_goal_reached(self):
-        self.drive_controller.stop()
+        self.stop()
         self._drive_manager.pid.reset()
 
     def __get_new_pose(self):
@@ -408,11 +402,11 @@ class NavigationController(Stateful):
         )
 
     def __get_odometry_measurements(self):
-        left_wheel_speed = self.drive_controller.left_motor.current_speed
-        right_wheel_speed = self.drive_controller.right_motor.current_speed
+        left_wheel_speed = self.left_motor.current_speed
+        right_wheel_speed = self.right_motor.current_speed
         linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
         angular_velocity = (
             right_wheel_speed - left_wheel_speed
-        ) / self.drive_controller.wheel_separation
+        ) / self.wheel_separation
 
         return np.array([[linear_velocity], [angular_velocity]])
