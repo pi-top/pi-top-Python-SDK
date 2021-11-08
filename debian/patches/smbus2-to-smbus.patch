@@ -5,7 +5,9 @@ Last-Update: 2021-09-05
 
 --- a/pitop/common/smbus_device.py
 +++ b/pitop/common/smbus_device.py
-@@ -3,6 +3,6 @@
+@@ -1,6 +1,6 @@
+ import logging
+ 
 -from smbus2 import SMBus
 +from smbus import SMBus
  
