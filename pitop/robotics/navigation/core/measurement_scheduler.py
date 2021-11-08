@@ -4,21 +4,26 @@ from threading import Event, Thread
 
 
 class MeasurementScheduler:
-    def __init__(self, measurement_frequency, odometry_function, state_tracker):
+    def __init__(
+        self, measurement_frequency, measurement_input_function, state_tracker
+    ):
+        if not callable(measurement_input_function):
+            raise AttributeError(
+                "Argument 'measurement_input_function' must be a function"
+            )
+
+        self.measurement_func = measurement_input_function
         self.state_tracker = state_tracker
-        self.odometry_func = odometry_function
         self._measurement_dt = 1.0 / measurement_frequency
 
-        self._pose_prediction_scheduler = Thread(
+        self._new_measurement_event = Event()
+        self._measurement_prediction_scheduler = Thread(
             target=self.__measurement_scheduler, daemon=True
         )
-        self._new_pose_event = Event()
-
-    def start(self):
-        self._pose_prediction_scheduler.start()
+        self._measurement_prediction_scheduler.start()
 
     def wait_for_measurement(self):
-        self._new_pose_event.wait()
+        self._new_measurement_event.wait()
 
     def __measurement_scheduler(self):
         s = sched.scheduler(time.time, time.sleep)
@@ -34,11 +39,11 @@ class MeasurementScheduler:
     def __measurement_loop(self, s, previous_time):
         current_time = time.time()
         self.state_tracker.add_measurements(
-            odom_measurements=self.odometry_func(), dt=current_time - previous_time
+            odom_measurements=self.measurement_func(), dt=current_time - previous_time
         )
 
-        self._new_pose_event.set()
-        self._new_pose_event.clear()
+        self._new_measurement_event.set()
+        self._new_measurement_event.clear()
 
         s.enterabs(
             current_time + self._measurement_dt,

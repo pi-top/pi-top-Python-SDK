@@ -1,15 +1,13 @@
-import math
 from threading import Event, Thread
 from typing import Union
 
 import numpy as np
 
 from ..drive_controller import DriveController
-from .core.driving_manager import DrivingManager
-from .core.goal_criteria import GoalCriteria
 from .core.measurement_scheduler import MeasurementScheduler
 from .core.robot_state import StateFilter
-from .core.utils import normalize_angle, verify_callback
+from .core.utils import verify_callback
+from .navigator import Navigator
 
 
 class NavigationController(DriveController):
@@ -40,7 +38,6 @@ class NavigationController(DriveController):
 
         # Navigation algorithm flow control
         self.in_progress = False
-        self._stop_triggered = False
         self._nav_goal_finish_event = Event()
         self._nav_thread = None
 
@@ -52,21 +49,19 @@ class NavigationController(DriveController):
             wheel_separation=self.wheel_separation,
         )
 
-        self._drive_manager = DrivingManager(
+        self.navigator = Navigator(
             max_motor_speed=self.max_motor_speed,
-            max_angular_speed=self.max_robot_angular_speed,
+            max_robot_angular_speed=self.max_robot_angular_speed,
+            measurement_input_function=lambda: self.pose,
         )
-        self._goal_criteria = GoalCriteria()
 
         # Odometry updates
         self.measurement_scheduler = MeasurementScheduler(
             measurement_frequency=self._measurement_frequency,
-            odometry_function=lambda: self.odometry,
+            measurement_input_function=lambda: self.odometry,
             state_tracker=self.state_tracker,
         )
-        self.measurement_scheduler.start()
 
-        self._backwards = False
         self.linear_speed_factor = linear_speed_factor
         self.angular_speed_factor = angular_speed_factor
 
@@ -121,12 +116,12 @@ class NavigationController(DriveController):
 
         self._on_finish = verify_callback(on_finish)
 
-        self._backwards = backwards
         self._nav_thread = Thread(
             target=self.__navigate,
             args=(
                 position,
                 angle,
+                backwards,
             ),
             daemon=True,
         )
@@ -134,16 +129,15 @@ class NavigationController(DriveController):
 
         return self
 
-    def __navigate(self, position, angle):
+    def __navigate(self, position, angle, backwards):
         self.__navigation_started()
 
-        if position is not None:
-            x, y = position
-            self.__set_course_heading(x, y)
-            self.__drive_to_position_goal(x, y)
-
-        if angle is not None:
-            self.__rotate_to_angle_goal(math.radians(angle))
+        self.navigator.backwards = backwards
+        for linear_speed, angular_speed in self.navigator.navigate(position, angle):
+            self.robot_move(
+                linear_speed=linear_speed,
+                angular_speed=angular_speed,
+            )
 
         self.__navigation_finished()
 
@@ -153,11 +147,27 @@ class NavigationController(DriveController):
         self._nav_goal_finish_event.wait(timeout)
 
     @property
+    def pose(self):
+        self.measurement_scheduler.wait_for_measurement()
+        return self.state_tracker.x, self.state_tracker.y, self.state_tracker.angle_rad
+
+    @property
+    def odometry(self):
+        left_wheel_speed = self.left_motor.current_speed
+        right_wheel_speed = self.right_motor.current_speed
+        linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
+        angular_velocity = (
+            right_wheel_speed - left_wheel_speed
+        ) / self.wheel_separation
+
+        return np.array([[linear_velocity], [angular_velocity]])
+
+    @property
     def linear_speed_factor(self):
         """
         :return: current linear speed factor
         """
-        return self._drive_manager.linear_speed_factor
+        return self.navigator.linear_speed_factor
 
     @linear_speed_factor.setter
     def linear_speed_factor(self, speed_factor: float):
@@ -169,17 +179,14 @@ class NavigationController(DriveController):
         :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum linear
         speed of the robot (which is based on maximum motor RPM and wheel circumference).
         """
-        if not 0.0 < speed_factor <= 1.0:
-            raise ValueError("Value must be in the range 0.0 < speed_factor <= 1.0")
-        self._drive_manager.update_linear_speed(speed_factor)
-        self._goal_criteria.update_linear_speed(speed_factor)
+        self.navigator.linear_speed_factor = speed_factor
 
     @property
     def angular_speed_factor(self):
         """
         :return: current angular speed factor
         """
-        return self._drive_manager.angular_speed_factor
+        return self.navigator.angular_speed_factor
 
     @angular_speed_factor.setter
     def angular_speed_factor(self, speed_factor):
@@ -191,10 +198,7 @@ class NavigationController(DriveController):
         :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum angular
         speed of the robot (which is based on maximum motor RPM, wheel circumference and wheel-to-wheel spacing).
         """
-        if not 0.0 < speed_factor <= 1.0:
-            raise ValueError("Value must be in the range 0.0 < speed_factor <= 1.0")
-        self._drive_manager.update_angular_speed(speed_factor)
-        self._goal_criteria.update_angular_speed(speed_factor)
+        self.navigator.angular_speed_factor = speed_factor
 
     def reset_position_and_angle(self):
         """Reset the robot's position and angle (pose) to zeros."""
@@ -214,7 +218,7 @@ class NavigationController(DriveController):
     def stop_navigation(self):
         # don't call callback if user has terminated navigation manually
         self._on_finish = None
-        self._stop_triggered = True
+        self.navigator._stop_triggered = True
         try:
             self._nav_thread.join()
         except Exception:
@@ -224,73 +228,9 @@ class NavigationController(DriveController):
     def stop_movement(self):
         super().stop()
 
-    def __set_course_heading(self, x_goal, y_goal):
-        while not self._stop_triggered:
-            x, y, theta = self.pose
-
-            x_diff, y_diff = self.__get_position_error(
-                x=x, x_goal=x_goal, y=y, y_goal=y_goal
-            )
-            angle_error = self.__get_angle_error(
-                current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
-            )
-
-            if self._goal_criteria.angle(angle_error):
-                self.__sub_goal_reached()
-                break
-
-            self.robot_move(
-                linear_speed=0,
-                angular_speed=self.__get_new_angular_speed(angle_error=angle_error),
-            )
-
-    def __drive_to_position_goal(self, x_goal, y_goal):
-        while not self._stop_triggered:
-            x, y, theta = self.pose
-
-            x_diff, y_diff = self.__get_position_error(
-                x=x, x_goal=x_goal, y=y, y_goal=y_goal
-            )
-            angle_error = self.__get_angle_error(
-                current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
-            )
-            distance_error = (
-                -np.hypot(x_diff, y_diff)
-                if not self._backwards
-                else np.hypot(x_diff, y_diff)
-            )
-
-            if self._goal_criteria.distance(
-                distance_error=distance_error, angle_error=angle_error
-            ):
-                self.__sub_goal_reached()
-                break
-
-            self.robot_move(
-                angular_speed=self.__get_new_angular_speed(angle_error=angle_error),
-                linear_speed=self.__get_new_linear_speed(distance_error=distance_error),
-            )
-
-    def __rotate_to_angle_goal(self, theta_goal):
-        while not self._stop_triggered:
-            _, _, theta = self.pose
-
-            angle_error = self.__get_angle_error(
-                current_angle=theta, target_angle=theta_goal
-            )
-
-            if self._goal_criteria.angle(angle_error):
-                self.__sub_goal_reached()
-                break
-
-            self.robot_move(
-                linear_speed=0,
-                angular_speed=self.__get_new_angular_speed(angle_error=angle_error),
-            )
-
     def __navigation_started(self):
         self.in_progress = True
-        self._stop_triggered = False
+        self.navigator._stop_triggered = False
 
     def __navigation_finished(self):
         self.in_progress = False
@@ -298,42 +238,3 @@ class NavigationController(DriveController):
         self._nav_goal_finish_event.clear()
         if callable(self._on_finish):
             self._on_finish()
-
-    def __sub_goal_reached(self):
-        self.stop_movement()
-        self._drive_manager.pid.reset()
-
-    @property
-    def pose(self):
-        self.measurement_scheduler.wait_for_measurement()
-        return self.state_tracker.x, self.state_tracker.y, self.state_tracker.angle_rad
-
-    @property
-    def odometry(self):
-        left_wheel_speed = self.left_motor.current_speed
-        right_wheel_speed = self.right_motor.current_speed
-        linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
-        angular_velocity = (
-            right_wheel_speed - left_wheel_speed
-        ) / self.wheel_separation
-
-        return np.array([[linear_velocity], [angular_velocity]])
-
-    def __get_new_angular_speed(self, angle_error):
-        return (
-            self._drive_manager.max_angular_velocity
-            * self._drive_manager.pid.heading(angle_error)
-        )
-
-    def __get_new_linear_speed(self, distance_error):
-        return self._drive_manager.max_velocity * self._drive_manager.pid.distance(
-            distance_error
-        )
-
-    def __get_angle_error(self, current_angle, target_angle):
-        return normalize_angle(current_angle - target_angle)
-
-    def __get_position_error(self, x, x_goal, y, y_goal):
-        x_diff = x_goal - x if not self._backwards else x - x_goal
-        y_diff = y_goal - y if not self._backwards else y - y_goal
-        return x_diff, y_diff
