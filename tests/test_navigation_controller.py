@@ -4,15 +4,7 @@ from unittest.mock import Mock, patch
 
 modules_to_patch = [
     "atexit",
-    "pitopcommon.common_ids",
-    "pitopcommon.current_session_info",
-    "pitopcommon.ptdm",
-    "pitopcommon.firmware_device",
-    "pitopcommon.command_runner",
-    "pitopcommon.common_names",
-    "pitopcommon.smbus_device",
-    "pitopcommon.logger",
-    "pitopcommon.singleton",
+    "pitop.common",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()

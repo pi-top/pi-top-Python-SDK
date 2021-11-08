@@ -11,8 +11,7 @@ for module in modules_to_patch:
     modules[module] = Mock()
 
 
-from pitopcommon.bitwise_ops import join_bytes, split_into_bytes
-
+from pitop.common.bitwise_ops import join_bytes, split_into_bytes
 from pitop.pma.common.encoder_motor_registers import (
     EncoderMotorM1,
     MotorControlModes,
