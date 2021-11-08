@@ -1,7 +1,4 @@
 import math
-import sched
-import time
-from inspect import getfullargspec
 from threading import Event, Thread
 from typing import Union
 
@@ -10,8 +7,9 @@ import numpy as np
 from ..drive_controller import DriveController
 from .core.driving_manager import DrivingManager
 from .core.goal_criteria import GoalCriteria
+from .core.measurement_scheduler import MeasurementScheduler
 from .core.robot_state import StateFilter
-from .core.utils import normalize_angle
+from .core.utils import normalize_angle, verify_callback
 
 
 class NavigationController(DriveController):
@@ -45,27 +43,29 @@ class NavigationController(DriveController):
         self._stop_triggered = False
         self._nav_goal_finish_event = Event()
         self._nav_thread = None
-        self._sub_goal_nav_thread = None
 
-        # Odometry updates
         self._measurement_frequency = 10.0  # Hz
-        self._measurement_dt = 1.0 / self._measurement_frequency
-        self._new_pose_event = Event()
-        self._pose_prediction_scheduler = Thread(
-            target=self.__measurement_scheduler, daemon=True
-        )
-        self._pose_prediction_scheduler.start()
 
         # Robot state tracking and driving management
         self.state_tracker = StateFilter(
             measurement_frequency=self._measurement_frequency,
             wheel_separation=self.wheel_separation,
         )
+
         self._drive_manager = DrivingManager(
             max_motor_speed=self.max_motor_speed,
             max_angular_speed=self.max_robot_angular_speed,
         )
         self._goal_criteria = GoalCriteria()
+
+        # Odometry updates
+        self.measurement_scheduler = MeasurementScheduler(
+            measurement_frequency=self._measurement_frequency,
+            odometry_function=lambda: self.odometry,
+            state_tracker=self.state_tracker,
+        )
+        self.measurement_scheduler.start()
+
         self._backwards = False
         self.linear_speed_factor = linear_speed_factor
         self.angular_speed_factor = angular_speed_factor
@@ -99,8 +99,6 @@ class NavigationController(DriveController):
         :param bool backwards: Go to navigation goal in reverse by setting to True
         :return NavigationController: self
         """
-        self._on_finish = self.__check_callback(on_finish)
-
         if self.in_progress:
             raise RuntimeError(
                 "Cannot call function before previous navigation is complete, use .wait() or call "
@@ -121,6 +119,8 @@ class NavigationController(DriveController):
                     f"Angle must from {-self.__VALID_ANGLE_RANGE} to {self.__VALID_ANGLE_RANGE}."
                 )
 
+        self._on_finish = verify_callback(on_finish)
+
         self._backwards = backwards
         self._nav_thread = Thread(
             target=self.__navigate,
@@ -139,32 +139,11 @@ class NavigationController(DriveController):
 
         if position is not None:
             x, y = position
-            self._sub_goal_nav_thread = Thread(
-                target=self.__set_course_heading,
-                args=(
-                    x,
-                    y,
-                ),
-                daemon=True,
-            )
-            self.__sub_goal_flow_control()
-            self._sub_goal_nav_thread = Thread(
-                target=self.__drive_to_position_goal,
-                args=(
-                    x,
-                    y,
-                ),
-                daemon=True,
-            )
-            self.__sub_goal_flow_control()
+            self.__set_course_heading(x, y)
+            self.__drive_to_position_goal(x, y)
 
         if angle is not None:
-            self._sub_goal_nav_thread = Thread(
-                target=self.__rotate_to_angle_goal,
-                args=(math.radians(angle),),
-                daemon=True,
-            )
-            self.__sub_goal_flow_control()
+            self.__rotate_to_angle_goal(math.radians(angle))
 
         self.__navigation_finished()
 
@@ -235,12 +214,7 @@ class NavigationController(DriveController):
     def stop_navigation(self):
         # don't call callback if user has terminated navigation manually
         self._on_finish = None
-
         self._stop_triggered = True
-        try:
-            self._sub_goal_nav_thread.join()
-        except Exception:
-            pass
         try:
             self._nav_thread.join()
         except Exception:
@@ -251,9 +225,8 @@ class NavigationController(DriveController):
         super().stop()
 
     def __set_course_heading(self, x_goal, y_goal):
-        linear_speed = 0
         while not self._stop_triggered:
-            x, y, theta = self.__get_new_pose()
+            x, y, theta = self.pose
 
             x_diff, y_diff = self.__get_position_error(
                 x=x, x_goal=x_goal, y=y, y_goal=y_goal
@@ -266,13 +239,14 @@ class NavigationController(DriveController):
                 self.__sub_goal_reached()
                 break
 
-            angular_speed = self.__get_angular_speed(angle_error=angle_error)
-
-            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
+            self.robot_move(
+                linear_speed=0,
+                angular_speed=self.__get_new_angular_speed(angle_error=angle_error),
+            )
 
     def __drive_to_position_goal(self, x_goal, y_goal):
         while not self._stop_triggered:
-            x, y, theta = self.__get_new_pose()
+            x, y, theta = self.pose
 
             x_diff, y_diff = self.__get_position_error(
                 x=x, x_goal=x_goal, y=y, y_goal=y_goal
@@ -292,15 +266,14 @@ class NavigationController(DriveController):
                 self.__sub_goal_reached()
                 break
 
-            angular_speed = self.__get_angular_speed(angle_error=angle_error)
-            linear_speed = self.__get_linear_speed(distance_error=distance_error)
-
-            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
+            self.robot_move(
+                angular_speed=self.__get_new_angular_speed(angle_error=angle_error),
+                linear_speed=self.__get_new_linear_speed(distance_error=distance_error),
+            )
 
     def __rotate_to_angle_goal(self, theta_goal):
-        linear_speed = 0
         while not self._stop_triggered:
-            x, y, theta = self.__get_new_pose()
+            _, _, theta = self.pose
 
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=theta_goal
@@ -310,39 +283,10 @@ class NavigationController(DriveController):
                 self.__sub_goal_reached()
                 break
 
-            angular_speed = self.__get_angular_speed(angle_error=angle_error)
-
-            self.robot_move(linear_speed=linear_speed, angular_speed=angular_speed)
-
-    @staticmethod
-    def __check_callback(on_finish):
-        if on_finish is None:
-            return None
-        if callable(on_finish):
-            arg_spec = getfullargspec(on_finish)
-            number_of_arguments = len(arg_spec.args)
-            number_of_default_arguments = (
-                len(arg_spec.defaults) if arg_spec.defaults is not None else 0
+            self.robot_move(
+                linear_speed=0,
+                angular_speed=self.__get_new_angular_speed(angle_error=angle_error),
             )
-            if number_of_arguments == 0:
-                return on_finish
-            if (
-                arg_spec.args[0] in ("self", "_mock_self")
-                and (number_of_arguments - number_of_default_arguments) == 1
-            ):
-                return on_finish
-            if number_of_arguments != number_of_default_arguments:
-                raise ValueError(
-                    "on_finish should have no non-default keyword arguments."
-                )
-        else:
-            raise ValueError("on_finish should be a callable function.")
-
-        return on_finish
-
-    def __sub_goal_flow_control(self):
-        self._sub_goal_nav_thread.start()
-        self._sub_goal_nav_thread.join()
 
     def __navigation_started(self):
         self.in_progress = True
@@ -359,59 +303,13 @@ class NavigationController(DriveController):
         self.stop_movement()
         self._drive_manager.pid.reset()
 
-    def __get_new_pose(self):
-        self._new_pose_event.wait()
+    @property
+    def pose(self):
+        self.measurement_scheduler.wait_for_measurement()
         return self.state_tracker.x, self.state_tracker.y, self.state_tracker.angle_rad
 
-    @staticmethod
-    def __get_angle_error(current_angle, target_angle):
-        return normalize_angle(current_angle - target_angle)
-
-    def __get_angular_speed(self, angle_error):
-        return (
-            self._drive_manager.max_angular_velocity
-            * self._drive_manager.pid.heading(angle_error)
-        )
-
-    def __get_linear_speed(self, distance_error):
-        return self._drive_manager.max_velocity * self._drive_manager.pid.distance(
-            distance_error
-        )
-
-    def __get_position_error(self, x, x_goal, y, y_goal):
-        x_diff = x_goal - x if not self._backwards else x - x_goal
-        y_diff = y_goal - y if not self._backwards else y - y_goal
-        return x_diff, y_diff
-
-    def __measurement_scheduler(self):
-        s = sched.scheduler(time.time, time.sleep)
-        current_time = time.time()
-        s.enterabs(
-            current_time + self._measurement_dt,
-            1,
-            self.__measurement_loop,
-            (s, current_time),
-        )
-        s.run()
-
-    def __measurement_loop(self, s, previous_time):
-        current_time = time.time()
-        dt = current_time - previous_time
-
-        odom_measurements = self.__get_odometry_measurements()
-        self.state_tracker.add_measurements(odom_measurements=odom_measurements, dt=dt)
-
-        self._new_pose_event.set()
-        self._new_pose_event.clear()
-
-        s.enterabs(
-            current_time + self._measurement_dt,
-            1,
-            self.__measurement_loop,
-            (s, current_time),
-        )
-
-    def __get_odometry_measurements(self):
+    @property
+    def odometry(self):
         left_wheel_speed = self.left_motor.current_speed
         right_wheel_speed = self.right_motor.current_speed
         linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
@@ -420,3 +318,22 @@ class NavigationController(DriveController):
         ) / self.wheel_separation
 
         return np.array([[linear_velocity], [angular_velocity]])
+
+    def __get_new_angular_speed(self, angle_error):
+        return (
+            self._drive_manager.max_angular_velocity
+            * self._drive_manager.pid.heading(angle_error)
+        )
+
+    def __get_new_linear_speed(self, distance_error):
+        return self._drive_manager.max_velocity * self._drive_manager.pid.distance(
+            distance_error
+        )
+
+    def __get_angle_error(self, current_angle, target_angle):
+        return normalize_angle(current_angle - target_angle)
+
+    def __get_position_error(self, x, x_goal, y, y_goal):
+        x_diff = x_goal - x if not self._backwards else x - x_goal
+        y_diff = y_goal - y if not self._backwards else y - y_goal
+        return x_diff, y_diff
