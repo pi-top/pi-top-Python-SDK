@@ -27,25 +27,24 @@ class Navigator:
         )
 
     def navigate(self, position, angle):
-        generators = []
+        position_generators = []
         if position is not None:
-            x, y = position
-            generators.append(self._set_course_heading(x, y))
-            generators.append(self._drive_to_position_goal(x, y))
+            position_generators.append(self._set_course_heading(position))
+            position_generators.append(self._drive_to_position_goal(position))
         if angle is not None:
-            generators.append(self._rotate_to_angle_goal(math.radians(angle)))
+            position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
 
-        for generator in generators:
-            try:
-                for linear_speed, angular_speed in generator:
-                    yield linear_speed, angular_speed
-            except StopIteration:
-                yield 0, 0
-                self._drive_manager.pid.reset()
+        for generator in position_generators:
+            for linear_speed, angular_speed in generator:
+                yield linear_speed, angular_speed
+            yield 0, 0
+            self._drive_manager.pid.reset()
 
         yield 0, 0
+        self._drive_manager.pid.reset()
 
-    def _set_course_heading(self, x_goal, y_goal):
+    def _set_course_heading(self, position):
+        x_goal, y_goal = position
         while not self._stop_triggered:
             x, y, theta = self.measurement_input_function()
 
@@ -63,7 +62,8 @@ class Navigator:
             angular_speed = self._get_new_angular_speed(angle_error=angle_error)
             yield linear_speed, angular_speed
 
-    def _drive_to_position_goal(self, x_goal, y_goal):
+    def _drive_to_position_goal(self, position):
+        x_goal, y_goal = position
         while not self._stop_triggered:
             x, y, theta = self.measurement_input_function()
 
