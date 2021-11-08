@@ -71,7 +71,10 @@ class NavigationController(DriveController):
 
     @property
     def own_state(self):
-        return {"in_progress": self.in_progress}
+        return {
+            "in_progress": self.in_progress,
+            "tracker": self.state_tracker.own_state,
+        }
 
     def go_to(
         self,

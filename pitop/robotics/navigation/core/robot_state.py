@@ -94,6 +94,7 @@ class StateFilter(Stateful):
             f"(+/- {math.degrees(self.w_tolerance):.3})\n"
         )
 
+    @property
     def own_state(self):
         return {
             "x_position": self.x,
