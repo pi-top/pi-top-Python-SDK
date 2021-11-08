@@ -26,7 +26,8 @@ class NavigationController(DriveController):
         name="navigate",
     ):
         """
-        :param drive_controller: DriveController() object used to control motors
+        :param left_motor_port: string with the name of the port for the left motor
+        :param right_motor_port: string with the name of the port for the right motor
         :param linear_speed_factor: value between 0 and 1 for the linear speed
         :param angular_speed_factor: value between 0 and 1 for the angular speed
         """
