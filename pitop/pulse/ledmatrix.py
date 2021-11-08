@@ -1,3 +1,4 @@
+import logging
 import signal
 from copy import deepcopy
 from math import ceil, cos, radians, sin
@@ -8,8 +9,9 @@ from time import sleep
 
 from serial import Serial, serialutil
 
-from pitop.common.logger import PTLogger
 from pitop.pulse import configuration
+
+logger = logging.getLogger(__name__)
 
 _initialised = False
 
@@ -322,19 +324,19 @@ def __initialise():
                 err_str = "Could not find serial port - are you sure it's enabled?"
                 raise serialutil.SerialException(err_str)
 
-            PTLogger.debug("Opening serial port...")
+            logger.debug("Opening serial port...")
 
             _serial_device = Serial("/dev/serial0", baudrate=250000, timeout=2)
 
             if _serial_device.isOpen():
-                PTLogger.debug("OK.")
+                logger.debug("OK.")
             else:
-                PTLogger.info("Error: Failed to open serial port!")
+                logger.info("Error: Failed to open serial port!")
                 exit()
 
             _initialised = True
         else:
-            PTLogger.error("Error: pi-topPULSE not initialised by pi-topd")
+            logger.error("Error: pi-topPULSE not initialised by pi-topd")
 
 
 def __signal_handler(signal, frame):
@@ -343,7 +345,7 @@ def __signal_handler(signal, frame):
     Handles signals from the OS to exit.
     """
 
-    PTLogger.info("\nQuitting...")
+    logger.info("\nQuitting...")
 
     stop()
     off()
@@ -376,7 +378,7 @@ def __write(data):
     Write data to the matrix.
     """
 
-    PTLogger.debug(
+    logger.debug(
         "{s0:<4}{s1:<4}{s2:<4}{s3:<4}{s4:<4}{s5:<4}{s6:<4}{s7:<4}{s8:<4}{s9:<4}{s10:<4}".format(
             s0=data[0],
             s1=data[1],
@@ -472,7 +474,7 @@ def __sync_with_device():
     """
 
     __initialise()
-    PTLogger.debug("Sync data:")
+    logger.debug("Sync data:")
     __write(_sync)
 
 
@@ -680,7 +682,7 @@ def show():
 
     attempt_to_show_early = not _show_enabled
     if attempt_to_show_early:
-        PTLogger.info("Can't update pi-topPULSE LEDs more than 50/s. Waiting...")
+        logger.info("Can't update pi-topPULSE LEDs more than 50/s. Waiting...")
 
     pause_length = 0.001
 
@@ -697,7 +699,7 @@ def show():
             wait_counter = wait_counter + 1
 
     if attempt_to_show_early:
-        PTLogger.debug("pi-topPULSE LEDs re-enabled.")
+        logger.debug("pi-topPULSE LEDs re-enabled.")
 
     __sync_with_device()
 
@@ -706,7 +708,7 @@ def show():
 
     __initialise()
 
-    PTLogger.debug("LED data:")
+    logger.debug("LED data:")
     # For each col
     for x in range(_w):
         # Write col to LED matrix

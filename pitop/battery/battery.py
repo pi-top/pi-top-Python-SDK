@@ -1,7 +1,9 @@
 import atexit
+import logging
 
-from pitop.common.logger import PTLogger
 from pitop.common.ptdm import Message, PTDMRequestClient, PTDMSubscribeClient
+
+logger = logging.getLogger(__name__)
 
 
 class Battery:
@@ -40,11 +42,11 @@ class Battery:
                 self.__previous_capacity = capacity
 
             if charging_state not in range(0, 3):
-                PTLogger.warning("Invalid charging state from pi-top device manager")
+                logger.warning("Invalid charging state from pi-top device manager")
                 return
 
             if charging_state == self.__previous_charging_state:
-                PTLogger.debug("Charging state has not changed - doing nothing...")
+                logger.debug("Charging state has not changed - doing nothing...")
                 return
 
             self.__previous_charging_state = charging_state

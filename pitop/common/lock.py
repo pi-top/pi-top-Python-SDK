@@ -1,10 +1,11 @@
+import logging
 from fcntl import LOCK_EX, LOCK_NB, LOCK_UN, flock
 from os import chmod
 from os.path import exists
 from stat import S_IWGRP, S_IWOTH, S_IWUSR
 from threading import Lock
 
-from pitop.common.logger import PTLogger
+logger = logging.getLogger(__name__)
 
 
 class PTLock(object):
@@ -21,41 +22,41 @@ class PTLock(object):
         if not lock_file_already_existed:
             chmod(self.path, S_IWUSR | S_IWGRP | S_IWOTH)
 
-        PTLogger.debug("Creating PTLock with path: {}".format(self.path))
+        logger.debug("Creating PTLock with path: {}".format(self.path))
 
     def acquire(self) -> bool:
         """Block until lock can be acquired."""
         if self._thread_lock.locked():
-            PTLogger.debug(
+            logger.debug(
                 "Attempting to acquire thread lock, which is currently already acquired."
             )
 
         if self.is_locked():
-            PTLogger.debug(
+            logger.debug(
                 f"Attempting to acquire lock file ({self.path}), which is currently already globally acquired."
             )
 
-        PTLogger.debug("Acquiring thread lock")
+        logger.debug("Acquiring thread lock")
         self._thread_lock.acquire()
-        PTLogger.debug("Acquiring lock file at {}".format(self.path))
+        logger.debug("Acquiring lock file at {}".format(self.path))
         flock(self.__lock_file_handle, LOCK_EX)
         self.__locked_by_self = True
 
     def release(self) -> bool:
         """Attempt to release lock."""
         if not self._thread_lock.locked():
-            PTLogger.debug(
+            logger.debug(
                 "Attempting to release thread lock, which is currently already acquired."
             )
 
         if not self.is_locked():
-            PTLogger.debug(
+            logger.debug(
                 f"Attempting to release lock file ({self.path}), which is currently already globally acquired."
             )
 
-        PTLogger.debug("Releasing thread lock")
+        logger.debug("Releasing thread lock")
         self._thread_lock.release()
-        PTLogger.debug("Releasing lock file at {}".format(self.path))
+        logger.debug("Releasing lock file at {}".format(self.path))
         flock(self.__lock_file_handle, LOCK_UN)
         self.__locked_by_self = False
 
@@ -70,7 +71,7 @@ class PTLock(object):
         except BlockingIOError:
             lock_status = True
 
-        PTLogger.debug(
+        logger.debug(
             "Lock file at {} is {}locked".format(
                 self.path, "not " if not lock_status else ""
             )

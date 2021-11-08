@@ -1,3 +1,4 @@
+import logging
 from atexit import register, unregister
 from inspect import signature
 from threading import Thread
@@ -6,9 +7,9 @@ from traceback import format_exc
 
 import zmq
 
-from pitop.common.logger import PTLogger
 from pitop.common.type_helper import TypeHelper
 
+logger = logging.getLogger(__name__)
 _TIMEOUT_MS = 1000
 
 
@@ -339,11 +340,11 @@ class PTDMRequestClient:
 
         try:
             self.__zmq_socket.connect("tcp://127.0.0.1:3782")
-            PTLogger.debug("pi-topd request client is ready")
+            logger.debug("pi-topd request client is ready")
 
         except zmq.error.ZMQError as e:
-            PTLogger.error("Error starting the request client: " + str(e))
-            PTLogger.info(format_exc())
+            logger.error("Error starting the request client: " + str(e))
+            logger.info(format_exc())
             raise
 
     def __cleanup(self):
@@ -422,11 +423,11 @@ class PTDMSubscribeClient:
 
         try:
             self.__zmq_socket.connect("tcp://127.0.0.1:3781")
-            PTLogger.debug("pi-topd subscribe client is ready")
+            logger.debug("pi-topd subscribe client is ready")
 
         except zmq.error.ZMQError as e:
-            PTLogger.error("Error starting the subscribe client: " + str(e))
-            PTLogger.info(format_exc())
+            logger.error("Error starting the subscribe client: " + str(e))
+            logger.info(format_exc())
 
             return False
 
