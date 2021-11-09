@@ -186,14 +186,14 @@ def reset_device_state(enable):
 
 def enable_device():
     logger.info(
-        "'enable_device' function has been moved to pi-topd, and is handled automatically."
+        "'enable_device' function has been moved to pt-device-manager, and is handled automatically."
     )
     return False
 
 
 def disable_device():
     logger.info(
-        "'disable_device' function has been moved to pi-topd, and is handled automatically."
+        "'disable_device' function has been moved to pt-device-manager, and is handled automatically."
     )
     return False
 

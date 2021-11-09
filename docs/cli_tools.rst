@@ -204,7 +204,7 @@ timeout_value
 pi-top devices
 ===================
 
-Finds useful information about the system and the attached devices that are being managed by `pi-topd`.
+Finds useful information about the system and the attached devices that are being managed by `pt-device-manager`.
 
 Running `pi-top devices` on its own will report back the current brightness value.
 

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 _TIMEOUT_MS = 1000
 
 
-# Messages sent to/from pi-topd clients (formerly pt-device-manager (ptdm))
+# Messages sent to/from pt-device-manager clients (formerly pt-device-manager (ptdm))
 class Message:
     __message_names = dict()
     __param_types = dict()
@@ -340,7 +340,7 @@ class PTDMRequestClient:
 
         try:
             self.__zmq_socket.connect("tcp://127.0.0.1:3782")
-            logger.debug("pi-topd request client is ready")
+            logger.debug("pt-device-manager request client is ready")
 
         except zmq.error.ZMQError as e:
             logger.error("Error starting the request client: " + str(e))
@@ -387,14 +387,14 @@ class PTDMRequestClient:
             Message.RSP_ERR_UNSUPPORTED,
         ]:
             raise Exception(
-                f"pi-topd reported an error ({response_object.message_id_name()})"
+                f"pt-device-manager reported an error ({response_object.message_id_name()})"
             )
 
         # Check response matches initial message (original message value + 100)
         expected_message_id = message.message_id() + 100
         if response_object.message_id() != expected_message_id:
             raise Exception(
-                "Invalid response from pi-topd. "
+                "Invalid response from pt-device-manager. "
                 f"Expected: {Message.name_for_id(expected_message_id)}, "
                 f"Actual: {response_object.message_id_name()}"
             )
@@ -423,7 +423,7 @@ class PTDMSubscribeClient:
 
         try:
             self.__zmq_socket.connect("tcp://127.0.0.1:3781")
-            logger.debug("pi-topd subscribe client is ready")
+            logger.debug("pt-device-manager subscribe client is ready")
 
         except zmq.error.ZMQError as e:
             logger.error("Error starting the subscribe client: " + str(e))
