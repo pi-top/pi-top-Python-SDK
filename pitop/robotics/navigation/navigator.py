@@ -29,7 +29,8 @@ class Navigator:
     def navigate(self, position, angle):
         position_generators = []
         if position is not None:
-            position_generators.append(self._set_course_heading(position))
+            if self.should_set_course(position):
+                position_generators.append(self._set_course_heading(position))
             position_generators.append(self._drive_to_position_goal(position))
         if angle is not None:
             position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
@@ -43,6 +44,19 @@ class Navigator:
         yield 0, 0
         self._drive_manager.pid.reset()
 
+    def should_set_course(self, position):
+        x_goal, y_goal = position
+        x, y, theta = self.measurement_input_function()
+        x_diff, y_diff = self.__get_position_error(
+            x=x, x_goal=x_goal, y=y, y_goal=y_goal
+        )
+        return not self._goal_criteria.distance(
+            distance_error=self.__get_distance_error(x_diff=x_diff, y_diff=y_diff),
+            angle_error=self.__get_angle_error(
+                current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
+            ),
+        )
+
     def _set_course_heading(self, position):
         x_goal, y_goal = position
         while not self._stop_triggered:
@@ -54,7 +68,6 @@ class Navigator:
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
-
             if self._goal_criteria.angle(angle_error):
                 break
 
@@ -73,11 +86,7 @@ class Navigator:
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
-            distance_error = (
-                -np.hypot(x_diff, y_diff)
-                if not self.backwards
-                else np.hypot(x_diff, y_diff)
-            )
+            distance_error = self.__get_distance_error(x_diff, y_diff)
 
             if self._goal_criteria.distance(
                 distance_error=distance_error, angle_error=angle_error
@@ -121,6 +130,12 @@ class Navigator:
         x_diff = x_goal - x if not self.backwards else x - x_goal
         y_diff = y_goal - y if not self.backwards else y - y_goal
         return x_diff, y_diff
+
+    def __get_distance_error(self, x_diff, y_diff):
+        value = np.hypot(x_diff, y_diff)
+        if not self.backwards:
+            return -value
+        return value
 
     @property
     def angular_speed_factor(self):
