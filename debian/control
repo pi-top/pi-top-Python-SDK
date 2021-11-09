@@ -38,7 +38,6 @@ Description: pi-top Python 3 Library - Complete
 
 Package: python3-pitop-examples
 Architecture: all
-Section: python
 Depends:
  ${misc:Depends},
  ${python3:Depends},
