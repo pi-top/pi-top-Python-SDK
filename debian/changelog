@@ -4,7 +4,7 @@ py-pitop-sdk (0.21.0-1) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 20 Sep 2021 15:25:30 -0300
 
-pi-top-python-sdk (0.20.3-3) bullseye; urgency=medium
+pi-top-python-sdk (0.20.3-3) buster; urgency=medium
 
   * Fix path to default font in oled assistant (#465)
   * Drop shebangs (#468)
@@ -17,13 +17,13 @@ pi-top-python-sdk (0.20.3-3) bullseye; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 27 Sep 2021 17:25:51 +0000
 
-pi-top-python-sdk (0.20.3-2) bullseye; urgency=medium
+pi-top-python-sdk (0.20.3-2) buster; urgency=medium
 
   * Fix version.txt
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 14 Sep 2021 18:56:11 +0000
 
-pi-top-python-sdk (0.20.3-1) bullseye; urgency=medium
+pi-top-python-sdk (0.20.3-1) buster; urgency=medium
 
   * Add additional sys info functions used by web portal (#456)
   * CLI uses is_connected_to_internet from SDK
@@ -33,20 +33,20 @@ pi-top-python-sdk (0.20.3-1) bullseye; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Sat, 11 Sep 2021 14:24:09 +0000
 
-pi-top-python-sdk (0.20.2-1) bullseye; urgency=medium
+pi-top-python-sdk (0.20.2-1) buster; urgency=medium
 
   * Remove unused ${python3:Depends} from '-full' package
   * Fix version.txt
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:46:24 +0000
 
-py-pitop-sdk (0.20.1-1) bullseye; urgency=medium
+py-pitop-sdk (0.20.1-1) buster; urgency=medium
 
   * Fix miniscreen issues (#452)
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:22:23 +0000
 
-py-pitop-sdk (0.20.0-2) bullseye; urgency=medium
+py-pitop-sdk (0.20.0-2) buster; urgency=medium
 
   * New workflows (#407)
   * Update master workflow files
@@ -98,7 +98,7 @@ py-pitop-sdk (0.20.0-2) bullseye; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 06 Sep 2021 09:21:41 -0300
 
-py-pitop-sdk (0.20.0-1) bullseye; urgency=medium
+py-pitop-sdk (0.20.0-1) buster; urgency=medium
 
   * Drop pip from build deps
   * Vendor simple_pid (#410)
