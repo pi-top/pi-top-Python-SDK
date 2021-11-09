@@ -48,7 +48,10 @@ def get_pitopOS_info():
         build_info_file_dict = file_to_dict(build_info_path)
         build_id = build_info_file_dict.get("Build ID")
         build_info_fields = build_id.split(DELIMITER)
-        return {LOOKUP.get(field[0]): field[1:] for field in build_info_fields}
+        return {
+            LOOKUP.get(field[0].replace(":", "")): field[1:]
+            for field in build_info_fields
+        }
 
     def parse_legacy_ptissue(build_info_path):
         LOOKUP = {

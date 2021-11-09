@@ -1,7 +1,8 @@
+import logging
 from glob import glob
 from os import environ
 
-from pitop.common.logger import PTLogger
+logger = logging.getLogger(__name__)
 
 
 def get_current_user():
@@ -29,7 +30,7 @@ def get_list_of_displays() -> int:
 def get_first_display() -> int:
     displays = get_list_of_displays()
     first_display = displays[0] if len(displays) > 0 else None
-    PTLogger.debug("First display is: {}".format(first_display))
+    logger.debug("First display is: {}".format(first_display))
     return first_display
 
 

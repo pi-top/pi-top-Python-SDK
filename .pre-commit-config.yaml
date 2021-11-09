@@ -4,8 +4,9 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.0.1
     hooks:
-    # debian/patches needs whitespace at end of line
-    # - id: trailing-whitespace
+    - id: trailing-whitespace
+      # debian/patches needs whitespace at end of line
+      exclude: ^debian/patches/smbus2-to-smbus.patch
     - id: end-of-file-fixer
     - id: check-yaml
     - id: check-symlinks
@@ -27,17 +28,17 @@ repos:
       ]
 
 -   repo: https://github.com/pycqa/isort
-    rev: 5.9.3
+    rev: 5.10.0
     hooks:
     - id: isort
 
 -   repo: https://github.com/psf/black
-    rev: 21.7b0
+    rev: 21.10b0
     hooks:
     - id: black
 
 -   repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 4.0.1
     hooks:
     - id: flake8
 

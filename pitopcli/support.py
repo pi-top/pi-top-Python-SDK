@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 from .cli_base import CliBaseClass
 from .support_core import HealthCheck, Links
 

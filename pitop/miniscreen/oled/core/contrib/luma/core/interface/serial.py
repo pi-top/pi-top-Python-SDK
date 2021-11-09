@@ -7,7 +7,7 @@ from time import sleep
 import RPi.GPIO as GPIO
 from spidev import SpiDev
 
-from pitop.miniscreen.oled.core.contrib.luma.core.error import DeviceNotFoundError
+from ..error import DeviceNotFoundError
 
 GPIO.setmode(GPIO.BCM)
 # Suppress serial warnings

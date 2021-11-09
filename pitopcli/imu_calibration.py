@@ -1,4 +1,5 @@
 import atexit
+import logging
 from math import atan2, degrees, sqrt
 from os import path
 from threading import Event, Thread
@@ -11,13 +12,14 @@ import numpy as np
 from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
 from scipy.linalg import sqrtm
 
-from pitop.common.logger import PTLogger
 from pitop.pma.common.math_functions.ellipsoid_functions import (
     get_ellipsoid_geometric_params,
     least_squares_ellipsoid_fit,
     plot_ellipsoid,
 )
 from pitop.pma.imu_controller import ImuController
+
+logger = logging.getLogger(__name__)
 
 
 class ImuCalibration:
@@ -280,7 +282,7 @@ class ImuCalibration:
                     print("Read error, trying again...")
                     error_count += 1
                     if error_count > 50:
-                        PTLogger.error(
+                        logger.error(
                             "Cannot get magnetometer readings, please try re-docking your pi-top into the "
                             "Expansion Plate and running the calibrator again."
                         )
@@ -350,15 +352,15 @@ class ImuCalibration:
                 )
                 hard_iron_offset = -np.dot(Minv, n)
             except Warning as e:
-                PTLogger.error("Calibration error: {}".format(e))
+                logger.error("Calibration error: {}".format(e))
                 if self.__test_data is None:
-                    PTLogger.info("Starting calibration process again...")
+                    logger.info("Starting calibration process again...")
                     sleep(3)
                     self.calibrate_magnetometer(
                         test_data=self.__test_data, save_data_name=self.__save_data_name
                     )
                 else:
-                    PTLogger.info("Please try again with different test data.")
+                    logger.info("Please try again with different test data.")
                     exit()
 
         return hard_iron_offset, soft_iron_matrix

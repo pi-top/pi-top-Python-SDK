@@ -156,11 +156,6 @@ documentation and test dependencies:
 
 Changes you make to the source will be reflected in your Python environment.
 
-You may want to repeat this process for the pi-top-Python-Common-Library_ if
-it's not installed already or you need to make changes there too.
-
-.. _pi-top-Python-Common-Library: https://github.com/pi-top/pi-top-Python-Common-Library
-
 Once the SDK is installed you can run the automated test suite with:
 
 .. code-block:: bash

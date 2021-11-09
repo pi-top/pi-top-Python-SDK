@@ -18,7 +18,7 @@ The recommended way of getting the latest version is through `apt`.
 
 Check out `Using pi-top Hardware with Raspberry Pi OS`_ in the pi-top knowledge base for how to do this.
 
-.. _Using pi-top Hardware with Raspberry Pi OS: https://knowledgebase.pi-top.com/knowledge/pi-top-and-raspberry-pi-os
+.. _Using pi-top Hardware with Raspberry Pi OS: https://pi-top.com/pi-top-rpi-os
 
 .. note::
 

@@ -1,15 +1,8 @@
 from pitop.common.command_runner import run_command, run_command_background
 from pitop.common.current_session_info import get_first_display
+from pitop.common.sys_info import is_connected_to_internet
 
 from ..formatter import StdoutFormat
-
-
-def is_connected_to_internet() -> bool:
-    try:
-        run_command("ping -c1 8.8.8.8", timeout=10, check=True, log_errors=False)
-        return True
-    except Exception:
-        return False
 
 
 class Links:

@@ -1,5 +1,3 @@
-#! /usr/bin/python3
-
 import argparse
 from os import get_terminal_size
 from sys import stderr
@@ -46,7 +44,7 @@ class DeviceCLI(CliBaseClass):
                 print(f" (v{data.get('fw_version')})", end="")
             print("")
 
-        # Get host device from device manager
+        # Get host device from pi-topd
         try:
             from pitop.system import device_info
 
@@ -57,7 +55,7 @@ class DeviceCLI(CliBaseClass):
                 print_hub_line(device)
         except Exception as e:
             print(
-                f"Error on pitop-devices.run: Unable to get device type from pt-device-manager: {e}",
+                f"Error on pitop-devices.run: Unable to get device type from pi-topd: {e}",
                 file=stderr,
             )
             return 1
@@ -74,7 +72,7 @@ class DeviceCLI(CliBaseClass):
                     print_peripheral_line(periph)
             except Exception as e:
                 print(
-                    f"Error on pitop-devices.run: Unable to get connected peripherals from pt-device-manager: {e}",
+                    f"Error on pitop-devices.run: Unable to get connected peripherals from pi-topd: {e}",
                     file=stderr,
                 )
         return 0

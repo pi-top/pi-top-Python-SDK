@@ -1,15 +1,14 @@
-Source: py-pitop-sdk
+Source: pi-top-python-sdk
 Section: python
 Priority: optional
 Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
+ dh-sequence-sphinxdoc,
 # Required by pybuild
  python3-all,
  python3-setuptools,
-# Required until we can use dh-sequence-sphinxdoc (Bullseye)
- python3-sphinx,
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
@@ -20,7 +19,6 @@ Package: python3-pitop-full
 Architecture: all
 Depends:
  ${misc:Depends},
- ${python3:Depends},
 # Emojis used in emotion recipe
  fonts-symbola,
  python3-onnxruntime,
@@ -52,30 +50,20 @@ Depends:
 # 'ping' command
  iputils-ping,
 # Required for hub communication; such as getting case button state
- pt-device-manager,
+ pi-topd | pt-device-manager,
 # ZMQ for messaging
  python3-zmq,
  raspi-config,
 Suggests:
-# Required for 'pt-notify-send'
- pt-notifications,
-# OLED system menu is optional, but useful for [4] users
- pt-sys-oled,
+# Required for OS notifications
+ notify-send-ng,
+# pi-top [4] miniscreen menu is optional, but useful for [4] users
+ pt-miniscreen | pt-sys-oled,
 # Required to get state about Access Point mode
  wifi-ap-sta,
 # Other SDK packages
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
-Breaks:
-# CLI utils
- pt-device-manager (<< 4.0.0),
-# pt-oled
- python3-pt-oled (<< 3.0.0),
-Replaces:
-# CLI utils
- pt-device-manager (<< 4.0.0),
-# pt-oled
- python3-pt-oled (<< 3.0.0),
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
@@ -86,10 +74,13 @@ Architecture: all
 Section: doc
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  ${sphinxdoc:Depends},
+Suggests:
+ python3-pitop,
 Built-Using:
  ${sphinxdoc:Built-Using},
-Description: pi-top Python 3 Library - Documentation
+Description: pi-top Python 3 Library - Documentation and Examples
  General purpose Python library for controlling a pi-top.
  .
  This is the documentation part of the package.
