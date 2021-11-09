@@ -23,7 +23,6 @@ Depends:
  fonts-symbola,
  python3-onnxruntime,
  python3-pitop (= ${binary:Version}),
- python3-pitop-examples (= ${binary:Version}),
  libopenblas-dev,
 # Required for face detection & emotion mapping
  liblapack-dev,
@@ -35,18 +34,6 @@ Description: pi-top Python 3 Library - Complete
  .
  This is a top-level dummy package which will install all of the required
  components for full pi-top support.
-
-Package: python3-pitop-examples
-Architecture: all
-Depends:
- ${misc:Depends},
- ${python3:Depends},
-Recommends: python3-pitop
-Description: Example Python files for python3-pitop
- General purpose Python library for controlling a pi-top.
- .
- This package contains example Python3 scripts meant to accommodate the
- python3-pitop package.
 
 Package: python3-pitop
 Architecture: all
@@ -87,10 +74,13 @@ Architecture: all
 Section: doc
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  ${sphinxdoc:Depends},
+Suggests:
+ python3-pitop,
 Built-Using:
  ${sphinxdoc:Built-Using},
-Description: pi-top Python 3 Library - Documentation
+Description: pi-top Python 3 Library - Documentation and Examples
  General purpose Python library for controlling a pi-top.
  .
  This is the documentation part of the package.
