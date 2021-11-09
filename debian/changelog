@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.20.3-4) bullseye; urgency=medium
+pi-top-python-sdk (0.21.0-1) bullseye; urgency=medium
 
   * Fix path to default font in oled assistant (#465)
   * Drop shebangs (#468)
