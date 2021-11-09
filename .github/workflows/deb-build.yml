@@ -13,9 +13,6 @@ env:
   DEB_BUILD_DOCKER_TAG: "latest"
   CHANGELOG_AUTHOR_NAME: "pi-top"
   CHANGELOG_AUTHOR_EMAIL: "deb-maintainers@pi-top.com"
-  PACKAGECLOUD_REPO: "experimental"
-  OS: "debian"
-  DISTRO: "bullseye"
 
 jobs:
   build-debian-package:
