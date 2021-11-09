@@ -44,7 +44,7 @@ class DeviceCLI(CliBaseClass):
                 print(f" (v{data.get('fw_version')})", end="")
             print("")
 
-        # Get host device from pt-device-manager
+        # Get host device from pt-device-manager/pi-topd
         try:
             from pitop.system import device_info
 
