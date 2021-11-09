@@ -1,4 +1,4 @@
-py-pitop-sdk (0.21.0-1) buster; urgency=medium
+pi-top-python-sdk (0.21.0-1) buster; urgency=medium
 
   * Fix path to default font in OLED assistant
 
@@ -40,13 +40,13 @@ pi-top-python-sdk (0.20.2-1) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:46:24 +0000
 
-py-pitop-sdk (0.20.1-1) buster; urgency=medium
+pi-top-python-sdk (0.20.1-1) buster; urgency=medium
 
   * Fix miniscreen issues (#452)
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 07 Sep 2021 21:22:23 +0000
 
-py-pitop-sdk (0.20.0-2) buster; urgency=medium
+pi-top-python-sdk (0.20.0-2) buster; urgency=medium
 
   * New workflows (#407)
   * Update master workflow files
@@ -98,7 +98,7 @@ py-pitop-sdk (0.20.0-2) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 06 Sep 2021 09:21:41 -0300
 
-py-pitop-sdk (0.20.0-1) buster; urgency=medium
+pi-top-python-sdk (0.20.0-1) buster; urgency=medium
 
   * Drop pip from build deps
   * Vendor simple_pid (#410)
@@ -129,13 +129,13 @@ py-pitop-sdk (0.20.0-1) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 14:21:36 +0000
 
-py-pitop-sdk (0.19.1-1) buster; urgency=medium
+pi-top-python-sdk (0.19.1-1) buster; urgency=medium
 
   * Initial release as quilt package
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 26 Jul 2021 10:59:06 +0000
 
-py-pitop-sdk (0.19.0) buster; urgency=medium
+pi-top-python-sdk (0.19.0) buster; urgency=medium
 
   [ Angus Whitehead ]
   * Add keyword arg to select font to miniscreen display text methods (#391)
@@ -145,45 +145,45 @@ py-pitop-sdk (0.19.0) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 26 Jul 2021 10:59:05 +0000
 
-py-pitop-sdk (0.18.12) buster; urgency=medium
+pi-top-python-sdk (0.18.12) buster; urgency=medium
 
   [ Jorge Capona ]
   * Only main thread can join miniscreen background thread (#384)
 
  -- pi-top <deb-maintainers@pi-top.com>  Thu, 08 Jul 2021 13:03:42 +0000
 
-py-pitop-sdk (0.18.11) buster; urgency=medium
+pi-top-python-sdk (0.18.11) buster; urgency=medium
 
   * Rename TiltRollHeadController class name and attributes (#366)
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 05 Jul 2021 10:03:16 +0000
 
-py-pitop-sdk (0.18.10) buster; urgency=medium
+pi-top-python-sdk (0.18.10) buster; urgency=medium
 
   * Remove trailing whitespace on "pi-top device" CLI command
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 14:22:27 +0000
 
-py-pitop-sdk (0.18.9) buster; urgency=medium
+pi-top-python-sdk (0.18.9) buster; urgency=medium
 
   * Face detector updates
   * Remove python-sonic dependency
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 13:57:38 +0000
 
-py-pitop-sdk (0.18.8) buster; urgency=medium
+pi-top-python-sdk (0.18.8) buster; urgency=medium
 
   * Face detector updates
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Jun 2021 12:58:54 +0000
 
-py-pitop-sdk (0.18.7) buster; urgency=medium
+pi-top-python-sdk (0.18.7) buster; urgency=medium
 
   * Update URL from where to download machine learning models
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 02 Jun 2021 02:27:57 +0000
 
-py-pitop-sdk (0.18.6) buster; urgency=medium
+pi-top-python-sdk (0.18.6) buster; urgency=medium
 
   * Drop references to deprecated GitHub wiki
   * Remove NativeFactory usage from PMA components
@@ -192,13 +192,13 @@ py-pitop-sdk (0.18.6) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 01 Jun 2021 20:48:12 +0000
 
-py-pitop-sdk (0.18.5) buster; urgency=medium
+pi-top-python-sdk (0.18.5) buster; urgency=medium
 
   * Update paths to include css/js/html from pitop.labs.web
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 12 May 2021 16:12:05 +0000
 
-py-pitop-sdk (0.18.4) buster; urgency=medium
+pi-top-python-sdk (0.18.4) buster; urgency=medium
 
   * Configurable web interface API
   * Fix DriveController's rotate function
@@ -209,13 +209,13 @@ py-pitop-sdk (0.18.4) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 10 May 2021 20:02:21 +0000
 
-py-pitop-sdk (0.18.3) buster; urgency=medium
+pi-top-python-sdk (0.18.3) buster; urgency=medium
 
   * Update coloured ball detection algorithm usage
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 20 Apr 2021 13:09:20 +0000
 
-py-pitop-sdk (0.18.2) buster; urgency=medium
+pi-top-python-sdk (0.18.2) buster; urgency=medium
 
   * Add algorithms for coloured ball detection
   * Add PincerController class to support Bobbie configuration
@@ -227,14 +227,14 @@ py-pitop-sdk (0.18.2) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 19 Apr 2021 16:59:24 +0000
 
-py-pitop-sdk (0.18.1) buster; urgency=medium
+pi-top-python-sdk (0.18.1) buster; urgency=medium
 
   * Remove unused global from example
   * Improve handling of camera object deletion
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 29 Mar 2021 17:34:35 +0000
 
-py-pitop-sdk (0.18.0) buster; urgency=medium
+pi-top-python-sdk (0.18.0) buster; urgency=medium
 
   * Track state and recreate Pitop object
   * Loop over available devices to create camera object
@@ -251,14 +251,14 @@ py-pitop-sdk (0.18.0) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Sun, 28 Mar 2021 21:13:39 +0000
 
-py-pitop-sdk (0.17.1) buster; urgency=medium
+pi-top-python-sdk (0.17.1) buster; urgency=medium
 
   * Allow importing main objects from module root
   * Use docformatter
 
  -- pi-top <deb-maintainers@pi-top.com>  Mon, 08 Mar 2021 16:18:52 +0000
 
-py-pitop-sdk (0.17.0) buster; urgency=medium
+pi-top-python-sdk (0.17.0) buster; urgency=medium
 
   * Architecture: all
   * Added 'pi-top support health_check' to replace 'pt-diagnostics'
@@ -268,13 +268,13 @@ py-pitop-sdk (0.17.0) buster; urgency=medium
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 24 Feb 2021 16:39:30 +0000
 
-py-pitop-sdk (0.16.1) buster; urgency=medium
+pi-top-python-sdk (0.16.1) buster; urgency=medium
 
   * Fix bug in get_component - no return
 
  -- Mike Roberts <mike@pi-top.com>  Sun, 07 Feb 2021 18:02:10 +0000
 
-py-pitop-sdk (0.16.0) buster; urgency=medium
+pi-top-python-sdk (0.16.0) buster; urgency=medium
 
   * Add standard function to convert between different image formats
   * Fix drive controller's 'right turn' method
@@ -286,20 +286,20 @@ py-pitop-sdk (0.16.0) buster; urgency=medium
 
  -- Jorge Capona <jorge@pi-top.com>  Tue, 02 Feb 2021 16:02:15 -0300
 
-py-pitop-sdk (0.15.1) buster; urgency=medium
+pi-top-python-sdk (0.15.1) buster; urgency=medium
 
   * Fix text wrapping when displaying multiline text
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 01 Feb 2021 12:44:45 -0300
 
-py-pitop-sdk (0.15.0) buster; urgency=medium
+pi-top-python-sdk (0.15.0) buster; urgency=medium
 
   * Docs update and refactor
   * Added miniscreen class
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 28 Jan 2021 12:50:55 -0300
 
-py-pitop-sdk (0.14.0) buster; urgency=medium
+pi-top-python-sdk (0.14.0) buster; urgency=medium
 
   * Buttons can only be used by a single process
   * Suppress ultrasonic sensor warning messages
@@ -307,26 +307,26 @@ py-pitop-sdk (0.14.0) buster; urgency=medium
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 25 Jan 2021 16:17:48 -0300
 
-py-pitop-sdk (0.13.3) buster; urgency=medium
+pi-top-python-sdk (0.13.3) buster; urgency=medium
 
   * Convert image to array before checking dimensional size for RGB conversion
 
  -- Mike Roberts <mike@pi-top.com>  Sun, 24 Jan 2021 23:02:20 +0000
 
-py-pitop-sdk (0.13.2) buster; urgency=medium
+pi-top-python-sdk (0.13.2) buster; urgency=medium
 
   * Use 'ImageFunctions' to handle all image conversion
   * Clarify when/why it is able to do channel conversion
 
  -- Mike Roberts <mike@pi-top.com>  Sun, 24 Jan 2021 22:47:52 +0000
 
-py-pitop-sdk (0.13.1) buster; urgency=medium
+pi-top-python-sdk (0.13.1) buster; urgency=medium
 
   * Set line detector default image format to 'PIL'
 
  -- Jorge Capona <jorge@pi-top.com>  Sun, 24 Jan 2021 18:28:38 -0300
 
-py-pitop-sdk (0.13.0) buster; urgency=medium
+pi-top-python-sdk (0.13.0) buster; urgency=medium
 
   * Add initial 'Pitop' and 'RobotAlex' top-level objects
   * Support line-following with 'RobotAlex'
@@ -336,13 +336,13 @@ py-pitop-sdk (0.13.0) buster; urgency=medium
 
  -- Jorge Capona <jorge@pi-top.com>  Sat, 23 Jan 2021 19:06:04 -0300
 
-py-pitop-sdk (0.12.1) buster; urgency=medium
+pi-top-python-sdk (0.12.1) buster; urgency=medium
 
   * Fix broken reference to OLED's internal canvas
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 18 Jan 2021 16:40:22 +0000
 
-py-pitop-sdk (0.12.0) buster; urgency=medium
+pi-top-python-sdk (0.12.0) buster; urgency=medium
 
   * Use common lib singleton metaclass
   * Upgrade on installing from docs/requirements.txt
@@ -353,7 +353,7 @@ py-pitop-sdk (0.12.0) buster; urgency=medium
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 18 Jan 2021 16:25:11 +0000
 
-py-pitop-sdk (0.11.0) buster; urgency=medium
+pi-top-python-sdk (0.11.0) buster; urgency=medium
 
   * Monitor OLED lock files using inotify to add events for user using the OLED
   * Improve miniscreen button importing to speed miniscreen imports
@@ -366,13 +366,13 @@ py-pitop-sdk (0.11.0) buster; urgency=medium
 
  -- Jorge Capona <jorge@pi-top.com>  Wed, 13 Jan 2021 13:40:11 -0300
 
-py-pitop-sdk (0.10.1) buster; urgency=medium
+pi-top-python-sdk (0.10.1) buster; urgency=medium
 
   * Fix recursion issue when resetting OLED
 
  -- Jorge Capona <jorge@pi-top.com>  Tue, 12 Jan 2021 10:46:11 -0300
 
-py-pitop-sdk (0.10.0) buster; urgency=medium
+pi-top-python-sdk (0.10.0) buster; urgency=medium
 
   * Use parameters property, not function
   * Remove unused zmq dependency (handled in common lib)
@@ -386,55 +386,55 @@ py-pitop-sdk (0.10.0) buster; urgency=medium
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 11 Jan 2021 14:09:42 -0300
 
-py-pitop-sdk (0.9.0) buster; urgency=medium
+pi-top-python-sdk (0.9.0) buster; urgency=medium
 
   * Migrate deprecated CLIs to python3-pitop-migr
 
  -- Mike Roberts <mike@pi-top.com>  Thu, 07 Jan 2021 15:29:50 +0000
 
-py-pitop-sdk (0.8.1) buster; urgency=medium
+pi-top-python-sdk (0.8.1) buster; urgency=medium
 
   * Update GitHub CI - only build on master; publish to PyPI on release
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 04 Jan 2021 13:36:22 +0000
 
-py-pitop-sdk (0.8.0) buster; urgency=medium
+pi-top-python-sdk (0.8.0) buster; urgency=medium
 
   * Rename 'help' CLI to 'support'
 
  -- Jorge Capona <jorge@pi-top.com>  Wed, 30 Dec 2020 17:14:44 -0300
 
-py-pitop-sdk (0.7.0) buster; urgency=medium
+pi-top-python-sdk (0.7.0) buster; urgency=medium
 
   * Fix detection of legacy peripherals
 
  -- Jorge Capona <jorge@pi-top.com>  Tue, 22 Dec 2020 17:34:37 -0300
 
-py-pitop-sdk (0.6.2) buster; urgency=medium
+pi-top-python-sdk (0.6.2) buster; urgency=medium
 
   * Set DISPLAY environment variable to plot IMU data
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 19:46:24 -0300
 
-py-pitop-sdk (0.6.1) buster; urgency=medium
+pi-top-python-sdk (0.6.1) buster; urgency=medium
 
   * Add missing init file
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 19:18:03 -0300
 
-py-pitop-sdk (0.6.0) buster; urgency=medium
+pi-top-python-sdk (0.6.0) buster; urgency=medium
 
   * Add IMU CLI
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 13:55:57 -0300
 
-py-pitop-sdk (0.5.1) buster; urgency=medium
+pi-top-python-sdk (0.5.1) buster; urgency=medium
 
   * Update docs links
 
  -- Mike Roberts <mike@pi-top.com>  Thu, 17 Dec 2020 15:33:43 +0000
 
-py-pitop-sdk (0.5.0) buster; urgency=medium
+pi-top-python-sdk (0.5.0) buster; urgency=medium
 
   * Update servo motor classes to latest firmware specification
   * Add new servo functionality
@@ -445,13 +445,13 @@ py-pitop-sdk (0.5.0) buster; urgency=medium
 
  -- Mike Roberts <mike@pi-top.com>  Thu, 17 Dec 2020 14:49:51 +0000
 
-py-pitop-sdk (0.4.2) buster; urgency=medium
+pi-top-python-sdk (0.4.2) buster; urgency=medium
 
   * Initial IMU implementation
 
  -- Jorge Capona <jorge@pi-top.com>  Thu, 17 Dec 2020 10:22:58 -0300
 
-py-pitop-sdk (0.4.1) buster; urgency=medium
+pi-top-python-sdk (0.4.1) buster; urgency=medium
 
   * 'pi-top Keyboard' --> 'Keyboard Input'
   * 'pi-top Camera' --> 'USB Camera'
@@ -460,7 +460,7 @@ py-pitop-sdk (0.4.1) buster; urgency=medium
 
  -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 19:26:07 +0000
 
-py-pitop-sdk (0.4.0) buster; urgency=medium
+pi-top-python-sdk (0.4.0) buster; urgency=medium
 
   * Add missing pages to docs
   * Update examples and mocking in docs as necessary
@@ -469,113 +469,113 @@ py-pitop-sdk (0.4.0) buster; urgency=medium
 
  -- Mike Roberts <mike@pi-top.com>  Wed, 16 Dec 2020 16:19:20 +0000
 
-py-pitop-sdk (0.3.9) buster; urgency=medium
+pi-top-python-sdk (0.3.9) buster; urgency=medium
 
   * Reorganize examples in docs
 
  -- Jorge Capona <jorge@pi-top.com>  Wed, 16 Dec 2020 00:53:33 -0300
 
-py-pitop-sdk (0.3.8) buster; urgency=medium
+pi-top-python-sdk (0.3.8) buster; urgency=medium
 
   * Update docs - add overview page, add placeholders for all API subsystems
 
  -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 22:40:55 +0000
 
-py-pitop-sdk (0.3.7) buster; urgency=medium
+pi-top-python-sdk (0.3.7) buster; urgency=medium
 
   * Fix display callback API
 
  -- Jorge Capona <jorge@pi-top.com>  Tue, 15 Dec 2020 19:22:56 -0300
 
-py-pitop-sdk (0.3.6) buster; urgency=medium
+pi-top-python-sdk (0.3.6) buster; urgency=medium
 
   * Remove pi-topPULSE config methods
   * Fix common lib mocking to support inclusion of Singleton internal methods
 
  -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 19:23:06 +0000
 
-py-pitop-sdk (0.3.5) buster; urgency=medium
+pi-top-python-sdk (0.3.5) buster; urgency=medium
 
   * Add missing return statement in OLED API
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 23:38:05 -0300
 
-py-pitop-sdk (0.3.4) buster; urgency=medium
+pi-top-python-sdk (0.3.4) buster; urgency=medium
 
   * Supplement 'Breaks' with 'Replaces'
 
  -- Mike Roberts <mike@pi-top.com>  Tue, 15 Dec 2020 01:58:43 +0000
 
-py-pitop-sdk (0.3.3) buster; urgency=medium
+pi-top-python-sdk (0.3.3) buster; urgency=medium
 
   * Breaks with python3-pt-oled (<< 2.0.0)
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:58:15 +0000
 
-py-pitop-sdk (0.3.2) buster; urgency=medium
+pi-top-python-sdk (0.3.2) buster; urgency=medium
 
   * Breaks with python3-pt-oled (pt-oled)
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:52:03 +0000
 
-py-pitop-sdk (0.3.1) buster; urgency=medium
+pi-top-python-sdk (0.3.1) buster; urgency=medium
 
   * Breaks with pt-device-manager << 4.0.0 (CLI utils)
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:46:30 +0000
 
-py-pitop-sdk (0.3.0) buster; urgency=medium
+pi-top-python-sdk (0.3.0) buster; urgency=medium
 
   * Do not break python3-pt-oled
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 23:10:06 +0000
 
-py-pitop-sdk (0.2.6) buster; urgency=medium
+pi-top-python-sdk (0.2.6) buster; urgency=medium
 
   * Set default OLED CLI force argument to False
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 18:37:51 -0300
 
-py-pitop-sdk (0.2.5) buster; urgency=medium
+pi-top-python-sdk (0.2.5) buster; urgency=medium
 
   * Fix battery API
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 18:24:02 -0300
 
-py-pitop-sdk (0.2.4) buster; urgency=medium
+pi-top-python-sdk (0.2.4) buster; urgency=medium
 
   * Check for available displays before opening browser in help CLI
 
  -- Jorge Capona <jorge@pi-top.com>  Mon, 14 Dec 2020 12:45:20 -0300
 
-py-pitop-sdk (0.2.3) buster; urgency=medium
+pi-top-python-sdk (0.2.3) buster; urgency=medium
 
   * Add help section to CLI, including support for opening a browser directing
   to the first recommended available docs URL
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 14:53:24 +0000
 
-py-pitop-sdk (0.2.2) buster; urgency=medium
+pi-top-python-sdk (0.2.2) buster; urgency=medium
 
   * Make miniscreen buttons top-level object a singleton, to ensure that
   pt-sys-oled can correctly set 'exclusive mode' for the application scope
 
  -- Mike Roberts <mike@pi-top.com>  Mon, 14 Dec 2020 14:22:01 +0000
 
-py-pitop-sdk (0.2.1) buster; urgency=medium
+pi-top-python-sdk (0.2.1) buster; urgency=medium
 
   * Fix changelog date
 
  -- Mike Roberts <mike@pi-top.com>  Sun, 13 Dec 2020 21:27:15 +0000
 
-py-pitop-sdk (0.2.0) buster; urgency=medium
+pi-top-python-sdk (0.2.0) buster; urgency=medium
 
   * Move support for deprecated user libs to python3-pitop-depr (to be dropped
   at a later date)
 
  -- Mike Roberts <mike@pi-top.com>  Sun, 13 Dec 2020 21:12:13 +0000
 
-py-pitop-sdk (0.1.0) buster; urgency=medium
+pi-top-python-sdk (0.1.0) buster; urgency=medium
 
   * Initial release of package
 
