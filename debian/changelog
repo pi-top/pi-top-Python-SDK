@@ -1,3 +1,40 @@
+pi-top-python-sdk (0.20.3-4) bullseye; urgency=medium
+
+  * Fix path to default font in oled assistant (#465)
+  * Drop shebangs (#468)
+  * [pre-commit.ci] pre-commit autoupdate (#464)
+  * Miniscreen text centering (#463)
+  * Re-enable trailing whitespace pre-commit check
+  * Update references to `pt-device-manager`: `pi-topd` (#472)
+  * Add numpy to override
+  * Update overrides file
+  * New changelog entry: v0.20.3-3 (#461)
+  * Miniscreen: move lockfile management to another file (#471)
+  * Move rendering from miniscreen to assistant (#470)
+  * Handle colons in build ID
+  * Fix clear function
+  * Fix lock file
+  * Fix callback assignment for deprecated functions
+  * Correct name of opencv-python in setup.cfg and py3dist-overrides (#474)
+  * Assistant handles Image and ImageDraw
+  * Add formatting options to mono font path
+  * MiniscreenAssistant: unified text function (#475)
+  * Add fill and spacing to text function
+  * Use __main__.py (#477)
+  * Update conf.py
+  * Update contributing.rst
+  * [pre-commit.ci] pre-commit autoupdate (#479)
+  * Use short links
+  * Add battery capacity event (#484)
+  * Set battery params to int
+  * [pre-commit.ci] pre-commit autoupdate (#486)
+  * Remove PTLogger (#488)
+  * [pre-commit.ci] pre-commit autoupdate (#490)
+  * Update README.rst (#492)
+  * Add examples to OS package (#493)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 09 Nov 2021 22:30:13 +0000
+
 pi-top-python-sdk (0.20.3-3) bullseye; urgency=medium
 
   * Fix path to default font in oled assistant (#465)
