@@ -38,12 +38,16 @@ Description: pi-top Python 3 Library - Complete
 
 Package: python3-pitop-examples
 Architecture: all
+Section: python
 Depends:
  ${misc:Depends},
-Description: pi-top Python 3 Library - Examples
+ ${python3:Depends},
+Recommends: python3-pitop
+Description: Example Python files for python3-pitop
  General purpose Python library for controlling a pi-top.
  .
- These are the examples provided to use the pi-top Python SDK.
+ This package contains example Python3 scripts meant to accommodate the
+ python3-pitop package.
 
 Package: python3-pitop
 Architecture: all
