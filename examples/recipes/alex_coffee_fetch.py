@@ -1,5 +1,5 @@
 from signal import pause
-from time import sleep
+from time import localtime, sleep, strftime
 from datetime import datetime
 import pygame
 
@@ -12,6 +12,10 @@ robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0")
 robot.add_component(PanTiltController(servo_pan_port="S0", servo_tilt_port="S3"))
 robot.add_component(Camera())
 robot.add_component(Button("D0"))
+
+#Start filming
+output_file_name = f"/home/pi/Desktop/DrivingTo {strftime('%Y-%m-%d %H:%M:%S', localtime(datetime.now().timestamp()))}.avi"
+robot.camera.start_video_capture(output_file_name=output_file_name)
 
 #Point camera down to look for line to follow
 robot.pan_tilt.tilt_servo.target_angle = 40
@@ -48,7 +52,7 @@ def follow_the_line():
             break
         else:
             #print(f"Target angle: {processed_frame.angle:.2f} deg ", end="\r")
-            robot.drive.forward(0.25, hold=True)
+            robot.drive.forward(1 , hold=True)
             robot.drive.target_lock_drive_angle(processed_frame.angle)
             robot.miniscreen.display_image(processed_frame.robot_view)
 
@@ -58,6 +62,7 @@ def follow_the_line():
             break
 
 follow_the_line()
+
 
 ## On each camera frame, detect a line
 #robot.camera.on_frame = drive_based_on_frame
@@ -104,6 +109,9 @@ sleep(3)
 print("camera moved to face down")
 
 follow_the_line()
+
+#Stop recording
+robot.camera.stop_detecting_motion()
 
 
 pause()
