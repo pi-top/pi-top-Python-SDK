@@ -128,7 +128,6 @@ py-pitop-sdk (0.20.0-1) buster; urgency=medium
   * Refactor setuptools (#443)
 
  -- pi-top <deb-maintainers@pi-top.com>  Wed, 01 Sep 2021 14:21:36 +0000
->>>>>>> master
 
 py-pitop-sdk (0.19.1-1) buster; urgency=medium
 
