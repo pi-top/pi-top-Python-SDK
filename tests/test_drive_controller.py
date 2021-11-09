@@ -5,7 +5,6 @@ from unittest.mock import Mock, patch
 modules_to_patch = [
     "pitop.camera.camera",
     "atexit",
-    "pyinput",
     "smbus2",
 ]
 for module in modules_to_patch:
