@@ -1,1 +1,3 @@
+# Fixed in Sphinx 2.4.3-5; not available until build dependencies are installed from Bullseye
+python3-pitop-doc: embedded-javascript-library usr/share/doc/python3-pitop/html/_static/language_data.js please use sphinx
 python3-pitop-doc: extra-license-file usr/share/doc/python3-pitop/html/_sources/more/license.rst.txt
