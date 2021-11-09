@@ -28,11 +28,13 @@ class Navigator:
 
     def navigate(self, position, angle):
         position_generators = []
-        if position is not None:
-            if self.should_set_course(position):
-                position_generators.append(self._set_course_heading(position))
+        if position is not None and not self.reached_position(
+            position=position, angle=None
+        ):
+            position_generators.append(self._set_course_heading(position))
             position_generators.append(self._drive_to_position_goal(position))
         if angle is not None:
+            position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
             position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
 
         for generator in position_generators:
@@ -41,20 +43,20 @@ class Navigator:
             yield 0, 0
             self._drive_manager.pid.reset()
 
-        yield 0, 0
-        self._drive_manager.pid.reset()
-
-    def should_set_course(self, position):
+    def reached_position(self, position, angle=None):
         x_goal, y_goal = position
         x, y, theta = self.measurement_input_function()
         x_diff, y_diff = self.__get_position_error(
             x=x, x_goal=x_goal, y=y, y_goal=y_goal
         )
-        return not self._goal_criteria.distance(
-            distance_error=self.__get_distance_error(x_diff=x_diff, y_diff=y_diff),
-            angle_error=self.__get_angle_error(
+        angle_error = 0
+        if angle:
+            angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
-            ),
+            )
+        return self._goal_criteria.distance(
+            distance_error=self.__get_distance_error(x_diff=x_diff, y_diff=y_diff),
+            angle_error=angle_error,
         )
 
     def _set_course_heading(self, position):
@@ -72,7 +74,9 @@ class Navigator:
                 break
 
             linear_speed = 0
-            angular_speed = self._get_new_angular_speed(angle_error=angle_error)
+            angular_speed = self._drive_manager.get_new_angular_speed(
+                angle_error=angle_error
+            )
             yield linear_speed, angular_speed
 
     def _drive_to_position_goal(self, position):
@@ -93,8 +97,12 @@ class Navigator:
             ):
                 break
 
-            angular_speed = self._get_new_angular_speed(angle_error=angle_error)
-            linear_speed = self.__get_new_linear_speed(distance_error=distance_error)
+            angular_speed = self._drive_manager.get_new_angular_speed(
+                angle_error=angle_error
+            )
+            linear_speed = self._drive_manager.get_new_linear_speed(
+                distance_error=distance_error
+            )
             yield linear_speed, angular_speed
 
     def _rotate_to_angle_goal(self, theta_goal):
@@ -109,19 +117,10 @@ class Navigator:
                 break
 
             linear_speed = 0
-            angular_speed = self._get_new_angular_speed(angle_error=angle_error)
+            angular_speed = self._drive_manager.get_new_angular_speed(
+                angle_error=angle_error
+            )
             yield linear_speed, angular_speed
-
-    def _get_new_angular_speed(self, angle_error):
-        return (
-            self._drive_manager.max_angular_velocity
-            * self._drive_manager.pid.heading(angle_error)
-        )
-
-    def __get_new_linear_speed(self, distance_error):
-        return self._drive_manager.max_velocity * self._drive_manager.pid.distance(
-            distance_error
-        )
 
     def __get_angle_error(self, current_angle, target_angle):
         return normalize_angle(current_angle - target_angle)
