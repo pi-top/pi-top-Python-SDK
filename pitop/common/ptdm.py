@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 _TIMEOUT_MS = 1000
 
 
-# Messages sent to/from pt-device-manager clients (formerly pt-device-manager (ptdm))
+# Messages sent to/from pt-device-manager (ptdm)/pi-topd clients
 class Message:
     __message_names = dict()
     __param_types = dict()
