@@ -5,10 +5,11 @@ Maintainer: pi-top <deb-maintainers@pi-top.com>
 Build-Depends:
  debhelper-compat (= 12),
  dh-sequence-python3,
- dh-sequence-sphinxdoc,
 # Required by pybuild
  python3-all,
  python3-setuptools,
+# Required until we can use dh-sequence-sphinxdoc (Bullseye)
+ python3-sphinx,
  python3-sphinx-rtd-theme,
 # GPIO Zero is required for importing the libraries in the docs
  python3-gpiozero,
@@ -56,7 +57,7 @@ Depends:
  raspi-config,
 Suggests:
 # Required for OS notifications
- notify-send-ng,
+ pt-notifications,
 # pi-top [4] miniscreen menu is optional, but useful for [4] users
  pt-miniscreen | pt-sys-oled,
 # Required to get state about Access Point mode
@@ -64,6 +65,16 @@ Suggests:
 # Other SDK packages
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
+Breaks:
+# CLI utils
+ pt-device-manager (<< 4.0.0),
+# pt-oled
+ python3-pt-oled (<< 3.0.0),
+Replaces:
+# CLI utils
+ pt-device-manager (<< 4.0.0),
+# pt-oled
+ python3-pt-oled (<< 3.0.0),
 Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
