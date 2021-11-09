@@ -13,3 +13,12 @@ override_dh_auto_build:
 	# Fail on warnings; make verbose
 	PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
 	PYTHONPATH=. sphinx-build -W -v -bman  docs/ build/man
+
+override_dh_installexamples:
+	dh_installexamples -O--buildsystem=pybuild
+
+	# Move from
+	# /usr/share/doc/python3-pitop-examples/examples to
+	# /usr/share/doc/python3-pitop-examples
+	mv debian/python3-pitop-examples/usr/share/doc/python3-pitop-examples/examples/* debian/python3-pitop-examples/usr/share/doc/python3-pitop-examples/
+	rm -rf debian/python3-pitop-examples/usr/share/doc/python3-pitop-examples/examples/
