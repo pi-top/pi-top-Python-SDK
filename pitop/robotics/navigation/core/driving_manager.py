@@ -68,3 +68,9 @@ class DrivingManager:
             self._full_speed_deceleration_angle
         )
         self.pid.heading_update(deceleration_angle=self.deceleration_angle)
+
+    def get_new_angular_speed(self, angle_error):
+        return self.max_angular_velocity * self.pid.heading(angle_error)
+
+    def get_new_linear_speed(self, distance_error):
+        return self.max_velocity * self.pid.distance(distance_error)

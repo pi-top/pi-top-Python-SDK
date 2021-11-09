@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 modules_to_patch = [
     "atexit",
-    "pitop.common",
+    "smbus2",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
@@ -12,7 +12,6 @@ for module in modules_to_patch:
 import math
 from time import sleep
 
-from pitop.robotics.drive_controller import DriveController
 from pitop.robotics.navigation.navigation_controller import NavigationController
 
 
@@ -183,31 +182,31 @@ class TestNavigationController(TestCase):
         )
 
         self.assertEqual(
-            navigation_controller._goal_criteria._max_distance_error,
-            navigation_controller._goal_criteria._full_speed_distance_error
+            navigation_controller.navigator.goal_criteria._max_distance_error,
+            navigation_controller.navigator.goal_criteria._full_speed_distance_error
             * linear_speed_factor,
         )
         self.assertEqual(
-            navigation_controller._goal_criteria._max_angle_error,
-            navigation_controller._goal_criteria._full_speed_angle_error
+            navigation_controller.navigator.goal_criteria._max_angle_error,
+            navigation_controller.navigator.goal_criteria._full_speed_angle_error
             * angular_speed_factor,
         )
 
         self.assertEqual(
-            navigation_controller._drive_manager.pid.distance.Kp,
+            navigation_controller.navigator.drive_manager.pid.distance.Kp,
             1
             / (
-                navigation_controller._drive_manager._full_speed_deceleration_distance
+                navigation_controller.navigator.drive_manager._full_speed_deceleration_distance
                 * linear_speed_factor
             ),
         )
 
         self.assertEqual(
-            navigation_controller._drive_manager.pid.heading.Kp,
+            navigation_controller.navigator.drive_manager.pid.heading.Kp,
             1
             / (
                 math.radians(
-                    navigation_controller._drive_manager._full_speed_deceleration_angle
+                    navigation_controller.navigator.drive_manager._full_speed_deceleration_angle
                 )
                 * angular_speed_factor
             ),
@@ -216,7 +215,7 @@ class TestNavigationController(TestCase):
     @staticmethod
     @patch("pitop.robotics.drive_controller.EncoderMotor", EncoderMotorSim)
     def get_navigation_controller():
-        return NavigationController(drive_controller=DriveController())
+        return NavigationController()
 
     def robot_state_assertions(
         self, navigation_controller, x_expected, y_expected, angle_expected

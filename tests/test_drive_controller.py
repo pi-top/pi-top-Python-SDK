@@ -5,8 +5,7 @@ from unittest.mock import Mock, patch
 modules_to_patch = [
     "pitop.camera.camera",
     "atexit",
-    "numpy",
-    "pitop.common",
+    "smbus2",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
@@ -110,10 +109,10 @@ class DriveControllerTestCase(TestCase):
 
         test_values = [
             [0, 0, 0, 0, 0],
-            [0.363, 0.428, 1, 1, 0],
-            [0.394, 0.428, 1, 1, 1],
+            [0.38, 0.447, 1, 1, 0],
+            [0.412, 0.447, 1, 1, 1],
             [0.276, 0.324, 0.3, 0.3, 0],
-            [0.391, 0.428, 0.3, 0.3, 0.8],
+            [0.408, 0.447, 0.3, 0.3, 0.8],
         ]
         for (
             exp_rpm_left,
