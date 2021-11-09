@@ -17,26 +17,24 @@ class MeasurementScheduler:
         self._measurement_dt = 1.0 / measurement_frequency
 
         self._new_measurement_event = Event()
-        self._measurement_prediction_scheduler = Thread(
-            target=self.__measurement_scheduler, daemon=True
-        )
+        self._measurement_prediction_scheduler = Thread(target=self.start, daemon=True)
         self._measurement_prediction_scheduler.start()
 
     def wait_for_measurement(self):
         self._new_measurement_event.wait()
 
-    def __measurement_scheduler(self):
+    def start(self):
         s = sched.scheduler(time.time, time.sleep)
         current_time = time.time()
         s.enterabs(
             current_time + self._measurement_dt,
             1,
-            self.__measurement_loop,
+            self.loop,
             (s, current_time),
         )
         s.run()
 
-    def __measurement_loop(self, s, previous_time):
+    def loop(self, s, previous_time):
         current_time = time.time()
         self.state_tracker.add_measurements(
             odom_measurements=self.measurement_func(), dt=current_time - previous_time
@@ -48,6 +46,6 @@ class MeasurementScheduler:
         s.enterabs(
             current_time + self._measurement_dt,
             1,
-            self.__measurement_loop,
+            self.loop,
             (s, current_time),
         )
