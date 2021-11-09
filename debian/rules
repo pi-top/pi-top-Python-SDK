@@ -3,7 +3,7 @@
 export PYBUILD_NAME=pitop
 
 %:
-	dh $@ --buildsystem=pybuild
+	dh $@ --with=sphinxdoc --buildsystem=pybuild
 
 override_dh_auto_test:
 	# Don't run the tests!
