@@ -218,7 +218,7 @@ class NavigationController(DriveController):
     def stop_navigation(self):
         # don't call callback if user has terminated navigation manually
         self._on_finish = None
-        self.navigator._stop_triggered = True
+        self.navigator.stop_triggered = True
         try:
             self._nav_thread.join()
         except Exception:
@@ -230,7 +230,7 @@ class NavigationController(DriveController):
 
     def __navigation_started(self):
         self.in_progress = True
-        self.navigator._stop_triggered = False
+        self.navigator.stop_triggered = False
 
     def __navigation_finished(self):
         self.in_progress = False

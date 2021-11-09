@@ -182,31 +182,31 @@ class TestNavigationController(TestCase):
         )
 
         self.assertEqual(
-            navigation_controller.navigator._goal_criteria._max_distance_error,
-            navigation_controller.navigator._goal_criteria._full_speed_distance_error
+            navigation_controller.navigator.goal_criteria._max_distance_error,
+            navigation_controller.navigator.goal_criteria._full_speed_distance_error
             * linear_speed_factor,
         )
         self.assertEqual(
-            navigation_controller.navigator._goal_criteria._max_angle_error,
-            navigation_controller.navigator._goal_criteria._full_speed_angle_error
+            navigation_controller.navigator.goal_criteria._max_angle_error,
+            navigation_controller.navigator.goal_criteria._full_speed_angle_error
             * angular_speed_factor,
         )
 
         self.assertEqual(
-            navigation_controller.navigator._drive_manager.pid.distance.Kp,
+            navigation_controller.navigator.drive_manager.pid.distance.Kp,
             1
             / (
-                navigation_controller.navigator._drive_manager._full_speed_deceleration_distance
+                navigation_controller.navigator.drive_manager._full_speed_deceleration_distance
                 * linear_speed_factor
             ),
         )
 
         self.assertEqual(
-            navigation_controller.navigator._drive_manager.pid.heading.Kp,
+            navigation_controller.navigator.drive_manager.pid.heading.Kp,
             1
             / (
                 math.radians(
-                    navigation_controller.navigator._drive_manager._full_speed_deceleration_angle
+                    navigation_controller.navigator.drive_manager._full_speed_deceleration_angle
                 )
                 * angular_speed_factor
             ),

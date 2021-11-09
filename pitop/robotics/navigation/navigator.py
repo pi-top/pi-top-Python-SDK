@@ -20,8 +20,8 @@ class Navigator:
         self.backwards = False
         self._stop_triggered = False
 
-        self._goal_criteria = GoalCriteria()
-        self._drive_manager = DrivingManager(
+        self.goal_criteria = GoalCriteria()
+        self.drive_manager = DrivingManager(
             max_motor_speed=max_motor_speed,
             max_angular_speed=max_robot_angular_speed,
         )
@@ -35,13 +35,14 @@ class Navigator:
             position_generators.append(self._drive_to_position_goal(position))
         if angle is not None:
             position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
+            # TODO: fine tune the PID controller to avoid running this twice
             position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
 
         for generator in position_generators:
             for linear_speed, angular_speed in generator:
                 yield linear_speed, angular_speed
             yield 0, 0
-            self._drive_manager.pid.reset()
+            self.drive_manager.pid.reset()
 
     def reached_position(self, position, angle=None):
         x_goal, y_goal = position
@@ -54,7 +55,7 @@ class Navigator:
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
-        return self._goal_criteria.distance(
+        return self.goal_criteria.distance(
             distance_error=self.__get_distance_error(x_diff=x_diff, y_diff=y_diff),
             angle_error=angle_error,
         )
@@ -70,11 +71,11 @@ class Navigator:
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
-            if self._goal_criteria.angle(angle_error):
+            if self.goal_criteria.angle(angle_error):
                 break
 
             linear_speed = 0
-            angular_speed = self._drive_manager.get_new_angular_speed(
+            angular_speed = self.drive_manager.get_new_angular_speed(
                 angle_error=angle_error
             )
             yield linear_speed, angular_speed
@@ -92,15 +93,15 @@ class Navigator:
             )
             distance_error = self.__get_distance_error(x_diff, y_diff)
 
-            if self._goal_criteria.distance(
+            if self.goal_criteria.distance(
                 distance_error=distance_error, angle_error=angle_error
             ):
                 break
 
-            angular_speed = self._drive_manager.get_new_angular_speed(
+            angular_speed = self.drive_manager.get_new_angular_speed(
                 angle_error=angle_error
             )
-            linear_speed = self._drive_manager.get_new_linear_speed(
+            linear_speed = self.drive_manager.get_new_linear_speed(
                 distance_error=distance_error
             )
             yield linear_speed, angular_speed
@@ -113,11 +114,11 @@ class Navigator:
                 current_angle=theta, target_angle=theta_goal
             )
 
-            if self._goal_criteria.angle(angle_error):
+            if self.goal_criteria.angle(angle_error):
                 break
 
             linear_speed = 0
-            angular_speed = self._drive_manager.get_new_angular_speed(
+            angular_speed = self.drive_manager.get_new_angular_speed(
                 angle_error=angle_error
             )
             yield linear_speed, angular_speed
@@ -138,22 +139,22 @@ class Navigator:
 
     @property
     def angular_speed_factor(self):
-        return self._drive_manager.angular_speed_factor
+        return self.drive_manager.angular_speed_factor
 
     @angular_speed_factor.setter
     def angular_speed_factor(self, speed_factor):
         if not 0.0 < speed_factor <= 1.0:
             raise ValueError("Value must be in the range 0.0 < speed_factor <= 1.0")
-        self._drive_manager.update_angular_speed(speed_factor)
-        self._goal_criteria.update_angular_speed(speed_factor)
+        self.drive_manager.update_angular_speed(speed_factor)
+        self.goal_criteria.update_angular_speed(speed_factor)
 
     @property
     def linear_speed_factor(self):
-        return self._drive_manager.linear_speed_factor
+        return self.drive_manager.linear_speed_factor
 
     @linear_speed_factor.setter
     def linear_speed_factor(self, speed_factor: float):
         if not 0.0 < speed_factor <= 1.0:
             raise ValueError("Value must be in the range 0.0 < speed_factor <= 1.0")
-        self._drive_manager.update_linear_speed(speed_factor)
-        self._goal_criteria.update_linear_speed(speed_factor)
+        self.drive_manager.update_linear_speed(speed_factor)
+        self.goal_criteria.update_linear_speed(speed_factor)
