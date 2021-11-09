@@ -28,14 +28,10 @@ class Navigator:
 
     def navigate(self, position, angle):
         position_generators = []
-        if position is not None and not self.reached_position(
-            position=position, angle=None
-        ):
+        if position is not None:
             position_generators.append(self._set_course_heading(position))
             position_generators.append(self._drive_to_position_goal(position))
         if angle is not None:
-            position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
-            # TODO: fine tune the PID controller to avoid running this twice
             position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
 
         for generator in position_generators:
@@ -71,6 +67,7 @@ class Navigator:
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
+
             if self.goal_criteria.angle(angle_error):
                 break
 
