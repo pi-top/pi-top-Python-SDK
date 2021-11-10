@@ -16,7 +16,7 @@ class DrivingManager:
                 output_limits=(-1.0, 1.0),
             )
             self.heading = PID(
-                Kp=0.0,
+                Kp=0.7,
                 Ki=self._Ki,
                 Kd=self._Kd,
                 setpoint=0.0,
@@ -31,7 +31,8 @@ class DrivingManager:
             self.distance.Kp = 1.0 / deceleration_distance
 
         def heading_update(self, deceleration_angle):
-            self.heading.Kp = 1.0 / deceleration_angle
+            # self.heading.Kp = 1.0 / deceleration_angle
+            pass
 
     def __init__(
         self,
