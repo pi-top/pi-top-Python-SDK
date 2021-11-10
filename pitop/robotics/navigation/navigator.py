@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class Navigator:
+    MINIMUM_HITS = 2
+
     def __init__(
         self, max_motor_speed, max_robot_angular_speed, measurement_input_function
     ) -> None:
@@ -32,10 +34,10 @@ class Navigator:
     def navigate(self, position, angle):
         position_generators = []
         if position is not None:
-            position_generators.append(self._set_course_heading(position))
-            position_generators.append(self._drive_to_position_goal(position))
+            position_generators.append(self.set_course_heading(position))
+            position_generators.append(self.drive_to_position_goal(position))
         if angle is not None:
-            position_generators.append(self._rotate_to_angle_goal(math.radians(angle)))
+            position_generators.append(self.rotate_to_angle_goal(math.radians(angle)))
 
         for generator in position_generators:
             for linear_speed, angular_speed in generator:
@@ -59,98 +61,94 @@ class Navigator:
             angle_error=angle_error,
         )
 
-    def _set_course_heading(self, position):
-        x_goal, y_goal = position
-        logger.debug(f"Navigator._set_course_heading - going to position {position}")
-        while not self._stop_triggered:
-            x, y, theta = self.measurement_input_function()
-            logger.debug(
-                f"Navigator._set_course_heading - (x, y, angle): ({x}, {y}, {math.degrees(theta)})"
-            )
+    def get_errors(self, current_pose, goal_pose):
+        x, y, theta = current_pose
+        x_goal, y_goal, theta_goal = goal_pose
+
+        if x_goal is None and y_goal is None and theta_goal is None:
+            raise Exception("At least one element of 'goal_pose' should have a value.")
+
+        distance_error = 0
+        if x_goal is not None and y_goal is not None:
             x_diff, y_diff = self.__get_position_error(
                 x=x, x_goal=x_goal, y=y, y_goal=y_goal
-            )
-            angle_error = self.__get_angle_error(
-                current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
-            )
-            logger.debug(
-                "Navigator._set_course_heading - angle / goal / error : "
-                f"{math.degrees(theta)} / {math.degrees(math.atan2(y_diff, x_diff))} / {math.degrees(angle_error)}"
-            )
-
-            if self.reached_position(position) or self.goal_criteria.angle(angle_error):
-                logger.debug("Navigator._set_course_heading - arrived, exiting...")
-                break
-
-            linear_speed = 0
-            angular_speed = self.drive_manager.get_new_angular_speed(
-                angle_error=angle_error
-            )
-            yield linear_speed, angular_speed
-
-    def _drive_to_position_goal(self, position):
-        x_goal, y_goal = position
-        logger.debug(
-            f"Navigator._drive_to_position_goal - going to position {position}"
-        )
-        while not self._stop_triggered:
-            x, y, theta = self.measurement_input_function()
-            logger.debug(
-                f"Navigator._drive_to_position_goal - (x, y, angle): ({x}, {y}, {math.degrees(theta)})"
-            )
-
-            x_diff, y_diff = self.__get_position_error(
-                x=x, x_goal=x_goal, y=y, y_goal=y_goal
-            )
-            angle_error = self.__get_angle_error(
-                current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
             distance_error = self.__get_distance_error(x_diff, y_diff)
+            if theta_goal is None:
+                theta_goal = math.atan2(y_diff, x_diff)
 
-            logger.debug(
-                f"Navigator._drive_to_position_goal - distance error / angle_error : {distance_error} / {math.degrees(angle_error)}"
-            )
-            if self.goal_criteria.distance(
-                distance_error=distance_error, angle_error=angle_error
-            ):
-                logger.debug("Navigator._drive_to_position_goal - arrived, exiting...")
-                break
+        angle_error = self.__get_angle_error(
+            current_angle=theta, target_angle=theta_goal
+        )
 
-            angular_speed = self.drive_manager.get_new_angular_speed(
-                angle_error=angle_error
-            )
+        return angle_error, distance_error
+
+    def get_motor_input(self, angle_error=None, distance_error=None):
+        linear_speed = 0
+        angular_speed = 0
+        if distance_error:
             linear_speed = self.drive_manager.get_new_linear_speed(
                 distance_error=distance_error
             )
-            yield linear_speed, angular_speed
-
-    def _rotate_to_angle_goal(self, theta_goal):
-        logger.debug(
-            f"Navigator._rotate_to_angle_goal - going to angle {math.degrees(theta_goal)}"
-        )
-        while not self._stop_triggered:
-            x, y, theta = self.measurement_input_function()
-            logger.debug(
-                f"Navigator._drive_to_position_goal - (x, y, angle): ({x}, {y}, {math.degrees(theta)})"
-            )
-
-            angle_error = self.__get_angle_error(
-                current_angle=theta, target_angle=theta_goal
-            )
-            logger.debug(
-                "Navigator._rotate_to_angle_goal - angle / goal / error : "
-                f"{math.degrees(theta)} / {math.degrees(theta_goal)} / {math.degrees(angle_error)}"
-            )
-
-            if self.goal_criteria.angle(angle_error):
-                logger.debug("Navigator._rotate_to_angle_goal - arrived, exiting...")
-                break
-
-            linear_speed = 0
+        if angle_error:
             angular_speed = self.drive_manager.get_new_angular_speed(
                 angle_error=angle_error
             )
-            yield linear_speed, angular_speed
+        return linear_speed, angular_speed
+
+    def set_course_heading(self, position):
+        logger.debug(f"Navigator.set_course_heading - going to position {position}")
+        hits = 0
+        while not self._stop_triggered:
+            current_pose = self.measurement_input_function()
+            angle_error, _ = self.get_errors(current_pose, (*position, None))
+
+            if self.reached_position(position) or self.goal_criteria.angle(angle_error):
+                hits += 1
+                self.drive_manager.pid.reset()
+
+            if hits == self.MINIMUM_HITS:
+                logger.debug("Navigator.set_course_heading - arrived, exiting...")
+                break
+
+            yield self.get_motor_input(angle_error=angle_error)
+
+    def drive_to_position_goal(self, position):
+        logger.debug(f"Navigator.drive_to_position_goal - going to position {position}")
+        while not self._stop_triggered:
+            current_pose = self.measurement_input_function()
+            angle_error, distance_error = self.get_errors(
+                current_pose, (*position, None)
+            )
+
+            if self.goal_criteria.distance(
+                distance_error=distance_error, angle_error=angle_error
+            ):
+                logger.debug("Navigator.drive_to_position_goal - arrived, exiting...")
+                break
+
+            yield self.get_motor_input(
+                angle_error=angle_error, distance_error=distance_error
+            )
+
+    def rotate_to_angle_goal(self, theta_goal):
+        logger.debug(
+            f"Navigator.rotate_to_angle_goal - going to angle {math.degrees(theta_goal)}"
+        )
+        hits = 0
+        while not self._stop_triggered:
+            current_pose = self.measurement_input_function()
+            angle_error, _ = self.get_errors(current_pose, (None, None, theta_goal))
+
+            if self.goal_criteria.angle(angle_error):
+                hits += 1
+                self.drive_manager.pid.reset()
+
+            if hits == self.MINIMUM_HITS:
+                logger.debug("Navigator.rotate_to_angle_goal - arrived, exiting...")
+                break
+
+            yield self.get_motor_input(angle_error=angle_error)
 
     def __get_angle_error(self, current_angle, target_angle):
         return normalize_angle(current_angle - target_angle)
