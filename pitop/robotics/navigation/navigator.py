@@ -1,3 +1,4 @@
+import logging
 import math
 
 import numpy as np
@@ -5,6 +6,8 @@ import numpy as np
 from .core.driving_manager import DrivingManager
 from .core.goal_criteria import GoalCriteria
 from .core.utils import normalize_angle
+
+logger = logging.getLogger(__name__)
 
 
 class Navigator:
@@ -58,17 +61,25 @@ class Navigator:
 
     def _set_course_heading(self, position):
         x_goal, y_goal = position
+        logger.debug(f"Navigator._set_course_heading - going to position {position}")
         while not self._stop_triggered:
             x, y, theta = self.measurement_input_function()
-
+            logger.debug(
+                f"Navigator._set_course_heading - (x, y, angle): ({x}, {y}, {math.degrees(theta)})"
+            )
             x_diff, y_diff = self.__get_position_error(
                 x=x, x_goal=x_goal, y=y, y_goal=y_goal
             )
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=math.atan2(y_diff, x_diff)
             )
+            logger.debug(
+                "Navigator._set_course_heading - angle / goal / error : "
+                f"{math.degrees(theta)} / {math.degrees(math.atan2(y_diff, x_diff))} / {math.degrees(angle_error)}"
+            )
 
-            if self.goal_criteria.angle(angle_error):
+            if self.reached_position(position) or self.goal_criteria.angle(angle_error):
+                logger.debug("Navigator._set_course_heading - arrived, exiting...")
                 break
 
             linear_speed = 0
@@ -79,8 +90,14 @@ class Navigator:
 
     def _drive_to_position_goal(self, position):
         x_goal, y_goal = position
+        logger.debug(
+            f"Navigator._drive_to_position_goal - going to position {position}"
+        )
         while not self._stop_triggered:
             x, y, theta = self.measurement_input_function()
+            logger.debug(
+                f"Navigator._drive_to_position_goal - (x, y, angle): ({x}, {y}, {math.degrees(theta)})"
+            )
 
             x_diff, y_diff = self.__get_position_error(
                 x=x, x_goal=x_goal, y=y, y_goal=y_goal
@@ -90,9 +107,13 @@ class Navigator:
             )
             distance_error = self.__get_distance_error(x_diff, y_diff)
 
+            logger.debug(
+                f"Navigator._drive_to_position_goal - distance error / angle_error : {distance_error} / {math.degrees(angle_error)}"
+            )
             if self.goal_criteria.distance(
                 distance_error=distance_error, angle_error=angle_error
             ):
+                logger.debug("Navigator._drive_to_position_goal - arrived, exiting...")
                 break
 
             angular_speed = self.drive_manager.get_new_angular_speed(
@@ -104,14 +125,25 @@ class Navigator:
             yield linear_speed, angular_speed
 
     def _rotate_to_angle_goal(self, theta_goal):
+        logger.debug(
+            f"Navigator._rotate_to_angle_goal - going to angle {math.degrees(theta_goal)}"
+        )
         while not self._stop_triggered:
-            _, _, theta = self.measurement_input_function()
+            x, y, theta = self.measurement_input_function()
+            logger.debug(
+                f"Navigator._drive_to_position_goal - (x, y, angle): ({x}, {y}, {math.degrees(theta)})"
+            )
 
             angle_error = self.__get_angle_error(
                 current_angle=theta, target_angle=theta_goal
             )
+            logger.debug(
+                "Navigator._rotate_to_angle_goal - angle / goal / error : "
+                f"{math.degrees(theta)} / {math.degrees(theta_goal)} / {math.degrees(angle_error)}"
+            )
 
             if self.goal_criteria.angle(angle_error):
+                logger.debug("Navigator._rotate_to_angle_goal - arrived, exiting...")
                 break
 
             linear_speed = 0
