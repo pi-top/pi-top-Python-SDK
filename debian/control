@@ -74,10 +74,13 @@ Architecture: all
 Section: doc
 Depends:
  ${misc:Depends},
+ ${python3:Depends},
  ${sphinxdoc:Depends},
+Suggests:
+ python3-pitop,
 Built-Using:
  ${sphinxdoc:Built-Using},
-Description: pi-top Python 3 Library - Documentation
+Description: pi-top Python 3 Library - Documentation and Examples
  General purpose Python library for controlling a pi-top.
  .
  This is the documentation part of the package.

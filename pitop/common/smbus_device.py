@@ -1,7 +1,10 @@
+import logging
+
 from smbus2 import SMBus
 
 from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
-from pitop.common.logger import PTLogger
+
+logger = logging.getLogger(__name__)
 
 
 class SMBusDevice:
@@ -14,7 +17,7 @@ class SMBusDevice:
         self._bus = None
 
     def connect(self):
-        PTLogger.debug(
+        logger.debug(
             "I2C (SMBus): Connecting to address "
             + hex(self._device_address)
             + " on bus "
@@ -24,7 +27,7 @@ class SMBusDevice:
         self._bus = SMBus(self._bus_number)
 
     def disconnect(self):
-        PTLogger.debug("I2C (SMBus): Disconnecting...")
+        logger.debug("I2C (SMBus): Disconnecting...")
         self._bus.close()
 
     ####################
@@ -32,7 +35,7 @@ class SMBusDevice:
     ####################
     def write_n_bytes(self, register_address: int, byte_list: list):
         """Base function to write to an I2C device."""
-        PTLogger.debug(
+        logger.debug(
             "I2C: Writing byte/s " + str(byte_list) + " to " + hex(register_address)
         )
         self._bus.write_i2c_block_data(
@@ -41,7 +44,7 @@ class SMBusDevice:
 
     def write_byte(self, register_address: int, byte_value: int):
         if byte_value > 0xFF:
-            PTLogger.warning(
+            logger.warning(
                 "Possible unintended overflow writing value to register "
                 + hex(register_address)
             )
@@ -54,7 +57,7 @@ class SMBusDevice:
             word_value, 2, little_endian=little_endian, signed=signed
         )
         if bytes_to_write is None:
-            PTLogger.error(f"Error splitting word into bytes list. Value: {word_value}")
+            logger.error(f"Error splitting word into bytes list. Value: {word_value}")
             return
 
         self.write_n_bytes(register_address, bytes_to_write)
@@ -101,7 +104,7 @@ class SMBusDevice:
             if result & (1 << ((8 * number_of_bytes) - 1)):
                 result = -(1 << (8 * number_of_bytes)) + result
 
-        PTLogger.debug(
+        logger.debug(
             "I2C: Read "
             + str(number_of_bytes)
             + " bytes from "
@@ -111,7 +114,7 @@ class SMBusDevice:
             + ("LE" if little_endian else "BE")
             + ")"
         )
-        PTLogger.debug(str(result_array) + " : " + str(result))
+        logger.debug(str(result_array) + " : " + str(result))
 
         return result
 
