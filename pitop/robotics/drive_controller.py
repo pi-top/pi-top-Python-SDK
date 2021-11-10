@@ -1,8 +1,10 @@
-from math import floor, pi, radians
+from math import floor, radians
 from time import sleep
 
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma import EncoderMotor, ForwardDirection
+from pitop.pma.common.encoder_motor_registers import MotorSyncBits, MotorSyncRegisters
+from pitop.pma.plate_interface import PlateInterface
 
 from .simple_pid import PID
 
@@ -13,44 +15,43 @@ class DriveController(Stateful, Recreatable):
 
     def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
         self.name = name
-        self.right_motor_port = right_motor_port
+
+        # motor and wheel setup
         self.left_motor_port = left_motor_port
-
-        self._wheel_separation = 0.1675
-        self._wheel_diameter = 0.074
-        self._wheel_circumference = self._wheel_diameter * pi
-        self._linear_speed_x_hold = 0
-
-        self._left_motor_port = left_motor_port
-        self._right_motor_port = right_motor_port
-
+        self.right_motor_port = right_motor_port
         self.left_motor = EncoderMotor(
-            port_name=left_motor_port, forward_direction=ForwardDirection.CLOCKWISE
+            port_name=self.left_motor_port, forward_direction=ForwardDirection.CLOCKWISE
         )
         self.right_motor = EncoderMotor(
-            port_name=right_motor_port,
+            port_name=self.right_motor_port,
             forward_direction=ForwardDirection.COUNTER_CLOCKWISE,
         )
 
+        # chassis setup
+        self.wheel_separation = 0.163
+
         # Round down to ensure no speed value ever goes above maximum due to rounding issues (resulting in error)
-        self._max_motor_speed = (
+        self.max_motor_speed = (
             floor(min(self.left_motor.max_speed, self.right_motor.max_speed) * 1000)
             / 1000
         )
-        self._max_robot_angular_speed = self._max_motor_speed / (
-            self._wheel_separation / 2
+        self.max_robot_angular_speed = self.max_motor_speed / (
+            self.wheel_separation / 2
         )
 
+        # Target lock drive angle
+        self._linear_speed_x_hold = 0
         self.__target_lock_pid_controller = PID(
             Kp=0.045,
             Ki=0.002,
             Kd=0.0035,
             setpoint=0,
-            output_limits=(
-                -self._max_robot_angular_speed,
-                self._max_robot_angular_speed,
-            ),
+            output_limits=(-self.max_robot_angular_speed, self.max_robot_angular_speed),
         )
+
+        # Motor syncing
+        self.__mcu_device = PlateInterface().get_device_mcu()
+        self._set_synchronous_motor_movement_mode()
 
         Stateful.__init__(self, children=["left_motor", "right_motor"])
         Recreatable.__init__(
@@ -62,20 +63,30 @@ class DriveController(Stateful, Recreatable):
             },
         )
 
+    def _set_synchronous_motor_movement_mode(self):
+        sync_config = (
+            MotorSyncBits[self.left_motor_port].value
+            | MotorSyncBits[self.right_motor_port].value
+        )
+        self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, sync_config)
+
+    def _start_synchronous_motor_movement(self):
+        self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
+
     def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = (
-            linear_speed + (turn_radius + self._wheel_separation / 2) * angular_speed
+            linear_speed + (turn_radius + self.wheel_separation / 2) * angular_speed
         )
         speed_left = (
-            linear_speed + (turn_radius - self._wheel_separation / 2) * angular_speed
+            linear_speed + (turn_radius - self.wheel_separation / 2) * angular_speed
         )
 
         if (
-            abs(speed_right) > self._max_motor_speed
-            or abs(speed_left) > self._max_motor_speed
+            abs(speed_right) > self.max_motor_speed
+            or abs(speed_left) > self.max_motor_speed
         ):
-            factor = self._max_motor_speed / max(abs(speed_left), abs(speed_right))
+            factor = self.max_motor_speed / max(abs(speed_left), abs(speed_right))
             speed_right = speed_right * factor
             speed_left = speed_left * factor
 
@@ -89,6 +100,7 @@ class DriveController(Stateful, Recreatable):
         )
         self.left_motor.set_target_speed(target_speed=speed_left)
         self.right_motor.set_target_speed(target_speed=speed_right)
+        self._start_synchronous_motor_movement()
 
     def forward(self, speed_factor, hold=False):
         """Move the robot forward.
@@ -99,7 +111,7 @@ class DriveController(Stateful, Recreatable):
         :param bool hold:
             Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
         """
-        linear_speed_x = self._max_motor_speed * speed_factor
+        linear_speed_x = self.max_motor_speed * speed_factor
         if hold:
             self._linear_speed_x_hold = linear_speed_x
         else:
@@ -129,7 +141,7 @@ class DriveController(Stateful, Recreatable):
 
         self.robot_move(
             self._linear_speed_x_hold,
-            self._max_robot_angular_speed * speed_factor,
+            self.max_robot_angular_speed * speed_factor,
             turn_radius,
         )
 
@@ -164,7 +176,7 @@ class DriveController(Stateful, Recreatable):
         speed_left, speed_right = self._calculate_motor_speeds(
             0, angular_speed, turn_radius=0
         )
-        distance = abs(angle_radians) * self._wheel_separation / 2
+        distance = abs(angle_radians) * self.wheel_separation / 2
         self.left_motor.set_target_speed(
             target_speed=speed_left, distance=distance * speed_left / abs(speed_left)
         )
@@ -188,7 +200,3 @@ class DriveController(Stateful, Recreatable):
         forward.
         """
         self.robot_move(self._linear_speed_x_hold, 0)
-
-    @property
-    def wheel_separation(self):
-        return self._wheel_separation

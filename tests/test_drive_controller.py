@@ -5,8 +5,7 @@ from unittest.mock import Mock, patch
 modules_to_patch = [
     "pitop.camera.camera",
     "atexit",
-    "numpy",
-    "pitop.common",
+    "smbus2",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
@@ -29,7 +28,7 @@ class DriveControllerTestCase(TestCase):
         """'forward' method calls 'robot_move'."""
         d = DriveController()
         speed_factor = 1
-        expected_linear_speed = speed_factor * d._max_motor_speed
+        expected_linear_speed = speed_factor * d.max_motor_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
             d.forward(speed_factor, hold=False)
@@ -39,7 +38,7 @@ class DriveControllerTestCase(TestCase):
         """'forward' hold parameter stores linear speed in object."""
         d = DriveController()
         speed_factor = 1
-        expected_linear_speed = speed_factor * d._max_motor_speed
+        expected_linear_speed = speed_factor * d.max_motor_speed
 
         d.forward(speed_factor, hold=True)
         self.assertEquals(d._linear_speed_x_hold, expected_linear_speed)
@@ -49,8 +48,8 @@ class DriveControllerTestCase(TestCase):
         d = DriveController()
         speed_factor = 1
         turn_radius = 0.1
-        expected_linear_speed = speed_factor * d._max_motor_speed
-        expected_angular_speed = d._max_robot_angular_speed * speed_factor
+        expected_linear_speed = speed_factor * d.max_motor_speed
+        expected_angular_speed = d.max_robot_angular_speed * speed_factor
         d._linear_speed_x_hold = expected_linear_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
@@ -110,10 +109,10 @@ class DriveControllerTestCase(TestCase):
 
         test_values = [
             [0, 0, 0, 0, 0],
-            [0.378, 0.447, 1, 1, 0],
-            [0.411, 0.447, 1, 1, 1],
-            [0.275, 0.325, 0.3, 0.3, 0],
-            [0.407, 0.447, 0.3, 0.3, 0.8],
+            [0.38, 0.447, 1, 1, 0],
+            [0.412, 0.447, 1, 1, 1],
+            [0.276, 0.324, 0.3, 0.3, 0],
+            [0.408, 0.447, 0.3, 0.3, 0.8],
         ]
         for (
             exp_rpm_left,
