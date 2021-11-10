@@ -38,6 +38,23 @@ class NotificationUrgencyLevel(Enum):
     critical = auto()
 
 
+def get_notify_command():
+    cmd = None
+    try:
+        run(["dpkg-query", "-l", "pt-notifications"], check=True)
+        cmd = "/usr/bin/pt-notify-send"
+    except CalledProcessError:
+        pass
+
+    try:
+        run(["dpkg-query", "-l", "notify-send-ng"], check=True)
+        cmd = "/usr/bin/notify-send"
+    except CalledProcessError:
+        pass
+
+    return cmd
+
+
 def send_notification(
     title: str,
     text: str,
@@ -50,15 +67,11 @@ def send_notification(
     capture_notification_id: bool = True,
 ) -> str:
 
-    # Check that `notify-send-ng` is available, as it's not a hard dependency of the package
-    try:
-        run(["dpkg-query", "-l", "notify-send-ng"], capture_output=True, check=True)
-    except CalledProcessError:
+    cmd = get_notify_command()
+    if not cmd:
         raise Exception("notify-send-ng not installed")
 
-    cmd = "/usr/bin/notify-send "
-    cmd += "--print-id "
-    cmd += "--expire-time=" + str(timeout) + " "
+    cmd += " --print-id --expire-time=" + str(timeout) + " "
 
     if icon_name:
         cmd += "--icon=" + icon_name + " "
