@@ -1,8 +1,10 @@
+import logging
 from enum import Enum, auto
 from subprocess import CalledProcessError, run
 
 from pitop.common.command_runner import run_command
-from pitop.common.logger import PTLogger
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationAction:
@@ -91,11 +93,11 @@ def send_notification(
     cmd += ' "' + title + '" '
     cmd += '"' + text + '"'
 
-    PTLogger.info("notify-send command: {}".format(cmd))
+    logger.info("notify-send command: {}".format(cmd))
 
     try:
         resp_stdout = run_command(cmd, 2000, capture_output=capture_notification_id)
     except Exception as e:
-        PTLogger.warning("Failed to show message: {}".format(e))
+        logger.warning("Failed to show message: {}".format(e))
         raise
     return resp_stdout

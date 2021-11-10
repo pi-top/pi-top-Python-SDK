@@ -1,9 +1,11 @@
+import logging
 from os import environ
 from shlex import split
 from subprocess import DEVNULL, CalledProcessError, Popen, TimeoutExpired, run
 
 from pitop.common.current_session_info import get_first_display
-from pitop.common.logger import PTLogger
+
+logger = logging.getLogger(__name__)
 
 
 def __get_env():
@@ -15,7 +17,7 @@ def __get_env():
 
 
 def run_command_background(command_str: str, print_output=False) -> Popen:
-    PTLogger.debug("Function: run_command_background(command_str=%s)" % command_str)
+    logger.debug("Function: run_command_background(command_str=%s)" % command_str)
 
     return Popen(
         split(command_str),
@@ -33,7 +35,7 @@ def run_command(
     log_errors: bool = True,
     lower_priority: bool = False,
 ) -> str:
-    PTLogger.debug(
+    logger.debug(
         f"Function: run_command(command_str={command_str}, timeout={timeout}, check={check}, capture_output={capture_output}, \
          log_errors={log_errors}, lower_priority={lower_priority})"
     )
@@ -54,18 +56,18 @@ def run_command(
 
     except (CalledProcessError, TimeoutExpired) as e:
         if log_errors:
-            PTLogger.error(str(e))
+            logger.error(str(e))
         raise e
     except Exception as e:
         if log_errors:
-            PTLogger.error(str(e))
+            logger.error(str(e))
         return ""
 
     if capture_output:
         resp_stdout = str(resp.stdout, "utf8")
         resp_stderr = str(resp.stderr, "utf8")
 
-        PTLogger.debug(
+        logger.debug(
             f"run_command("
             f"command_str='{command_str}', "
             f"timeout={timeout}, "
@@ -73,7 +75,7 @@ def run_command(
             f"capture_output='{capture_output}'"
             f") stdout:\n{resp_stdout}"
         )
-        PTLogger.debug(
+        logger.debug(
             f"run_command("
             f"command_str='{command_str}', "
             f"timeout={timeout}, "
@@ -83,7 +85,7 @@ def run_command(
         )
 
     if not check:
-        PTLogger.debug(
+        logger.debug(
             f"run_command("
             f"command_str='{command_str}', "
             f"timeout={timeout}, "

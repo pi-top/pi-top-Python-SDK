@@ -1,3 +1,4 @@
+import logging
 import signal
 from binascii import hexlify, unhexlify
 from os import close, path, remove, rename, stat
@@ -9,8 +10,9 @@ from time import sleep
 
 import serial
 
-from pitop.common.logger import PTLogger
 from pitop.pulse import configuration
+
+logger = logging.getLogger(__name__)
 
 _bitrate = 8
 _continue_writing = False
@@ -38,7 +40,7 @@ def __signal_handler(signal, frame):
         if _thread_running is True:
             stop()
 
-    PTLogger.info("\nQuitting...")
+    logger.info("\nQuitting...")
     exit(0)
 
 
@@ -76,7 +78,7 @@ def __space_separated_little_endian(integer_value, byte_len):
     elif byte_len <= 8:
         pack_type = "<Q"
     else:
-        PTLogger.info("Value cannot be represented in 8 bytes - exiting")
+        logger.info("Value cannot be represented in 8 bytes - exiting")
         exit()
 
     hex_string = pack(pack_type, integer_value)
@@ -151,12 +153,12 @@ def __finalise_wav_file(file_path):
     size_of_data = __get_size(file_path) - 44
 
     if size_of_data <= 0:
-        PTLogger.info("Error: No data was recorded!")
+        logger.info("Error: No data was recorded!")
         remove(file_path)
     else:
         with open(file_path, "rb+") as file:
 
-            PTLogger.debug("Updating header information...")
+            logger.debug("Updating header information...")
 
             __update_header_in_file(file, 4, size_of_data + 36)
             __update_header_in_file(file, 40, size_of_data)
@@ -185,7 +187,7 @@ def __record_audio():
 
     if path.exists("/dev/serial0"):
 
-        PTLogger.debug("Opening serial device...")
+        logger.debug("Opening serial device...")
 
         serial_device = serial.Serial(
             port="/dev/serial0",
@@ -200,18 +202,18 @@ def __record_audio():
         if serial_device_open is True:
 
             try:
-                PTLogger.debug("Start recording")
+                logger.debug("Start recording")
 
                 with open(_temp_file_path, "wb") as file:
 
-                    PTLogger.debug("WRITING: initial header information")
+                    logger.debug("WRITING: initial header information")
                     file.write(__init_header_information())
 
                     if serial_device.inWaiting():
-                        PTLogger.debug("Flushing input and starting from scratch")
+                        logger.debug("Flushing input and starting from scratch")
                         serial_device.flushInput()
 
-                    PTLogger.debug("WRITING: wave data")
+                    logger.debug("WRITING: wave data")
 
                     while _continue_writing:
                         while not serial_device.inWaiting():
@@ -247,13 +249,13 @@ def __record_audio():
 
                 __finalise_wav_file(_temp_file_path)
 
-                PTLogger.debug("Finished Recording.")
+                logger.debug("Finished Recording.")
 
         else:
-            PTLogger.info("Error: Serial port failed to open")
+            logger.info("Error: Serial port failed to open")
 
     else:
-        PTLogger.info("Error: Could not find serial port - are you sure it's enabled?")
+        logger.info("Error: Could not find serial port - are you sure it's enabled?")
 
 
 #######################
@@ -269,7 +271,7 @@ def record():
     global _recording_thread
 
     if not configuration.mcu_enabled():
-        PTLogger.info("Error: pi-topPULSE is not initialised.")
+        logger.info("Error: pi-topPULSE is not initialised.")
         exit()
 
     if _thread_running is False:
@@ -278,7 +280,7 @@ def record():
         _recording_thread = Thread(group=None, target=__thread_method)
         _recording_thread.start()
     else:
-        PTLogger.info("Microphone is already recording!")
+        logger.info("Microphone is already recording!")
 
 
 def is_recording():
@@ -314,11 +316,11 @@ def save(file_path, overwrite=False):
                 _temp_file_path = ""
 
             else:
-                PTLogger.info("File already exists")
+                logger.info("File already exists")
         else:
-            PTLogger.info("No recorded audio data found")
+            logger.info("No recorded audio data found")
     else:
-        PTLogger.info("Microphone is still recording!")
+        logger.info("Microphone is still recording!")
 
 
 def set_sample_rate_to_16khz():

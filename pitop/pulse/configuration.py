@@ -1,7 +1,9 @@
+import logging
 from math import pow
 
 from pitop.common.i2c_device import I2CDevice
-from pitop.common.logger import PTLogger
+
+logger = logging.getLogger(__name__)
 
 _i2c_device_name = "/dev/i2c-1"
 _device_addr = 0x24
@@ -19,12 +21,12 @@ _16khz_bit = 3
 
 def __get_addr_for_bit(bit):
     if bit in [0, 1, 2, 3]:
-        PTLogger.debug("bit:  " + str(bit))
+        logger.debug("bit:  " + str(bit))
         addr = int(pow(2, bit))
-        PTLogger.debug("addr: " + str(addr))
+        logger.debug("addr: " + str(addr))
         return addr
     else:
-        PTLogger.warning("Internal ERROR: invalid bit; cannot get address")
+        logger.warning("Internal ERROR: invalid bit; cannot get address")
         return -1
 
 
@@ -48,15 +50,15 @@ def __update_device_state_bit(bit, value):
     # Index:   3210
 
     if bit not in [0, 1, 2, 3]:
-        PTLogger.warning("Error: Not a valid state bit")
+        logger.warning("Error: Not a valid state bit")
         return False
 
     try:
         current_state = __read_device_state()
-        PTLogger.debug("Current device state: " + __get_bit_string(current_state))
+        logger.debug("Current device state: " + __get_bit_string(current_state))
 
     except Exception:
-        PTLogger.warning("Error: There was a problem getting the current device state")
+        logger.warning("Error: There was a problem getting the current device state")
         return False
 
     # Get the bit mask for the new state
@@ -69,7 +71,7 @@ def __update_device_state_bit(bit, value):
     if (value == 1 and (new_state & current_state) != 0) or (
         value == 0 and (~new_state & ~current_state) != 0
     ):
-        PTLogger.debug("Warning: Mode already set, nothing to send")
+        logger.debug("Warning: Mode already set, nothing to send")
         return True
 
     if value == 0:
@@ -93,7 +95,7 @@ def __verify_device_state(expected_state):
         return True
 
     else:
-        PTLogger.warning(
+        logger.warning(
             "Error: Device write verification failed. Expected: "
             + __get_bit_string(expected_state)
             + " Received: "
@@ -109,11 +111,11 @@ def __write_device_state(state):
     """
 
     try:
-        PTLogger.debug("Connecting to device...")
+        logger.debug("Connecting to device...")
 
         state_to_send = 0x0F & state
 
-        PTLogger.debug("Writing new state:    " + __get_bit_string(state_to_send))
+        logger.debug("Writing new state:    " + __get_bit_string(state_to_send))
 
         i2c_device = I2CDevice(_i2c_device_name, _device_addr)
         i2c_device.connect()
@@ -123,14 +125,14 @@ def __write_device_state(state):
         result = __verify_device_state(state_to_send)
 
         if result is True:
-            PTLogger.debug("OK")
+            logger.debug("OK")
         else:
-            PTLogger.warning("Error: New state could not be verified")
+            logger.warning("Error: New state could not be verified")
 
         return result
 
     except Exception:
-        PTLogger.warning("Error: There was a problem writing to the device")
+        logger.warning("Error: There was a problem writing to the device")
         return False
 
 
@@ -142,7 +144,7 @@ def __read_device_state():
     """
 
     try:
-        PTLogger.debug("Connecting to device...")
+        logger.debug("Connecting to device...")
         i2c_device = I2CDevice(_i2c_device_name, _device_addr)
         i2c_device.connect()
         current_state = i2c_device.read_unsigned_byte(_register_addr) & 0x0F
@@ -151,7 +153,7 @@ def __read_device_state():
         return int(current_state)
 
     except Exception:
-        PTLogger.warning("Error: There was a problem reading from the device")
+        logger.warning("Error: There was a problem reading from the device")
         # Best to re-raise as we can't recover from this
         raise
 
@@ -175,7 +177,7 @@ def __reset_device_state(enable):
 
 def reset_device_state(enable):
     """reset_device_state: Deprecated"""
-    PTLogger.info(
+    logger.info(
         "'reset_device_state' function has been deprecated, and can likely be removed. "
         "If you experience problems, please see documentation for instructions."
     )
@@ -183,14 +185,14 @@ def reset_device_state(enable):
 
 
 def enable_device():
-    PTLogger.info(
+    logger.info(
         "'enable_device' function has been moved to pi-topd, and is handled automatically."
     )
     return False
 
 
 def disable_device():
-    PTLogger.info(
+    logger.info(
         "'disable_device' function has been moved to pi-topd, and is handled automatically."
     )
     return False

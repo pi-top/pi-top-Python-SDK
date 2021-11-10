@@ -1,10 +1,12 @@
+import logging
 from fcntl import ioctl
 from io import open as iopen
 from time import sleep
 
 from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
 from pitop.common.lock import PTLock
-from pitop.common.logger import PTLogger
+
+logger = logging.getLogger(__name__)
 
 
 class I2CDevice:
@@ -27,7 +29,7 @@ class I2CDevice:
         self._post_write_delay = write_delay
 
     def connect(self, read_test=True):
-        PTLogger.debug(
+        logger.debug(
             "I2C: Connecting to address "
             + hex(self._device_address)
             + " on "
@@ -41,12 +43,12 @@ class I2CDevice:
         ioctl(self._write_device, self.I2C_SLAVE, self._device_address)
 
         if read_test is True:
-            PTLogger.debug("I2C: Test read 1 byte")
+            logger.debug("I2C: Test read 1 byte")
             self._read_device.read(1)
-            PTLogger.debug("I2C: OK")
+            logger.debug("I2C: OK")
 
     def disconnect(self):
-        PTLogger.debug("I2C: Disconnecting...")
+        logger.debug("I2C: Disconnecting...")
 
         if self._write_device is not None:
             self._write_device.close()
@@ -59,14 +61,14 @@ class I2CDevice:
     ####################
     def write_n_bytes(self, register_address: int, byte_list: list):
         """Base function to write to an I2C device."""
-        PTLogger.debug(
+        logger.debug(
             "I2C: Writing byte/s " + str(byte_list) + " to " + hex(register_address)
         )
         self.__run_transaction([register_address] + byte_list, 0)
 
     def write_byte(self, register_address: int, byte_value: int):
         if byte_value > 0xFF:
-            PTLogger.warning(
+            logger.warning(
                 "Possible unintended overflow writing value to register "
                 + hex(register_address)
             )
@@ -84,7 +86,7 @@ class I2CDevice:
             word_value, 2, little_endian=little_endian, signed=signed
         )
         if word_to_write is None:
-            PTLogger.error(f"Error splitting word into bytes list. Value: {word_value}")
+            logger.error(f"Error splitting word into bytes list. Value: {word_value}")
         else:
             self.write_n_bytes(register_address, word_to_write)
 
@@ -127,7 +129,7 @@ class I2CDevice:
             if result & (1 << ((8 * number_of_bytes) - 1)):
                 result = -(1 << (8 * number_of_bytes)) + result
 
-        PTLogger.debug(
+        logger.debug(
             "I2C: Read "
             + str(number_of_bytes)
             + " bytes from "
@@ -137,7 +139,7 @@ class I2CDevice:
             + ("LE" if little_endian else "BE")
             + ")"
         )
-        PTLogger.debug(str(result_array) + " : " + str(result))
+        logger.debug(str(result_array) + " : " + str(result))
 
         return result
 

@@ -1,4 +1,5 @@
 import atexit
+import logging
 import time
 from abc import abstractmethod
 from collections import deque
@@ -13,7 +14,6 @@ from pitop.common.firmware_device import (
     FirmwareDevice,
     PTInvalidFirmwareDeviceException,
 )
-from pitop.common.logger import PTLogger
 from pitop.common.singleton import Singleton
 from pitop.pma.common.utils import get_pin_for_port
 
@@ -23,6 +23,8 @@ from .common.ultrasonic_registers import (
     UltrasonicRegisterTypes,
 )
 from .plate_interface import PlateInterface
+
+logger = logging.getLogger(__name__)
 
 
 class UltrasonicSensorBase:
@@ -312,7 +314,7 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
         try:
             super(UltrasonicSensorRPI, self).close()
         except RuntimeError:
-            PTLogger.debug(
+            logger.debug(
                 f"Ultrasonic Sensor on port {self._pma_port} - "
                 "there was an error in closing the port!"
             )
@@ -338,7 +340,7 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
         # horribly wrong (most likely at the hardware level)
         if self.pin.state:
             if not self._echo.wait(0.05):
-                PTLogger.debug(
+                logger.debug(
                     f"Ultrasonic Sensor on port {self._pma_port} - "
                     "no echo received, not using value"
                 )
@@ -364,7 +366,7 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
                     return None
             else:
                 # The echo pin never rose or fell - assume that distance is max
-                PTLogger.debug(
+                logger.debug(
                     f"Ultrasonic Sensor on port {self._pma_port} - "
                     "no echo received, using max distance "
                 )

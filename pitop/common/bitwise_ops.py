@@ -1,6 +1,7 @@
+import logging
 from math import ceil
 
-from pitop.common.logger import PTLogger
+logger = logging.getLogger(__name__)
 
 
 def split_into_bytes(
@@ -24,7 +25,7 @@ def split_into_bytes(
             no_of_bytes, byteorder=byteorder_indicator, signed=signed
         )
     except OverflowError as e:
-        PTLogger.error(e)
+        logger.error(e)
         return None
 
     return [i for i in bytearray(byte_string)]
