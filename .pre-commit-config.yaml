@@ -54,7 +54,6 @@ repos:
         args: [
             "--ignore-missing-imports",
             "--strict",
-            "--implicit-reexport",
-            "--pretty"
+            "--implicit-reexport"
         ]
         exclude: ^examples

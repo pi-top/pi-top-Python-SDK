@@ -4,7 +4,6 @@
 # list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
-import importlib.util
 import os
 
 # -- Path setup --------------------------------------------------------------
@@ -20,16 +19,12 @@ PARENT = os.path.dirname(HERE)
 # -- Project information -----------------------------------------------------
 
 # Get package version directly from file
-#
-# Importing 'pitop' requires all core dependencies to be installed
-# which is impractical for building docs
-spec = importlib.util.spec_from_file_location("version", f"{PARENT}/pitop/version.py")
-modulevar = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(modulevar)
+with open(os.path.join(PARENT, "pitop", "version.txt"), "w") as f:
+    version = f.read().strip()
 
 project = "pitop"
 author = "pi-top (CEED Ltd)"
-release = modulevar.__version__
+release = version
 copyright = "pi-top 2021"
 
 # -- General configuration ---------------------------------------------------
