@@ -1,11 +1,27 @@
 import atexit
+from dataclasses import dataclass
 from os import getenv
-from typing import Union
+from typing import Any, Optional, Tuple
 
 from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.face import Face
 from pitop.processing.core.load_models import load_face_landmark_predictor
 from pitop.processing.core.vision_functions import tuple_for_color_by_name
+
+
+@dataclass
+class TrackingFrame:
+    rectangle: Optional[Tuple] = None
+    features: Optional[Any] = None  # numpy array not type-hintable in Debian Bullseye
+
+    @property
+    def center(self):
+        if self.rectangle:
+            return (
+                self.rectangle[0] + int(round(self.rectangle[2] / 2)),
+                self.rectangle[1] + int(round(self.rectangle[3] / 2)),
+            )
+        return None
 
 
 class FaceDetector:
@@ -15,13 +31,13 @@ class FaceDetector:
 
     def __init__(
         self,
-        image_processing_width: Union[int, None] = 320,
+        image_processing_width: Optional[int] = 320,
         format: str = "OpenCV",
         enable_tracking: bool = True,
         dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat",
     ):
         """
-        :param Union[int, None] image_processing_width: image width to scale to for image processing, set to None for
+        :param Optional[int] image_processing_width: image width to scale to for image processing, set to None for
         no scaling.
         :param str format: desired output image format.
         :param bool enable_tracking: enable dlib's correlaction tracker to track the detected face between frames.
@@ -72,30 +88,25 @@ class FaceDetector:
 
         if self._face_tracker is None:
             # if the face tracker has not been started, we first need to use face detection to find a face
-            face_rectangle, face_center, face_features = self.__detect_largest_face(
-                frame=frame_to_process
-            )
-            if face_center is not None and self._enable_tracking:
+
+            tracking_frame = self.__detect_largest_face(frame=frame_to_process)
+            if tracking_frame.center is not None and self._enable_tracking:
                 # Face found, enable dlib correlation tracker for subsequent calls
-                self.__start_tracker(frame=frame_to_process, rectangle=face_rectangle)
+                self.__start_tracker(
+                    frame=frame_to_process, rectangle=tracking_frame.rectangle
+                )
         else:
             # We are in face tracking mode, use dlib correlation tracker to track the face
-            face_rectangle, face_center, face_features = self.__track_face(
-                frame=frame_to_process
-            )
-            if face_center is None:
+            tracking_frame = self.__track_face(frame_to_process)
+            if tracking_frame.center is None:
                 self.__stop_tracker()
                 # attempt to detect face since tracker has failed
-                face_rectangle, face_center, face_features = self.__detect_largest_face(
-                    frame=frame_to_process
-                )
+                tracking_frame = self.__detect_largest_face(frame_to_process)
 
         self.face = self.__prepare_face_data(
             frame=frame,
             face=self.face,
-            rectangle=face_rectangle,
-            center=face_center,
-            features=face_features,
+            tracking_frame=tracking_frame,
         )
         if self._print_fps:
             self._fps.update()
@@ -127,12 +138,10 @@ class FaceDetector:
         :param frame: Image frame to process for faces
         :return: Detected face data
         """
-        face_rectangle, face_center, face_features = self.__process_detected_rectangles(
+        return self.__process_detected_rectangles(
             frame,
             self._face_rectangle_detector(frame, self._FACE_DETECTOR_PYRAMID_LAYERS),
         )
-
-        return face_rectangle, face_center, face_features
 
     def __process_detected_rectangles(self, frame, rectangles_dlib):
         """Find largest face rectangle and process it to get the required face
@@ -144,25 +153,26 @@ class FaceDetector:
         """
         import face_utils
 
+        tracking_frame = TrackingFrame()
+
         if len(rectangles_dlib) == 0:
-            return None, None, None
+            return tracking_frame
 
         largest_rectangle_dlib = None
         area = 0
-        face_rectangle = None
-        face_center = None
         for rectangle_dlib in rectangles_dlib:
             x, y, w, h = face_utils.rect_to_bb(rectangle_dlib)
             current_area = w * h
             if current_area > area:
                 area = current_area
                 largest_rectangle_dlib = rectangle_dlib
-                face_rectangle = (x, y, w, h)
-                face_center = (int(x + w / 2), int(y + h / 2))
+                tracking_frame.rectangle = (x, y, w, h)
 
-        face_features = self.__get_dlib_face_features(frame, largest_rectangle_dlib)
+        tracking_frame.features = self.__get_dlib_face_features(
+            frame, largest_rectangle_dlib
+        )
 
-        return face_rectangle, face_center, face_features
+        return tracking_frame
 
     def __get_dlib_face_features(self, frame, dlib_rectangle):
         """Find's dlib face features using the predictor and then convert them
@@ -216,33 +226,33 @@ class FaceDetector:
         if peak_to_side_lobe_ratio < 7.0:
             # Object occluded or lost when PSR found to be below a certain threshold (7.0 according to Bolme et al)
             # Treat as failed attempt to track face and return
-            return None, None, None
+            return TrackingFrame()
 
         rectangle_dlib = convert_dlib_rect_to_int_type(
             self._face_tracker.get_position()
         )
-        face_features = self.__get_dlib_face_features(frame, rectangle_dlib)
 
-        face_rectangle = face_utils.rect_to_bb(rectangle_dlib)
-        face_center = (
-            face_rectangle[0] + int(round(face_rectangle[2] / 2)),
-            face_rectangle[1] + int(round(face_rectangle[3] / 2)),
+        return TrackingFrame(
+            rectangle=face_utils.rect_to_bb(rectangle_dlib),
+            features=self.__get_dlib_face_features(frame, rectangle_dlib),
         )
 
-        return face_rectangle, face_center, face_features
-
-    def __prepare_face_data(self, frame, face, rectangle, center, features):
+    def __prepare_face_data(self, frame, face, tracking_frame):
         face.original_detection_frame = frame
 
-        if center is None:
+        if tracking_frame.center is None:
             face.clear()
             face.robot_view = ImageFunctions.convert(frame, format=self._format)
             return face
 
         # resize back to original frame resolution
-        face.rectangle = tuple((int(item * self._frame_scaler) for item in rectangle))
-        face.center_default = tuple((int(item * self._frame_scaler) for item in center))
-        face.features = (features * self._frame_scaler).astype("int")
+        face.rectangle = tuple(
+            (int(item * self._frame_scaler) for item in tracking_frame.rectangle)
+        )
+        face.center_default = tuple(
+            (int(item * self._frame_scaler) for item in tracking_frame.center)
+        )
+        face.features = (tracking_frame.features * self._frame_scaler).astype("int")
 
         face.robot_view = ImageFunctions.convert(
             self.__draw_on_frame(frame=frame.copy(), face=face), format=self._format
