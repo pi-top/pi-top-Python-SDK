@@ -8,7 +8,6 @@ __pycache__
 *.sw*
 tags
 .idea
-.vscode
 
 # Packaging detritus
 *.egg

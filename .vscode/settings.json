@@ -1,0 +1,13 @@
+{
+  "restructuredtext.confPath": "docs/conf.py",
+  "python.formatting.provider": "black",
+  // "python.testing.pytestEnabled": true,
+  // "python.testing.pytestArgs": [
+  //     "tests"
+  // ],
+
+  // isort
+  // rstcheck
+  // docformatter
+  // flake8
+}

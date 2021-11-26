@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "command": "${command:python.interpreterPath}",
+      "args": ["setup.py", "bdist_wheel", "sdist"],
+      "isBackground": true,
+      "options": {"cwd": "${workspaceFolder}"},
+      "label": "Build Wheel",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
