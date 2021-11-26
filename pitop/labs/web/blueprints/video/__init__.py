@@ -28,7 +28,7 @@ class VideoResponse(Response):
                     b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
                 )
 
-        Response.__init__(
+        super().__init__(
             self,
             generate_frames(),
             mimetype="multipart/x-mixed-replace; boundary=frame",
@@ -38,7 +38,7 @@ class VideoResponse(Response):
 
 class VideoBlueprint(Blueprint):
     def __init__(self, name="video", get_frame=None, **kwargs):
-        Blueprint.__init__(
+        super().__init__(
             self,
             name,
             __name__,

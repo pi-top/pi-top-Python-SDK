@@ -16,7 +16,7 @@ class Miniscreen(OLED):
     """
 
     def __init__(self):
-        super(Miniscreen, self).__init__()
+        super().__init__()
 
         self._up_button = MiniscreenButton()
         self._down_button = MiniscreenButton()

@@ -17,7 +17,7 @@ class Potentiometer(ADCBase):
     """
 
     def __init__(self, port_name, pin_number=1, name="potentiometer"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+        super().__init__(self, port_name=port_name, pin_number=pin_number, name=name)
 
     @property
     def own_state(self):

@@ -16,7 +16,7 @@ def log_unhandled_message(message_type, message_data):
 
 class MessagingBlueprint(Blueprint):
     def __init__(self, message_handlers={}, **kwargs):
-        Blueprint.__init__(
+        super().__init__(
             self,
             "messaging",
             __name__,

@@ -16,7 +16,7 @@ class LightSensor(ADCBase):
     """
 
     def __init__(self, port_name, pin_number=1, name="light_sensor"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+        super().__init__(self, port_name=port_name, pin_number=pin_number, name=name)
 
     @property
     def reading(self):

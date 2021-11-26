@@ -64,4 +64,4 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
             ...     led.on()
             ...
         """
-        super(Buzzer, self).close()
+        super().close()

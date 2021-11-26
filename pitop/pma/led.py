@@ -65,4 +65,4 @@ class LED(Stateful, Recreatable, gpiozero_LED):
             ...     led.on()
             ...
         """
-        super(LED, self).close()
+        super().close()

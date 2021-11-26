@@ -3,7 +3,7 @@ from flask import Blueprint
 
 class BaseBlueprint(Blueprint):
     def __init__(self, name="base", **kwargs):
-        Blueprint.__init__(
+        super().__init__(
             self,
             name,
             __name__,

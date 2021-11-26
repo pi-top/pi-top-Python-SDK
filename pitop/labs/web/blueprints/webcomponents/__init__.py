@@ -3,7 +3,7 @@ from flask import Blueprint
 
 class WebComponentsBlueprint(Blueprint):
     def __init__(self, **kwargs):
-        Blueprint.__init__(
+        super().__init__(
             self,
             "webcomponents",
             __name__,

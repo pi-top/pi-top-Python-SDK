@@ -24,9 +24,7 @@ class RoverControllerBlueprint(Blueprint):
     def __init__(
         self, drive=None, pan_tilt=None, get_frame=None, message_handlers={}, **kwargs
     ):
-        Blueprint.__init__(
-            self, "rover", __name__, template_folder="templates", **kwargs
-        )
+        super().__init__(self, "rover", __name__, template_folder="templates", **kwargs)
 
         passed_left_joystick_handler = message_handlers.get("left_joystick") is not None
 

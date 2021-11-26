@@ -57,7 +57,7 @@ class WebServer(WSGIServer):
             for blueprint in blueprints:
                 self.app.register_blueprint(blueprint, sockets=self.sockets)
 
-        WSGIServer.__init__(
+        super().__init__(
             self, ("0.0.0.0", port), self.app, handler_class=WebSocketHandler
         )
 

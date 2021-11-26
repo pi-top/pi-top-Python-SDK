@@ -81,7 +81,7 @@ class StateFilter(Stateful):
         # for now.
         self._imu_angular_velocity_variance = np.radians(0.5 ** 2)
 
-        Stateful.__init__(self, children=[])
+        super().__init__(self, children=[])
 
     def __str__(self):
         degree_symbol = "\N{DEGREE SIGN}"

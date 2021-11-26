@@ -312,7 +312,7 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
 
     def close(self):
         try:
-            super(UltrasonicSensorRPI, self).close()
+            super().close()
         except RuntimeError:
             logger.debug(
                 f"Ultrasonic Sensor on port {self._pma_port} - "
@@ -321,11 +321,11 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
 
     @property
     def value(self):
-        return super(UltrasonicSensorRPI, self).value
+        return super().value
 
     @property
     def pin(self):
-        return super(UltrasonicSensorRPI, self).pin
+        return super().pin
 
     def _echo_changed(self, ticks, level):
         if level:

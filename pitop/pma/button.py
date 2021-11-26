@@ -66,4 +66,4 @@ class Button(Stateful, Recreatable, gpiozero_Button):
             ...     led.on()
             ...
         """
-        super(Button, self).close()
+        super().close()
