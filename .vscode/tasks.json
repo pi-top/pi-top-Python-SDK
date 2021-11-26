@@ -4,6 +4,14 @@
     {
       "type": "shell",
       "command": "${command:python.interpreterPath}",
+      "args": ["setup.py", "sdist"],
+      "isBackground": true,
+      "options": {"cwd": "${workspaceFolder}"},
+      "label": "Build Source",
+    },
+    {
+      "type": "shell",
+      "command": "${command:python.interpreterPath}",
       "args": ["setup.py", "bdist_wheel", "sdist"],
       "isBackground": true,
       "options": {"cwd": "${workspaceFolder}"},
@@ -11,7 +19,20 @@
       "group": {
         "kind": "build",
         "isDefault": true
-      }
-    }
+      },
+      "dependsOn": ["Build Source"]
+    },
+    // {
+    //   "type": "shell",
+    //   "command": "tox",
+    //   "args": [],
+    //   "isBackground": false,
+    //   "options": {"cwd": "${workspaceFolder}"},
+    //   "label": "Run tox",
+    //   "group": {
+    //       "kind": "test",
+    //       "isDefault": true
+    //   }
+    // }
   ]
 }
