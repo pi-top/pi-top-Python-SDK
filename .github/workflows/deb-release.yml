@@ -17,11 +17,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v2.4.0
         with:
           submodules: true
           fetch-depth: 0
-
 
       - name: Get latest semver tag and latest version in changelog
         run: |
@@ -84,5 +83,3 @@ jobs:
           draft: false
           prerelease: false
           files: ./artifacts/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PUBLISH_PAT }}
