@@ -54,6 +54,8 @@ jobs:
         with:
           target_architecture: ${{ env.TARGET_ARCHITECTURE }}
           docker_image: ${{ env.DEB_BUILD_DOCKER_IMAGE }}:${{ env.DEB_BUILD_DOCKER_TAG }}
+          signing_key: ${{ secrets.DEB_SIGNING_GPG_KEY }}
+          signing_passphrase: ${{ secrets.DEB_SIGNING_GPG_PASSPHRASE }}
           build_directory: ./artifacts
           # Optional, repo-specific build environment variables
           additional_env: |
