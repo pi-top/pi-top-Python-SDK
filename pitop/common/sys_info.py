@@ -1,8 +1,7 @@
-import subprocess
 from fractions import Fraction
 from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
 from os import path, uname
-from subprocess import DEVNULL, PIPE, Popen
+from subprocess import DEVNULL, PIPE, CalledProcessError, Popen, check_output
 from typing import Dict, Union
 
 import netifaces
@@ -56,14 +55,14 @@ def get_maj_debian_version() -> str:
 def get_network_strength(iface) -> str:
     strength = -1
     try:
-        response_str = str(subprocess.check_output(["iwconfig", iface]).decode("utf-8"))
+        response_str = str(check_output(["iwconfig", iface]).decode("utf-8"))
         response_lines = response_str.splitlines()
         for line in response_lines:
             if "Link Quality" in line:
                 strength_str = line.lstrip(" ").lstrip("Link Quality=").split(" ")[0]
                 strength = int(Fraction(strength_str) * 100)
                 break
-    except (FileNotFoundError, subprocess.CalledProcessError):
+    except (FileNotFoundError, CalledProcessError):
         pass
 
     return str(strength) + "%"
@@ -71,10 +70,8 @@ def get_network_strength(iface) -> str:
 
 def get_wifi_network_ssid() -> str:
     try:
-        network_id = str(
-            subprocess.check_output(["iwgetid", "-r"]).decode("utf-8")
-        ).strip()
-    except (FileNotFoundError, subprocess.CalledProcessError):
+        network_id = str(check_output(["iwgetid", "-r"]).decode("utf-8")).strip()
+    except (FileNotFoundError, CalledProcessError):
         network_id = "Error"
 
     return network_id
@@ -135,11 +132,9 @@ def get_systemd_active_state(service_name: str) -> str:
 def get_systemd_enabled_state(service_to_check: str) -> str:
     try:
         state = str(
-            subprocess.check_output(
-                ["systemctl", "is-enabled", service_to_check]
-            ).decode("utf-8")
+            check_output(["systemctl", "is-enabled", service_to_check]).decode("utf-8")
         )
-    except subprocess.CalledProcessError as response:
+    except CalledProcessError as response:
         state = str(response.output.decode("utf-8"))
     except Exception:
         state = "Unknown Error"
