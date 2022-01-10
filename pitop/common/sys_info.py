@@ -1,7 +1,8 @@
 import subprocess
 from fractions import Fraction
-from ipaddress import IPv4Network, IPv6Network, ip_address
+from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
 from os import path, uname
+from subprocess import DEVNULL, PIPE, Popen
 from typing import Dict, Union
 
 import netifaces
@@ -194,6 +195,21 @@ def interface_is_up(interface_name: str) -> bool:
     return "up" in contents
 
 
+class InterfaceNetworkData:
+    def __init__(self, interface):
+        self.interface = interface
+        self.ip = ip_address(get_internal_ip(self.interface))
+        self.network = ip_network(f"{self.ip}/{self.netmask}", strict=False)
+
+    @property
+    def netmask(self):
+        cmd = f"ifconfig {self.interface} " + "| awk '/netmask /{ print $4;}'"
+        output = (
+            Popen(cmd, shell=True, stdout=PIPE, stderr=DEVNULL).stdout.read().strip()
+        )
+        return output.decode("utf-8")
+
+
 def get_address_for_connected_device(
     network: Union[None, IPv4Network, IPv6Network] = None
 ) -> str:
@@ -224,7 +240,17 @@ def get_address_for_connected_device(
 
 def get_address_for_ptusb_connected_device() -> str:
     if interface_is_up("ptusb0"):
-        return get_address_for_connected_device()
+        return get_address_for_connected_device(
+            network=InterfaceNetworkData("ptusb0").network
+        )
+    return ""
+
+
+def get_address_for_ap_connected_device() -> str:
+    if interface_is_up("wlan_ap0"):
+        return get_address_for_connected_device(
+            network=InterfaceNetworkData("wlan_ap0").network
+        )
     return ""
 
 
