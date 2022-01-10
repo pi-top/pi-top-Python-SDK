@@ -1,7 +1,8 @@
 import subprocess
 from fractions import Fraction
+from ipaddress import IPv4Network, IPv6Network, ip_address
 from os import path, uname
-from typing import Dict
+from typing import Dict, Union
 
 import netifaces
 from isc_dhcp_leases import IscDhcpLeases
@@ -193,7 +194,9 @@ def interface_is_up(interface_name: str) -> bool:
     return "up" in contents
 
 
-def get_address_for_connected_device():
+def get_address_for_connected_device(
+    network: Union[None, IPv4Network, IPv6Network] = None
+) -> str:
     def command_succeeds(cmd, timeout):
         try:
             run_command(cmd, timeout=timeout, check=True, log_errors=False)
@@ -206,6 +209,9 @@ def get_address_for_connected_device():
     current_leases.reverse()
 
     for lease in current_leases:
+        if network and ip_address(lease.ip) not in network:
+            continue
+
         # Windows machines won't respond to ping requests by default. Using arping
         # helps us on that case, but since it takes ~1.5s, it's used as a fallback
         if command_succeeds(f"ping -c1 {lease.ip}", 0.1) or command_succeeds(
