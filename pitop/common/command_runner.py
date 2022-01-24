@@ -9,11 +9,15 @@ logger = logging.getLogger(__name__)
 
 
 def __get_env():
-    env_plus_display = environ.copy()
+    env = environ.copy()
     first_display = get_first_display()
     if first_display is not None:
-        env_plus_display["DISPLAY"] = first_display
-    return env_plus_display
+        env["DISPLAY"] = first_display
+
+    # Print output of commands in english
+    env["LANG"] = "en_US.UTF-8"
+
+    return env
 
 
 def run_command_background(command_str: str, print_output=False) -> Popen:
