@@ -286,11 +286,11 @@ class OLED:
         self.assistant.render_text(
             image,
             text,
-            xy,
-            font_size,
-            font,
-            align,
-            anchor,
+            xy=xy,
+            font_size=font_size,
+            font=font,
+            align=align,
+            anchor=anchor,
         )
         self.display_image(image, invert=invert)
 
@@ -324,14 +324,14 @@ class OLED:
         :param str anchor: PIL ImageDraw text anchor to use
         """
         image = self.assistant.empty_image
-        self.assistant.render_multiline_text(
+        self.assistant.render_text(
             image,
             text,
-            xy,
-            font_size,
-            font,
-            align,
-            anchor,
+            xy=xy,
+            font_size=font_size,
+            font=font,
+            align=align,
+            anchor=anchor,
         )
         self.display_image(image, invert=invert)
 
