@@ -1,6 +1,8 @@
-import subprocess
 from fractions import Fraction
+from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
 from os import path, uname
+from subprocess import DEVNULL, PIPE, CalledProcessError, Popen, check_output
+from typing import Dict, Union
 
 import netifaces
 from isc_dhcp_leases import IscDhcpLeases
@@ -10,19 +12,19 @@ from pitop.common.command_runner import run_command
 _, _, _, _, machine = uname()
 
 
-def is_pi():
+def is_pi() -> bool:
     return machine in ("armv7l", "aarch64")
 
 
-def get_uname_release():
+def get_uname_release() -> str:
     return uname().release
 
 
-def get_uname_version():
+def get_uname_version() -> str:
     return uname().version
 
 
-def get_debian_version():
+def get_debian_version() -> str:
     debian_version_file = "/etc/debian_version"
     if not path.exists(debian_version_file):
         return None
@@ -31,7 +33,7 @@ def get_debian_version():
     return content.strip()
 
 
-def get_maj_debian_version():
+def get_maj_debian_version() -> str:
     version = None
     with open("/etc/os-release", "r") as f:
         for line in f:
@@ -50,34 +52,32 @@ def get_maj_debian_version():
         return None
 
 
-def get_network_strength(iface):
+def get_network_strength(iface) -> str:
     strength = -1
     try:
-        response_str = str(subprocess.check_output(["iwconfig", iface]).decode("utf-8"))
+        response_str = str(check_output(["iwconfig", iface]).decode("utf-8"))
         response_lines = response_str.splitlines()
         for line in response_lines:
             if "Link Quality" in line:
                 strength_str = line.lstrip(" ").lstrip("Link Quality=").split(" ")[0]
                 strength = int(Fraction(strength_str) * 100)
                 break
-    except (FileNotFoundError, subprocess.CalledProcessError):
+    except (FileNotFoundError, CalledProcessError):
         pass
 
     return str(strength) + "%"
 
 
-def get_wifi_network_ssid():
+def get_wifi_network_ssid() -> str:
     try:
-        network_id = str(
-            subprocess.check_output(["iwgetid", "-r"]).decode("utf-8")
-        ).strip()
-    except (FileNotFoundError, subprocess.CalledProcessError):
+        network_id = str(check_output(["iwgetid", "-r"]).decode("utf-8")).strip()
+    except (FileNotFoundError, CalledProcessError):
         network_id = "Error"
 
     return network_id
 
 
-def get_internal_ip(iface="wlan0"):
+def get_internal_ip(iface="wlan0") -> str:
     if iface not in netifaces.interfaces():
         return iface + " Not Found"
 
@@ -99,7 +99,7 @@ def get_internal_ip(iface="wlan0"):
     return internal_ip
 
 
-def start_systemd_service(service_name: str):
+def start_systemd_service(service_name: str) -> None:
     try:
         run_command(
             f"systemctl start {service_name}", timeout=20, check=True, log_errors=False
@@ -108,7 +108,7 @@ def start_systemd_service(service_name: str):
         pass
 
 
-def stop_systemd_service(service_name: str):
+def stop_systemd_service(service_name: str) -> None:
     try:
         run_command(
             f"systemctl stop {service_name}", timeout=20, check=False, log_errors=False
@@ -117,7 +117,7 @@ def stop_systemd_service(service_name: str):
         pass
 
 
-def get_systemd_active_state(service_name: str):
+def get_systemd_active_state(service_name: str) -> str:
     try:
         state = run_command(
             f"systemctl is-active {service_name}", timeout=10, log_errors=False
@@ -129,14 +129,12 @@ def get_systemd_active_state(service_name: str):
         return state
 
 
-def get_systemd_enabled_state(service_to_check: str):
+def get_systemd_enabled_state(service_to_check: str) -> str:
     try:
         state = str(
-            subprocess.check_output(
-                ["systemctl", "is-enabled", service_to_check]
-            ).decode("utf-8")
+            check_output(["systemctl", "is-enabled", service_to_check]).decode("utf-8")
         )
-    except subprocess.CalledProcessError as response:
+    except CalledProcessError as response:
         state = str(response.output.decode("utf-8"))
     except Exception:
         state = "Unknown Error"
@@ -144,22 +142,22 @@ def get_systemd_enabled_state(service_to_check: str):
         return state.strip().capitalize()
 
 
-def get_ssh_enabled_state():
+def get_ssh_enabled_state() -> bool:
     ssh_enabled_state = get_systemd_enabled_state("ssh")
     return ssh_enabled_state
 
 
-def get_vnc_enabled_state():
+def get_vnc_enabled_state() -> bool:
     vnc_enabled_state = get_systemd_enabled_state("vncserver-x11-serviced.service")
     return vnc_enabled_state
 
 
-def get_pt_further_link_enabled_state():
+def get_pt_further_link_enabled_state() -> bool:
     vnc_enabled_state = get_systemd_enabled_state("further-link.service")
     return vnc_enabled_state
 
 
-def get_ap_mode_status():
+def get_ap_mode_status() -> Dict:
     key_lookup = {
         "State": "state",
         "Access Point Network SSID": "ssid",
@@ -180,7 +178,7 @@ def get_ap_mode_status():
     return data
 
 
-def interface_is_up(interface_name):
+def interface_is_up(interface_name: str) -> bool:
     operstate_file = "/sys/class/net/" + interface_name + "/operstate"
     if not path.exists(operstate_file):
         return False
@@ -192,7 +190,24 @@ def interface_is_up(interface_name):
     return "up" in contents
 
 
-def get_address_for_connected_device():
+class InterfaceNetworkData:
+    def __init__(self, interface):
+        self.interface = interface
+        self.ip = ip_address(get_internal_ip(self.interface))
+        self.network = ip_network(f"{self.ip}/{self.netmask}", strict=False)
+
+    @property
+    def netmask(self):
+        cmd = f"ifconfig {self.interface} " + "| awk '/netmask /{ print $4;}'"
+        output = (
+            Popen(cmd, shell=True, stdout=PIPE, stderr=DEVNULL).stdout.read().strip()
+        )
+        return output.decode("utf-8")
+
+
+def get_address_for_connected_device(
+    network: Union[None, IPv4Network, IPv6Network] = None
+) -> str:
     def command_succeeds(cmd, timeout):
         try:
             run_command(cmd, timeout=timeout, check=True, log_errors=False)
@@ -205,6 +220,9 @@ def get_address_for_connected_device():
     current_leases.reverse()
 
     for lease in current_leases:
+        if network and ip_address(lease.ip) not in network:
+            continue
+
         # Windows machines won't respond to ping requests by default. Using arping
         # helps us on that case, but since it takes ~1.5s, it's used as a fallback
         if command_succeeds(f"ping -c1 {lease.ip}", 0.1) or command_succeeds(
@@ -215,9 +233,19 @@ def get_address_for_connected_device():
     return ""
 
 
-def get_address_for_ptusb_connected_device():
+def get_address_for_ptusb_connected_device() -> str:
     if interface_is_up("ptusb0"):
-        return get_address_for_connected_device()
+        return get_address_for_connected_device(
+            network=InterfaceNetworkData("ptusb0").network
+        )
+    return ""
+
+
+def get_address_for_ap_connected_device() -> str:
+    if interface_is_up("wlan_ap0"):
+        return get_address_for_connected_device(
+            network=InterfaceNetworkData("wlan_ap0").network
+        )
     return ""
 
 
