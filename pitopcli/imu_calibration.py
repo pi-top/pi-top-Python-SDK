@@ -259,8 +259,8 @@ class ImuCalibration:
 
     def accelerometer_orientation(self):
         x, y, z = self.imu_controller.accelerometer_raw
-        roll = degrees(atan2(x, sqrt(y ** 2 + z ** 2)))
-        pitch = degrees(atan2(-y, sqrt(x ** 2 + z ** 2)))
+        roll = degrees(atan2(x, sqrt(y**2 + z**2)))
+        pitch = degrees(atan2(-y, sqrt(x**2 + z**2)))
 
         return roll, pitch
 
@@ -385,7 +385,7 @@ class ImuCalibration:
             z_cal[i] = h_estimate[2]
             magnitude = np.sqrt(np.dot(h_estimate.T, h_estimate))
             error = magnitude[0][0] - self.__field_strength
-            error_squared = error ** 2
+            error_squared = error**2
             error_sum += error
             error_squared_sum += error_squared
         print("Average Error: {}".format(error_sum / x_uncal.shape))

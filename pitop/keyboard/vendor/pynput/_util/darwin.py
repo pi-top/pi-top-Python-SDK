@@ -161,7 +161,7 @@ def keycode_to_string(context, keycode, modifier_state=0):
         ctypes.byref(length),
         unicode_string,
     )
-    return u"".join(six.unichr(unicode_string[i]) for i in range(length.value))
+    return "".join(six.unichr(unicode_string[i]) for i in range(length.value))
 
 
 def get_unicode_to_keycode_map():
