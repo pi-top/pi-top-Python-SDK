@@ -53,9 +53,9 @@ def least_squares_ellipsoid_fit(magX, magY, magZ):
     # ax^2 + by^2 + cz^2 +2fyz + 2gxz + 2hxy + px + qy + rz + d = 0
     # x_T.M.x + x_T.n + d = 0
 
-    a1 = magX ** 2
-    a2 = magY ** 2
-    a3 = magZ ** 2
+    a1 = magX**2
+    a2 = magY**2
+    a3 = magZ**2
     a4 = 2 * np.multiply(magY, magZ)
     a5 = 2 * np.multiply(magX, magZ)
     a6 = 2 * np.multiply(magX, magY)

@@ -21,7 +21,7 @@ class MotionDetector(CaptureActionBase):
         self.cv2 = import_opencv()
 
         self.__motion_detect_previous_frame = None
-        self.__motion_detect_threshold = moving_object_minimum_area ** 2
+        self.__motion_detect_threshold = moving_object_minimum_area**2
         self.__motion_detect_callback = callback_on_motion
         self.__event_executor = ThreadPoolExecutor()
 

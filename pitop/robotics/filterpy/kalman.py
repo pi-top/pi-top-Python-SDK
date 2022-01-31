@@ -886,7 +886,7 @@ class KalmanFilter(object):
         filter's estimates. This formulation of the Fading memory filter
         (there are many) is due to Dan Simon [1]_.
         """
-        return self._alpha_sq ** 0.5
+        return self._alpha_sq**0.5
 
     def log_likelihood_of(self, z):
         """log likelihood of the measurement `z`.
@@ -904,7 +904,7 @@ class KalmanFilter(object):
         if not np.isscalar(value) or value < 1:
             raise ValueError("alpha must be a float greater than 1")
 
-        self._alpha_sq = value ** 2
+        self._alpha_sq = value**2
 
     def __repr__(self):
         return "\n".join(

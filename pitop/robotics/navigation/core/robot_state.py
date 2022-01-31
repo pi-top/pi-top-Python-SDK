@@ -57,18 +57,18 @@ class StateFilter(Stateful):
         )
         self._kalman_filter.Q = np.diag(
             [
-                Q_sigma ** 2,
-                Q_sigma ** 2,
+                Q_sigma**2,
+                Q_sigma**2,
                 math.radians(Q_sigma),
-                Q_sigma ** 2,
-                Q_sigma ** 2,
+                Q_sigma**2,
+                Q_sigma**2,
             ]
         )
 
         # State transition function for x1 = Fx0 + Bu0
         self._kalman_filter.F = np.diag([1, 1, 1, 0, 0])
 
-        self._odom_linear_velocity_variance = linear_velocity_sigma ** 2
+        self._odom_linear_velocity_variance = linear_velocity_sigma**2
         # angular velocity is calculated from motor velocities, maximum error is 0.005 * 2 across both wheel speeds
         # divide by wheel separation to get resulting standard deviation for angular velocity
         self._odom_angular_velocity_variance = (
@@ -79,7 +79,7 @@ class StateFilter(Stateful):
         # Measure variance from stationary IMU is sigma**2 = 0.0018 over approx 200 samples
         # IMU is likely to have a bias term associated and is less trustworthy than the odometry, use a larger value
         # for now.
-        self._imu_angular_velocity_variance = np.radians(0.5 ** 2)
+        self._imu_angular_velocity_variance = np.radians(0.5**2)
 
         Stateful.__init__(self, children=[])
 
