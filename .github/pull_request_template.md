@@ -1,4 +1,4 @@
-| Status  | Ticket |
+| Status  | Ticket/Issue |
 | :---: | :--: |
 | Ready/Hold | [Ticket](https://pi-top.atlassian.net/browse/<ticket-number>) |
 
