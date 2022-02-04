@@ -1,3 +1,4 @@
+distutils python3-distutils; PEP386
 dlib python3-dlib; PEP386
 flask python3-flask; PEP386
 flask-cors python3-flask-cors; PEP386
