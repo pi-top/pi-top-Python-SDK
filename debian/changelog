@@ -1,3 +1,12 @@
+pi-top-python-sdk (0.22.0-1) bullseye; urgency=medium
+
+  * Fix function names and params when calling miniscreen assistant (#509)
+  * Filter devices connected to a pi-top by network (#508)
+  * Set output of command runner to english (#510)
+  * Add missing `distutils` dependency (#513)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Feb 2022 12:10:06 +0000
+
 pi-top-python-sdk (0.21.0-1) bullseye; urgency=medium
 
   * Fix path to default font in oled assistant (#465)
