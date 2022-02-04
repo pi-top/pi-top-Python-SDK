@@ -1,18 +1,9 @@
 pi-top-python-sdk (0.21.0-2) bullseye; urgency=medium
 
-  * [pre-commit.ci] pre-commit autoupdate (#499)
-  * [pre-commit.ci] pre-commit autoupdate (#502)
-  * [pre-commit.ci] pre-commit autoupdate (#506)
-  * Updated master workflow files
-  * [pre-commit.ci] pre-commit autoupdate (#507)
-  * Add signing key and passphrase to deb_release workflow
   * Fix function names and params when calling miniscreen assistant (#509)
   * Filter devices connected to a pi-top by network (#508)
   * Set output of command runner to english (#510)
-  * [pre-commit.ci] pre-commit autoupdate (#512)
   * Add missing `distutils` dependency (#513)
-  * Add pull request template
-  * Update PR template to track Github issues
 
  -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Feb 2022 12:10:06 +0000
 
