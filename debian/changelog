@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.21.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.22.0-1) bullseye; urgency=medium
 
   * Fix function names and params when calling miniscreen assistant (#509)
   * Filter devices connected to a pi-top by network (#508)
