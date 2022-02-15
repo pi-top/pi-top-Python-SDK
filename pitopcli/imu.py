@@ -27,13 +27,14 @@ class ImuCLI(CliBaseClass):
             return 1
 
         # Check if Expansion Plate is connected
+        # TODO replace with pitop.system.pitop_peripherals
         expansion_plate_info = FirmwareDevice.device_info.get(
             FirmwareDeviceID.pt4_expansion_plate
         )
         i2c_address = expansion_plate_info.get("i2c_addr")
         try:
             expansion_plate_connected = (
-                getstatusoutput(f"pt-i2cdetect {i2c_address}")[0] == 0
+                getstatusoutput(f"i2cping {i2c_address}")[0] == 0
             )
         except Exception:
             expansion_plate_connected = False
