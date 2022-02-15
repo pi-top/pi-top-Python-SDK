@@ -48,8 +48,8 @@ def create_app(
 
 
 class WebServer(WSGIServer):
-    def __init__(self, port=8070, app=create_app(), blueprints=[BaseBlueprint()]):
-        self.port = port
+    def __init__(self, port=None, app=create_app(), blueprints=[BaseBlueprint()]):
+        self.port = port if isinstance(port, int) else 8070
         self.app = app
         self.sockets = Sockets(app)
 

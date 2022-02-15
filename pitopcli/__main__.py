@@ -6,6 +6,7 @@ from .devices import DeviceCLI
 from .display import DisplayCLI
 from .imu import ImuCLI
 from .oled import OledCLI
+from .rover import RoverCLI
 from .support import SupportCLI
 
 lookup_dict = {
@@ -15,6 +16,7 @@ lookup_dict = {
     "support": SupportCLI,
     "imu": ImuCLI,
     "oled": OledCLI,
+    "rover": RoverCLI,
 }
 
 
