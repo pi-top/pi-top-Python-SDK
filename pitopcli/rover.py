@@ -21,9 +21,10 @@ class RoverCLI(CliBaseClass):
     def run(self) -> int:
         if self.args.rover_subcommand == "start":
             return self.start_server()
+        elif self.args.rover_subcommand == "stop":
+            return self.stop_server()
         else:
             raise PitopCliInvalidArgument("oops")
-        return 0
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
@@ -45,6 +46,13 @@ class RoverCLI(CliBaseClass):
             action="store_true",
             help="Run the server as a background process",
         )
+
+        subparser.add_parser("stop", help="Stop detached Rover control servers")
+
+    def stop_server(self) -> int:
+        file_dir = Path(__file__).parent.resolve()
+        subprocess_file = path.abspath(path.join(file_dir, "rover_start_detach.py"))
+        Popen(["pkill", "-f", f"python3 {subprocess_file}"])
 
     def start_server(self) -> int:
         def is_pitop_four():
@@ -81,9 +89,7 @@ class RoverCLI(CliBaseClass):
 
         if self.args.detach:
             file_dir = Path(__file__).parent.resolve()
-            subprocess_file = path.abspath(
-                path.join(file_dir, "rover_start_detach.py")
-            )
+            subprocess_file = path.abspath(path.join(file_dir, "rover_start_detach.py"))
             Popen(["python3", subprocess_file, str(self.args.port)])
         else:
             from pitop import Camera, DriveController, Pitop
