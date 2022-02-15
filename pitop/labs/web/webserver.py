@@ -58,7 +58,7 @@ class WebServer(WSGIServer):
                 self.app.register_blueprint(blueprint, sockets=self.sockets)
 
         WSGIServer.__init__(
-            self, ("0.0.0.0", port), self.app, handler_class=WebSocketHandler
+            self, ("0.0.0.0", self.port), self.app, handler_class=WebSocketHandler
         )
 
     def _log_address(self):
