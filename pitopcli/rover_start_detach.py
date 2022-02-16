@@ -20,7 +20,7 @@ rover_controller = RoverWebController(
     drive=rover.drive,
 )
 
-for interface in ("wlan0", "ptusb0", "lo", "en0"):
+for interface in ("wlan0", "eth0", "ptusb0", "lo"):
     ip_address = get_internal_ip(interface)
     if is_url("http://" + ip_address):
         break
