@@ -17,7 +17,7 @@ Where:
 -h, --help
     Show a help message and exits
 
-{battery,devices,display,help,imu,oled}
+{battery,devices,display,help,imu,oled,rover}
     battery:
         Get battery information from a pi-top
 
@@ -35,6 +35,9 @@ Where:
 
     oled:
         Quickly display text in pi-top [4]'s miniscreen OLED display
+
+    rover:
+        Spin up & stop a web-based Rover remote control
 
 
 pi-top battery
@@ -285,6 +288,69 @@ Example:
 
     pi-top imu calibrate --path /tmp
 
+
+pi-top rover
+==================
+
+Spin up & stop a web-based Rover remote control
+
+.. code-block:: bash
+
+    pi-top rover [-h] {start,stop}
+
+Where:
+
+
+-h, --help
+    Show a help message and exits
+
+start
+    Start the Rover control server
+
+stop
+    Stop detached Rover control servers
+
+
+pi-top rover start
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Start the Rover control server
+
+.. code-block:: bash
+
+    pi-top rover start [-h] [--port PORT] [--detach]
+
+Where:
+
+-h, --help
+     Show a help message and exits
+
+-p, --port PORT
+    The port number to run the server on. Default 8070
+
+-d, --detach
+    If set, server is run as a background process
+
+Example:
+
+.. code-block:: bash
+
+    pi@pi-top:~ $ pi-top rover start -p 8070 -d
+
+
+pi-top rover stop
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Stop any background Rover control servers started with the detach flag
+
+.. code-block:: bash
+
+    pi-top rover stop [-h]
+
+Where:
+
+-h, --help
+     Show a help message and exits
 
 
 pi-top oled
