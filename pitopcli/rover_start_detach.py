@@ -25,7 +25,7 @@ for interface in ("wlan0", "ptusb0", "lo", "en0"):
     if is_url("http://" + ip_address):
         break
 
-text = f"Rover Remote Control:\n{ip_address}:{port}"
+text = f"Rover Remote Control:\nhttp://\n{ip_address}:{port}"
 rover.miniscreen.display_text(text, font_size=12)
 
 rover_controller.serve_forever()
