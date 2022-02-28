@@ -17,12 +17,14 @@ jobs:
      - name: Install dependencies
        run: |
          sudo apt update
-         sudo apt install python3-pip -y
+         DEBIAN_FRONTEND=noninteractive sudo apt install cmake python3-pip python3-opencv -y
          pip3 install -r tests/requirements.txt
+
      - name: Run Python tests and generate coverage report
        run: |
          pytest --verbose --cov-report term-missing --cov=pitop
          coverage xml
+
      - name: Upload Python test coverage reports to Codecov
        uses: codecov/codecov-action@v2.1.0
        with:

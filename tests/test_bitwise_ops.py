@@ -1,19 +1,7 @@
-from sys import modules
 from unittest import TestCase
-from unittest.mock import Mock
 
 from parameterized import parameterized
 
-modules_to_patch = [
-    # "zmq",
-    # "smbus2",
-    # "scipy",
-    # "scipy.stats",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
-
-# import after applying mocks
 import pitop.common.bitwise_ops as bitwise  # noqa: E402
 
 

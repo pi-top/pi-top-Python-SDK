@@ -1,22 +1,19 @@
 from threading import Thread
-from unittest import Mock, TestCase, skip
+from unittest import TestCase, skip
 from unittest.mock import mock_open, patch
 
-# import after applying mocks
 from pitop.common.lock import PTLock  # noqa: E402
 
-mock_os = Mock()  # modules["os"] = Mock()
-mock_logger = Mock()  # modules["pitop.common.logger"] = Mock()
 
-
-@skip
+@skip("Class changed - need to update tests")
 class PTLockTestCase(TestCase):
     __dummy_lock_id = "dummy"
     lock_file_path = "/tmp/.com.pi-top.sdk.dummy.lock"
 
-    def tearDown(self):
-        mock_logger.reset_mock()
-        mock_os.reset_mock()
+    def setUp(self):
+        self.chmod_patch = patch("pitop.common.lock.chmod")
+        self.chmod_mock = self.chmod_patch.start()
+        self.addCleanup(self.chmod_mock.stop)
 
     @patch("builtins.open", new_callable=mock_open())
     def test_instance_opens_file(self, m):
@@ -27,13 +24,13 @@ class PTLockTestCase(TestCase):
     def test_chmod_not_called_if_file_exist(self, exists_mock):
         _ = PTLock(self.__dummy_lock_id)
         exists_mock.assert_called_once_with(self.lock_file_path)
-        mock_os.chmod.assert_not_called()
+        self.chmod_mock.assert_not_called()
 
     @patch("pitop.common.lock.exists", return_value=False)
     def test_chmod_is_called_if_file_doesnt_exist(self, exists_mock):
         _ = PTLock(self.__dummy_lock_id)
         exists_mock.assert_called_once_with(self.lock_file_path)
-        mock_os.chmod.assert_called_once_with(self.lock_file_path, 146)
+        self.chmod_mock.assert_called_once_with(self.lock_file_path, 146)
 
     def test_acquire_success(self):
         lock = PTLock(self.__dummy_lock_id)
