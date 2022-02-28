@@ -7,25 +7,10 @@ mock_sys_info.is_pi = MagicMock(return_value=False)
 mock_curr_session_info = modules["pitop.common.current_session_info"] = MagicMock()
 mock_curr_session_info.get_first_display = MagicMock(return_value=None)
 
-modules_to_patch = [
-    "PIL",
-    "pyinotify",
-    "pitop.camera",
-    "numpy",
-    "pitop.common",
-]
-for module in modules_to_patch:
-    modules[module] = MagicMock()
-
 from os import environ, path
 from unittest import TestCase, skip
 
 from PIL import Image
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
-
 
 root = path.dirname(path.dirname(path.abspath(__file__)))
 

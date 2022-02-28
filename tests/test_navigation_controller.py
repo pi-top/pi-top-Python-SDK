@@ -1,10 +1,10 @@
 from sys import modules
-from unittest import TestCase
+from unittest import TestCase, skip
 from unittest.mock import Mock, patch
 
 modules_to_patch = [
-    "atexit",
-    "smbus2",
+    # "atexit",
+    # "smbus2",
 ]
 for module in modules_to_patch:
     modules[module] = Mock()
@@ -37,6 +37,7 @@ for patched_module in modules_to_patch:
     del modules[patched_module]
 
 
+@skip
 class TestNavigationController(TestCase):
     def test_navigate_to_x_y_position(self):
         navigation_controller = self.get_navigation_controller()

@@ -1,23 +1,7 @@
-from sys import modules
 from unittest import TestCase, skip
-from unittest.mock import Mock
-
-modules_to_patch = [
-    "pitop.camera.camera",
-    "atexit",
-    "numpy",
-    "pitop.common",
-    "gpiozero",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
 
 from pitop.pma.ultrasonic_sensor import UltrasonicSensor
 from pitop.pma.ultrasonic_sensor_base import UltrasonicSensorMCU, UltrasonicSensorRPI
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
 
 
 class UltrasonicSensorTestCase(TestCase):

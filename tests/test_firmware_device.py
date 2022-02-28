@@ -1,26 +1,34 @@
 from sys import modules
-from unittest import TestCase
+from unittest import TestCase, skip
 from unittest.mock import Mock
 
 from parameterized import parameterized
-
-mock_logger = modules["pitop.common.logger"] = Mock()
-mock_i2c_device = modules["pitop.common.i2c_device"] = Mock()
 
 # import after applying mocks
 from pitop.common.common_ids import FirmwareDeviceID  # noqa: E402
 from pitop.common.firmware_device import FirmwareDevice  # noqa: E402
 from pitop.common.firmware_device import PTInvalidFirmwareDeviceException  # noqa: E402
 
+mock_io = Mock()  # modules["io"] = Mock()
+mock_lock = Mock()  # modules["pitop.common.lock"] = Mock()
+mock_fcntl = Mock()  # modules["fcntl"] = Mock()
+mock_time = Mock()  # modules["time"] = Mock()
 
+
+@skip
 class FirmwareDeviceTestCase(TestCase):
     @classmethod
     def tearDownClass(cls):
-        del modules["pitop.common.i2c_device"]
+        del modules["io"]
+        del modules["pitop.common.lock"]
+        del modules["fcntl"]
+        del modules["time"]
 
     def tearDown(self):
-        mock_logger.reset_mock()
-        mock_i2c_device.reset_mock()
+        mock_io.reset_mock()
+        mock_lock.reset_mock()
+        mock_fcntl.reset_mock()
+        mock_time.reset_mock()
 
     def __get_mocked_firmware_device(self, part_name=None):
         cls = FirmwareDevice

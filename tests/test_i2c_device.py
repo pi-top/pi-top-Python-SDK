@@ -4,14 +4,13 @@ from unittest.mock import Mock
 
 from parameterized import parameterized
 
-mock_io = modules["io"] = Mock()
-mock_logger = modules["pitop.common.logger"] = Mock()
-mock_lock = modules["pitop.common.lock"] = Mock()
-mock_fcntl = modules["fcntl"] = Mock()
-mock_time = modules["time"] = Mock()
-
 # import after applying mocks
 from pitop.common.i2c_device import I2CDevice  # noqa: E402
+
+mock_io = Mock()  # modules["io"] = Mock()
+mock_lock = Mock()  # modules["pitop.common.lock"] = Mock()
+mock_fcntl = Mock()  # modules["fcntl"] = Mock()
+mock_time = Mock()  # modules["time"] = Mock()
 
 
 @skip
@@ -37,7 +36,6 @@ class I2CDeviceTestCase(TestCase):
         ]
 
     def tearDown(self):
-        mock_logger.reset_mock()
         mock_lock.reset_mock()
         mock_io.reset_mock()
         mock_fcntl.reset_mock()
@@ -47,6 +45,8 @@ class I2CDeviceTestCase(TestCase):
     def tearDownClass(cls):
         del modules["pitop.common.lock"]
         del modules["fcntl"]
+        del modules["io"]
+        del modules["time"]
 
     def test_initialisation_creates_lock_file(self):
         mock_lock.PTLock.assert_called_once_with(
