@@ -122,9 +122,9 @@ class EncoderMotorController:
 
     @type_check
     def set_rpm_control(self, rpm: int) -> None:
-        if not (-self.MAX_DC_MOTOR_RPM <= rpm <= self.MAX_DC_MOTOR_RPM):
+        if not (-self._MAX_DC_MOTOR_RPM <= rpm <= self._MAX_DC_MOTOR_RPM):
             raise ValueError(
-                f"DC motor RPM value must be between {-self.MAX_DC_MOTOR_RPM} and {self.MAX_DC_MOTOR_RPM} (inclusive)"
+                f"DC motor RPM value must be between {-self._MAX_DC_MOTOR_RPM} and {self._MAX_DC_MOTOR_RPM} (inclusive)"
             )
 
         self.set_control_mode(MotorControlModes.MODE_1)
@@ -156,9 +156,9 @@ class EncoderMotorController:
 
     @type_check
     def set_rpm_with_rotations(self, rpm: int, rotations_to_complete: int) -> None:
-        if not (-self.MAX_DC_MOTOR_RPM <= rpm <= self.MAX_DC_MOTOR_RPM):
+        if not (-self._MAX_DC_MOTOR_RPM <= rpm <= self._MAX_DC_MOTOR_RPM):
             raise ValueError(
-                f"DC motor RPM value must be between {-self.MAX_DC_MOTOR_RPM} and {self.MAX_DC_MOTOR_RPM} (inclusive)"
+                f"DC motor RPM value must be between {-self._MAX_DC_MOTOR_RPM} and {self._MAX_DC_MOTOR_RPM} (inclusive)"
             )
 
         self.set_control_mode(MotorControlModes.MODE_2)
