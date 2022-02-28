@@ -16,3 +16,4 @@ flask_sockets
 flask_cors
 Pillow
 wget
+scipy
