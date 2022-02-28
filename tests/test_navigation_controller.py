@@ -178,25 +178,18 @@ class TestNavigationController(TestCase):
             * angular_speed_factor,
         )
 
-        # self.assertEqual(
-        #     navigation_controller.navigator.drive_manager.pid.distance.Kp,
-        #     1
-        #     / (
-        #         navigation_controller.navigator.drive_manager._full_speed_deceleration_distance
-        #         * linear_speed_factor
-        #     ),
-        # )
+        self.assertEqual(
+            navigation_controller.navigator.drive_manager.pid.distance.Kp,
+            1
+            / (
+                navigation_controller.navigator.drive_manager._full_speed_deceleration_distance
+                * linear_speed_factor
+            ),
+        )
 
-        # self.assertEqual(
-        #     navigation_controller.navigator.drive_manager.pid.heading.Kp,
-        #     1
-        #     / (
-        #         math.radians(
-        #             navigation_controller.navigator.drive_manager._full_speed_deceleration_angle
-        #         )
-        #         * angular_speed_factor
-        #     ),
-        # )
+        self.assertEqual(
+            navigation_controller.navigator.drive_manager.pid.heading.Kp, 0.7
+        )
 
     @staticmethod
     @patch("pitop.robotics.drive_controller.EncoderMotor", EncoderMotorSim)
