@@ -21,6 +21,9 @@ jobs:
          cache: 'pip'
          cache-dependency-path: 'tests/requirements.txt'
 
+     - name: Install pip dependencies
+       run: pip3 install -r tests/requirements.txt
+
      - name: Run Python tests and generate coverage report
        run: |
          pytest --verbose --cov-report term-missing --cov=pitop
