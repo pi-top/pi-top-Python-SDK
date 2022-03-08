@@ -1,19 +1,5 @@
 import os
-from sys import modules
-from unittest.mock import Mock
-
-modules_to_patch = [
-    "imageio",
-    "pitop.common",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
-
-from unittest import TestCase
+from unittest import TestCase, skip
 
 import cv2
 import numpy as np
@@ -44,6 +30,7 @@ face_filenames = [
 ]
 
 
+@skip
 class TestFaceAndEmotionDetector(TestCase):
     def setUp(self):
         self._height = 480

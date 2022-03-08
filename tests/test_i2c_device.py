@@ -1,70 +1,64 @@
-from sys import modules
-from unittest import TestCase, skip
-from unittest.mock import Mock
+from unittest import TestCase
+from unittest.mock import Mock, patch
 
 from parameterized import parameterized
 
-mock_io = modules["io"] = Mock()
-mock_logger = modules["pitop.common.logger"] = Mock()
-mock_lock = modules["pitop.common.lock"] = Mock()
-mock_fcntl = modules["fcntl"] = Mock()
-mock_time = modules["time"] = Mock()
 
-# import after applying mocks
-from pitop.common.i2c_device import I2CDevice  # noqa: E402
-
-
-@skip
 class I2CDeviceTestCase(TestCase):
     _dummy_device_path = "test_device_path"
     _dummy_device_address = 0x99
     _dummy_register = 0x77
 
     def setUp(self):
+        self.iopen_patch = patch("pitop.common.i2c_device.iopen")
+        self.ioctl_patch = patch("pitop.common.i2c_device.ioctl")
+        self.sleep_patch = patch("pitop.common.i2c_device.sleep")
+        self.ptlock_patch = patch("pitop.common.i2c_device.PTLock")
+
+        self.iopen_mock = self.iopen_patch.start()
+        self.ioctl_mock = self.ioctl_patch.start()
+        self.sleep_mock = self.sleep_patch.start()
+        self.ptlock_mock = self.ptlock_patch.start()
+
+        self.addCleanup(self.iopen_patch.stop)
+        self.addCleanup(self.ioctl_patch.stop)
+        self.addCleanup(self.sleep_patch.stop)
+        self.addCleanup(self.ptlock_patch.stop)
+
+        from pitop.common.i2c_device import I2CDevice  # noqa: E402
+
         self._i2c_device = I2CDevice(
             self._dummy_device_path, self._dummy_device_address
         )
 
         self._mock_read_device = Mock()
         self._mock_write_device = Mock()
-        self._mock_lock = Mock()
+        self._ptlock_mock = Mock(__enter__=Mock(), __exit__=Mock())
 
-        self._i2c_device._lock = self._mock_lock
+        self._i2c_device._lock = self._ptlock_mock
 
-        mock_io.open.side_effect = [
+        self.iopen_mock.side_effect = [
             self._mock_read_device,
             self._mock_write_device,
         ]
 
-    def tearDown(self):
-        mock_logger.reset_mock()
-        mock_lock.reset_mock()
-        mock_io.reset_mock()
-        mock_fcntl.reset_mock()
-        mock_time.reset_mock()
-
-    @classmethod
-    def tearDownClass(cls):
-        del modules["pitop.common.lock"]
-        del modules["fcntl"]
-
     def test_initialisation_creates_lock_file(self):
-        mock_lock.PTLock.assert_called_once_with(
-            "i2c_" + hex(self._dummy_device_address)
+        self.ptlock_mock.assert_called_once_with(
+            f"i2c_{hex(self._dummy_device_address)}"
         )
 
     def test_connect_opens_device_file_for_rw(self):
         self._i2c_device.connect(read_test=True)
 
-        mock_io.open.assert_any_call(self._dummy_device_path, "rb", buffering=0)
-        mock_io.open.assert_any_call(self._dummy_device_path, "wb", buffering=0)
+        self.iopen_mock.assert_any_call(self._dummy_device_path, "rb", buffering=0)
+        self.iopen_mock.assert_any_call(self._dummy_device_path, "wb", buffering=0)
 
-        mock_fcntl.ioctl.assert_any_call(
+        self.ioctl_mock.assert_any_call(
             self._mock_read_device,
             self._i2c_device.I2C_SLAVE,
             self._dummy_device_address,
         )
-        mock_fcntl.ioctl.assert_any_call(
+        self.ioctl_mock.assert_any_call(
             self._mock_write_device,
             self._i2c_device.I2C_SLAVE,
             self._dummy_device_address,
@@ -103,7 +97,7 @@ class I2CDeviceTestCase(TestCase):
         self._i2c_device.write_n_bytes(self._dummy_register, [0x01, 0x02, 0x03])
         self._i2c_device.disconnect()
 
-        mock_time.sleep.assert_called_once_with(self._i2c_device._post_write_delay)
+        self.sleep_mock.assert_called_once_with(self._i2c_device._post_write_delay)
 
     @parameterized.expand([[[0x01], 0x01], [[0x08], 0x08], [[0xAF], 0xAF]])
     def test_read_unsigned_byte(self, read_value, expected_value):
@@ -272,15 +266,15 @@ class I2CDeviceTestCase(TestCase):
         self._i2c_device.write_n_bytes(self._dummy_register, test_data)
         self._i2c_device.disconnect()
 
-        self._mock_lock.acquire.assert_called_once()
-        self._mock_lock.release.assert_called_once()
+        self._ptlock_mock.__enter__.assert_called_once()
+        self._ptlock_mock.__exit__.assert_called_once()
 
     def test_no_transaction_leaves_lock_alone(self):
         self._i2c_device.connect(read_test=False)
         self._i2c_device.disconnect()
 
-        self._mock_lock.acquire.assert_not_called()
-        self._mock_lock.release.assert_not_called()
+        self._ptlock_mock.__enter__.assert_not_called()
+        self._ptlock_mock.__exit__.assert_not_called()
 
     @parameterized.expand([[[0x01], 1, 0x01]])
     def test_read_n_unsigned_bytes_acquires_and_releases_lock(
@@ -293,5 +287,5 @@ class I2CDeviceTestCase(TestCase):
         )
         self._i2c_device.disconnect()
 
-        self._mock_lock.acquire.assert_called_once()
-        self._mock_lock.release.assert_called_once()
+        self._ptlock_mock.__enter__.assert_called_once()
+        self._ptlock_mock.__exit__.assert_called_once()

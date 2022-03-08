@@ -1,0 +1,39 @@
+name: Run Tests and Upload Coverage Report
+
+on: push
+
+jobs:
+  test-and-upload-coverage-report:
+   runs-on: ubuntu-20.04
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v2.4.0
+
+     - name: Install apt dependencies
+       run: |
+         sudo apt update
+         DEBIAN_FRONTEND=noninteractive sudo apt install cmake python3-opencv -y
+
+     - name: Setup Python
+       uses: actions/setup-python@v3.0.0
+       with:
+         python-version: 3.9
+         cache: 'pip'
+         cache-dependency-path: 'tests/requirements.txt'
+
+     - name: Install pip dependencies
+       run: pip3 install -r tests/requirements.txt
+
+     - name: Run Python tests and generate coverage report
+       run: |
+         pytest --verbose --cov-report term-missing --cov=pitop
+         coverage xml
+
+     - name: Upload Python test coverage reports to Codecov
+       uses: codecov/codecov-action@v2.1.0
+       with:
+         files: ./coverage.xml
+         flags: unittests
+         env_vars: OS,PYTHON
+         fail_ci_if_error: true
+         verbose: true

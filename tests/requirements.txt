@@ -1,3 +1,9 @@
+# Test framework deps
+pytest
+pytest-cov
+pytest-mock
+parameterized
+# Dependencies
 dlib
 gpiozero
 imutils
@@ -9,5 +15,5 @@ flask
 flask_sockets
 flask_cors
 Pillow
-simple_pid
+scipy
 wget

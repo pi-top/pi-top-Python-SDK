@@ -1,20 +1,7 @@
-from sys import modules
 from unittest import TestCase
-from unittest.mock import Mock, patch
-
-modules_to_patch = [
-    "pitop.camera.camera",
-    "atexit",
-    "smbus2",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
+from unittest.mock import patch
 
 from pitop import DriveController, EncoderMotor
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
 
 
 class DriveControllerTestCase(TestCase):
@@ -41,7 +28,7 @@ class DriveControllerTestCase(TestCase):
         expected_linear_speed = speed_factor * d.max_motor_speed
 
         d.forward(speed_factor, hold=True)
-        self.assertEquals(d._linear_speed_x_hold, expected_linear_speed)
+        self.assertEqual(d._linear_speed_x_hold, expected_linear_speed)
 
     def test_turning_methods_uses_internal_linear_speed(self):
         """turning left/right uses the internal linear speed to move."""
@@ -124,5 +111,5 @@ class DriveControllerTestCase(TestCase):
             speed_left, speed_right = d._calculate_motor_speeds(
                 linear_speed, angular_speed, turn_radius
             )
-            self.assertEquals(round(speed_left, 3), exp_rpm_left)
-            self.assertEquals(round(speed_right, 3), exp_rpm_right)
+            self.assertEqual(round(speed_left, 3), exp_rpm_left)
+            self.assertEqual(round(speed_right, 3), exp_rpm_right)

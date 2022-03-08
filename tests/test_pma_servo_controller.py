@@ -1,20 +1,5 @@
-from sys import modules
 from unittest import TestCase
 from unittest.mock import Mock, patch
-
-modules_to_patch = [
-    "io",
-    "gpiozero",
-    "gpiozero.exc",
-    "cv2",
-    "numpy",
-    "pitop.common.smbus_device",
-    "pitop.common.logger",
-    "pitop.common.singleton",
-    "pitop.pma.ultrasonic_sensor",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
 
 from pitop.pma.common.servo_motor_registers import (
     ServoMotorS0,
@@ -23,15 +8,11 @@ from pitop.pma.common.servo_motor_registers import (
 )
 from pitop.pma.servo_controller import ServoController
 
-# Avoid getting the mocked modules in other tests
-for module in modules_to_patch:
-    del modules[module]
-
 
 class ServoControllerTestCase(TestCase):
     def test_constructor_success(self):
         controller = ServoController(port="S0")
-        self.assertEquals(controller.registers, ServoMotorS0)
+        self.assertEqual(controller.registers, ServoMotorS0)
 
     def test_constructor_fails_on_incorrect_port(self):
         """Constructor fails if providing an invalid port."""
@@ -90,7 +71,7 @@ class ServoControllerTestCase(TestCase):
                 ServoMotorSetup.REGISTER_PWM_FREQUENCY, pwm_frequency_value
             )
 
-            self.assertEquals(controller.pwm_frequency(), pwm_frequency_value)
+            self.assertEqual(controller.pwm_frequency(), pwm_frequency_value)
             read_unsigned_byte_mock.assert_called_with(
                 ServoMotorSetup.REGISTER_PWM_FREQUENCY
             )
@@ -115,7 +96,7 @@ class ServoControllerTestCase(TestCase):
                     ServoMotorS0.get(ServoRegisterTypes.ACC_MODE), acceleration_mode
                 )
 
-                self.assertEquals(controller.get_acceleration_mode(), acceleration_mode)
+                self.assertEqual(controller.get_acceleration_mode(), acceleration_mode)
                 read_unsigned_byte_mock.assert_called_with(
                     ServoMotorS0.get(ServoRegisterTypes.ACC_MODE)
                 )

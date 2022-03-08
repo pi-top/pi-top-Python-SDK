@@ -1,23 +1,9 @@
 from math import pi
-from sys import modules
 from unittest import TestCase
-from unittest.mock import Mock, patch
-
-modules_to_patch = [
-    "pitop.camera.camera",
-    "atexit",
-    "numpy",
-    "pitop.common",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
+from unittest.mock import patch
 
 from pitop.pma.encoder_motor import EncoderMotor
 from pitop.pma.parameters import BrakingType, Direction, ForwardDirection
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
 
 
 class EncoderMotorTestCase(TestCase):
@@ -29,9 +15,9 @@ class EncoderMotorTestCase(TestCase):
             braking_type=BrakingType.COAST,
         )
 
-        self.assertEquals(wheel.wheel_diameter, 0.0718)
-        self.assertEquals(round(wheel.wheel_circumference, 3), 0.226)
-        self.assertEquals(wheel.forward_direction, ForwardDirection.CLOCKWISE)
+        self.assertEqual(wheel.wheel_diameter, 0.075)
+        self.assertEqual(round(wheel.wheel_circumference, 3), 0.236)
+        self.assertEqual(wheel.forward_direction, ForwardDirection.CLOCKWISE)
 
     @patch("pitop.pma.EncoderMotor.max_rpm", 142)
     @patch("pitop.pma.EncoderMotor.wheel_circumference", 0.075)
@@ -44,7 +30,7 @@ class EncoderMotorTestCase(TestCase):
             braking_type=BrakingType.COAST,
         )
 
-        self.assertEquals(round(wheel.max_speed, 3), 0.177)
+        self.assertEqual(round(wheel.max_speed, 3), 0.177)
 
     @patch("pitop.pma.EncoderMotor.set_target_speed")
     def test_forward_uses_correct_direction(self, mock_set_target_speed):
@@ -85,7 +71,7 @@ class EncoderMotorTestCase(TestCase):
         new_diameter = 0.5
         wheel.wheel_diameter = new_diameter
         self.assertNotEqual(wheel.wheel_circumference, initial_circumference)
-        self.assertEquals(wheel.wheel_circumference, new_diameter * pi)
+        self.assertEqual(wheel.wheel_circumference, new_diameter * pi)
 
     def test_wheel_diameter_cant_be_zero_or_negative(self):
         """Wheel diameter must be higher than zero."""

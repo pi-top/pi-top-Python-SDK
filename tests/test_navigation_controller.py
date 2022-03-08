@@ -1,16 +1,7 @@
-from sys import modules
-from unittest import TestCase
-from unittest.mock import Mock, patch
-
-modules_to_patch = [
-    "atexit",
-    "smbus2",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
-
 import math
 from time import sleep
+from unittest import TestCase
+from unittest.mock import Mock, patch
 
 from pitop.robotics.navigation.navigation_controller import NavigationController
 
@@ -30,11 +21,6 @@ class EncoderMotorSim:
 
     def set_target_speed(self, target_speed, direction=None, distance=None):
         self._target_speed = target_speed
-
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
 
 
 class TestNavigationController(TestCase):
@@ -202,14 +188,7 @@ class TestNavigationController(TestCase):
         )
 
         self.assertEqual(
-            navigation_controller.navigator.drive_manager.pid.heading.Kp,
-            1
-            / (
-                math.radians(
-                    navigation_controller.navigator.drive_manager._full_speed_deceleration_angle
-                )
-                * angular_speed_factor
-            ),
+            navigation_controller.navigator.drive_manager.pid.heading.Kp, 0.7
         )
 
     @staticmethod
