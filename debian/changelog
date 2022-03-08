@@ -1,3 +1,10 @@
+pi-top-python-sdk (0.22.0-2) bullseye; urgency=medium
+
+  * Improve EncoderMotor class error messages (#515)
+  * Re-enable test CI runs (#516)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 08 Mar 2022 12:55:55 +0000
+
 pi-top-python-sdk (0.22.0-1) bullseye; urgency=medium
 
   * Fix function names and params when calling miniscreen assistant (#509)
