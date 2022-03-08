@@ -204,6 +204,12 @@ class EncoderMotor(Stateful, Recreatable):
         :param total_rotations:
             Total number of rotations to be execute. Set to 0 to run indefinitely.
         """
+
+        if not (-self.max_rpm <= abs(target_rpm) <= self.max_rpm):
+            raise ValueError(
+                f"Target RPM value must be between {-self.max_rpm} and {self.max_rpm} (inclusive)"
+            )
+
         dc_motor_rpm = int(
             round(target_rpm * self.MMK_STANDARD_GEAR_RATIO)
             * self.__forward_direction
