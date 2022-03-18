@@ -33,7 +33,8 @@ import Xlib.ext
 import Xlib.ext.xtest
 import Xlib.protocol
 import Xlib.X
-from pynput._util.xorg import ListenerMixin, display_manager
+
+from pitop.keyboard.vendor.pynput._util.xorg import ListenerMixin, display_manager
 
 from . import _base
 

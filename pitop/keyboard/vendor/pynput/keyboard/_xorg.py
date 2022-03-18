@@ -32,8 +32,9 @@ import Xlib.keysymdef.xkb
 import Xlib.protocol
 import Xlib.X
 import Xlib.XK
-from pynput._util import NotifierMixin
-from pynput._util.xorg import (
+
+from pitop.keyboard.vendor.pynput._util import NotifierMixin
+from pitop.keyboard.vendor.pynput._util.xorg import (
     ListenerMixin,
     alt_gr_mask,
     alt_mask,
@@ -44,7 +45,13 @@ from pynput._util.xorg import (
     shift_to_index,
     symbol_to_keysym,
 )
-from pynput._util.xorg_keysyms import CHARS, DEAD_KEYS, KEYPAD_KEYS, KEYSYMS, SYMBOLS
+from pitop.keyboard.vendor.pynput._util.xorg_keysyms import (
+    CHARS,
+    DEAD_KEYS,
+    KEYPAD_KEYS,
+    KEYSYMS,
+    SYMBOLS,
+)
 
 from . import _base
 
