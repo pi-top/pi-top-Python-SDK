@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.22.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.23.0-1) bullseye; urgency=medium
 
   * Improve EncoderMotor class error messages (#515)
   * Re-enable test CI runs (#516)
