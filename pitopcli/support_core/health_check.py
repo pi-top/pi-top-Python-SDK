@@ -1,4 +1,3 @@
-from distutils.util import strtobool
 from os import uname
 from time import strftime
 
@@ -20,7 +19,7 @@ from .ptsoftware import PitopSoftware
 
 
 def str_to_bool(value):
-    return strtobool(value) == 0
+    return str(value) == "0"
 
 
 class HealthCheck:
