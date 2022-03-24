@@ -26,7 +26,8 @@ import enum
 
 import Quartz
 from AppKit import NSEvent
-from pynput._util.darwin import ListenerMixin
+
+from pitop.keyboard.vendor.pynput._util.darwin import ListenerMixin
 
 from . import _base
 

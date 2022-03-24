@@ -26,8 +26,8 @@ import ctypes
 import enum
 from ctypes import windll, wintypes
 
-from pynput._util import NotifierMixin
-from pynput._util.win32 import (
+from pitop.keyboard.vendor.pynput._util import NotifierMixin
+from pitop.keyboard.vendor.pynput._util.win32 import (
     INPUT,
     MOUSEINPUT,
     INPUT_union,

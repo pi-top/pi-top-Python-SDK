@@ -29,8 +29,9 @@ import threading
 import unicodedata
 
 import six
-from pynput import _logger
-from pynput._util import AbstractListener
+
+from pitop.keyboard.vendor.pynput._logger import _logger
+from pitop.keyboard.vendor.pynput._util import AbstractListener
 
 
 class KeyCode(object):
