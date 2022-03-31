@@ -263,3 +263,27 @@ def is_connected_to_internet() -> bool:
         return True
     except Exception:
         return False
+
+
+def get_pi_top_ip():
+    for iface in (NetworkInterface.wlan0, NetworkInterface.eth0):
+        try:
+            ip = ip_address(get_internal_ip(iface.name))
+            return ip.exploded
+        except ValueError:
+            pass
+
+    # ptusb0 & wlan_ap0 always have an IP address; check is performed differently
+    for iface in (NetworkInterface.ptusb0, NetworkInterface.wlan_ap0):
+        try:
+            iface_data = InterfaceNetworkData(iface.name)
+            if (
+                interface_is_up(iface.name)
+                and len(get_address_for_connected_device(network=iface_data.network))
+                > 0
+            ):
+                return iface_data.ip.exploded
+        except Exception:
+            pass
+
+    return ""
