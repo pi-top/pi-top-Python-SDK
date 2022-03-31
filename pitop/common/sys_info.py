@@ -1,3 +1,4 @@
+from enum import Enum, auto
 from fractions import Fraction
 from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
 from os import path, uname
@@ -10,6 +11,13 @@ from isc_dhcp_leases import IscDhcpLeases
 from pitop.common.command_runner import run_command
 
 _, _, _, _, machine = uname()
+
+
+class NetworkInterface(Enum):
+    eth0 = auto()
+    wlan0 = auto()
+    wlan_ap0 = auto()
+    ptusb0 = auto()
 
 
 def is_pi() -> bool:
@@ -77,7 +85,7 @@ def get_wifi_network_ssid() -> str:
     return network_id
 
 
-def get_internal_ip(iface="wlan0") -> str:
+def get_internal_ip(iface=NetworkInterface.wlan0.name) -> str:
     if iface not in netifaces.interfaces():
         return iface + " Not Found"
 
@@ -179,7 +187,7 @@ def get_ap_mode_status() -> Dict:
 
 
 def interface_is_up(interface_name: str) -> bool:
-    operstate_file = "/sys/class/net/" + interface_name + "/operstate"
+    operstate_file = f"/sys/class/net/{interface_name}/operstate"
     if not path.exists(operstate_file):
         return False
 
@@ -234,17 +242,17 @@ def get_address_for_connected_device(
 
 
 def get_address_for_ptusb_connected_device() -> str:
-    if interface_is_up("ptusb0"):
+    if interface_is_up(NetworkInterface.ptusb0.name):
         return get_address_for_connected_device(
-            network=InterfaceNetworkData("ptusb0").network
+            network=InterfaceNetworkData(NetworkInterface.ptusb0.name).network
         )
     return ""
 
 
 def get_address_for_ap_connected_device() -> str:
-    if interface_is_up("wlan_ap0"):
+    if interface_is_up(NetworkInterface.wlan_ap0.name):
         return get_address_for_connected_device(
-            network=InterfaceNetworkData("wlan_ap0").network
+            network=InterfaceNetworkData(NetworkInterface.wlan_ap0.name).network
         )
     return ""
 
@@ -255,3 +263,27 @@ def is_connected_to_internet() -> bool:
         return True
     except Exception:
         return False
+
+
+def get_pi_top_ip():
+    for iface in (NetworkInterface.wlan0, NetworkInterface.eth0):
+        try:
+            ip = ip_address(get_internal_ip(iface.name))
+            return ip.exploded
+        except ValueError:
+            pass
+
+    # ptusb0 & wlan_ap0 always have an IP address; check is performed differently
+    for iface in (NetworkInterface.ptusb0, NetworkInterface.wlan_ap0):
+        try:
+            iface_data = InterfaceNetworkData(iface.name)
+            if (
+                interface_is_up(iface.name)
+                and len(get_address_for_connected_device(network=iface_data.network))
+                > 0
+            ):
+                return iface_data.ip.exploded
+        except Exception:
+            pass
+
+    return ""
