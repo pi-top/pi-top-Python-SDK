@@ -1,13 +1,14 @@
+from pathlib import Path
 from threading import Thread
-from unittest import TestCase, skip
+from time import sleep
+from unittest import TestCase
 from unittest.mock import mock_open, patch
 
 from pitop.common.lock import PTLock  # noqa: E402
 
 
-@skip("Class changed - need to update tests")
 class PTLockTestCase(TestCase):
-    __dummy_lock_id = "dummy"
+    _dummy_lock_id = "dummy"
     lock_file_path = "/tmp/.com.pi-top.sdk.dummy.lock"
 
     def setUp(self):
@@ -15,81 +16,68 @@ class PTLockTestCase(TestCase):
         self.chmod_mock = self.chmod_patch.start()
         self.addCleanup(self.chmod_mock.stop)
 
+    def tearDown(self) -> None:
+        file = Path(self.lock_file_path)
+        if file.exists():
+            file.unlink()
+
     @patch("builtins.open", new_callable=mock_open())
     def test_instance_opens_file(self, m):
-        _ = PTLock(self.__dummy_lock_id)
+        _ = PTLock(self._dummy_lock_id)
         m.assert_called_with(self.lock_file_path, "w")
 
     @patch("pitop.common.lock.exists", return_value=True)
     def test_chmod_not_called_if_file_exist(self, exists_mock):
-        _ = PTLock(self.__dummy_lock_id)
+        _ = PTLock(self._dummy_lock_id)
         exists_mock.assert_called_once_with(self.lock_file_path)
         self.chmod_mock.assert_not_called()
 
     @patch("pitop.common.lock.exists", return_value=False)
     def test_chmod_is_called_if_file_doesnt_exist(self, exists_mock):
-        _ = PTLock(self.__dummy_lock_id)
+        _ = PTLock(self._dummy_lock_id)
         exists_mock.assert_called_once_with(self.lock_file_path)
         self.chmod_mock.assert_called_once_with(self.lock_file_path, 146)
 
-    def test_acquire_success(self):
-        lock = PTLock(self.__dummy_lock_id)
-        self.assertTrue(lock.acquire())
+    def test_is_locked_reports_correct_status(self):
+        lock = PTLock(self._dummy_lock_id)
+        self.assertFalse(lock.is_locked())
+        lock.acquire()
+        self.assertTrue(lock.is_locked())
 
-    def test_acquire_an_already_acquired_lock_by_same_object_fails(self):
-        lock = PTLock(self.__dummy_lock_id)
-        self.assertTrue(lock.acquire())
-        self.assertFalse(lock.acquire())
-
-    def test_release_a_locked_lock_by_same_object_returns_true(self):
-        lock = PTLock(self.__dummy_lock_id)
-        self.assertTrue(lock.acquire())
-        self.assertTrue(lock.release())
-
-    def test_release_a_locked_lock_by_other_object_fails(self):
-        lock1 = PTLock(self.__dummy_lock_id)
-        self.assertTrue(lock1.acquire())
-
-        lock2 = PTLock(self.__dummy_lock_id)
-        self.assertFalse(lock2.release())
-
-    def test_release_an_unlocked_lock_returns_false(self):
-        lock = PTLock(self.__dummy_lock_id)
-        self.assertFalse(lock.release())
-
-    def test_acquire_locks_all_instances(self):
-        lock1 = PTLock(self.__dummy_lock_id)
-        lock2 = PTLock(self.__dummy_lock_id)
-
+    def test_acquire_locks_other_instances(self):
+        lock1 = PTLock(self._dummy_lock_id)
         lock1.acquire()
-        for lock in (lock1, lock2):
-            self.assertTrue(lock.is_locked())
-        lock1.release()
+
+        lock2 = PTLock(self._dummy_lock_id)
+        self.assertTrue(lock2.is_locked())
+
+    def test_only_lock_owner_can_release_lock(self):
+        lock1 = PTLock(self._dummy_lock_id)
+        lock1.acquire()
+
+        lock2 = PTLock(self._dummy_lock_id)
+        self.assertRaises(RuntimeError, lock2.release)
+
+    def test_release_an_unlocked_lock_raises(self):
+        lock = PTLock(self._dummy_lock_id)
+        self.assertRaises(RuntimeError, lock.release)
 
     def test_acquire_locks_thread_until_unlocked(self):
         def acquire_lock(_lock: PTLock):
             _lock.acquire()
 
-        lock = PTLock(self.__dummy_lock_id)
+        lock = PTLock(self._dummy_lock_id)
         lock.acquire()
 
-        lock2 = PTLock(self.__dummy_lock_id)
-        thread = Thread(target=acquire_lock, args=[lock2])
+        lock2 = PTLock(self._dummy_lock_id)
+        thread = Thread(target=acquire_lock, args=[lock2], daemon=True)
         thread.start()
 
+        sleep(1)
+        # lock in thread is still waiting for it to be released
         self.assertTrue(thread.is_alive())
+
         lock.release()
         thread.join()
         self.assertFalse(thread.is_alive())
-
-    def test_is_locked_method(self):
-        lock1 = PTLock(self.__dummy_lock_id)
-        lock2 = PTLock(self.__dummy_lock_id)
-
-        lock1.acquire()
-        for lock in (lock1, lock2):
-            self.assertTrue(lock.is_locked())
-
-        lock1.release()
-        for lock in (lock1, lock2):
-            self.assertFalse(lock.is_locked())
+        self.assertTrue(lock2.is_locked())
