@@ -35,7 +35,7 @@ class ServoMotor(Stateful, Recreatable):
         self._pma_port = port_name
         self.name = name
 
-        self.__controller = ServoController(self._pma_port)
+        self._controller = ServoController(self._pma_port)
 
         self.__target_angle = 0.0
         self.__target_speed = self.__DEFAULT_SPEED
@@ -125,7 +125,7 @@ class ServoMotor(Stateful, Recreatable):
         if not self.__has_set_angle:
             return None, None
 
-        angle, speed = self.__controller.get_current_angle_and_speed()
+        angle, speed = self._controller.get_current_angle_and_speed()
         current_state = ServoMotorSetting()
         current_state.angle = angle - self.zero_point
         current_state.speed = speed
@@ -156,7 +156,7 @@ class ServoMotor(Stateful, Recreatable):
                 target_setting.speed = 20
                 servo.setting = target_setting
         """
-        self.__controller.set_target_angle(
+        self._controller.set_target_angle(
             target_state.angle + self.__zero_point, target_state.speed
         )
         self.__has_set_angle = True
@@ -176,7 +176,7 @@ class ServoMotor(Stateful, Recreatable):
                 "Current angle is unknown. "
                 "Please set a servo angle first to initialise the servo to an angle."
             )
-        angle, _ = self.__controller.get_current_angle_and_speed()
+        angle, _ = self._controller.get_current_angle_and_speed()
         return angle - self.zero_point
 
     @property
@@ -189,7 +189,7 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: float value of the current speed of the servo motor in deg/s.
         """
-        _, speed = self.__controller.get_current_angle_and_speed()
+        _, speed = self._controller.get_current_angle_and_speed()
         return speed
 
     @property
@@ -199,7 +199,7 @@ class ServoMotor(Stateful, Recreatable):
 
         :return: boolean value of the acceleration mode
         """
-        return self.__controller.get_acceleration_mode() == 1
+        return self._controller.get_acceleration_mode() == 1
 
     @smooth_acceleration.setter
     def smooth_acceleration(self, enabled: bool):
@@ -209,7 +209,7 @@ class ServoMotor(Stateful, Recreatable):
         :type enabled: bool
         :param enabled: acceleration mode state
         """
-        self.__controller.set_acceleration_mode(int(enabled))
+        self._controller.set_acceleration_mode(int(enabled))
 
     @property
     def target_angle(self):
@@ -231,7 +231,7 @@ class ServoMotor(Stateful, Recreatable):
                 f"Angle value must be from {self.__min_angle} to {self.__max_angle} degrees (inclusive)"
             )
         self.__target_angle = angle
-        self.__controller.set_target_angle(
+        self._controller.set_target_angle(
             self.__target_angle + self.__zero_point, self.__target_speed
         )
         self.__has_set_angle = True
@@ -291,4 +291,4 @@ class ServoMotor(Stateful, Recreatable):
             )
 
         angle = self.__min_angle if speed < 0 else self.__max_angle
-        self.__controller.set_target_angle(angle + self.__zero_point, speed)
+        self._controller.set_target_angle(angle + self.__zero_point, speed)

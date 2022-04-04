@@ -1,3 +1,4 @@
+from os import environ
 from sys import modules
 from unittest.mock import Mock
 
@@ -9,3 +10,6 @@ for module in [
     "atexit",
 ]:
     modules[module] = Mock()
+
+# use gpiozero fake pins
+environ["GPIOZERO_PIN_FACTORY"] = "mock"
