@@ -82,10 +82,11 @@ class PMAComponentStateKeysTestCase(TestCase):
         servo_motor.target_angle = 0
         self.assertEqual(set(servo_motor.own_state.keys()), {"angle", "speed"})
 
-    def test_camera_state_keys(self):
+    @patch("pitop.camera.camera.UsbCamera", autospec=True)
+    def test_camera_state_keys(self, _):
         from pitop import Camera
 
-        camera = Camera.from_file_system("/tmp")
+        camera = Camera()
         self.assertEqual(set(camera.own_state.keys()), {"running", "capture_actions"})
 
     def test_drive_controller_state_keys(self):
