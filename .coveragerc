@@ -1,11 +1,8 @@
 [run]
 source=pitop
-omit = tests/* \
-    setup.py \
-    *\__init__.py \
-    pitop/keyboard/vendor/* \
-    pitop/robotics/filterpy/* \
-    pitop/robotics/simple_pid/*
+omit = tests/*
 
-[coverage:report]
-skip_empty = true
+[report]
+skip_empty=true
+omit = pitop/keyboard/vendor/*,pitop/robotics/filterpy/*,pitop/robotics/simple_pid/*
+ignore_errors = True
