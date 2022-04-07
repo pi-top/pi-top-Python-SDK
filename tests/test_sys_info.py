@@ -66,9 +66,8 @@ class SysInfoTestCase(TestCase):
 
         assert get_maj_debian_version() == 99
 
-    @patch("pitop.common.sys_info.path")
-    def test_debian_maj_version_checks_if_version_file_exists(self, path_mock):
-        path_mock.exists.return_value = False
+    @patch("pitop.common.sys_info.path", return_value=False)
+    def test_debian_maj_version_checks_if_version_file_exists(self, _):
         from pitop.common.sys_info import get_maj_debian_version
 
         assert get_maj_debian_version() is None
