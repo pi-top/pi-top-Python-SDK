@@ -321,9 +321,11 @@ class Message:
 
 
 class PTDMRequestClient:
+    URI = "tcp://127.0.0.1:3782"
+
     def __init__(self):
-        self.__zmq_context = None
-        self.__zmq_socket = None
+        self._zmq_context = None
+        self._zmq_socket = None
 
     def __enter__(self):
         self.__connect_to_socket()
@@ -333,13 +335,13 @@ class PTDMRequestClient:
         self.__cleanup()
 
     def __connect_to_socket(self):
-        self.__zmq_context = zmq.Context()
-        self.__zmq_socket = self.__zmq_context.socket(zmq.REQ)
-        self.__zmq_socket.sndtimeo = _TIMEOUT_MS
-        self.__zmq_socket.rcvtimeo = _TIMEOUT_MS
+        self._zmq_context = zmq.Context()
+        self._zmq_socket = self._zmq_context.socket(zmq.REQ)
+        self._zmq_socket.sndtimeo = _TIMEOUT_MS
+        self._zmq_socket.rcvtimeo = _TIMEOUT_MS
 
         try:
-            self.__zmq_socket.connect("tcp://127.0.0.1:3782")
+            self._zmq_socket.connect(self.URI)
             logger.debug("pi-topd request client is ready")
 
         except zmq.error.ZMQError as e:
@@ -348,20 +350,20 @@ class PTDMRequestClient:
             raise
 
     def __cleanup(self):
-        if self.__zmq_socket is not None:
-            self.__zmq_socket.close(linger=0)
-            self.__zmq_socket = None
+        if self._zmq_socket is not None:
+            self._zmq_socket.close(linger=0)
+            self._zmq_socket = None
 
-        if self.__zmq_context is not None:
-            self.__zmq_context.destroy(linger=0)
-            self.__zmq_context = None
+        if self._zmq_context is not None:
+            self._zmq_context.destroy(linger=0)
+            self._zmq_context = None
 
     def send_request(self, message_request_id, parameters=list()):
         message = Message.from_parts(message_request_id, parameters)
         self.send_message(message)
 
     def send_message(self, message):
-        initialised = self.__zmq_socket is not None
+        initialised = self._zmq_socket is not None
 
         # Connect to socket if 'with' syntax was not used
         # This allows for one-off messages to be sent successfully
@@ -370,8 +372,8 @@ class PTDMRequestClient:
             self.__connect_to_socket()
 
         # Do exchange
-        self.__zmq_socket.send_string(message.to_string())
-        response_string = self.__zmq_socket.recv_string()
+        self._zmq_socket.send_string(message.to_string())
+        response_string = self._zmq_socket.recv_string()
 
         # Close socket connection if 'with' syntax was not used
         if not initialised:
@@ -404,6 +406,7 @@ class PTDMRequestClient:
 
 class PTDMSubscribeClient:
     __thread = Thread()
+    URI = "tcp://127.0.0.1:3781"
 
     def __init__(self):
         self.__thread = Thread(target=self.__thread_method)
@@ -411,18 +414,18 @@ class PTDMSubscribeClient:
 
         self.__callback_funcs = None
 
-        self.__zmq_context = None
-        self.__zmq_socket = None
+        self._zmq_context = None
+        self._zmq_socket = None
 
         self.__continue = False
 
     def __connect_to_socket(self):
-        self.__zmq_context = zmq.Context()
-        self.__zmq_socket = self.__zmq_context.socket(zmq.SUB)
-        self.__zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+        self._zmq_context = zmq.Context()
+        self._zmq_socket = self._zmq_context.socket(zmq.SUB)
+        self._zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
         try:
-            self.__zmq_socket.connect("tcp://127.0.0.1:3781")
+            self._zmq_socket.connect(self.URI)
             logger.debug("pi-topd subscribe client is ready")
 
         except zmq.error.ZMQError as e:
@@ -434,22 +437,22 @@ class PTDMSubscribeClient:
         return True
 
     def __cleanup(self):
-        if self.__zmq_socket is not None:
-            self.__zmq_socket.close(linger=0)
-            self.__zmq_socket = None
+        if self._zmq_socket is not None:
+            self._zmq_socket.close(linger=0)
+            self._zmq_socket = None
 
-        if self.__zmq_context is not None:
-            self.__zmq_context.destroy(linger=0)
-            self.__zmq_context = None
+        if self._zmq_context is not None:
+            self._zmq_context.destroy(linger=0)
+            self._zmq_context = None
 
     def __thread_method(self):
         poller = zmq.Poller()
-        poller.register(self.__zmq_socket, zmq.POLLIN)
+        poller.register(self._zmq_socket, zmq.POLLIN)
         while self.__continue:
             events = poller.poll(_TIMEOUT_MS)
 
             for i in range(len(events)):
-                message_string = self.__zmq_socket.recv_string()
+                message_string = self._zmq_socket.recv_string()
                 message = Message.from_string(message_string)
 
                 id = message.message_id()
