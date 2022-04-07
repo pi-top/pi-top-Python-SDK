@@ -241,7 +241,7 @@ class Message:
             raise ValueError("Message did not have an id")
 
         if TypeHelper.is_integer(message_parts[0]) is False:
-            raise ValueError("Message id was not an integer")
+            raise ValueError(f"Message id '{message_parts[0]}' is not an integer")
 
         self._message_id = int(message_parts[0])
         self._parameters = message_parts[1:]
@@ -467,9 +467,10 @@ class PTDMSubscribeClient:
 
         func_arg_no = len(signature(func).parameters)
         if func_arg_no > 1:
-            raise ValueError(
+            logger.error(
                 "Invalid callback function - it should receive at most one argument."
             )
+            return ""
 
         if params == list() or func_arg_no == 0:
             func()
