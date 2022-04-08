@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 for module in [
     "pitop.common.ptdm.zmq",
+    "imageio",
     "zmq",
     "smbus2",
     "smbus",

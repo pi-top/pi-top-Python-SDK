@@ -17,10 +17,7 @@ class UsbCamera:
         flip_top_bottom: bool = False,
         flip_left_right: bool = False,
     ):
-
-        VideoCapture = import_opencv().VideoCapture
-
-        self.__camera = None
+        self._camera = None
         self.index = -1 if index is None else index
 
         self._flip_top_bottom = flip_top_bottom
@@ -36,23 +33,23 @@ class UsbCamera:
             self._rotate_angle = rotate_angle
 
         def create_camera_object(index, resolution=None):
-            cap = VideoCapture(index)
+            cap = import_opencv().VideoCapture(index)
             if resolution is not None:
                 cap.set(3, resolution[0])
                 cap.set(4, resolution[1])
             return cap
 
-        self.__camera = create_camera_object(self.index, resolution)
+        self._camera = create_camera_object(self.index, resolution)
         if not self.is_opened():
-            self.__camera = None
+            self._camera = None
             raise IOError(
                 "Error opening camera. Make sure it's correctly connected via USB."
             ) from None
 
     def __del__(self):
         try:
-            if hasattr(self.__camera, "release"):
-                self.__camera.release()
+            if hasattr(self._camera, "release"):
+                self._camera.release()
         except AttributeError:
             # Camera was not initialized
             pass
@@ -61,7 +58,7 @@ class UsbCamera:
         if not self.is_opened():
             raise IOError("Camera not connected")
 
-        result, frame = self.__camera.read()
+        result, frame = self._camera.read()
         if not result:
             raise ValueError("Couldn't grab frame from camera")
 
@@ -77,7 +74,7 @@ class UsbCamera:
         return pil_image
 
     def is_opened(self):
-        return self.__camera is not None and self.__camera.isOpened()
+        return self._camera is not None and self._camera.isOpened()
 
     @staticmethod
     def list_device_indexes():
