@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
+import pytest
+
 from tests.utils import wait_until
 
 
@@ -19,6 +21,7 @@ class PTDMSubscribeClientTestCase(TestCase):
         self.poller_mock.poll.return_value = [1]
         self.addCleanup(self.zmq_patch.stop)
 
+    @pytest.mark.flaky(reruns=3)
     def test_callback_called_when_message_is_published(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
