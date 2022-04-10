@@ -16,7 +16,7 @@ class PTDMSubscribeClientTestCase(TestCase):
         self.context_mock.socket.return_value = self.socket_mock
         self.zmq_mock.Context.return_value = self.context_mock
         self.zmq_mock.Poller.return_value = self.poller_mock
-        self.poller_mock.poll.return_value = [1]
+        self.poller_mock.poll.return_value = []
         self.addCleanup(self.zmq_patch.stop)
 
     @skip
@@ -102,7 +102,7 @@ class PTDMRequestClientTestCase(TestCase):
         self.context_mock.socket.return_value = self.socket_mock
         self.zmq_mock.Context.return_value = self.context_mock
         self.zmq_mock.Poller.return_value = self.poller_mock
-        self.poller_mock.poll.return_value = [1]
+        self.poller_mock.poll.return_value = []
         self.addCleanup(self.zmq_patch.stop)
 
     def test_uri(self):

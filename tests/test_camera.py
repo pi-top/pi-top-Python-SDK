@@ -28,6 +28,10 @@ class CameraTestCase(TestCase):
 
         self.Camera = Camera
 
+    def tearDown(self):
+        if hasattr(self.Camera, "_camera"):
+            self.Camera._camera = None
+
     def test_uses_usb_camera_by_default(self):
         from pitop.camera.core.cameras.usb_camera import UsbCamera
 
