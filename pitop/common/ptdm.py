@@ -451,7 +451,7 @@ class PTDMSubscribeClient:
         while self.__continue:
             events = poller.poll(_TIMEOUT_MS)
 
-            for i in range(len(events)):
+            for _ in range(len(events)):
                 message_string = self._zmq_socket.recv_string()
                 message = Message.from_string(message_string)
 

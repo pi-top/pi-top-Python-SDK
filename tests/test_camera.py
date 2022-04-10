@@ -175,7 +175,7 @@ class CameraTestCase(TestCase):
         with self.assertRaises(ValueError):
             c.start_detecting_motion(callback)
 
-    def test_start_handling_frames_registers_action_on_frame_handler(self):
+    def test_handling_frames_registers_action_on_frame_handler(self):
         from pitop.camera.core import CaptureActions
 
         c = self.Camera()
@@ -186,15 +186,6 @@ class CameraTestCase(TestCase):
         c.start_handling_frames(callback)
         self.assertTrue(c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME))
 
-    def test_stop_handling_frames_motion_removes_action_on_frame_handler(self):
-        from pitop.camera.core import CaptureActions
-
-        c = self.Camera()
-
-        def callback(frame):
-            return
-
-        c.start_handling_frames(callback)
         c.stop_handling_frames()
         self.assertFalse(
             c._frame_handler.is_running_action(CaptureActions.HANDLE_FRAME)
