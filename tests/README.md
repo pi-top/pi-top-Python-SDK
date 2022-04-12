@@ -24,7 +24,7 @@ Then, run the tests with:
 $ docker run \
     --rm \
     -it \
-    --volume $PWD:/sdk \
+    --volume "$PWD/..":/sdk \
     --workdir /sdk \
     --entrypoint=pytest \
     sdk-test-runner \
