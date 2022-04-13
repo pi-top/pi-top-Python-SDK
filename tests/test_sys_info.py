@@ -49,25 +49,30 @@ class SysInfoTestCase(TestCase):
 
         get_debian_version() == "bullseye/sid"
 
+    @patch("pitop.common.sys_info.path")
     @patch(
         "pitop.common.sys_info.open", new_callable=mock_open, read_data="VERSION_ID=99"
     )
-    def test_debian_maj_version_checks_os_release_file(self, open_mock):
+    def test_debian_maj_version_checks_os_release_file(self, open_mock, path_mock):
+        path_mock.exists = Mock(return_value=True)
         from pitop.common.sys_info import get_maj_debian_version
 
         get_maj_debian_version()
         open_mock.assert_called_with("/etc/os-release", "r")
 
+    @patch("pitop.common.sys_info.path")
     @patch(
         "pitop.common.sys_info.open", new_callable=mock_open, read_data="VERSION_ID=99"
     )
-    def test_debian_maj_version_content(self, _):
+    def test_debian_maj_version_content(self, open_mock, path_mock):
+        path_mock.exists = Mock(return_value=True)
         from pitop.common.sys_info import get_maj_debian_version
 
         assert get_maj_debian_version() == 99
 
-    @patch("pitop.common.sys_info.path", return_value=False)
-    def test_debian_maj_version_checks_if_version_file_exists(self, _):
+    @patch("pitop.common.sys_info.path")
+    def test_debian_maj_version_checks_if_version_file_exists(self, path_mock):
+        path_mock.exists = Mock(return_value=False)
         from pitop.common.sys_info import get_maj_debian_version
 
         assert get_maj_debian_version() is None
