@@ -27,8 +27,10 @@ class SysInfoTestCase(TestCase):
             response_mock.machine = machine
             assert is_pi() is expected_value
 
+    @patch("pitop.common.sys_info.path")
     @patch("pitop.common.sys_info.open", new_callable=mock_open())
-    def test_debian_version_checks_version_file(self, open_mock):
+    def test_debian_version_checks_version_file(self, open_mock, path_mock):
+        path_mock.exists.return_value = True
         from pitop.common.sys_info import get_debian_version
 
         get_debian_version()
@@ -41,10 +43,12 @@ class SysInfoTestCase(TestCase):
 
         assert get_debian_version() is None
 
+    @patch("pitop.common.sys_info.path")
     @patch(
         "pitop.common.sys_info.open", new_callable=mock_open(), read_data="bullseye/sid"
     )
-    def test_debian_version_returns_file_content(self, _):
+    def test_debian_version_returns_file_content(self, open_mock, path_mock):
+        path_mock.exists.return_value = True
         from pitop.common.sys_info import get_debian_version
 
         get_debian_version() == "bullseye/sid"
