@@ -55,7 +55,7 @@ class Camera(Stateful, Recreatable):
         self._flip_left_right = flip_left_right
 
         if self._camera_type == CameraTypes.USB_CAMERA:
-            self.__camera = UsbCamera(
+            self._camera = UsbCamera(
                 index=self._index,
                 resolution=self._resolution,
                 flip_top_bottom=flip_top_bottom,
@@ -64,15 +64,15 @@ class Camera(Stateful, Recreatable):
             )
 
         elif self._camera_type == CameraTypes.FILE_SYSTEM_CAMERA:
-            self.__camera = FileSystemCamera(self._path_to_images)
+            self._camera = FileSystemCamera(self._path_to_images)
 
-        self.__continue_processing = True
-        self.__frame_handler = FrameHandler()
-        self.__new_frame_event = Event()
-        self.__process_image_thread = Thread(
+        self._continue_processing = True
+        self._frame_handler = FrameHandler()
+        self._new_frame_event = Event()
+        self._process_image_thread = Thread(
             target=self.__process_camera_output, daemon=True
         )
-        self.__process_image_thread.start()
+        self._process_image_thread.start()
 
         self.name = name
         Stateful.__init__(self)
@@ -96,8 +96,8 @@ class Camera(Stateful, Recreatable):
     @property
     def own_state(self):
         return {
-            "running": lambda: self.__process_image_thread.is_alive(),
-            "capture_actions": lambda: self.__frame_handler.current_actions(),
+            "running": lambda: self._process_image_thread.is_alive(),
+            "capture_actions": lambda: self._frame_handler.current_actions(),
         }
 
     @classmethod
@@ -124,22 +124,22 @@ class Camera(Stateful, Recreatable):
         return cls(camera_type=CameraTypes.USB_CAMERA, index=index)
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.__camera = None
-        self.__continue_processing = False
-        if self.__process_image_thread.is_alive():
-            self.__process_image_thread.join()
+        self._camera = None
+        self._continue_processing = False
+        if self._process_image_thread.is_alive():
+            self._process_image_thread.join()
 
     def is_recording(self):
         """Returns True if recording mode is enabled."""
 
-        return self.__frame_handler.is_running_action(
+        return self._frame_handler.is_running_action(
             CaptureActions.CAPTURE_VIDEO_TO_FILE
         )
 
     def is_detecting_motion(self):
         """Returns True if motion detection mode is enabled."""
 
-        return self.__frame_handler.is_running_action(CaptureActions.DETECT_MOTION)
+        return self._frame_handler.is_running_action(CaptureActions.DETECT_MOTION)
 
     @type_check
     def capture_image(self, output_file_name=""):
@@ -153,7 +153,7 @@ class Camera(Stateful, Recreatable):
             The filename into which to write the image.
         """
 
-        self.__frame_handler.register_action(
+        self._frame_handler.register_action(
             CaptureActions.CAPTURE_SINGLE_FRAME, {"output_file_name": output_file_name}
         )
 
@@ -180,7 +180,7 @@ class Camera(Stateful, Recreatable):
             "fps": fps,
             "resolution": resolution,
         }
-        self.__frame_handler.register_action(CaptureActions.CAPTURE_VIDEO_TO_FILE, args)
+        self._frame_handler.register_action(CaptureActions.CAPTURE_VIDEO_TO_FILE, args)
 
     def stop_video_capture(self):
         """Stop capturing video from the camera.
@@ -189,7 +189,7 @@ class Camera(Stateful, Recreatable):
         called.
         """
 
-        self.__frame_handler.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
+        self._frame_handler.remove_action(CaptureActions.CAPTURE_VIDEO_TO_FILE)
 
     @type_check
     def start_detecting_motion(
@@ -220,7 +220,7 @@ class Camera(Stateful, Recreatable):
             raise ValueError(
                 "Invalid callback signature: it should receive at most one argument."
             )
-        self.__frame_handler.register_action(CaptureActions.DETECT_MOTION, args)
+        self._frame_handler.register_action(CaptureActions.DETECT_MOTION, args)
 
     def stop_detecting_motion(self):
         """Stop running the motion detection processing.
@@ -229,7 +229,7 @@ class Camera(Stateful, Recreatable):
         called.
         """
 
-        self.__frame_handler.remove_action(CaptureActions.DETECT_MOTION)
+        self._frame_handler.remove_action(CaptureActions.DETECT_MOTION)
 
     @type_check
     def start_handling_frames(self, callback_on_frame, frame_interval=1, format=None):
@@ -267,7 +267,7 @@ class Camera(Stateful, Recreatable):
             raise ValueError(
                 "Invalid callback signature: it should receive at least one argument."
             )
-        self.__frame_handler.register_action(CaptureActions.HANDLE_FRAME, args)
+        self._frame_handler.register_action(CaptureActions.HANDLE_FRAME, args)
 
     def stop_handling_frames(self):
         """Stops handling camera frames.
@@ -276,26 +276,29 @@ class Camera(Stateful, Recreatable):
         called.
         """
 
-        self.__frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
+        self._frame_handler.remove_action(CaptureActions.HANDLE_FRAME)
 
     def __get_processed_current_frame(self):
-        image = self.__frame_handler.frame
-
+        image = self._frame_handler.frame
         if self.format.lower() == "opencv":
             image = ImageFunctions.convert(image, format="opencv")
 
         return image
 
     def __process_camera_output(self):
-        while self.__camera and self.__continue_processing is True:
-            self.__frame_handler.frame = self.__camera.get_frame()
-            self.__new_frame_event.set()
+        while (
+            self._camera
+            and self._camera.is_opened()
+            and self._continue_processing is True
+        ):
+            self._frame_handler.frame = self._camera.get_frame()
+            self._new_frame_event.set()
 
             if callable(self.on_frame):
                 self.on_frame(self.__get_processed_current_frame())
 
             try:
-                self.__frame_handler.process()
+                self._frame_handler.process()
             except Exception as e:
                 print(f"Error in camera frame handler: {e}")
 
@@ -331,7 +334,7 @@ class Camera(Stateful, Recreatable):
                 "Please set the 'camera.format' property directly, and call this function without 'format' parameter."
             )
 
-        self.__new_frame_event.wait()
-        self.__new_frame_event.clear()
+        self._new_frame_event.wait()
+        self._new_frame_event.clear()
 
         return self.__get_processed_current_frame()

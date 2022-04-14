@@ -1,5 +1,5 @@
 import os
-from unittest import TestCase, skip
+from unittest import TestCase
 
 import cv2
 import numpy as np
@@ -30,7 +30,6 @@ face_filenames = [
 ]
 
 
-@skip
 class TestFaceAndEmotionDetector(TestCase):
     def setUp(self):
         self._height = 480
