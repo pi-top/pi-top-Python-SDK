@@ -10,8 +10,6 @@ from isc_dhcp_leases import IscDhcpLeases
 
 from pitop.common.command_runner import run_command
 
-_, _, _, _, machine = uname()
-
 
 class NetworkInterface(Enum):
     eth0 = auto()
@@ -21,7 +19,7 @@ class NetworkInterface(Enum):
 
 
 def is_pi() -> bool:
-    return machine in ("armv7l", "aarch64")
+    return uname().machine in ("armv7l", "aarch64")
 
 
 def get_uname_release() -> str:
@@ -42,22 +40,20 @@ def get_debian_version() -> str:
 
 
 def get_maj_debian_version() -> str:
-    version = None
-    with open("/etc/os-release", "r") as f:
-        for line in f:
-            if "VERSION_ID=" in line:
-                quote_wrapped_version = line.split("=")[1]
-                version_str = quote_wrapped_version.replace('"', "").replace("\n", "")
-                try:
-                    version = int(version_str)
-                except ValueError:
-                    version = None
-                break
-
-    try:
-        return int(version)
-    except ValueError:
+    os_release_file = "/etc/os-release"
+    if not path.exists(os_release_file):
         return None
+    with open(os_release_file, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            if "VERSION_ID=" not in line:
+                continue
+            quote_wrapped_version = line.split("=")[1]
+            version_str = quote_wrapped_version.replace('"', "").replace("\n", "")
+            try:
+                return int(version_str)
+            except ValueError:
+                pass
 
 
 def get_network_strength(iface) -> str:
@@ -151,18 +147,15 @@ def get_systemd_enabled_state(service_to_check: str) -> str:
 
 
 def get_ssh_enabled_state() -> bool:
-    ssh_enabled_state = get_systemd_enabled_state("ssh")
-    return ssh_enabled_state
+    return get_systemd_enabled_state("ssh")
 
 
 def get_vnc_enabled_state() -> bool:
-    vnc_enabled_state = get_systemd_enabled_state("vncserver-x11-serviced.service")
-    return vnc_enabled_state
+    return get_systemd_enabled_state("vncserver-x11-serviced.service")
 
 
 def get_pt_further_link_enabled_state() -> bool:
-    vnc_enabled_state = get_systemd_enabled_state("further-link.service")
-    return vnc_enabled_state
+    return get_systemd_enabled_state("further-link.service")
 
 
 def get_ap_mode_status() -> Dict:
@@ -194,7 +187,6 @@ def interface_is_up(interface_name: str) -> bool:
     contents = ""
     with open(operstate_file, "r") as file:
         contents = file.read()
-
     return "up" in contents
 
 

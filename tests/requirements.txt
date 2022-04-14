@@ -2,13 +2,16 @@
 pytest
 pytest-cov
 pytest-mock
+pytest-rerunfailures
 parameterized
 # Dependencies
 dlib
 gpiozero
 imutils
+isc_dhcp_leases
 matplotlib
 numpy
+netifaces
 onnxruntime
 opencv-python
 flask
