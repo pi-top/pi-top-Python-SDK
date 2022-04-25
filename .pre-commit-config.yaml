@@ -11,6 +11,9 @@ repos:
     - id: check-yaml
     - id: check-symlinks
     - id: check-added-large-files
+    - id: file-contents-sorter
+      files: '^debian/py3dist-overrides$'
+    - id: no-commit-to-branch
 
 -   repo: https://github.com/myint/docformatter
     rev: v1.4
