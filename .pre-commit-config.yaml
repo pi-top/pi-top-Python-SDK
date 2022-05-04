@@ -42,8 +42,18 @@ repos:
     hooks:
     - id: flake8
 
-# -   repo: https://github.com/pre-commit/mirrors-mypy
-#     rev: v0.910
-#     hooks:
-#     -   id: mypy
-#         additional_dependencies: [types-all]
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910
+    hooks:
+    -   id: mypy
+        additional_dependencies: [
+            "types-all",  # A shim for the typeshed changes in mypy 0.900
+        ]
+        # "--ignore-missing-imports" prevents "Cannot find implementation or library stub for module"
+        # in pre-commit virtualenv
+        args: [
+            "--ignore-missing-imports",
+            "--strict",
+            "--implicit-reexport"
+        ]
+        exclude: ^examples
