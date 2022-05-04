@@ -1,3 +1,17 @@
+pi-top-python-sdk (0.24.0-2) bullseye; urgency=medium
+
+  * Remove distutils dependency (#519)
+  * Fix pyinput references (#518)
+  * Add helper to get pi-top IP address (#521)
+  * [pre-commit.ci] pre-commit autoupdate (#523)
+  * Fix D7 port secondary GPIO pin (#524)
+  * Improve SDK test coverage (#522)
+  * [pre-commit.ci] pre-commit autoupdate (#525)
+  * New changelog entry: v0.24.0-1 (#520)
+  * fix: changelog (#528)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 04 May 2022 19:27:12 +0000
+
 pi-top-python-sdk (0.24.0-1) bullseye; urgency=medium
 
   * Remove distutils dependency (#519)
