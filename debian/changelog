@@ -6,7 +6,7 @@ pi-top-python-sdk (0.24.0-1) bullseye; urgency=medium
   * Fix D7 port secondary GPIO pin (#524)
   * Improve SDK test coverage (#522)
 
- -- pi-top <deb-maintainers@pi-top.com>  Wed, 5 May 2022 16:21:30 +0000
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 4 May 2022 16:21:30 +0000
 
 pi-top-python-sdk (0.23.0-1) bullseye; urgency=medium
 
