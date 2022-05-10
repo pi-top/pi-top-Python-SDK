@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.24.1-2) bullseye; urgency=medium
+
+  * Use PAT when creating release (#533)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 10 May 2022 19:48:03 +0000
+
 pi-top-python-sdk (0.24.1-1) bullseye; urgency=medium
 
   * Add module folder to sys.path (#530)
