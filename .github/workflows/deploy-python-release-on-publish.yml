@@ -1,9 +1,6 @@
 name: Deploy Published Python Release
 
 on:
-  push:
-    branches:
-      - "ci-test-publish-release-*"
   release:
     types:
       - published
