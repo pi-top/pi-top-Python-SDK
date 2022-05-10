@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.24.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.24.1-1) bullseye; urgency=medium
 
   * Add module folder to sys.path (#530)
   * fix: update forgotten version number file (#531)
