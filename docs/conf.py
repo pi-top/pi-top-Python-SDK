@@ -6,6 +6,7 @@
 
 import importlib.util
 import os
+import sys
 
 # -- Path setup --------------------------------------------------------------
 
@@ -16,6 +17,7 @@ import os
 #
 HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
+sys.path.append(PARENT)
 
 # -- Project information -----------------------------------------------------
 
@@ -30,7 +32,7 @@ spec.loader.exec_module(modulevar)
 project = "pitop"
 author = "pi-top (CEED Ltd)"
 release = modulevar.__version__
-copyright = "pi-top 2021"
+copyright = "pi-top 2022"
 
 # -- General configuration ---------------------------------------------------
 
