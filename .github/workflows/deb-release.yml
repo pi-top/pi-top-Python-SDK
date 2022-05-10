@@ -85,3 +85,4 @@ jobs:
           draft: false
           prerelease: false
           files: ./artifacts/*
+          token: ${{ secrets.PAT_GITHUB }}
