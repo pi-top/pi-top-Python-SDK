@@ -25,6 +25,7 @@ class OLED:
 
         self.__visible = False
         self.__auto_play_thread = None
+        self._contrast = 255
 
         self.reset()
 
@@ -173,8 +174,11 @@ class OLED:
         :param int new_contrast_value: contrast value to set, between 0 and 255.
         """
         assert new_contrast_value in range(0, 256)
-
+        self._contrast = new_contrast_value
         self.device.contrast(new_contrast_value)
+
+    def get_contrast(self):
+        return self._contrast
 
     def wake(self):
         """The miniscreen display is set to high contrast mode, without
