@@ -9,7 +9,6 @@ from PIL import Image
 from tests.utils import wait_until
 
 
-@skip
 class CameraTestCase(TestCase):
     def setUp(self):
         from pitop.camera.core.cameras.file_system_camera import FsImage
