@@ -1,5 +1,5 @@
 from threading import Thread
-from time import perf_counter
+from time import perf_counter, sleep
 from unittest import TestCase, skip
 from unittest.mock import Mock, patch
 
@@ -90,8 +90,18 @@ class CameraTestCase(TestCase):
         c = self.Camera()
         c.format = "OpenCV"
         frame = c.current_frame()
-        if frame:
-            self.assertIsInstance(frame, numpy.ndarray)
+
+        timeout = 0
+        MAX_TIMEOUT = 5
+        sleep_time = 0.1
+        while frame is None and timeout < MAX_TIMEOUT:
+            sleep(sleep_time)
+            timeout += sleep_time
+            frame = c.current_frame()
+
+        if timeout >= MAX_TIMEOUT:
+            raise TimeoutError
+        self.assertIsInstance(frame, numpy.ndarray)
 
     def test_current_frame_does_not_block(self):
         c = self.Camera(4)
