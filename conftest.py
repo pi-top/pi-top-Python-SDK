@@ -12,6 +12,7 @@ for module in [
     "smbus2",
     "smbus",
     "atexit",
+    "logging",
 ]:
     modules[module] = Mock()
 
