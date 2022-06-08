@@ -56,7 +56,7 @@ jobs:
      - name: Run Python tests and generate coverage report
        run: |
          python3 -m pytest --verbose --cov-report term-missing --cov=pitop --capture=no
-         coverage xml
+         python3 -m coverage xml
 
      - name: Upload Python test coverage reports to Codecov
        uses: codecov/codecov-action@v2.1.0
