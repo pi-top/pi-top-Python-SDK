@@ -409,8 +409,7 @@ class PTDMSubscribeClient:
     URI = "tcp://127.0.0.1:3781"
 
     def __init__(self):
-        self.__thread = Thread(target=self.__thread_method)
-        self.__thread.setDaemon(True)
+        self.__thread = Thread(target=self.__thread_method, daemon=True)
 
         self.__callback_funcs = None
 
