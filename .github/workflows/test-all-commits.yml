@@ -21,6 +21,19 @@ jobs:
          cache: 'pip'
          cache-dependency-path: 'tests/requirements.txt'
 
+     - name: Cache python dependencies
+       id: cache-python-deps
+       uses: actions/cache@v3
+       env:
+         cache-name: cache-python-dependencies
+       with:
+         path: ~/.cache/pip
+         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}
+         restore-keys: |
+           ${{ runner.os }}-build-${{ env.cache-name }}-
+           ${{ runner.os }}-build-
+           ${{ runner.os }}-
+
      - name: Install pip dependencies
        run: pip3 install -r tests/requirements.txt
 
