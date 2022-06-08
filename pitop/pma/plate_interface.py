@@ -18,6 +18,9 @@ class PlateInterface(metaclass=Singleton):
         self.__mcu_thread_lock = Lock()
         self.__heartbeat_thread = None
 
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.__disconnect_mcu()
+
     def __del__(self):
         self.__disconnect_mcu()
 

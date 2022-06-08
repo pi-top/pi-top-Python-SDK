@@ -212,7 +212,8 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self._filtered_distance = np.median(self.__data_queue)
         self.__new_reading_event.set()
         self.__new_reading_event.clear()
-        s.enter(self._data_read_dt, 1, self.__read_loop, (s,))
+        if self._continue_processing:
+            s.enter(self._data_read_dt, 1, self.__read_loop, (s,))
 
     def __state_monitor(self):
         while self._continue_processing:
