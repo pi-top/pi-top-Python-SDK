@@ -144,6 +144,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self.__new_reading_event = Event()
         self.__activated_event = Event()
         self.__deactivated_event = Event()
+        self._continue_processing = True
 
         if self.__partial:
             self.__data_ready = True
@@ -160,6 +161,11 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self.__state_check.start()
 
         atexit.register(self.close)
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self._continue_processing = False
+        if self._process_image_thread.is_alive():
+            self._process_image_thread.join()
 
     def __configure_mcu(self):
         self.__mcu_device.write_byte(
@@ -209,7 +215,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         s.enter(self._data_read_dt, 1, self.__read_loop, (s,))
 
     def __state_monitor(self):
-        while True:
+        while self._continue_processing:
             self.__new_reading_event.wait()
             if self.__data_ready:
                 self.__check_for_state_change()
@@ -243,7 +249,7 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         self.__deactivated_event.clear()
 
     def __queue_filled_check(self):
-        while True:
+        while self._continue_processing:
             self.__new_reading_event.wait()
             if self.__queue_len == len(self.__data_queue):
                 self.__data_ready = True

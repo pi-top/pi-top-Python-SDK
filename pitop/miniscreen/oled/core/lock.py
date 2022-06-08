@@ -10,6 +10,11 @@ class MiniscreenLockFileMonitor:
         self.when_user_starts_using_oled = None
         self.lock_path = lock_path
 
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.__continue = False
+        if self.__thread.is_alive():
+            self.__thread.join()
+
     def _monitor_lockfile(self):
         eh = ProcessEvent()
         events_to_watch = 0

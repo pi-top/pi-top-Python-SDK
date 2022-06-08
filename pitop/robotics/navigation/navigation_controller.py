@@ -115,7 +115,6 @@ class NavigationController(DriveController):
                 )
 
         self._on_finish = verify_callback(on_finish)
-
         self._nav_thread = Thread(
             target=self.__navigate,
             args=(
@@ -128,6 +127,10 @@ class NavigationController(DriveController):
         self._nav_thread.start()
 
         return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self._nav_thread.is_alive():
+            self._nav_thread.join()
 
     def __navigate(self, position, angle, backwards):
         self.__navigation_started()
@@ -218,11 +221,11 @@ class NavigationController(DriveController):
     def stop_navigation(self):
         # don't call callback if user has terminated navigation manually
         self._on_finish = None
-        self.navigator.stop_triggered = True
+        self.navigator._stop_triggered = True
         try:
             self._nav_thread.join()
         except Exception:
-            pass
+            raise
         self.__navigation_finished()
 
     def stop_movement(self):
@@ -230,7 +233,7 @@ class NavigationController(DriveController):
 
     def __navigation_started(self):
         self.in_progress = True
-        self.navigator.stop_triggered = False
+        self.navigator._stop_triggered = False
 
     def __navigation_finished(self):
         self.in_progress = False

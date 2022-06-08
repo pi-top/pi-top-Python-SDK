@@ -418,6 +418,11 @@ class PTDMSubscribeClient:
 
         self.__continue = False
 
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.__continue = False
+        if self.__thread.is_alive():
+            self.__thread.join()
+
     def __connect_to_socket(self):
         self._zmq_context = zmq.Context()
         self._zmq_socket = self._zmq_context.socket(zmq.SUB)
