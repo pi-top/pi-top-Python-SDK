@@ -26,16 +26,28 @@ jobs:
        run: |
          echo "::set-output name=dir::$(pip cache dir)"
 
-     - name: Cache python dependencies
-       id: cache-python-deps
+     - name: Cache python downloaded dependencies
+       id: cache-python-downloaded-deps
        uses: actions/cache@v3
        env:
-         cache-name: cache-python-dependencies
+         cache-name: cache-python-downloaded-dependencies
        with:
          path: ${{ steps.pip-cache.outputs.dir }}
          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
          restore-keys: |
-           ${{ runner.os }}-build-
+           ${{ runner.os }}-pip-
+           ${{ runner.os }}-
+
+     - name: Cache python built dependencies
+       id: cache-python-built-deps
+       uses: actions/cache@v3
+       env:
+         cache-name: cache-python-built-dependencies
+       with:
+         path: ${{ env.pythonLocation }}/lib/python3.9/site-packages/
+         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+         restore-keys: |
+           ${{ runner.os }}-pip-
            ${{ runner.os }}-
 
      - name: Install pip dependencies
