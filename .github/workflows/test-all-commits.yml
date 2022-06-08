@@ -21,16 +21,20 @@ jobs:
          cache: 'pip'
          cache-dependency-path: 'tests/requirements.txt'
 
+     - name: Get pip cache dir
+       id: pip-cache
+       run: |
+         echo "::set-output name=dir::$(pip cache dir)"
+
      - name: Cache python dependencies
        id: cache-python-deps
        uses: actions/cache@v3
        env:
          cache-name: cache-python-dependencies
        with:
-         path: ~/.cache/pip
-         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}
+         path: ${{ steps.pip-cache.outputs.dir }}
+         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
          restore-keys: |
-           ${{ runner.os }}-build-${{ env.cache-name }}-
            ${{ runner.os }}-build-
            ${{ runner.os }}-
 
