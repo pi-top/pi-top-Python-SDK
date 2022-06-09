@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.24.1-2) bullseye; urgency=medium
+
+  * Automatically create release on changelog PR merge (#537)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 09 Jun 2022 20:12:27 +0000
+
 pi-top-python-sdk (0.24.1-1) bullseye; urgency=medium
 
   * Add module folder to sys.path (#530)
