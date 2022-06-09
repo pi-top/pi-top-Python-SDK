@@ -50,6 +50,17 @@ jobs:
            ${{ runner.os }}-pip-
            ${{ runner.os }}-
 
+     - name: Cache shape predictors
+       id: cache-sdk-shape-predictors
+       uses: actions/cache@v3
+       env:
+         cache-name: cache-sdk-shape-predictors
+       with:
+         path: ~/.config/pi-top/sdk/models/
+         key: ${{ runner.os }}-sdk-shape-predictors
+         restore-keys: |
+           ${{ runner.os }}-sdk-shape-predictors
+
      - name: Install pip dependencies
        run: pip3 install -r tests/requirements.txt
 
