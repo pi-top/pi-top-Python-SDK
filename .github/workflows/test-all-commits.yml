@@ -57,9 +57,9 @@ jobs:
          cache-name: cache-sdk-shape-predictors
        with:
          path: ~/.config/pi-top/sdk/models/
-         key: ${{ runner.os }}-sdk-shape-predictors
+         key: ${{ runner.os }}-sdk-shape-predictors-${{ hashFiles('~/.config/pi-top/sdk/models/**') }}
          restore-keys: |
-           ${{ runner.os }}-sdk-shape-predictors
+           ${{ runner.os }}-sdk-shape-predictors-
 
      - name: Install pip dependencies
        run: pip3 install -r tests/requirements.txt
