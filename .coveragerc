@@ -1,8 +1,8 @@
 [run]
 source = pitop
-omit = tests/*
+omit = .git/*,docs/*,examples/*,debian/*,tests/*,pitop/keyboard/vendor/*,pitop/robotics/filterpy/*,pitop/robotics/simple_pid/*
 
 [report]
 skip_empty = true
-omit = pitop/keyboard/vendor/*,pitop/robotics/filterpy/*,pitop/robotics/simple_pid/*
+omit = pitop/keyboard/vendor/*,pitop/robotics/filterpy/*,pitop/robotics/simple_pid/*,examples/*
 ignore_errors = True
