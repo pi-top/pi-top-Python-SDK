@@ -23,7 +23,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
         with:
           submodules: true
           fetch-depth: 0
@@ -69,7 +69,7 @@ jobs:
             TLS_KEY="${{ secrets.TLS_KEY }}"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "dsc"
           path: "./artifacts"
