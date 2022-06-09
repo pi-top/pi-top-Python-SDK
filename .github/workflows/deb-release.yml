@@ -6,7 +6,7 @@ on:
       - master
   pull_request:
     branches:
-      - bump-changelog
+      - master
     types: [closed]
 
 
@@ -20,7 +20,7 @@ env:
 jobs:
   release:
     runs-on: ubuntu-20.04
-    if: github.event.pull_request.merged || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.4.0
