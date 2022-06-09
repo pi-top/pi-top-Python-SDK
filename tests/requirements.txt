@@ -3,7 +3,6 @@ pytest
 pytest-cov
 pytest-mock
 pytest-rerunfailures
-parameterized
 # Dependencies
 dlib
 gpiozero
