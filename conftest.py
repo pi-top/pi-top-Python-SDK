@@ -9,6 +9,10 @@ for module in [
     "smbus2",
     "smbus",
     "atexit",
+    "RPi",
+    "RPi.GPIO",
+    "spidev",
+    "pyinotify",
 ]:
     modules[module] = Mock()
 
