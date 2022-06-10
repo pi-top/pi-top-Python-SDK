@@ -13,8 +13,8 @@ class OLED:
     methods for simple rendering of text or images to the screen."""
 
     def __init__(self):
-        self.__controller = OledDeviceController(self._redraw_last_image)
-        self.lock_file_monitor = MiniscreenLockFileMonitor(self.__controller.lock.path)
+        self._controller = OledDeviceController(self._redraw_last_image)
+        self.lock_file_monitor = MiniscreenLockFileMonitor(self._controller.lock.path)
 
         self.assistant = MiniscreenAssistant(self.mode, self.size)
 
@@ -66,12 +66,12 @@ class OLED:
 
         :param int bus: Number of the SPI bus for the OLED to use. Accepted values are `0` or `1`.
         """
-        return self.__controller.spi_bus
+        return self._controller.spi_bus
 
     @spi_bus.setter
     def spi_bus(self, bus):
         assert bus in (0, 1)
-        self.__controller.spi_bus = bus
+        self._controller.spi_bus = bus
 
     @property
     def device(self):
@@ -79,7 +79,7 @@ class OLED:
 
         :rtype: :class:`pitop.miniscreen.oled.core.contrib.luma.oled.device.sh1106`
         """
-        return self.__controller.get_device()
+        return self._controller.get_device()
 
     @property
     def size(self):
@@ -117,7 +117,7 @@ class OLED:
         :return: whether the OLED instance is in control of the OLED hardware.
         :rtype: bool
         """
-        return self.__controller.device_is_active()
+        return self._controller.device_is_active()
 
     @property
     def visible(self):
@@ -131,11 +131,11 @@ class OLED:
     def set_control_to_pi(self):
         """Signals the pi-top hub to give control of the miniscreen display to
         the Raspberry Pi."""
-        self.__controller.set_control_to_pi()
+        self._controller.set_control_to_pi()
 
     def set_control_to_hub(self):
         """Signals the pi-top hub to take control of the miniscreen display."""
-        self.__controller.set_control_to_hub()
+        self._controller.set_control_to_hub()
 
     def set_max_fps(self, max_fps):
         """Set the maximum frames per second that the miniscreen display can
@@ -200,7 +200,7 @@ class OLED:
 
     def refresh(self):
         self.set_control_to_pi()
-        self.__controller.reset_device()
+        self._controller.reset_device()
         self._redraw_last_image()
 
     def reset(self, force=True):
