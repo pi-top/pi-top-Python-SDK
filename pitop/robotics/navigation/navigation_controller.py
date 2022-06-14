@@ -129,8 +129,7 @@ class NavigationController(DriveController):
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        if self._nav_thread.is_alive():
-            self._nav_thread.join()
+        self.stop()
 
     def __navigate(self, position, angle, backwards):
         self.__navigation_started()
