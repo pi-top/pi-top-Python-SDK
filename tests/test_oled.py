@@ -4,10 +4,10 @@ import PIL.Image
 import pytest
 
 
-def test_contrast_raises_on_invalid_values(oled):
-    for value in ("123", -100, -1, 257):
-        with pytest.raises(AssertionError):
-            oled.contrast(value)
+@pytest.mark.parametrize("contrast_value", ("123", -100, -1, 257))
+def test_contrast_raises_on_invalid_values(oled, contrast_value):
+    with pytest.raises(AssertionError):
+        oled.contrast(contrast_value)
 
 
 def test_contrast_is_set_on_instantiation(oled):
@@ -36,26 +36,30 @@ def test_sleep_sets_contrast(oled):
     )
 
 
-def test_should_redisplay_output(oled):
-
-    for image, expected_output in [
+@pytest.mark.parametrize(
+    "image,expected_output",
+    (
         (None, False),
-        (PIL.Image.new("1", (1, 1), "white"), True),
+        (PIL.Image.new("1", (15, 34), "white"), True),
         (PIL.Image.new("1", (128, 64), "white"), True),
         (PIL.Image.new("1", (128, 64), "black"), False),
-    ]:
-        assert oled.should_redisplay(image_to_display=image) is expected_output
+    ),
+)
+def test_should_redisplay_output(oled, image, expected_output):
+    assert oled.should_redisplay(image_to_display=image) is expected_output
 
 
-def test_prepare_image_transforms_images(oled):
-
-    for input_image in [
+@pytest.mark.parametrize(
+    "input_image",
+    (
         PIL.Image.new("1", (24, 123), "white"),
         PIL.Image.new("L", (224, 13), "black"),
-    ]:
-        output_image = oled.prepare_image(image_to_prepare=input_image)
-        assert output_image.size == oled.size
-        assert output_image.mode == oled.mode
+    ),
+)
+def test_prepare_image_transforms_images(oled, input_image):
+    output_image = oled.prepare_image(image_to_prepare=input_image)
+    assert output_image.size == oled.size
+    assert output_image.mode == oled.mode
 
 
 def test_refresh_redraws_last_image(oled):
@@ -85,10 +89,10 @@ def test_bottom_left(oled):
     assert oled.bottom_left == (0, oled.size[1] - 1)
 
 
-def test_spi_bus_setter_validates_input(oled):
-    for bus in (-1, 2, 10):
-        with pytest.raises(AssertionError):
-            oled.spi_bus = bus
+@pytest.mark.parametrize("bus", (-1, 2, 10))
+def test_spi_bus_setter_validates_input(oled, bus):
+    with pytest.raises(AssertionError):
+        oled.spi_bus = bus
 
 
 def test_spi_bus_setter_sends_ptdm_request(setup_mocks):

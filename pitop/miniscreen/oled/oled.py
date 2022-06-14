@@ -54,7 +54,7 @@ class OLED:
         if image_to_display is None:
             image_to_display = self._image
 
-        return self.image is None or self.assistant.images_match(
+        return self.image is None or not self.assistant.images_match(
             self.image, image_to_display
         )
 
