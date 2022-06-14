@@ -1,26 +1,10 @@
-from os import path
-
 import PIL.Image
-import pytest
 
 MODE = "1"
 SIZE = (128, 64)
 LOREM_IPSUM = """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 Ut enim ad minim veniam"""
-
-
-TESTS_FONT_DIR = f"{path.dirname(path.realpath(__file__))}/fonts"
-VERA_DIR = f"{TESTS_FONT_DIR}/ttf-bitstream-vera/"
-ROBOTO_DIR = f"{TESTS_FONT_DIR}/roboto/"
-
-
-@pytest.fixture
-def fonts_mock(mocker):
-    from pitop.miniscreen.oled.assistant import Fonts
-
-    mocker.patch.object(Fonts, "_roboto_directory", ROBOTO_DIR)
-    mocker.patch.object(Fonts, "_vera_directory", VERA_DIR)
 
 
 def test_images_match():
@@ -108,9 +92,7 @@ def test_render_text_is_centered(to_bytes, snapshot, fonts_mock):
 
     assistant = MiniscreenAssistant(MODE, SIZE)
     image = PIL.Image.new(MODE, SIZE, "black")
-    assistant.render_text(
-        image=image, text="Hey!", font=f"{ROBOTO_DIR}/Roboto-Regular.ttf"
-    )
+    assistant.render_text(image=image, text="Hey!")
     snapshot.assert_match(to_bytes(image), "centered.png")
 
 

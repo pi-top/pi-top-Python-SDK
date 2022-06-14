@@ -1,4 +1,5 @@
-from unittest.mock import call
+from os import path
+from unittest.mock import Mock, call
 
 import PIL.Image
 import pytest
@@ -95,28 +96,122 @@ def test_spi_bus_setter_validates_input(oled, bus):
         oled.spi_bus = bus
 
 
-def test_spi_bus_setter_sends_ptdm_request(setup_mocks):
-    oled = setup_mocks.get("oled")
-    ptdm_req_client_mock = setup_mocks.get("ptdm_req_client_mock")
+def test_spi_bus_setter_sends_ptdm_request(oled_mocks):
+    oled = oled_mocks.get("oled")
+    ptdm_req_client_mock = oled_mocks.get("ptdm_req_client_mock")
 
     assert ptdm_req_client_mock.call_count == 2
     oled.spi_bus = 0
     assert ptdm_req_client_mock.call_count > 2
 
 
-def test_set_control_to_pi_sends_ptdm_request(setup_mocks):
-    oled = setup_mocks.get("oled")
-    ptdm_req_client_mock = setup_mocks.get("ptdm_req_client_mock")
+def test_set_control_to_pi_sends_ptdm_request(oled_mocks):
+    oled = oled_mocks.get("oled")
+    ptdm_req_client_mock = oled_mocks.get("ptdm_req_client_mock")
 
     assert ptdm_req_client_mock.call_count == 2
     oled.set_control_to_pi()
     assert ptdm_req_client_mock.call_count > 2
 
 
-def test_set_control_to_hub_sends_ptdm_request(setup_mocks):
-    oled = setup_mocks.get("oled")
-    ptdm_req_client_mock = setup_mocks.get("ptdm_req_client_mock")
+def test_set_control_to_hub_sends_ptdm_request(oled_mocks):
+    oled = oled_mocks.get("oled")
+    ptdm_req_client_mock = oled_mocks.get("ptdm_req_client_mock")
 
     assert ptdm_req_client_mock.call_count == 2
     oled.set_control_to_hub()
     assert ptdm_req_client_mock.call_count > 2
+
+
+def test_show_and_hide_changes_visible_property(oled):
+    assert oled.visible is True
+    oled.show()
+    assert oled.visible is False
+    oled.hide()
+    assert oled.visible is True
+
+
+def test_clear_displays_an_empty_image(oled, to_bytes, snapshot):
+    sample_image_path = (
+        f"{path.dirname(path.realpath(__file__))}/assets/miniscreen/sample.png"
+    )
+
+    oled.display_image_file(sample_image_path)
+    snapshot.assert_match(to_bytes(oled.image), "sample_image.png")
+    oled.clear()
+    snapshot.assert_match(to_bytes(oled.image), "black_image.png")
+
+
+def test_refresh_restores_control_and_resets(oled):
+    oled._controller.set_control_to_pi = Mock()
+    oled._controller.reset_device = Mock()
+    assert oled._controller.set_control_to_pi.call_count == 0
+    assert oled._controller.reset_device.call_count == 0
+
+    oled.reset()
+
+    assert oled._controller.set_control_to_pi.call_count == 1
+    assert oled._controller.reset_device.call_count == 1
+
+
+def test_display_image_file(oled, to_bytes, snapshot):
+    sample_image_path = (
+        f"{path.dirname(path.realpath(__file__))}/assets/miniscreen/sample.png"
+    )
+
+    oled.display_image_file(sample_image_path)
+    snapshot.assert_match(to_bytes(oled.image), "sample_image.png")
+
+
+def test_display_image(oled, to_bytes, snapshot):
+    sample_image_path = (
+        f"{path.dirname(path.realpath(__file__))}/assets/miniscreen/sample.png"
+    )
+    image = PIL.Image.open(sample_image_path)
+
+    oled.display_image(image)
+    snapshot.assert_match(to_bytes(oled.image), "sample_image.png")
+
+
+def test_display_text_args(oled, to_bytes, snapshot, fonts_mock):
+    text = "Hey!"
+
+    oled.display_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+    oled.display_text(text, font_size=8)
+    snapshot.assert_match(to_bytes(oled.image), "small_font_size.png")
+
+    oled.display_text(text, font_size=20)
+    snapshot.assert_match(to_bytes(oled.image), "large_font_size.png")
+
+    oled.display_text(text, invert=True)
+    snapshot.assert_match(to_bytes(oled.image), "invert.png")
+
+    oled.display_text(text, xy=(20, 40))
+    snapshot.assert_match(to_bytes(oled.image), "xy.png")
+
+    oled.display_text(text, anchor="rs")
+    snapshot.assert_match(to_bytes(oled.image), "anchor.png")
+
+
+def test_display_multiline_text_args(oled, to_bytes, snapshot, fonts_mock):
+    text = "Hey! This is a super long line"
+
+    oled.display_multiline_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+    oled.display_multiline_text(text, font_size=8)
+    snapshot.assert_match(to_bytes(oled.image), "small_font_size.png")
+
+    oled.display_multiline_text(text, font_size=20)
+    snapshot.assert_match(to_bytes(oled.image), "large_font_size.png")
+
+    oled.display_multiline_text(text, invert=True)
+    snapshot.assert_match(to_bytes(oled.image), "invert.png")
+
+    oled.display_multiline_text(text, xy=(20, 40))
+    snapshot.assert_match(to_bytes(oled.image), "xy.png")
+
+    oled.display_multiline_text(text, anchor="rs")
+    snapshot.assert_match(to_bytes(oled.image), "anchor.png")

@@ -1,5 +1,5 @@
 from io import BytesIO
-from os import environ
+from os import environ, path
 from sys import modules
 from unittest.mock import Mock, patch
 
@@ -26,7 +26,7 @@ environ["GPIOZERO_PIN_FACTORY"] = "mock"
 
 
 @pytest.fixture
-def setup_mocks():
+def oled_mocks():
     SIZE = (128, 64)
     MODE = "1"
     SPI_BUS = 0
@@ -85,8 +85,8 @@ def setup_mocks():
 
 
 @pytest.fixture
-def oled(setup_mocks):
-    yield setup_mocks.get("oled")
+def oled(oled_mocks):
+    yield oled_mocks.get("oled")
 
 
 @pytest.fixture
@@ -97,3 +97,16 @@ def to_bytes():
         return img_byte_arr.getvalue()
 
     return to_bytes
+
+
+TESTS_FONT_DIR = f"{path.dirname(path.realpath(__file__))}/tests/fonts"
+VERA_DIR = f"{TESTS_FONT_DIR}/ttf-bitstream-vera/"
+ROBOTO_DIR = f"{TESTS_FONT_DIR}/roboto/"
+
+
+@pytest.fixture
+def fonts_mock(mocker):
+    from pitop.miniscreen.oled.assistant import Fonts
+
+    mocker.patch.object(Fonts, "_roboto_directory", ROBOTO_DIR)
+    mocker.patch.object(Fonts, "_vera_directory", VERA_DIR)
