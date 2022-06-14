@@ -5,6 +5,7 @@ pytest-cov
 pytest-mock
 pytest-rerunfailures
 pytest-snapshot
+pytest-xdist
 parameterized
 # Dependencies
 dlib
