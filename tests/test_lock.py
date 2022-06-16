@@ -4,6 +4,8 @@ from time import sleep
 from unittest import TestCase
 from unittest.mock import mock_open, patch
 
+import pytest
+
 from pitop.common.lock import PTLock  # noqa: E402
 
 
@@ -38,6 +40,7 @@ class PTLockTestCase(TestCase):
         exists_mock.assert_called_once_with(self.lock_file_path)
         self.chmod_mock.assert_called_once_with(self.lock_file_path, 146)
 
+    @pytest.mark.flaky(reruns=3)
     def test_is_locked_reports_correct_status(self):
         lock = PTLock(self._dummy_lock_id)
         self.assertFalse(lock.is_locked())

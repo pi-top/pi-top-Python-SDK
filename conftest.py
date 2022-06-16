@@ -18,6 +18,7 @@ for module in [
     "RPi.GPIO",
     "spidev",
     "pyinotify",
+    "logging",
 ]:
     modules[module] = Mock()
 

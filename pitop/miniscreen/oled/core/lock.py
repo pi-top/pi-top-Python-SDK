@@ -9,6 +9,14 @@ class MiniscreenLockFileMonitor:
         self.when_user_stops_using_oled = None
         self.when_user_starts_using_oled = None
         self.lock_path = lock_path
+        self.notifier = None
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.notifier:
+            self.notifier.stop()
+
+        if self.__thread.is_alive():
+            self.__thread.join()
 
     def _monitor_lockfile(self):
         eh = ProcessEvent()
@@ -22,8 +30,8 @@ class MiniscreenLockFileMonitor:
 
         wm = WatchManager()
         wm.add_watch(self.lock_path, events_to_watch)
-        notifier = Notifier(wm, eh)
-        notifier.loop()
+        self.notifier = Notifier(wm, eh)
+        self.notifier.loop(daemonize=True)
 
     def start(self):
         self.stop()
