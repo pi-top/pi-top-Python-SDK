@@ -16,9 +16,15 @@ class MeasurementScheduler:
         self.state_tracker = state_tracker
         self._measurement_dt = 1.0 / measurement_frequency
 
+        self._continue_processing = True
         self._new_measurement_event = Event()
         self._measurement_prediction_scheduler = Thread(target=self.start, daemon=True)
         self._measurement_prediction_scheduler.start()
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self._continue_processing = False
+        if self._measurement_prediction_scheduler.is_alive():
+            self._measurement_prediction_scheduler.join()
 
     def wait_for_measurement(self):
         self._new_measurement_event.wait()
@@ -43,9 +49,10 @@ class MeasurementScheduler:
         self._new_measurement_event.set()
         self._new_measurement_event.clear()
 
-        s.enterabs(
-            current_time + self._measurement_dt,
-            1,
-            self.loop,
-            (s, current_time),
-        )
+        if self._continue_processing:
+            s.enterabs(
+                current_time + self._measurement_dt,
+                1,
+                self.loop,
+                (s, current_time),
+            )

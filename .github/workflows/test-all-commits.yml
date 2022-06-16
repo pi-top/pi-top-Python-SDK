@@ -21,13 +21,53 @@ jobs:
          cache: 'pip'
          cache-dependency-path: 'tests/requirements.txt'
 
+     - name: Get pip cache dir
+       id: pip-cache
+       run: |
+         echo "::set-output name=dir::$(pip cache dir)"
+
+     - name: Cache python downloaded dependencies
+       id: cache-python-downloaded-deps
+       uses: actions/cache@v3
+       env:
+         cache-name: cache-python-downloaded-dependencies
+       with:
+         path: ${{ steps.pip-cache.outputs.dir }}
+         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+         restore-keys: |
+           ${{ runner.os }}-pip-
+           ${{ runner.os }}-
+
+     - name: Cache python built dependencies
+       id: cache-python-built-deps
+       uses: actions/cache@v3
+       env:
+         cache-name: cache-python-built-dependencies
+       with:
+         path: ${{ env.pythonLocation }}/lib/python3.9/site-packages/
+         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+         restore-keys: |
+           ${{ runner.os }}-pip-
+           ${{ runner.os }}-
+
+     - name: Cache shape predictors
+       id: cache-sdk-shape-predictors
+       uses: actions/cache@v3
+       env:
+         cache-name: cache-sdk-shape-predictors
+       with:
+         path: ~/.config/pi-top/sdk/models/
+         key: ${{ runner.os }}-sdk-shape-predictors-${{ hashFiles('~/.config/pi-top/sdk/models/**') }}
+         restore-keys: |
+           ${{ runner.os }}-sdk-shape-predictors-
+
      - name: Install pip dependencies
        run: pip3 install -r tests/requirements.txt
 
      - name: Run Python tests and generate coverage report
        run: |
-         pytest --verbose --cov-report term-missing --cov=pitop
-         coverage xml
+         python3 -m pytest --verbose --cov-report term-missing --cov=pitop
+         python3 -m coverage xml
 
      - name: Upload Python test coverage reports to Codecov
        uses: codecov/codecov-action@v2.1.0

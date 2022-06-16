@@ -9,7 +9,6 @@ from PIL import Image
 from tests.utils import wait_until
 
 
-@skip
 class CameraTestCase(TestCase):
     def setUp(self):
         from pitop.camera.core.cameras.file_system_camera import FsImage
@@ -91,8 +90,17 @@ class CameraTestCase(TestCase):
         c = self.Camera()
         c.format = "OpenCV"
         frame = c.current_frame()
-        if frame:
-            self.assertIsInstance(frame, numpy.ndarray)
+
+        def update_frame():
+            nonlocal frame
+            frame = c.current_frame()
+
+        wait_until(
+            condition=lambda: frame is not None,
+            on_wait=update_frame,
+        )
+
+        self.assertIsInstance(frame, numpy.ndarray)
 
     def test_current_frame_does_not_block(self):
         c = self.Camera(4)

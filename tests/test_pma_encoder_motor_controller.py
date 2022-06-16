@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
+import pytest
+
 from pitop.common.bitwise_ops import join_bytes, split_into_bytes
 from pitop.pma.common.encoder_motor_registers import (
     EncoderMotorM1,
@@ -118,6 +120,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 self.assertEqual(controller.braking_type(), braking_type)
                 read_unsigned_byte_mock.assert_called_with(brake_type_register)
 
+    @pytest.mark.flaky(reruns=3)
     def test_control_mode_read_write(self):
         """Registers read/written when setting/reading control modes from
         MCU."""

@@ -409,8 +409,7 @@ class PTDMSubscribeClient:
     URI = "tcp://127.0.0.1:3781"
 
     def __init__(self):
-        self.__thread = Thread(target=self.__thread_method)
-        self.__thread.setDaemon(True)
+        self.__thread = Thread(target=self.__thread_method, daemon=True)
 
         self.__callback_funcs = None
 
@@ -418,6 +417,11 @@ class PTDMSubscribeClient:
         self._zmq_socket = None
 
         self.__continue = False
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.__continue = False
+        if self.__thread.is_alive():
+            self.__thread.join()
 
     def __connect_to_socket(self):
         self._zmq_context = zmq.Context()
