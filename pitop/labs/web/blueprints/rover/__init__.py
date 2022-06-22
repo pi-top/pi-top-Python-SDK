@@ -49,6 +49,13 @@ class RoverControllerBlueprint(Blueprint):
 
             message_handlers["right_joystick"] = right_joystick
 
+        if message_handlers.get("disconnect") is None:
+
+            def disconnect():
+                drive.robot_move(0, 0)
+
+            message_handlers["disconnect"] = disconnect
+
         self.controller_blueprint = ControllerBlueprint(
             get_frame=get_frame, message_handlers=message_handlers
         )

@@ -64,6 +64,10 @@ class MessagingBlueprint(Blueprint):
                 if message:
                     handle_message(message, send)
 
+            disconnect_handler = message_handlers.get("disconnect")
+            if disconnect_handler:
+                disconnect_handler()
+
             del self.sockets[id]
 
     def register(self, app, options, *args):
