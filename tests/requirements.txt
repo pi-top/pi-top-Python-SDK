@@ -1,8 +1,10 @@
 # Test framework deps
+imgcat
 pytest
 pytest-cov
 pytest-mock
 pytest-rerunfailures
+pytest-snapshot
 pytest-xdist
 # Dependencies
 dlib

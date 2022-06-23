@@ -6,6 +6,25 @@ import PIL.ImageOps
 import PIL.ImageSequence
 
 
+class Fonts:
+    _roboto_directory = ""
+    _vera_directory = ""
+
+    @staticmethod
+    def regular():
+        return f"{Fonts._roboto_directory}Roboto-Regular.ttf"
+
+    @staticmethod
+    def mono(bold, italics):
+        if bold and not italics:
+            return f"{Fonts._vera_directory}VeraMoBd.ttf"
+        if not bold and italics:
+            return f"{Fonts._vera_directory}VeraMoIt.ttf"
+        if bold and italics:
+            return f"{Fonts._vera_directory}VeraMoBI.ttf"
+        return f"{Fonts._vera_directory}VeraMono.ttf"
+
+
 class MiniscreenAssistant:
     resize_resampling_filter = PIL.Image.NEAREST
 
@@ -21,7 +40,7 @@ class MiniscreenAssistant:
         return PIL.ImageSequence.Iterator(image)
 
     def images_match(self, image1, image2):
-        return PIL.ImageChops.difference(image1, image2).getbbox() is not None
+        return PIL.ImageChops.difference(image1, image2).getbbox() is None
 
     def clear(self, image):
         PIL.ImageDraw.Draw(image).rectangle(((0, 0), image.size), fill=0)
@@ -156,22 +175,15 @@ class MiniscreenAssistant:
         return PIL.ImageFont.truetype(self.get_regular_font_path(), size=size)
 
     def get_regular_font_path(self):
-        return "Roboto-Regular.ttf"
+        return Fonts.regular()
 
     def get_mono_font(self, size=11, bold=False, italics=False):
+        if size is None:
+            size = self.get_recommended_font_size()
         return PIL.ImageFont.truetype(self.get_mono_font_path(bold, italics), size=size)
 
     def get_mono_font_path(self, bold=False, italics=False):
-        if bold and not italics:
-            return "VeraMoBd.ttf"
-
-        if not bold and italics:
-            return "VeraMoIt.ttf"
-
-        if bold and italics:
-            return "VeraMoBI.ttf"
-
-        return "VeraMono.ttf"
+        return Fonts.mono(bold, italics)
 
     @property
     def empty_image(self):

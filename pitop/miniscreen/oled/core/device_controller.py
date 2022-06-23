@@ -20,7 +20,7 @@ class OledDeviceController:
     def __init__(self, redraw_last_image_func):
         self.__redraw_last_image_func = redraw_last_image_func
         self.__spi_bus = self.__get_spi_bus_from_ptdm()
-        self.__device = None
+        self._device = None
         self.lock = PTLock("miniscreen")
 
         self.__ptdm_subscribe_client = None
@@ -59,7 +59,7 @@ class OledDeviceController:
             self.lock.acquire()
             atexit.register(self.reset_device)
 
-        self.__device = sh1106(
+        self._device = sh1106(
             serial_interface=spi(
                 port=self.__spi_bus,
                 device=self.SPI_DEVICE,
@@ -87,15 +87,15 @@ class OledDeviceController:
         return self.lock.is_locked()
 
     def reset_device(self):
-        self.__device = None
+        self._device = None
         if self.device_is_active():
             self.lock.release()
 
     def get_device(self):
-        if self.__device is None:
+        if self._device is None:
             self.__setup_device()
 
-        return self.__device
+        return self._device
 
     def set_control_to_pi(self):
         self.__set_controls(controlled_by_pi=True)
