@@ -7,7 +7,6 @@
     {% if g.show_left_joystick %}
       <joystick-component
         onmove="publish({ type: 'left_joystick', data })"
-        onend="publish({ type: 'left_joystick', data })"
       > </joystick-component>
     {% endif %}
 
