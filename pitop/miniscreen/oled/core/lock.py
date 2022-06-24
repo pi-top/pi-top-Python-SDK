@@ -31,7 +31,7 @@ class MiniscreenLockFileMonitor:
         wm = WatchManager()
         wm.add_watch(self.lock_path, events_to_watch)
         self.notifier = Notifier(wm, eh)
-        self.notifier.loop(daemonize=True)
+        self.notifier.loop()
 
     def start(self):
         self.stop()
