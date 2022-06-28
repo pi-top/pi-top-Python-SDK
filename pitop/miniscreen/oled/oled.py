@@ -196,7 +196,8 @@ class OLED:
     # this is only necessary to support users with SPI0 on device
     # with older SDK version that only supported SPI1
     def _redraw_last_image(self):
-        self.__display(self.image, force=True)
+        if hasattr(self, "image"):
+            self.__display(self.image, force=True)
 
     def refresh(self):
         self.set_control_to_pi()
