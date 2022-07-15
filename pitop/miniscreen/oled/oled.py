@@ -292,6 +292,7 @@ class OLED:
             font=font,
             align=align,
             anchor=anchor,
+            wrap=False,
         )
         self.display_image(image, invert=invert)
 

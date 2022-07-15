@@ -259,3 +259,17 @@ def test_display_multiline_text_with_long_text(oled, to_bytes, snapshot, fonts_m
 
     oled.display_multiline_text(text, anchor="rs")
     snapshot.assert_match(to_bytes(oled.image), "anchor.png")
+
+
+def test_display_text_with_newlines(oled, to_bytes, snapshot, fonts_mock):
+    # display_text prints newlines
+    text = "Line1\nLine2\nLine3\nLine4"
+    oled.display_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+
+def test_display_multiline_text_with_newlines(oled, to_bytes, snapshot, fonts_mock):
+    # display_multiline_text automatically wraps text, omits newlines from input
+    text = "Line1\nLine2\nLine3\nLine4"
+    oled.display_multiline_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
