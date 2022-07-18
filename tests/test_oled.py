@@ -173,7 +173,29 @@ def test_display_image(oled, to_bytes, snapshot):
     snapshot.assert_match(to_bytes(oled.image), "sample_image.png")
 
 
-def test_display_text_args(oled, to_bytes, snapshot, fonts_mock):
+def test_display_text_with_long_text(oled, to_bytes, snapshot, fonts_mock):
+    text = "Hey! This is a super long line"
+
+    oled.display_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+    oled.display_text(text, font_size=8)
+    snapshot.assert_match(to_bytes(oled.image), "small_font_size.png")
+
+    oled.display_text(text, font_size=20)
+    snapshot.assert_match(to_bytes(oled.image), "large_font_size.png")
+
+    oled.display_text(text, invert=True)
+    snapshot.assert_match(to_bytes(oled.image), "invert.png")
+
+    oled.display_text(text, xy=(20, 40))
+    snapshot.assert_match(to_bytes(oled.image), "xy.png")
+
+    oled.display_text(text, anchor="rs")
+    snapshot.assert_match(to_bytes(oled.image), "anchor.png")
+
+
+def test_display_text_with_short_text(oled, to_bytes, snapshot, fonts_mock):
     text = "Hey!"
 
     oled.display_text(text)
@@ -195,7 +217,29 @@ def test_display_text_args(oled, to_bytes, snapshot, fonts_mock):
     snapshot.assert_match(to_bytes(oled.image), "anchor.png")
 
 
-def test_display_multiline_text_args(oled, to_bytes, snapshot, fonts_mock):
+def test_display_multiline_text_with_short_text(oled, to_bytes, snapshot, fonts_mock):
+    text = "Hey!"
+
+    oled.display_multiline_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+    oled.display_multiline_text(text, font_size=8)
+    snapshot.assert_match(to_bytes(oled.image), "small_font_size.png")
+
+    oled.display_multiline_text(text, font_size=20)
+    snapshot.assert_match(to_bytes(oled.image), "large_font_size.png")
+
+    oled.display_multiline_text(text, invert=True)
+    snapshot.assert_match(to_bytes(oled.image), "invert.png")
+
+    oled.display_multiline_text(text, xy=(20, 40))
+    snapshot.assert_match(to_bytes(oled.image), "xy.png")
+
+    oled.display_multiline_text(text, anchor="rs")
+    snapshot.assert_match(to_bytes(oled.image), "anchor.png")
+
+
+def test_display_multiline_text_with_long_text(oled, to_bytes, snapshot, fonts_mock):
     text = "Hey! This is a super long line"
 
     oled.display_multiline_text(text)
@@ -215,3 +259,17 @@ def test_display_multiline_text_args(oled, to_bytes, snapshot, fonts_mock):
 
     oled.display_multiline_text(text, anchor="rs")
     snapshot.assert_match(to_bytes(oled.image), "anchor.png")
+
+
+def test_display_text_with_newlines(oled, to_bytes, snapshot, fonts_mock):
+    # display_text prints newlines
+    text = "Line1\nLine2\nLine3\nLine4"
+    oled.display_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+
+def test_display_multiline_text_with_newlines(oled, to_bytes, snapshot, fonts_mock):
+    # display_multiline_text automatically wraps text, omits newlines from input
+    text = "Line1\nLine2\nLine3\nLine4"
+    oled.display_multiline_text(text)
+    snapshot.assert_match(to_bytes(oled.image), "defaults.png")
