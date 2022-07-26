@@ -33,7 +33,8 @@ class UsbCamera:
             self._rotate_angle = rotate_angle
 
         def create_camera_object(index, resolution=None):
-            cap = import_opencv().VideoCapture(index)
+            cv = import_opencv()
+            cap = cv.VideoCapture(index, cv.CAP_V4L2)
             if resolution is not None:
                 cap.set(3, resolution[0])
                 cap.set(4, resolution[1])
