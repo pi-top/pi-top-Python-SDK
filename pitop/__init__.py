@@ -17,6 +17,7 @@ from .pma import ServoMotorSetting
 from .pma import ServoMotorSetting as ServoMotorState
 from .pma import SoundSensor, UltrasonicSensor
 from .pma.parameters import BrakingType, Direction, ForwardDirection
+from .robotics.blockpi_rover import BlockPiRover
 from .robotics.configurations import AlexRobot  # deprecated
 from .robotics.configurations import alex_config
 
