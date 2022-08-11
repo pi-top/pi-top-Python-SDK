@@ -13,6 +13,26 @@ class Componentable(Stateful, Recreatable):
         Stateful.__init__(self, children)
         Recreatable.__init__(self, config_dict)
 
+    def __del__(self):
+        self.close()
+
+    def children_gen(self):
+        for child_name in self.children:
+            if hasattr(self, child_name):
+                child = getattr(self, child_name)
+                yield child_name, child
+
+    def close(self):
+        def closeable(obj):
+            return callable(getattr(obj, "close", None))
+
+        for _, child in self.children_gen():
+            if closeable(child):
+                child.close()
+
+        if closeable(super()):
+            super().close()
+
     @classmethod
     def from_config(cls, config_dict):
         """Creates an instance of a :class:`Componentable` using the provided
@@ -69,9 +89,7 @@ class Componentable(Stateful, Recreatable):
         """Returns the component configuration as a dictionary."""
         cfg = super().config
         cfg["components"] = dict()
-        for child_name in self.children:
-            if hasattr(self, child_name):
-                child_obj = getattr(self, child_name)
-                if isinstance(child_obj, Recreatable):
-                    cfg["components"][child_name] = child_obj.config
+        for name, child in self.children_gen():
+            if isinstance(child, Recreatable):
+                cfg["components"][name] = child.config
         return cfg
