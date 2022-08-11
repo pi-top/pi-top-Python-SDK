@@ -7,7 +7,8 @@ from pitop.labs.web.blueprints.webcomponents import WebComponentsBlueprint
 
 
 class ControllerBlueprint(Blueprint):
-    def __init__(self, get_frame=None, message_handlers={}, **kwargs):
+    def __init__(self, get_frame=None, message_handlers=None, **kwargs):
+        message_handlers = {} if message_handlers is None else message_handlers
         Blueprint.__init__(
             self,
             "controller",

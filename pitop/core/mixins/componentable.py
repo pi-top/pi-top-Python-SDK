@@ -6,7 +6,7 @@ class Componentable(Stateful, Recreatable):
     """Represents an object that attach components to itself, and that can
     store its internal configuration to recreate itself in the future."""
 
-    def __init__(self, children=[], config_dict=None):
+    def __init__(self, children=None, config_dict=None):
         if config_dict is None:
             config_dict = dict()
 

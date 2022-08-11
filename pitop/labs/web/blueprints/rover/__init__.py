@@ -22,8 +22,9 @@ def pan_tilt_handler(pan_tilt, data):
 
 class RoverControllerBlueprint(Blueprint):
     def __init__(
-        self, drive=None, pan_tilt=None, get_frame=None, message_handlers={}, **kwargs
+        self, drive=None, pan_tilt=None, get_frame=None, message_handlers=None, **kwargs
     ):
+        message_handlers = {} if message_handlers is None else message_handlers
         Blueprint.__init__(
             self, "rover", __name__, template_folder="templates", **kwargs
         )
