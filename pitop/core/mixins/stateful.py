@@ -5,8 +5,8 @@ class Stateful:
     """Represents an object with a particular set of important properties that
     represent its state."""
 
-    def __init__(self, children=[]):
-        self.children = children
+    def __init__(self, children=None):
+        self.children = [] if children is None else children
 
     @property
     def own_state(self):
