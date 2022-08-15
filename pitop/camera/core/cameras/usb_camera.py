@@ -33,7 +33,19 @@ class UsbCamera:
             self._rotate_angle = rotate_angle
 
         def create_camera_object(index, resolution=None):
-            cap = import_opencv().VideoCapture(index)
+            cv = import_opencv()
+            try:
+                # Force V4L2 backend first to avoid warning logs
+                cap = cv.VideoCapture(index, cv.CAP_V4L2)
+            except Exception:
+                cap = None
+
+            # Retry using default backend on failure.
+            # Check if device is opened since sometimes VideoCapture
+            # doesn't raise an Exception on error
+            if cap is None or not cap.isOpened():
+                cap = cv.VideoCapture(index)
+
             if resolution is not None:
                 cap.set(3, resolution[0])
                 cap.set(4, resolution[1])
