@@ -1,6 +1,5 @@
-pi-top-python-sdk (0.24.1-4) bullseye; urgency=medium
+pi-top-python-sdk (0.24.2-1) bullseye; urgency=medium
 
-  * Updated master workflow files
   * Test runner improvements (#536)
   * Add OLED & MiniscreenAssistant tests (#541)
   * fix: sudden exit caused by pyinotify.Notifier.loop daemonize option
