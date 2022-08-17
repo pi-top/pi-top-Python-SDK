@@ -65,6 +65,7 @@ jobs:
           additional_env: |
             DATA="${{ secrets.DATA }}"
             TLS_KEY="${{ secrets.TLS_KEY }}"
+            PYTHON_PYTHON_PACKAGE_VERSION="${{ steps.version.outputs.tag_latest_ltrimv }}"
 
       - name: Generate artifact name
         run: |
