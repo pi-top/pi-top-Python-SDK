@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.24.2-2) bullseye; urgency=medium
+pi-top-python-sdk (0.24.3-1) bullseye; urgency=medium
 
   * Set package version using environment variable (#551)
 
