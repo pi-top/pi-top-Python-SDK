@@ -19,6 +19,19 @@ jobs:
         with:
           python-version: 3.7
 
+      - name: Get latest semver tag and latest version in changelog
+        run: |
+          set -x
+
+          sudo apt install -y --no-install-recommends dpkg-dev npm
+          npm install -g git-latest-semver-tag
+
+          latest_tag=$(git-latest-semver-tag)
+          changelog_version=$(dpkg-parsechangelog -Sversion)
+
+          echo "LATEST_TAG=${latest_tag#v}" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=${changelog_version}" >> $GITHUB_ENV
+
       - name: Upload to PyPI
         uses: casperdcl/deploy-pypi@v2
         with:
