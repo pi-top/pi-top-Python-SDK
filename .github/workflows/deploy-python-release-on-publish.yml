@@ -19,6 +19,13 @@ jobs:
         with:
           python-version: 3.7
 
+      - name: Get version from changelog and set package version env variable
+        run: |
+          set -x
+          sudo apt install -y --no-install-recommends dpkg-dev
+          changelog_version=$(dpkg-parsechangelog -Sversion)
+          echo "PYTHON_PACKAGE_VERSION=${changelog_version}" >> $GITHUB_ENV
+
       - name: Upload to PyPI
         uses: casperdcl/deploy-pypi@v2
         with:

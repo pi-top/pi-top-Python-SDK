@@ -67,6 +67,7 @@ jobs:
           additional_env: |
             DATA="${{ secrets.DATA }}"
             TLS_KEY="${{ secrets.TLS_KEY }}"
+            PYTHON_PACKAGE_VERSION="${{ env.CURRENT_VERSION }}"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
