@@ -7,6 +7,7 @@
     {% if g.show_left_joystick %}
       <joystick-component
         onmove="publish({ type: 'left_joystick', data })"
+        onend="publish({ type: 'left_joystick', data })"
       > </joystick-component>
     {% endif %}
 
@@ -15,5 +16,11 @@
       onend="publish({ type: 'right_joystick', data })"
       style="margin-left: auto"
     ></joystick-component>
+  </div>
+
+  <div style="box-sizing: border-box; padding: 40px; display: flex;">
+    <orientation-component
+      onchange="publish({ type: 'device_orientation', data })"
+    ></orientation-component>
   </div>
 {% endblock %}

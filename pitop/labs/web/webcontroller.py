@@ -24,6 +24,8 @@ class RoverWebController(WebServer):
         pan_tilt=None,
         message_handlers={},
         blueprints=[],
+        cert=None,
+        key=None,
         **kwargs
     ):
         self.rover_blueprint = RoverControllerBlueprint(
@@ -34,7 +36,11 @@ class RoverWebController(WebServer):
         )
 
         WebServer.__init__(
-            self, blueprints=[self.rover_blueprint] + blueprints, **kwargs
+            self,
+            blueprints=[self.rover_blueprint] + blueprints,
+            cert=cert,
+            key=key,
+            **kwargs
         )
 
     def broadcast(self, message):
