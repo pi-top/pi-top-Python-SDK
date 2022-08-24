@@ -118,3 +118,18 @@ def test_blockpi_rover(pitop_mocks):
     # delete refs to trigger component cleanup
     del rover
     del BlockPiRover.instance
+
+
+def test_pitop_virtualize(pitop_mocks):
+    from pitop import Pitop
+    from pitop.pma import LED
+
+    pitop = Pitop()
+    led = LED("D0")
+    pitop.add_component(led)
+
+    pitop.virtualize()
+
+    # delete refs to trigger component cleanup
+    del pitop
+    del Pitop.instance
