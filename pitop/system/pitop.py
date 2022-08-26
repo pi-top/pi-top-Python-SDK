@@ -1,8 +1,12 @@
+import tkinter
+from time import sleep
+
+from PIL import Image, ImageTk
+
+import pitop.common.images as Images
 from pitop.common.singleton import Singleton
 from pitop.core.mixins import Componentable, SupportsBattery, SupportsMiniscreen
-
 from pitop.pma import LED, Button
-import pitop.common.images as Images
 
 
 class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):
@@ -35,66 +39,83 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
         Componentable.__init__(self)
 
     def virtualize(self):
+        self.tk = tkinter.Tk()
+
+        width, height = 780, 620
+        self.tk.geometry(f"{width}x{height}")
+        self.canvas = tkinter.Canvas(self.tk, width=width, height=height)
+        self.canvas.pack()
+
+        self.create_sprites(width, height)
+
+        while True:
+            sleep(0.05)
+            self.draw()
+            self.tk.update_idletasks()
+            self.tk.update()
+
+    def create_sprites(self, width, height):
         self.sprites = {}
-        tk = self.draw()
-        tk.mainloop()
+        self.images = {}
+        centre = (int(width / 2), int(height / 2))
 
-    def draw(self):
-        global can
-        global pitop_tk_image # TODO need to keep refs around
+        # create components
+        pitop_image = ImageTk.PhotoImage(Image.open(Images.Pitop))
+        pitop_sprite_id = self.canvas.create_image(
+            centre[0], centre[1], image=pitop_image
+        )
 
-        import tkinter
-        from PIL import Image, ImageTk
-
-        width = 780;
-        height = 620;
-        size = width, height
-
-        pitop_size = 250, 250
-        pitop_pos = (width / 2), (height / 2)
-
-        led_size = 50, 50
-        led_pos = pitop_pos[0] + 200, pitop_pos[1] - 50
-
-        tk = tkinter.Tk()
-        tk.geometry(f'{width}x{height}')
-        can = tkinter.Canvas(tk,width=width,height=height)
-        can.pack()
-
-        pitop_pil_image = Image.open(Images.Pitop)
-        pitop_tk_image = ImageTk.PhotoImage(pitop_pil_image)
-        pitop_sprite = can.create_image(pitop_pos[0], pitop_pos[1], image=pitop_tk_image)
-
-        self.sprites['self'] = pitop_sprite
+        self.sprites["pitop"] = pitop_sprite_id
+        self.images[pitop_sprite_id] = pitop_image
 
         for child_name in self.children:
             child = getattr(self, child_name, None)
-            if isinstance(child, LED):
-                pos = pitop_pos[0] + 200, pitop_pos[1] - 50 # TODO base on child.config.port
 
-                if child.state.get('value', False):
-                    pil_image = Image.open(Images.LED_green_on)
-                else:
-                    pil_image = Image.open(Images.LED_green_off)
-                tk_image = ImageTk.PhotoImage(pil_image)
-                sprite = can.create_image(pos[0], pos[1], image=tk_image)
+            if isinstance(child, LED):
+                image_path = Images.LED_green_on
+                if not child.state.get("value", False):
+                    image_path = Images.LED_green_off
+
+                image = ImageTk.PhotoImage(Image.open(image_path))
+                sprite_id = self.canvas.create_image(
+                    centre[0] + 200, centre[1] - 50, image=image
+                )
+
+                self.sprites[child_name] = sprite_id
+                self.images[sprite_id] = image
 
             elif isinstance(child, Button):
-                pos = pitop_pos[0] + 200, pitop_pos[1] + 50 # TODO base on child.config.port
+                image = ImageTk.PhotoImage(Image.open(Images.Button))
 
-                pil_image = Image.open(Images.Button)
-                tk_image = ImageTk.PhotoImage(pil_image) # TODO might need to keep reference to this
+                def button_release(_):
+                    child._fire_events(child.pin_factory.ticks(), False)
 
-                def virutal_click():
-                    print('button click')
-                    child.is_pressed = true
-                    child.value = true
-                    child.is_active = true
-                    child._fire_events(child.pin_factory.ticks(), child.is_active)
+                def button_press(_):
+                    child._fire_events(child.pin_factory.ticks(), True)
 
-                sprite = tkinter.Button(tk, image=tk_image, command=virtual_click, borderwidth=0)
-                sprite.place(x=pos[0] - 25, y=pos[1] - 25) # pos is top left not center
+                sprite = tkinter.Button(self.tk, image=image, borderwidth=0)
 
-            self.sprites[child_name] = sprite
-        return tk
+                # sprite.place uses top left instead of centre of image
+                sprite.place(x=centre[0] + 200, y=centre[1] + 50)
+                sprite.bind("<ButtonRelease>", button_release)
+                sprite.bind("<ButtonPress>", button_press)
 
+                sprite_id = sprite.winfo_id()
+                self.sprites[child_name] = sprite_id
+                self.images[sprite.winfo_id()] = image
+
+    def draw(self):
+        for child_name in self.children:
+            child = getattr(self, child_name, None)
+
+            if isinstance(child, LED):
+                image_path = Images.LED_green_on
+                if not child.state.get("value", False):
+                    image_path = Images.LED_green_off
+
+                self.update_image(child_name, Image.open(image_path))
+
+    def update_image(self, child_name, image):
+        sprite_id = self.sprites[child_name]
+        self.images[sprite_id] = ImageTk.PhotoImage(image)
+        self.canvas.itemconfigure(sprite_id, image=self.images[sprite_id])

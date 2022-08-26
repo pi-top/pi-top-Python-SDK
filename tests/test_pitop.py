@@ -122,11 +122,14 @@ def test_blockpi_rover(pitop_mocks):
 
 def test_pitop_virtualize(pitop_mocks):
     from pitop import Pitop
-    from pitop.pma import LED
+    from pitop.pma import LED, Button
 
     pitop = Pitop()
-    led = LED("D0")
-    pitop.add_component(led)
+    pitop.add_component(LED("D0"))
+    pitop.add_component(Button("D1"))
+
+    pitop.button.when_pressed = lambda: pitop.led.on()  # noqa: F821
+    pitop.button.when_released = lambda: pitop.led.off()  # noqa: F821
 
     pitop.virtualize()
 
