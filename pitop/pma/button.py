@@ -1,10 +1,14 @@
-from gpiozero import Button as gpiozero_Button
+import tkinter
 
-from pitop.core.mixins import Recreatable, Stateful
+from gpiozero import Button as gpiozero_Button
+from PIL import Image
+
+import pitop.common.images as Images
+from pitop.core.mixins import Recreatable, Simulatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 
-class Button(Stateful, Recreatable, gpiozero_Button):
+class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.
 
     A push-button is a simple switch mechanism for controlling some aspect of a circuit.
@@ -15,9 +19,11 @@ class Button(Stateful, Recreatable, gpiozero_Button):
     def __init__(self, port_name, name="button"):
         self._pma_port = port_name
         self.name = name
+        self._sprite = None
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        Simulatable.__init__(self, size=(55, 55))
         gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port))
 
     @property
@@ -67,3 +73,18 @@ class Button(Stateful, Recreatable, gpiozero_Button):
             ...
         """
         super(Button, self).close()
+
+    def _create_sprites(self, canvas, pos):
+        def set_button_pressed(pressed):
+            self._fire_events(self.pin_factory.ticks(), pressed)
+
+        self._sprite = tkinter.Button(canvas, borderwidth=0)
+        self._set_sprite_image(
+            canvas, sprite=self._sprite, image=Image.open(Images.Button)
+        )
+
+        # sprite.place uses top left instead of centre of image
+        self._sprite.place(x=pos[0], y=pos[1])
+
+        self._sprite.bind("<ButtonRelease>", lambda _: set_button_pressed(False))
+        self._sprite.bind("<ButtonPress>", lambda _: set_button_pressed(True))

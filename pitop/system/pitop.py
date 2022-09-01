@@ -1,15 +1,18 @@
-import tkinter
-from time import sleep
-
-from PIL import Image, ImageTk
+from PIL import Image
 
 import pitop.common.images as Images
 from pitop.common.singleton import Singleton
-from pitop.core.mixins import Componentable, SupportsBattery, SupportsMiniscreen
-from pitop.pma import LED, Button
+from pitop.core.mixins import (
+    Componentable,
+    Simulatable,
+    SupportsBattery,
+    SupportsMiniscreen,
+)
 
 
-class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):
+class Pitop(
+    SupportsMiniscreen, SupportsBattery, Componentable, Simulatable, metaclass=Singleton
+):
     """Represents a pi-top Device.
 
     When creating a `Pitop` object, multiple properties will be set,
@@ -37,85 +40,51 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
         SupportsMiniscreen.__init__(self)
         SupportsBattery.__init__(self)
         Componentable.__init__(self)
+        Simulatable.__init__(self, size=(780, 620))
 
-    def virtualize(self):
-        self.tk = tkinter.Tk()
-
-        width, height = 780, 620
-        self.tk.geometry(f"{width}x{height}")
-        self.canvas = tkinter.Canvas(self.tk, width=width, height=height)
-        self.canvas.pack()
-
-        self.create_sprites(width, height)
-
-        while True:
-            sleep(0.05)
-            self.draw()
-            self.tk.update_idletasks()
-            self.tk.update()
-
-    def create_sprites(self, width, height):
-        self.sprites = {}
-        self.images = {}
-        centre = (int(width / 2), int(height / 2))
-
-        # create components
-        pitop_image = ImageTk.PhotoImage(Image.open(Images.Pitop))
-        pitop_sprite_id = self.canvas.create_image(
-            centre[0], centre[1], image=pitop_image
+        canvas_centre = (
+            int(self._sim_size[0] / 2),
+            int(self._sim_size[1] / 2),
         )
 
-        self.sprites["pitop"] = pitop_sprite_id
-        self.images[pitop_sprite_id] = pitop_image
+        self.__sprite_centres = {
+            "D0": (canvas_centre[0] + 200, canvas_centre[1] - 200),
+            "D1": (canvas_centre[0] + 230, canvas_centre[1] - 100),
+            "D2": (canvas_centre[0] + 240, canvas_centre[1]),
+            "D3": (canvas_centre[0] + 230, canvas_centre[1] + 100),
+            "D4": (canvas_centre[0] + 200, canvas_centre[1] + 200),
+        }
 
+    def _create_sprites(self, canvas, _):
+        self._sprites = {}
+        centre = (int(canvas.winfo_width() / 2), int(canvas.winfo_height() / 2))
+
+        # create own sprite
+        self._pitop_sprite_id = canvas.create_image(centre[0], centre[1])
+        self._set_sprite_image(
+            canvas, sprite_id=self._pitop_sprite_id, image=Image.open(Images.Pitop)
+        )
+
+        # create child sprites
         for child_name in self.children:
             child = getattr(self, child_name, None)
 
-            if isinstance(child, LED):
-                image_path = Images.LED_green_on
-                if not child.state.get("value", False):
-                    image_path = Images.LED_green_off
-
-                image = ImageTk.PhotoImage(Image.open(image_path))
-                sprite_id = self.canvas.create_image(
-                    centre[0] + 200, centre[1] - 50, image=image
+            if isinstance(child, Simulatable):
+                sprite_centre = self.__sprite_centres.get(
+                    child.config.get("port_name", None), (0, 0)
                 )
 
-                self.sprites[child_name] = sprite_id
-                self.images[sprite_id] = image
+                child._create_sprites(
+                    canvas,
+                    pos=(
+                        sprite_centre[0] - int(child._sim_size[0] / 2),
+                        sprite_centre[1] - int(child._sim_size[1] / 2),
+                    ),
+                )
 
-            elif isinstance(child, Button):
-                image = ImageTk.PhotoImage(Image.open(Images.Button))
-
-                def button_release(_):
-                    child._fire_events(child.pin_factory.ticks(), False)
-
-                def button_press(_):
-                    child._fire_events(child.pin_factory.ticks(), True)
-
-                sprite = tkinter.Button(self.tk, image=image, borderwidth=0)
-
-                # sprite.place uses top left instead of centre of image
-                sprite.place(x=centre[0] + 200, y=centre[1] + 50)
-                sprite.bind("<ButtonRelease>", button_release)
-                sprite.bind("<ButtonPress>", button_press)
-
-                sprite_id = sprite.winfo_id()
-                self.sprites[child_name] = sprite_id
-                self.images[sprite.winfo_id()] = image
-
-    def draw(self):
+    def _update_sprites(self, canvas):
         for child_name in self.children:
             child = getattr(self, child_name, None)
 
-            if isinstance(child, LED):
-                image_path = Images.LED_green_on
-                if not child.state.get("value", False):
-                    image_path = Images.LED_green_off
-
-                self.update_image(child_name, Image.open(image_path))
-
-    def update_image(self, child_name, image):
-        sprite_id = self.sprites[child_name]
-        self.images[sprite_id] = ImageTk.PhotoImage(image)
-        self.canvas.itemconfigure(sprite_id, image=self.images[sprite_id])
+            if isinstance(child, Simulatable):
+                child._update_sprites(canvas)

@@ -131,7 +131,7 @@ def test_pitop_virtualize(pitop_mocks):
     pitop.button.when_pressed = lambda: pitop.led.on()  # noqa: F821
     pitop.button.when_released = lambda: pitop.led.off()  # noqa: F821
 
-    pitop.virtualize()
+    pitop.simulate()
 
     # delete refs to trigger component cleanup
     del pitop
