@@ -3,8 +3,8 @@ Forwarded: not-needed
 Author: pi-top <deb-maintainers@pi-top.com>
 Last-Update: 2021-09-05
 
---- a/pitop/common/smbus_device.py
-+++ b/pitop/common/smbus_device.py
+--- a/packages/common/pitop/common/smbus_device.py
++++ b/packages/common/pitop/common/smbus_device.py
 @@ -1,6 +1,6 @@
  import logging
  
