@@ -1,6 +1,9 @@
+import tkinter
 from unittest.mock import patch
 
 import pytest
+
+from tests.utils import create_widget_mock, snapshot_simulation
 
 
 @pytest.fixture
@@ -120,7 +123,9 @@ def test_blockpi_rover(pitop_mocks):
     del BlockPiRover.instance
 
 
-def test_pitop_virtualize(pitop_mocks):
+def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
+    mocker.patch("pitop.pma.button.TkInterButton", create_widget_mock(tkinter.Button))
+
     from pitop import Pitop
     from pitop.pma import LED, Button
 
@@ -133,6 +138,9 @@ def test_pitop_virtualize(pitop_mocks):
 
     pitop.simulate()
 
+    snapshot.assert_match(snapshot_simulation(pitop), "default.png")
+
     # delete refs to trigger component cleanup
+    pitop.stop_simulation()
     del pitop
     del Pitop.instance

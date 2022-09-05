@@ -1,4 +1,4 @@
-import tkinter
+from tkinter import Button as TkInterButton
 
 from gpiozero import Button as gpiozero_Button
 from PIL import Image
@@ -78,12 +78,10 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
         def set_button_pressed(pressed):
             self._fire_events(self.pin_factory.ticks(), pressed)
 
-        self._sprite = tkinter.Button(canvas, borderwidth=0)
+        self._sprite = TkInterButton(canvas, borderwidth=0)
         self._set_sprite_image(
             canvas, sprite=self._sprite, image=Image.open(Images.Button)
         )
-
-        # sprite.place uses top left instead of centre of image
         self._sprite.place(x=pos[0], y=pos[1])
 
         self._sprite.bind("<ButtonRelease>", lambda _: set_button_pressed(False))
