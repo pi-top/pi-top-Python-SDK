@@ -1,5 +1,7 @@
 import PIL.Image
 
+from tests.utils import to_bytes
+
 MODE = "1"
 SIZE = (128, 64)
 LOREM_IPSUM = """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
@@ -23,7 +25,7 @@ def test_images_match():
         assert assistant.images_match(im1, im2) == match
 
 
-def test_empty_image_output(to_bytes, snapshot, fonts_mock):
+def test_empty_image_output(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
@@ -33,7 +35,7 @@ def test_empty_image_output(to_bytes, snapshot, fonts_mock):
     assert image.mode == MODE
 
 
-def test_clear_output(to_bytes, snapshot, fonts_mock):
+def test_clear_output(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
@@ -45,7 +47,7 @@ def test_clear_output(to_bytes, snapshot, fonts_mock):
     assert image.mode == MODE
 
 
-def test_invert_output(to_bytes, snapshot, fonts_mock):
+def test_invert_output(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
@@ -61,7 +63,7 @@ def test_invert_output(to_bytes, snapshot, fonts_mock):
     assert inverted_image.mode == MODE
 
 
-def test_render_text_wraps(to_bytes, snapshot, fonts_mock):
+def test_render_text_wraps(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
@@ -74,7 +76,7 @@ def test_render_text_wraps(to_bytes, snapshot, fonts_mock):
     snapshot.assert_match(to_bytes(image), "wrap.png")
 
 
-def test_render_text_no_wrap(to_bytes, snapshot, fonts_mock):
+def test_render_text_no_wrap(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
@@ -87,7 +89,7 @@ def test_render_text_no_wrap(to_bytes, snapshot, fonts_mock):
     snapshot.assert_match(to_bytes(image), "no-wrap.png")
 
 
-def test_render_text_is_centered(to_bytes, snapshot, fonts_mock):
+def test_render_text_is_centered(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
@@ -96,7 +98,7 @@ def test_render_text_is_centered(to_bytes, snapshot, fonts_mock):
     snapshot.assert_match(to_bytes(image), "centered.png")
 
 
-def test_render_text_xy(to_bytes, snapshot, fonts_mock):
+def test_render_text_xy(snapshot, fonts_mock):
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)

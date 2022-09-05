@@ -1,4 +1,3 @@
-from io import BytesIO
 from os import environ, path
 from sys import modules
 from unittest.mock import Mock, patch
@@ -87,16 +86,6 @@ def oled_mocks():
 @pytest.fixture
 def oled(oled_mocks):
     yield oled_mocks.get("oled")
-
-
-@pytest.fixture
-def to_bytes():
-    def to_bytes(image):
-        img_byte_arr = BytesIO()
-        image.save(img_byte_arr, format="PNG")
-        return img_byte_arr.getvalue()
-
-    return to_bytes
 
 
 TESTS_FONT_DIR = f"{path.dirname(path.realpath(__file__))}/tests/fonts"
