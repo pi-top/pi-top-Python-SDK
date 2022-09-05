@@ -1,7 +1,6 @@
-from tkinter import Button as TkInterButton
-
 from gpiozero import Button as gpiozero_Button
 from PIL import Image
+import pygame
 
 import pitop.common.images as Images
 from pitop.core.mixins import Recreatable, Simulatable, Stateful
@@ -20,6 +19,7 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
         self._pma_port = port_name
         self.name = name
         self._sprite = None
+        self._sprite_pressed = None
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
@@ -74,15 +74,34 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
         """
         super(Button, self).close()
 
-    def _create_sprites(self, canvas, pos):
-        def set_button_pressed(pressed):
-            self._fire_events(self.pin_factory.ticks(), pressed)
+    def _create_sprite(self):
+        self._sprite = ButtonSprite()
+        return self._sprite
 
-        self._sprite = TkInterButton(canvas, borderwidth=0)
-        self._set_sprite_image(
-            canvas, sprite=self._sprite, image=Image.open(Images.Button)
-        )
-        self._sprite.place(x=pos[0], y=pos[1])
+    def _handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # ignore if physical button is held
+            if self.value:
+                return
 
-        self._sprite.bind("<ButtonRelease>", lambda _: set_button_pressed(False))
-        self._sprite.bind("<ButtonPress>", lambda _: set_button_pressed(True))
+            mouse = pygame.mouse.get_pos()
+            rect = self._sprite.rect
+            if rect.x <= mouse[0] <= rect.x + rect.width and rect.y <= mouse[1] <= rect.y + rect.height:
+                self._sprite_pressed = True
+                self._fire_events(self.pin_factory.ticks(), True)
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            # ignore if physical button held or virtual not held
+            if self.value or not self._sprite_pressed:
+                return
+
+            self._sprite_pressed = False
+            self._fire_events(self.pin_factory.ticks(), False)
+
+
+class ButtonSprite(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+
+        self.image = pygame.image.load(Images.Button)
+        self.rect = self.image.get_rect()

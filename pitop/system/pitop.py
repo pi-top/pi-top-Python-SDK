@@ -1,4 +1,4 @@
-from PIL import Image
+import pygame
 
 import pitop.common.images as Images
 from pitop.common.singleton import Singleton
@@ -55,36 +55,45 @@ class Pitop(
             "D4": (canvas_centre[0] + 200, canvas_centre[1] + 200),
         }
 
-    def _create_sprites(self, canvas, _):
-        self._sprites = {}
-        centre = (int(canvas.winfo_width() / 2), int(canvas.winfo_height() / 2))
+    def _create_sprite(self):
+        sprite_group = pygame.sprite.Group()
 
-        # create own sprite
-        self._pitop_sprite_id = canvas.create_image(centre[0], centre[1])
-        self._set_sprite_image(
-            canvas, sprite_id=self._pitop_sprite_id, image=Image.open(Images.Pitop)
-        )
+        pitop_sprite = PitopSprite()
+        sprite_group.add(pitop_sprite)
+
+        center = int(self._sim_size[0] / 2), int(self._sim_size[1]/ 2)
+        pitop_sprite.rect.x = center[0] - int(pitop_sprite.rect.width / 2)
+        pitop_sprite.rect.y = center[1] - int(pitop_sprite.rect.height / 2)
+
 
         # create child sprites
         for child_name in self.children:
             child = getattr(self, child_name, None)
 
             if isinstance(child, Simulatable):
+
                 sprite_centre = self.__sprite_centres.get(
                     child.config.get("port_name", None), (0, 0)
                 )
 
-                child._create_sprites(
-                    canvas,
-                    pos=(
-                        sprite_centre[0] - int(child._sim_size[0] / 2),
-                        sprite_centre[1] - int(child._sim_size[1] / 2),
-                    ),
-                )
+                child_sprite = child._create_sprite()
+                child_sprite.rect.x = sprite_centre[0] - int(child_sprite.rect.width / 2)
+                child_sprite.rect.y = sprite_centre[1] - int(child_sprite.rect.height / 2)
 
-    def _update_sprites(self, canvas):
+                sprite_group.add(child_sprite)
+
+        return sprite_group
+
+    def _handle_event(self, event):
         for child_name in self.children:
             child = getattr(self, child_name, None)
-
             if isinstance(child, Simulatable):
-                child._update_sprites(canvas)
+                child._handle_event(event)
+
+
+class PitopSprite(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+
+        self.image = pygame.image.load(Images.Pitop)
+        self.rect = self.image.get_rect()

@@ -1,8 +1,6 @@
-import tkinter
+import pygame
 from threading import Event, Thread
 from time import sleep
-
-from PIL import ImageTk
 
 
 class Simulatable:
@@ -12,66 +10,49 @@ class Simulatable:
         self.stop_simulation()
 
     def __init__(self, size=(780, 620)):
-        self._sim_images = {}
         self._sim_size = size
-        self._sim_root = None
-        self._sim_canvas = None
-        self._stop_sim = None
-        self._sim_loop = None
+        self._sim_screen = None
+        self._sim_stop_event = None
 
     def simulate(self):
-        self._sim_root = tkinter.Tk()
+        self.stop_simulation()
+        self._sim_stop_event = Event()
 
-        width, height = self._sim_size
-        self._sim_root.geometry(f"{width}x{height}")
-        self._sim_canvas = tkinter.Canvas(self._sim_root, width=width, height=height)
-        self._sim_canvas.pack()
-        self._sim_root.update()
-
-        self._create_sprites(self._sim_canvas, (0, 0))
-        self.__tick()
-
-        self._sim_loop = Thread(target=self.__main_loop, daemon=True)
-        self._sim_loop.start()
+        # pygame has to be set up in the same thread as it's render loop
+        Thread(target=self.__run_sim, daemon=True).start()
 
     def stop_simulation(self):
-        if self._stop_sim is not None:
-            self._stop_sim.set()
-            self._sim_root.destroy()
-            self._sim_root = None
-            self._sim_canvas = None
+        if self._sim_stop_event is not None:
+            self._sim_stop_event.set()
+            pygame.quit()
+            self._sim_screen = None
 
-    def __tick(self):
-        self._update_sprites(self._sim_canvas)
-        self._sim_root.update_idletasks()
-        self._sim_root.update()
+    def __run_sim(self):
+        pygame.init()
+        clock = pygame.time.Clock()
 
-    def __main_loop(self):
-        self._stop_sim = Event()
+        width, height = self._sim_size
+        self._sim_screen = pygame.display.set_mode([width, height])
+        self._sim_screen.fill((255, 255, 255))
 
-        while not self._stop_sim.is_set():
-            self.__tick()
-            sleep(0.05)
+        sprite = self._create_sprite()
 
-    def _create_sprites(self, canvas, pos):
+        while not self._sim_stop_event.is_set():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.stop_simulation()
+                else:
+                    self._handle_event(event)
+
+            sprite.update()
+            sprite.draw(self._sim_screen)
+            pygame.display.flip()
+            clock.tick(20)
+
+    def _create_sprite(self):
         raise NotImplementedError(
-            "_create_sprites must be implemented to use `simulate`"
+            "_create_sprite must be implemented to use `simulate`"
         )
 
-    def _update_sprites(self, canvas):
-        # some simulatable object may not need to update their sprites
+    def _handle_event(self, event):
         pass
-
-    def _set_sprite_image(self, canvas, sprite=None, sprite_id=None, image=None):
-        if sprite is None and sprite_id is None:
-            raise Exception(
-                "Either sprite or sprite_id must be provided to _set_sprite_image"
-            )
-
-        self._sim_images[sprite_id] = ImageTk.PhotoImage(image)
-
-        if sprite is not None:
-            sprite.configure(image=self._sim_images[sprite_id])
-            return
-
-        canvas.itemconfigure(sprite_id, image=self._sim_images[sprite_id])

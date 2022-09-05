@@ -1,5 +1,6 @@
 from gpiozero import LED as gpiozero_LED
-from PIL import Image
+import pygame
+from weakref import ref
 
 import pitop.common.images as Images
 from pitop.core.mixins import Recreatable, Simulatable, Stateful
@@ -17,7 +18,6 @@ class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
     def __init__(self, port_name, name="led"):
         self._pma_port = port_name
         self.name = name
-        self._sprite_id = None
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
@@ -71,17 +71,24 @@ class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
         """
         super(LED, self).close()
 
-    def _create_sprites(self, canvas, pos):
-        self._sprite_id = canvas.create_image(
-            pos[0] + int(self._sim_size[0] / 2),
-            pos[1] + int(self._sim_size[1] / 2),
-        )
+    def _create_sprite(self):
+        return LEDSprite(self)
 
-    def _update_sprites(self, canvas):
-        image_path = Images.LED_green_on
-        if not self.state.get("value", False):
-            image_path = Images.LED_green_off
 
-        self._set_sprite_image(
-            canvas, sprite_id=self._sprite_id, image=Image.open(image_path)
-        )
+class LEDSprite(pygame.sprite.Sprite):
+    def __init__(self, led):
+        super().__init__()
+
+        self.led_ref = ref(led)
+        self.image = pygame.image.load(Images.LED_green_off)
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        led = self.led_ref()
+        if led is None:
+            return
+
+        if led.state.get("value", False):
+            self.image = pygame.image.load(Images.LED_green_on)
+        else:
+            self.image = pygame.image.load(Images.LED_green_off)

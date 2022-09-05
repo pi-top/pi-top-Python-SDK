@@ -2,8 +2,8 @@ import os
 from io import BytesIO
 from time import sleep
 from typing import Callable
-
 from PIL import Image
+import pygame
 
 
 def wait_until(condition: Callable, on_wait: Callable = None, timeout: int = 5) -> None:
@@ -26,13 +26,13 @@ def to_bytes(image):
 
 def snapshot_simulation(simulatable):
     # save postscipt image
-    simulatable._sim_canvas.postscript(file="temp_snapshot.eps", colormode="color")
+    pygame.image.save(simulatable._sim_screen, "temp_snapshot.png")
 
     # use PIL to convert to PNG bytes
-    snapshot = to_bytes(Image.open("temp_snapshot.eps"))
+    snapshot = to_bytes(Image.open("temp_snapshot.png"))
 
     # cleanup image
-    os.remove("temp_snapshot.eps")
+    os.remove("temp_snapshot.png")
 
     return snapshot
 

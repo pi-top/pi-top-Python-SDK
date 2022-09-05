@@ -1,5 +1,5 @@
-import tkinter
 from unittest.mock import patch
+from time import sleep
 
 import pytest
 
@@ -124,7 +124,7 @@ def test_blockpi_rover(pitop_mocks):
 
 
 def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
-    mocker.patch("pitop.pma.button.TkInterButton", create_widget_mock(tkinter.Button))
+    # mocker.patch("pitop.pma.button.TkInterButton", create_widget_mock(tkinter.Button))
 
     from pitop import Pitop
     from pitop.pma import LED, Button
@@ -137,6 +137,8 @@ def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
     pitop.button.when_released = lambda: pitop.led.off()  # noqa: F821
 
     pitop.simulate()
+    # give time for the screen and sprites to be set up
+    sleep(0.5)
 
     snapshot.assert_match(snapshot_simulation(pitop), "default.png")
 
