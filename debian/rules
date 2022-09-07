@@ -11,12 +11,6 @@ LIB_FOLDER := $(shell mktemp -d)
 override_dh_auto_test:
 	# Don't run the tests!
 
-override_dh_clean:
-	# dh_clean
-
-override_dh_auto_clean:
-	# dh_auto_clean
-
 override_dh_install:
 	set -ex ;\
 
