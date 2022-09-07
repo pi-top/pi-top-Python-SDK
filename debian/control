@@ -105,9 +105,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Main
- General purpose Python library for controlling a pi-top.
+ Python library for controlling the pi-top miniscreen
  .
- This is the main Python library part of the package.
+ Includes utilities to interact with the miniscreen OLED and buttons.
 
 
 Package: python3-pitop-battery
@@ -116,9 +116,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Battery
- General purpose Python library for controlling a pi-top.
+ Python library for interacting with the battery of a pi-top.
  .
- This is the main Python library part of the package.
+ Allows users to monitor the pi-top battery and subscribe to events.
 
 
 Package: python3-pitop-camera
@@ -127,9 +127,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Camera
- General purpose Python library for controlling a pi-top.
+ Python library for controlling the pi-top camera.
  .
- This is the main Python library part of the package.
+ Allows users to control the pi-top camera for taking pictures and
+ recording videos.
 
 
 Package: python3-pitop-cli
@@ -138,9 +139,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - CLI
- General purpose Python library for controlling a pi-top.
+ General purpose CLI to interact with a pi-top.
  .
- This is the main Python library part of the package.
+ Provides several commands to learn about the pi-top and peripherals
+ attached to it.
 
 
 Package: python3-pitop-common
@@ -149,9 +151,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Common
- General purpose Python library for controlling a pi-top.
+ General purpose Python library to interact with a pi-top.
  .
- This is the main Python library part of the package.
+ This is a set of common utilities used in the pi-top codebase.
 
 
 Package: python3-pitop-core
@@ -160,9 +162,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Core
- General purpose Python library for controlling a pi-top.
+ General purpose Python library to interact with a pi-top.
  .
- This is the main Python library part of the package.
+ This is library provides a set of mixins, image processing functions and
+ other helpers used in the SDK.
 
 
 Package: python3-pitop-display
@@ -171,9 +174,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Display
- General purpose Python library for controlling a pi-top.
+ Python library for interacting with a pi-top display.
  .
- This is the main Python library part of the package.
+ Allows users to monitor the pi-top display and subscribe to events.
 
 
 Package: python3-pitop-keyboard
@@ -182,9 +185,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Keyboard
- General purpose Python library for controlling a pi-top.
+ Keyboard simulator tool.
  .
- This is the main Python library part of the package.
+ Provides a class to simulate a button press similar to the button in
+ gpiozero but using the users keyboard.
 
 
 Package: python3-pitop-pma
@@ -193,9 +197,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - PMA
- General purpose Python library for controlling a pi-top.
+ Python library for interacting with PMA Components.
  .
- This is the main Python library part of the package.
+ Provides several interfaces to interact with PMA (pi-top Maker Architecture)
+ components, such as LEDs, Buttons, Motors, among others.
 
 
 Package: python3-pitop-processing
@@ -204,9 +209,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Processing
- General purpose Python library for controlling a pi-top.
+ Python library that provides a set of image processing algorithms.
  .
- This is the main Python library part of the package.
+ These algorithms are meant to be used by robots created using the
+ pi-top Robotics Kit.
 
 
 Package: python3-pitop-robotics
@@ -215,9 +221,10 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - Robotics
- General purpose Python library for controlling a pi-top.
+ Python library for creating and controlling pi-top based robots.
  .
- This is the main Python library part of the package.
+ The utilities included in this library are meant to be used by robots
+ created using the pi-top Robotics Kit.
 
 
 Package: python3-pitop-system
@@ -226,6 +233,7 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Description: pi-top Python 3 Library - System
- General purpose Python library for controlling a pi-top.
+ Python library for interacting with a pi-top hub and other peripherals.
  .
- This is the main Python library part of the package.
+ Provides utilities to interact with a pi-top hub and other peripherals
+ that can be attached to a device.
