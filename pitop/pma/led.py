@@ -1,6 +1,7 @@
-from gpiozero import LED as gpiozero_LED
-import pygame
 from weakref import ref
+
+import pygame
+from gpiozero import LED as gpiozero_LED
 
 import pitop.common.images as Images
 from pitop.core.mixins import Recreatable, Simulatable, Stateful

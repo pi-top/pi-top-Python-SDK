@@ -5,7 +5,7 @@ import pygame
 import pitop.common.images as Images
 from pitop.core.mixins import Recreatable, Simulatable, Stateful
 from pitop.pma.common import get_pin_for_port
-
+from pitop.virtual_hardware import using_virtual_hardware
 
 class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.
@@ -79,24 +79,20 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
         return self._sprite
 
     def _handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # ignore if physical button is held
-            if self.value:
-                return
+        if not using_virtual_hardware:
+            return
 
-            mouse = pygame.mouse.get_pos()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
             rect = self._sprite.rect
-            if rect.x <= mouse[0] <= rect.x + rect.width and rect.y <= mouse[1] <= rect.y + rect.height:
-                self._sprite_pressed = True
-                self._fire_events(self.pin_factory.ticks(), True)
+            if (
+                rect.x <= pos[0] <= rect.x + rect.width and
+                rect.y <= pos[1] <= rect.y + rect.height
+            ):
+                self.pin.drive_low()
 
         elif event.type == pygame.MOUSEBUTTONUP:
-            # ignore if physical button held or virtual not held
-            if self.value or not self._sprite_pressed:
-                return
-
-            self._sprite_pressed = False
-            self._fire_events(self.pin_factory.ticks(), False)
+            self.pin.drive_high()
 
 
 class ButtonSprite(pygame.sprite.Sprite):

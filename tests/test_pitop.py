@@ -2,6 +2,7 @@ from unittest.mock import patch
 from time import sleep
 
 import pytest
+import pygame
 
 from tests.utils import create_widget_mock, snapshot_simulation
 
@@ -124,7 +125,7 @@ def test_blockpi_rover(pitop_mocks):
 
 
 def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
-    # mocker.patch("pitop.pma.button.TkInterButton", create_widget_mock(tkinter.Button))
+    mocker.patch("pitop.pma.button.using_virtual_hardware", new=True)
 
     from pitop import Pitop
     from pitop.pma import LED, Button
@@ -133,14 +134,33 @@ def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
 
-    pitop.button.when_pressed = lambda: pitop.led.on()  # noqa: F821
-    pitop.button.when_released = lambda: pitop.led.off()  # noqa: F821
+    pitop.button.when_pressed = pitop.led.on
+    pitop.button.when_released = pitop.led.off
 
     pitop.simulate()
+
     # give time for the screen and sprites to be set up
     sleep(0.5)
-
     snapshot.assert_match(snapshot_simulation(pitop), "default.png")
+
+    # simulate a button click
+    pos = (pitop.button._sprite.rect.x, pitop.button._sprite.rect.y)
+    #pygame.mouse.set_pos(pos)
+
+    mouse_motion_event = pygame.fastevent.Event(pygame.MOUSEMOTION, {'pos': pos, 'rel': pos, 'buttons': (0, 0, 0), 'touch': False, 'window': None})
+    pygame.fastevent.post(mouse_motion_event)
+
+    mouse_down_event = pygame.fastevent.Event(pygame.MOUSEBUTTONDOWN, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+    pygame.fastevent.post(mouse_down_event)
+
+    sleep(0.1)
+    snapshot.assert_match(snapshot_simulation(pitop), "button_pressed.png")
+
+    mouse_up_event = pygame.fastevent.Event(pygame.MOUSEBUTTONUP, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+    pygame.fastevent.post(mouse_up_event)
+
+    sleep(0.1)
+    snapshot.assert_match(snapshot_simulation(pitop), "button_released.png")
 
     # delete refs to trigger component cleanup
     pitop.stop_simulation()

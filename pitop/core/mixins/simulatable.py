@@ -1,18 +1,19 @@
-import pygame
 from threading import Event, Thread
 from time import sleep
+
+import pygame
 
 
 class Simulatable:
     """Represents an object that can be simulated on a digital canvas."""
 
-    def __del__(self):
-        self.stop_simulation()
-
     def __init__(self, size=(780, 620)):
         self._sim_size = size
         self._sim_screen = None
         self._sim_stop_event = None
+
+    def __del__(self):
+        self.stop_simulation()
 
     def simulate(self):
         self.stop_simulation()
@@ -29,6 +30,7 @@ class Simulatable:
 
     def __run_sim(self):
         pygame.init()
+        pygame.fastevent.init()
         clock = pygame.time.Clock()
 
         width, height = self._sim_size
@@ -38,7 +40,7 @@ class Simulatable:
         sprite = self._create_sprite()
 
         while not self._sim_stop_event.is_set():
-            for event in pygame.event.get():
+            for event in pygame.fastevent.get():
                 if event.type == pygame.QUIT:
                     self.stop_simulation()
                 else:
