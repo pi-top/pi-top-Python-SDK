@@ -17,7 +17,7 @@ import sys
 #
 HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
-sys.path.append(PARENT)
+sys.path.append(f"{PARENT}/packages")
 
 # -- Project information -----------------------------------------------------
 
@@ -25,7 +25,9 @@ sys.path.append(PARENT)
 #
 # Importing 'pitop' requires all core dependencies to be installed
 # which is impractical for building docs
-spec = importlib.util.spec_from_file_location("version", f"{PARENT}/pitop/version.py")
+spec = importlib.util.spec_from_file_location(
+    "version", f"{PARENT}/packages/pitop/pitop/version.py"
+)
 modulevar = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(modulevar)
 
