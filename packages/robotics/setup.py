@@ -3,7 +3,7 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
@@ -67,7 +67,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop.robotics"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

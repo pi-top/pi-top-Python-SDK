@@ -54,6 +54,18 @@ Depends:
 # ZMQ for messaging
  python3-zmq,
  raspi-config,
+ python3-pitop-battery,
+ python3-pitop-camera,
+ python3-pitop-cli,
+ python3-pitop-common,
+ python3-pitop-core,
+ python3-pitop-display,
+ python3-pitop-keyboard,
+ python3-pitop-miniscreen,
+ python3-pitop-pma,
+ python3-pitop-processing,
+ python3-pitop-robotics,
+ python3-pitop-system,
 Suggests:
 # Required for OS notifications
  notify-send-ng,
@@ -68,6 +80,7 @@ Description: pi-top Python 3 Library - Main
  General purpose Python library for controlling a pi-top.
  .
  This is the main Python library part of the package.
+
 
 Package: python3-pitop-doc
 Architecture: all
@@ -84,3 +97,135 @@ Description: pi-top Python 3 Library - Documentation and Examples
  General purpose Python library for controlling a pi-top.
  .
  This is the documentation part of the package.
+
+
+Package: python3-pitop-miniscreen
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Main
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-battery
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Battery
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-camera
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Camera
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-cli
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - CLI
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-common
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Common
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-core
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Core
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-display
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Display
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-keyboard
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Keyboard
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-pma
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - PMA
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-processing
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Processing
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-robotics
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - Robotics
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.
+
+
+Package: python3-pitop-system
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+Description: pi-top Python 3 Library - System
+ General purpose Python library for controlling a pi-top.
+ .
+ This is the main Python library part of the package.

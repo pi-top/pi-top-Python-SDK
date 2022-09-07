@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("CURRENT_VERSION", "0.0.1")
 assert __version__ != ""
 
 __project__ = "pitopcli"
@@ -42,12 +42,13 @@ __keywords__ = [
 
 __requires__ = [
     f"pitop.common=={__version__}",
-    f"pitop.battery={__version__}",
-    f"pitop.system={__version__}",
-    f"pitop.display={__version__}",
-    f"pitop.pma={__version__}",
-    f"pitop.miniscreen={__version__}",
+    f"pitop.battery=={__version__}",
+    f"pitop.system=={__version__}",
+    f"pitop.display=={__version__}",
+    f"pitop.pma=={__version__}",
+    f"pitop.miniscreen=={__version__}",
 ]
+
 
 __entry_points__ = {
     "console_scripts": [
@@ -78,7 +79,6 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,
