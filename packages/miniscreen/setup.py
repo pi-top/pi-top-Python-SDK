@@ -47,6 +47,7 @@ __requires__ = [
     "luma.core>=2.3.1,<2.4",
     "luma.oled>=3.8.1,<3.9" "monotonic>=1.1,<1.2",
     "pyinotify>=0.9.6,<0.10",
+    "spidev>=3.5,<4.0",
 ]
 
 

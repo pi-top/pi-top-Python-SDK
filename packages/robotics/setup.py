@@ -44,7 +44,9 @@ __requires__ = [
     f"pitop.system=={__version__}",
     f"pitop.pma=={__version__}",
     f"pitop.core=={__version__}",
+    "numpy>=1.16.0,<1.17",
     "simple_pid>=0.2.4,<0.3",
+    "scipy>=1.6.0,<2.0",
 ]
 
 

@@ -48,13 +48,6 @@ __requires__ = [
     "imageio>=2.4.1,<2.5",
     "numpy>=1.16.0,<1.17",
     "Pillow>=5.4.0,<5.5",
-    # Camera communication
-    # Release version is '0.1a2', but Debian package is '0.1.2'
-    # so we allow for both here
-    #
-    # TODO: build '0.1~a2' Debian package
-    "PyV4L2Camera>=0.1a2,<0.2",
-    "PyV4L2Camera>=0.1a2,<0.2",
 ]
 
 

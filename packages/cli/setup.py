@@ -47,6 +47,10 @@ __requires__ = [
     f"pitop.display=={__version__}",
     f"pitop.pma=={__version__}",
     f"pitop.miniscreen=={__version__}",
+    "netifaces>=0.10.4,<0.11.0",
+    "numpy>=1.16.0,<1.17",
+    "matplotlib>=3.0.0,<3.1",
+    "scipy>=1.6.0,<2.0",
 ]
 
 
