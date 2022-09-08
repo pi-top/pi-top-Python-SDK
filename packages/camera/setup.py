@@ -48,6 +48,7 @@ __requires__ = [
     "imageio>=2.4.1,<2.5",
     "numpy>=1.16.0,<1.17",
     "Pillow>=5.4.0,<5.5",
+    "opencv-python>=4.5.1,<5.0.0",
 ]
 
 

@@ -44,6 +44,7 @@ __requires__ = [
     f"pitop.common=={__version__}",
     "Pillow>=5.4.0,<5.5",
     "numpy>=1.16.0,<1.17",
+    "opencv-python>=4.5.1,<5.0.0",
 ]
 
 
