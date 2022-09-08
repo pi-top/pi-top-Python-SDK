@@ -40,20 +40,6 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
- alsa-utils,
-# 'arping' command
- arping,
-# Miniscreen fonts
- fonts-roboto,
- ttf-bitstream-vera,
- i2c-tools,
-# 'ping' command
- iputils-ping,
-# Required for hub communication; such as getting case button state
- pi-topd | pt-device-manager,
-# ZMQ for messaging
- python3-zmq,
- raspi-config,
  python3-pitop-battery,
  python3-pitop-camera,
  python3-pitop-cli,
@@ -67,12 +53,8 @@ Depends:
  python3-pitop-robotics,
  python3-pitop-system,
 Suggests:
-# Required for OS notifications
- notify-send-ng,
 # pi-top [4] miniscreen menu is optional, but useful for [4] users
  pt-miniscreen | pt-sys-oled,
-# Required to get state about Access Point mode
- wifi-ap-sta,
 # Other SDK packages
  python3-pitop-doc (= ${source:Version}),
  python3-pitop-full,
@@ -104,6 +86,9 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+# Fonts
+ fonts-roboto,
+ ttf-bitstream-vera,
 Description: pi-top Python 3 Library - Main
  Python library for controlling the pi-top miniscreen
  .
@@ -138,6 +123,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+ raspi-config,
 Description: pi-top Python 3 Library - CLI
  General purpose CLI to interact with a pi-top.
  .
@@ -150,6 +136,18 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+# 'arping' command
+ arping,
+ i2c-tools,
+# 'ping' command
+ iputils-ping,
+# ZMQ for messaging
+ python3-zmq,
+Suggests:
+# Required for OS notifications
+ notify-send-ng,
+# Required to get state about Access Point mode
+ wifi-ap-sta,
 Description: pi-top Python 3 Library - Common
  General purpose Python library to interact with a pi-top.
  .
@@ -232,6 +230,8 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
+# Required for hub communication; such as getting case button state
+ pi-topd | pt-device-manager,
 Description: pi-top Python 3 Library - System
  Python library for interacting with a pi-top hub and other peripherals.
  .
