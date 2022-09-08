@@ -42,15 +42,15 @@ __keywords__ = [
 
 __requires__ = [
     # For reviewing DHCP leases
-    "isc_dhcp_leases>=0.9.1,<0.10.0",
+    "isc_dhcp_leases>=0.9.1,<1.0.0",
     # For network interface checking
-    "netifaces>=0.10.4,<0.11.0",
+    "netifaces>=0.10.4,<1.0.0",
     # For journal logging
     "systemd-python>=234,<235",
     # SMBusDevice (PMA)
-    "smbus2>=0.4.0,<0.5.0",
+    "smbus2>=0.4.0,<1.0.0",
     # Device Communication
-    "pyzmq>=17.1.2,<17.2.0",
+    "pyzmq>=20.0.0,<21.0.0",
 ]
 
 

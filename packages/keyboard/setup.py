@@ -42,7 +42,6 @@ __keywords__ = [
 
 __requires__ = [
     f"pitop.common=={__version__}",
-    "pynput>=1.4.2,<1.5",
 ]
 
 

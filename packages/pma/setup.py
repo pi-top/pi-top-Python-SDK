@@ -43,8 +43,8 @@ __keywords__ = [
 __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.core=={__version__}",
-    "gpiozero>=1.6.2,<1.7",
-    "numpy>=1.16.0,<1.17",
+    "gpiozero>=1.6.2,<2.0",
+    "numpy>=1.19.5,<2.0",
 ]
 
 

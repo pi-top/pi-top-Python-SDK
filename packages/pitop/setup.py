@@ -61,19 +61,19 @@ __requires__ = [
     # PROTO #
     #########
     # To use GPIO & components
-    "gpiozero>=1.6.2,<1.7",
+    "gpiozero>=1.6.2,<2.0.0",
     #########
     # Pulse #
     #########
-    "pyserial>=3.4,<3.5",
+    "pyserial>=3.5,<4.0",
     #############
     # Webserver #
     #############
-    "flask>=1.0.2,<1.1",
-    "flask-cors>=3.0.7,<3.1",
-    "flask-sockets>=0.2.1,<0.3",
-    "gevent>=1.3.7,<1.4",
-    "gevent-websocket>=0.10.1,<0.11.0",
+    "flask>=1.1.2,<2.0.0",
+    "flask-cors>=3.0.9,<4.0.0",
+    "flask-sockets>=0.2.1,<1.0",
+    "gevent>=20.9.0,<21.0.0",
+    "gevent-websocket>=0.10.1,<1.0.0",
 ]
 
 

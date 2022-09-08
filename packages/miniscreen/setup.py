@@ -43,10 +43,8 @@ __keywords__ = [
 __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.core=={__version__}",
-    "Pillow>=5.4.0,<5.5",
-    "luma.core>=2.3.1,<2.4",
-    "luma.oled>=3.8.1,<3.9" "monotonic>=1.1,<1.2",
-    "pyinotify>=0.9.6,<0.10",
+    "Pillow>=8.1.2,<9.0",
+    "pyinotify>=0.9.6,<1.0",
     "spidev>=3.5,<4.0",
 ]
 

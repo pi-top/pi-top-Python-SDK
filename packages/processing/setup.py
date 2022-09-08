@@ -44,17 +44,16 @@ __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.pma=={__version__}",
     f"pitop.core=={__version__}",
-    "imutils>=0.5.4,<0.6.0",
-    "matplotlib>=3.0.0,<3.1",
-    "numpy>=1.16.0,<1.17",
-    "onnxruntime>=1.7.2,<1.9",
+    "imutils>=0.5.4,<1.0.0",
+    "matplotlib>=3.3.4,<4.0",
+    "numpy>=1.19.5,<2.0",
+    "onnxruntime>=1.8.1,<2.0",
     "opencv-python>=4.5.1,<5.0.0",
     "wget>=3.2,<4.0",
     #############################
     # Advanced image processing #
     #############################
-    "dlib>=19.22.0,<19.23.0",
-    "scikit-learn>=0.20.2,<0.21.0",
+    "dlib>=19.22.0,<20.0.0",
 ]
 
 
