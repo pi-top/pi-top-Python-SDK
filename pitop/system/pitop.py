@@ -8,6 +8,7 @@ from pitop.core.mixins import (
     SupportsBattery,
     SupportsMiniscreen,
 )
+from pitop.core.mixins.simulatable import DEFAULT_SIZE
 
 
 class Pitop(
@@ -40,7 +41,7 @@ class Pitop(
         SupportsMiniscreen.__init__(self)
         SupportsBattery.__init__(self)
         Componentable.__init__(self)
-        Simulatable.__init__(self, size=(780, 620))
+        Simulatable.__init__(self, size=DEFAULT_SIZE)
 
         canvas_centre = (
             int(self._sim_size[0] / 2),

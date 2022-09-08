@@ -4,10 +4,15 @@ from time import sleep
 import pygame
 
 
+# this is based on the inital further-link graphics area dimensions of 720x680
+# multiplied by 2 to leave plenty space around our pi-top image of 435x573
+DEFAULT_SIZE = (1440, 1360)
+
+
 class Simulatable:
     """Represents an object that can be simulated on a digital canvas."""
 
-    def __init__(self, size=(780, 620)):
+    def __init__(self, size=DEFAULT_SIZE):
         self._sim_size = size
         self._sim_screen = None
         self._sim_stop_event = None
