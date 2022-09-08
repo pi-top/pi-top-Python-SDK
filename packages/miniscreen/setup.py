@@ -44,6 +44,8 @@ __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.core=={__version__}",
     "Pillow>=8.1.2,<9.0",
+    "RPi.GPIO>=0.7.0,<1.0.0",
+    "monotonic>=1.5,<2.0",
     "pyinotify>=0.9.6,<1.0",
     "spidev>=3.5,<4.0",
 ]

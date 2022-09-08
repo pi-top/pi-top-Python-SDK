@@ -10,6 +10,7 @@ imageio python3-imageio; PEP386
 imutils python3-imutils; PEP386
 isc_dhcp_leases python3-isc-dhcp-leases; PEP386
 matplotlib python3-matplotlib; PEP386
+monotonic python3-monotonic; PEP386
 netifaces python3-netifaces; PEP386
 # Numpy in Debian has epoch version 1
 numpy python3-numpy; s/^/1:/
