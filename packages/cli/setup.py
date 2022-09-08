@@ -83,6 +83,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
+            packages=["pitopcli"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,
