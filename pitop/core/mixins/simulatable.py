@@ -47,7 +47,7 @@ class Simulatable:
         while not self._sim_stop_event.is_set():
             for event in pygame.fastevent.get():
                 if event.type == pygame.QUIT:
-                    self.stop_simulation()
+                    return self.stop_simulation()
                 else:
                     self._handle_event(event)
 
