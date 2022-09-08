@@ -14,7 +14,21 @@ netifaces python3-netifaces; PEP386
 # Numpy in Debian has epoch version 1
 numpy python3-numpy; s/^/1:/
 opencv-python python3-opencv; PEP386
+pitop.battery python3-pitop-battery
+pitop.camera python3-pitop-camera
+pitop.cli python3-pitop-cli
+pitop.common python3-pitop-common
+pitop.core python3-pitop-core
+pitop.display python3-pitop-display
+pitop.keyboard python3-pitop-keyboard
+pitop.miniscreen python3-pitop-miniscreen
+pitop.pma python3-pitop-pma
+pitop.processing python3-pitop-processing
+pitop.robotics python3-pitop-robotics
+pitop.system python3-pitop-system
+pitop python3-pitop
 pyinotify python3-pyinotify; PEP386
+pyzmq python3-zmq; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
 scipy python3-scipy; PEP386
 # smbus2 is a pure Python implementation of the python-smbus package
@@ -23,4 +37,3 @@ smbus2 python3-smbus
 spidev python3-spidev; PEP386
 systemd_python python3-systemd; PEP386
 wget python3-wget; PEP386
-pyzmq python3-zmq; PEP386
