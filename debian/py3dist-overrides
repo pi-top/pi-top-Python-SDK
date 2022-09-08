@@ -34,6 +34,6 @@ scipy python3-scipy; PEP386
 # smbus2 is a pure Python implementation of the python-smbus package
 # Versions do not match so ignore version matching
 smbus2 python3-smbus
-spidev python3-spidev; PEP386
+spidev python3-spidev
 systemd_python python3-systemd; PEP386
 wget python3-wget; PEP386
