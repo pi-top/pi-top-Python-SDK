@@ -1,3 +1,5 @@
+from math import cos, sin, radians, sqrt
+
 import pygame
 
 import pitop.common.images as Images
@@ -43,29 +45,60 @@ class Pitop(
         Componentable.__init__(self)
         Simulatable.__init__(self, size=DEFAULT_SIZE)
 
+    def _generate_sprite_centres(self):
+        # sprites for the digital and analog ports are positioned on a circle
+        # around the pi-top, with 30 degrees between them
+
         canvas_centre = (
             int(self._sim_size[0] / 2),
             int(self._sim_size[1] / 2),
         )
 
+        def pythag_hypot(a, b):
+            return sqrt(a**2 + b**2)
+
+        def point_on_circle(angle):
+            center = canvas_centre
+            angle = radians(angle)
+
+            corner_padding = self._sprite.rect.width / 4
+            center_to_corner = pythag_hypot(
+                self._sprite.rect.width / 2, self._sprite.rect.height / 2)
+            radius = center_to_corner + corner_padding
+
+            x = center[0] + (radius * cos(angle))
+            y = center[1] + (radius * sin(angle))
+
+            return x,y
+
+        # clockwise from top right
         self.__sprite_centres = {
-            "D0": (canvas_centre[0] + 200, canvas_centre[1] - 200),
-            "D1": (canvas_centre[0] + 230, canvas_centre[1] - 100),
-            "D2": (canvas_centre[0] + 240, canvas_centre[1]),
-            "D3": (canvas_centre[0] + 230, canvas_centre[1] + 100),
-            "D4": (canvas_centre[0] + 200, canvas_centre[1] + 200),
+            "A1": point_on_circle(-75),
+            "A0": point_on_circle(-45),
+            "D3": point_on_circle(-15),
+            "D2": point_on_circle(15),
+            "D1": point_on_circle(45),
+            "D0": point_on_circle(75),
+            "A3": point_on_circle(180-75),
+            "A2": point_on_circle(180-45),
+            "D7": point_on_circle(180 -15),
+            "D6": point_on_circle(180+15),
+            "D5": point_on_circle(180+45),
+            "D4": point_on_circle(180+75),
         }
+
 
     def _create_sprite(self):
         sprite_group = pygame.sprite.Group()
 
-        pitop_sprite = PitopSprite()
-        sprite_group.add(pitop_sprite)
+        self._sprite = PitopSprite()
+        sprite_group.add(self._sprite)
 
         center = int(self._sim_size[0] / 2), int(self._sim_size[1]/ 2)
-        pitop_sprite.rect.x = center[0] - int(pitop_sprite.rect.width / 2)
-        pitop_sprite.rect.y = center[1] - int(pitop_sprite.rect.height / 2)
+        self._sprite.rect.x = center[0] - int(self._sprite.rect.width / 2)
+        self._sprite.rect.y = center[1] - int(self._sprite.rect.height / 2)
 
+        self._generate_sprite_centres()
 
         # create child sprites
         for child_name in self.children:
