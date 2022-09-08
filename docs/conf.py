@@ -33,7 +33,7 @@ spec.loader.exec_module(modulevar)
 
 project = "pitop"
 author = "pi-top (CEED Ltd)"
-release = modulevar.__version__
+release = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 copyright = "pi-top 2022"
 
 # -- General configuration ---------------------------------------------------
