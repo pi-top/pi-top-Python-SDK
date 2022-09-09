@@ -87,20 +87,15 @@ class Pitop(
             "D4": point_on_circle(180+75),
         }
 
-
     def _create_sprite(self):
-        sprite_group = pygame.sprite.Group()
-
         self._sprite = PitopSprite()
-        sprite_group.add(self._sprite)
+        return self._sprite
 
-        center = int(self._sim_size[0] / 2), int(self._sim_size[1]/ 2)
-        self._sprite.rect.x = center[0] - int(self._sprite.rect.width / 2)
-        self._sprite.rect.y = center[1] - int(self._sprite.rect.height / 2)
+    def _create_sprite_group(self):
+        sprite_group = Simulatable._create_sprite_group(self)
 
         self._generate_sprite_centres()
 
-        # create child sprites
         for child_name in self.children:
             child = getattr(self, child_name, None)
 

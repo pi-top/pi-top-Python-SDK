@@ -42,7 +42,7 @@ class Simulatable:
         self._sim_screen = pygame.display.set_mode([width, height])
         self._sim_screen.fill((255, 255, 255))
 
-        sprite = self._create_sprite()
+        sprite_group = self._create_sprite_group()
 
         while not self._sim_stop_event.is_set():
             for event in pygame.fastevent.get():
@@ -51,8 +51,8 @@ class Simulatable:
                 else:
                     self._handle_event(event)
 
-            sprite.update()
-            sprite.draw(self._sim_screen)
+            sprite_group.update()
+            sprite_group.draw(self._sim_screen)
             pygame.display.flip()
             clock.tick(20)
 
@@ -60,6 +60,18 @@ class Simulatable:
         raise NotImplementedError(
             "_create_sprite must be implemented to use `simulate`"
         )
+
+    def _create_sprite_group(self):
+        sprite_group = pygame.sprite.Group()
+        sprite = self._create_sprite()
+
+        # position main sprite in center
+        center = int(self._sim_size[0] / 2), int(self._sim_size[1]/ 2)
+        sprite.rect.x = center[0] - int(sprite.rect.width / 2)
+        sprite.rect.y = center[1] - int(sprite.rect.height / 2)
+
+        sprite_group.add(sprite)
+        return sprite_group
 
     def _handle_event(self, event):
         pass
