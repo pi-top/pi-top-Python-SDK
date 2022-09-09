@@ -3,14 +3,14 @@ from pitop.pma import LED, Button
 from time import sleep
 
 pitop = Pitop()
-pitop.add_component(LED("D0"), name="led1")
-pitop.add_component(Button("D1"), name="button1")
-pitop.add_component(LED("D2"), name="led2")
-pitop.add_component(Button("D3"), name="button2")
-pitop.add_component(LED("D4"), name="led3")
-pitop.add_component(Button("D5"), name="button3")
-pitop.add_component(LED("D6"), name="led4")
-pitop.add_component(Button("D7"), name="button4")
+pitop.add_component(LED("D0", name="led1"))
+pitop.add_component(Button("D1", name="button1"))
+pitop.add_component(LED("D2", name="led2", color="green"))
+pitop.add_component(Button("D3", name="button2"))
+pitop.add_component(LED("D4", name="led3"))
+pitop.add_component(Button("D5", name="button3"))
+pitop.add_component(LED("D6", name="led4", color="yellow"))
+pitop.add_component(Button("D7", name="button4"))
 
 pitop.button1.when_pressed = pitop.led1.on
 pitop.button1.when_released = pitop.led1.off

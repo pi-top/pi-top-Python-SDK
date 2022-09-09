@@ -8,6 +8,9 @@ from pitop.core.mixins import Recreatable, Simulatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 
+LED_COLORS = ["red", "green", "yellow"]
+
+
 class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
     """Encapsulates the behaviour of an LED.
 
@@ -16,13 +19,14 @@ class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name, name="led"):
+    def __init__(self, port_name, name="led", color=None):
         self._pma_port = port_name
         self.name = name
+        self.color = color if color in LED_COLORS else LED_COLORS[0]
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
-        Simulatable.__init__(self, size=(55, 55))
+        Simulatable.__init__(self, size=(122, 122))
         gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))
 
     @property
@@ -81,7 +85,7 @@ class LEDSprite(pygame.sprite.Sprite):
         super().__init__()
 
         self.led_ref = ref(led)
-        self.image = pygame.image.load(Images.LED_green_off)
+        self.image = pygame.image.load(getattr(Images, f"LED_{led.color}_off"))
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -90,6 +94,6 @@ class LEDSprite(pygame.sprite.Sprite):
             return
 
         if led.state.get("value", False):
-            self.image = pygame.image.load(Images.LED_green_on)
+            self.image = pygame.image.load(getattr(Images, f"LED_{led.color}_on"))
         else:
-            self.image = pygame.image.load(Images.LED_green_off)
+            self.image = pygame.image.load(getattr(Images, f"LED_{led.color}_off"))
