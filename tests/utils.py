@@ -35,39 +35,3 @@ def snapshot_simulation(simulatable):
     os.remove("temp_snapshot.png")
 
     return snapshot
-
-
-# TkInter widgets are not renderable using Postscript so we must use regular
-# images to render them for our snapshots
-def create_widget_mock(Widget):
-    class MockWidget(Widget):
-        def configure(self, *args, **kwargs):
-            super().configure(*args, **kwargs)
-            self.__render_image(kwargs.get("image", None))
-
-        def place(self, *args, **kwargs):
-            super().place(*args, **kwargs)
-
-            if hasattr(self, "_mock_image"):
-                self.__render_image(self._mock_image)
-
-        def __render_image(self, image=None):
-            if image is None:
-                return
-
-            # make sure the position is correct
-            self.master.update()
-
-            # clear old mock image
-            if hasattr(self, "_mock_image_sprite_id"):
-                self.master.itemconfigure(self._mock_image_sprite_id, image="")
-
-            # create new mock image positioned in the same place as the button
-            self._mock_image = image
-            self._mock_image_sprite_id = self.master.create_image(
-                self.winfo_x() + int(self.winfo_width() / 2),
-                self.winfo_y() + int(self.winfo_height() / 2),
-            )
-            self.master.itemconfigure(self._mock_image_sprite_id, image=image)
-
-    return MockWidget

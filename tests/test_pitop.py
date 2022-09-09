@@ -4,7 +4,7 @@ from time import sleep
 import pytest
 import pygame
 
-from tests.utils import create_widget_mock, snapshot_simulation
+from tests.utils import snapshot_simulation
 
 
 @pytest.fixture
