@@ -79,11 +79,14 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
         return self._sprite
 
     def _handle_event(self, event):
+        type = event.get("type")
+        dict = event.get("dict")
+
         if not using_virtual_hardware:
             return
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = event.pos
+        if type == pygame.MOUSEBUTTONDOWN:
+            pos = dict.get("pos", (0, 0))
             rect = self._sprite.rect
             if (
                 rect.x <= pos[0] <= rect.x + rect.width and
@@ -91,13 +94,5 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
             ):
                 self.pin.drive_low()
 
-        elif event.type == pygame.MOUSEBUTTONUP:
+        elif type == pygame.MOUSEBUTTONUP:
             self.pin.drive_high()
-
-
-class ButtonSprite(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-
-        self.image = pygame.image.load(Images.Button)
-        self.rect = self.image.get_rect()
