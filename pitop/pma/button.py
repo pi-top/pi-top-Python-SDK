@@ -5,7 +5,6 @@ import pygame
 import pitop.common.images as Images
 from pitop.core.mixins import Recreatable, Simulatable, Stateful
 from pitop.pma.common import get_pin_for_port
-from pitop.virtual_hardware import using_virtual_hardware
 
 class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.
@@ -23,7 +22,7 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
-        Simulatable.__init__(self, size=(55, 55))
+        Simulatable.__init__(self, size=(122, 122))
         gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port))
 
     @property
@@ -73,26 +72,3 @@ class Button(Stateful, Recreatable, Simulatable, gpiozero_Button):
             ...
         """
         super(Button, self).close()
-
-    def _create_sprite(self):
-        self._sprite = ButtonSprite()
-        return self._sprite
-
-    def _handle_event(self, event):
-        type = event.get("type")
-        dict = event.get("dict")
-
-        if not using_virtual_hardware:
-            return
-
-        if type == pygame.MOUSEBUTTONDOWN:
-            pos = dict.get("pos", (0, 0))
-            rect = self._sprite.rect
-            if (
-                rect.x <= pos[0] <= rect.x + rect.width and
-                rect.y <= pos[1] <= rect.y + rect.height
-            ):
-                self.pin.drive_low()
-
-        elif type == pygame.MOUSEBUTTONUP:
-            self.pin.drive_high()

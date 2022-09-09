@@ -1,4 +1,5 @@
 from time import sleep
+from queue import Queue
 from threading import Thread, Event as ThreadEvent
 from multiprocessing import Process, Pipe, Event as ProcessEvent
 from math import cos, sin, radians, sqrt
@@ -7,11 +8,19 @@ import pygame
 from PIL import Image
 
 import pitop.common.images as Images
+from pitop.virtual_hardware import is_virtual_hardware
 
 
 # this is based on the inital further-link graphics area dimensions of 720x680
 # multiplied by 2 to leave plenty space around our pi-top image of 435x573
 DEFAULT_SIZE = (1440, 1360)
+
+import os
+from io import BytesIO
+def to_bytes(image):
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format="PNG")
+    return img_byte_arr.getvalue()
 
 
 def _run_sim(size, config, stop_event, conn):
@@ -25,7 +34,7 @@ def _run_sim(size, config, stop_event, conn):
 
     exit_code = 0
 
-    sprite_group, sprites = _create_sprite_group(size, config)
+    sprite_group = _create_sprite_group(size, config)
     if not sprite_group:
         stop_event.set()
         exit_code = 1
@@ -34,26 +43,43 @@ def _run_sim(size, config, stop_event, conn):
         for event in pygame.fastevent.get():
             if event.type == pygame.QUIT:
                 break
-            # TODO move the click events here and dispatch to the correct sprite
-            else:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for sprite in sprite_group.sprites():
+                    if not isinstance(sprite, ButtonSprite):
+                        continue
+                    rect = sprite.rect
+                    if (
+                        rect.x <= event.pos[0] <= rect.x + rect.width and
+                        rect.y <= event.pos[1] <= rect.y + rect.height
+                    ):
+                        conn.send(("event", { "type": event.type, "target": sprite.name }))
+            elif event.type == pygame.MOUSEBUTTONUP:
                 conn.send(("event", { "type": event.type, "dict": event.dict }))
 
         while conn.poll(0):
             msg = conn.recv()
             type, data = msg
-            if type == "snapshot":
+            if type == "event":
+                type, target_name = data
+                target = [s for s in sprite_group.sprites() if s.name == target_name]
+                if not len(target):
+                    continue
+                pos = (target[0].rect.x, target[0].rect.y)
+                event = pygame.fastevent.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+                pygame.fastevent.post(event)
+
+            elif type == "snapshot":
                 pygame.image.save(screen, "temp_snapshot.png")
                 snapshot = to_bytes(Image.open("temp_snapshot.png"))
-                conn.send("snapshot", snapshot)
+                conn.send(("snapshot", snapshot))
                 os.remove("temp_snapshot.png")
 
             elif type == "state":
-                for key, value in sprites.items():
-                    if key == "main":
-                        sprites[key].state = data
+                for sprite in sprite_group.sprites():
+                    if sprite.name == "main":
+                        sprite.state = data
                     else:
-                        components = data.get('components', {})
-                        sprites[key].state = components.get(key)
+                        sprite.state = data.get(sprite.name)
 
         sprite_group.update()
         sprite_group.draw(screen)
@@ -115,7 +141,6 @@ def _create_sprite(config):
 
 def _create_sprite_group(sim_size, config):
     sprite_group = pygame.sprite.Group()
-    sprites = {}
 
     sprite = _create_sprite(config)
     if not sprite:
@@ -126,12 +151,12 @@ def _create_sprite_group(sim_size, config):
     sprite.rect.x = center[0] - int(sprite.rect.width / 2)
     sprite.rect.y = center[1] - int(sprite.rect.height / 2)
 
+    sprite.name = "main"
     sprite_group.add(sprite)
-    sprites["main"] = sprite
 
     sprite_centres = _generate_sprite_centres(sim_size, sprite)
 
-    components = config.get('components', [])
+    components = config.get('components', {})
     for component in components.values():
         sprite = _create_sprite(component)
         if not sprite:
@@ -144,10 +169,10 @@ def _create_sprite_group(sim_size, config):
         sprite.rect.x = sprite_centre[0] - int(sprite.rect.width / 2)
         sprite.rect.y = sprite_centre[1] - int(sprite.rect.height / 2)
 
+        sprite.name = component.get("name")
         sprite_group.add(sprite)
-        sprites[component.get("name")] = sprite
 
-    return (sprite_group, sprites)
+    return sprite_group
 
 
 class PitopSprite(pygame.sprite.Sprite):
@@ -162,7 +187,6 @@ class LEDSprite(pygame.sprite.Sprite):
     def __init__(self, config):
         super().__init__()
 
-        self.config = config
         self.color = config.get("color", "red")
         self.image = pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
         self.rect = self.image.get_rect()
@@ -186,18 +210,20 @@ class Simulatable:
     """Represents an object that can be simulated on a digital canvas."""
 
     def __init__(self, size=DEFAULT_SIZE):
-        # TODO must be recreatable and stateful
+        # TODO must be Recreatable and Stateful
         self._sim_size = size
 
         self._sim_snapshot = None
         self._sim_snapshot_request = ThreadEvent()
         self._sim_snapshot_received = ThreadEvent()
+        self._sim_event_queue = Queue()
 
         self._sim_stop_event = ProcessEvent()
 
         self._sim_process = None
 
     def __del__(self):
+        # TODO what about when this is overridden?
         self.stop_simulation()
 
     def simulate(self):
@@ -236,13 +262,19 @@ class Simulatable:
         self._sim_snapshot_received.clear()
         return self._sim_snapshot
 
+    def sim_event(self, type, target):
+        self._sim_event_queue.put((type, target))
+
     def __sim_communicate(self, conn):
         while not self._sim_stop_event.is_set():
             try:
-                conn.send(["state", self.state])
+                conn.send(("state", self.state))
             except BrokenPipeError:
                 break
 
+            while not self._sim_event_queue.empty():
+                event = self._sim_event_queue.get_nowait()
+                conn.send(("event", event))
 
             if self._sim_snapshot_request.is_set():
                 try:
@@ -264,4 +296,23 @@ class Simulatable:
         conn.close()
 
     def _handle_event(self, event):
-        pass
+        if not is_virtual_hardware():
+            return
+
+        type = event.get("type")
+
+        if type == pygame.MOUSEBUTTONDOWN:
+            target_name = event.get("target")
+            target = self if target_name == "main" else getattr(self, target_name, None)
+            try:
+                target.pin.drive_low()
+            except AttributeError:
+                pass
+
+        elif type == pygame.MOUSEBUTTONUP:
+            if self.config.get("classname") == "Button":
+                self.pin.drive_high()
+            elif callable(getattr(self, 'children_gen', None)):
+                for _, child in self.children_gen():
+                    if child.config.get("classname") == "Button":
+                        child.pin.drive_high()

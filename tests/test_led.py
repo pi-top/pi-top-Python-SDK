@@ -3,8 +3,6 @@ from time import sleep
 import pytest
 import pygame
 
-from tests.utils import snapshot_simulation
-
 
 def test_led():
     from pitop import LED
@@ -27,7 +25,6 @@ def test_led():
     assert led.value
     assert led.state["is_lit"]
 
-    # delete ref to trigger component cleanup
     led.close()
 
 
@@ -40,18 +37,61 @@ def test_led_simulate(snapshot):
 
     # give time for the screen and sprites to be set up
     sleep(0.5)
-    snapshot.assert_match(snapshot_simulation(led), "default.png")
+    snapshot.assert_match(led.snapshot(), "default.png")
 
     led.on()
 
     sleep(0.1)
-    snapshot.assert_match(snapshot_simulation(led), "led_on.png")
+    snapshot.assert_match(led.snapshot(), "led_on.png")
 
     led.off()
 
     sleep(0.1)
-    snapshot.assert_match(snapshot_simulation(led), "default.png")
+    snapshot.assert_match(led.snapshot(), "default.png")
 
     led.stop_simulation()
-    # delete ref to trigger component cleanup
-    del led
+    led.close()
+
+def test_led_color(snapshot):
+    from pitop import LED
+
+    red_led = LED("D0")
+    green_led = LED("D1", color="green")
+    yellow_led = LED("D2", color="yellow")
+
+    assert red_led.color == "red"
+    assert green_led.color == "green"
+    assert yellow_led.color == "yellow"
+
+    red_led.simulate()
+    green_led.simulate()
+    yellow_led.simulate()
+
+    # give time for the screen and sprites to be set up
+    sleep(0.5)
+    snapshot.assert_match(red_led.snapshot(), "red_led_off.png")
+    snapshot.assert_match(green_led.snapshot(), "green_led_off.png")
+    snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
+
+    red_led.on()
+    gree_led.on()
+    yellow_led.on()
+
+    sleep(0.1)
+    snapshot.assert_match(red_led.snapshot(), "red_led_on.png")
+    snapshot.assert_match(green_led.snapshot(), "green_led_on.png")
+    snapshot.assert_match(yellow_led.snapshot(), "yellow_led_on.png")
+
+    led.off()
+
+    sleep(0.1)
+    snapshot.assert_match(red_led.snapshot(), "red_led_off.png")
+    snapshot.assert_match(green_led.snapshot(), "green_led_off.png")
+    snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
+
+    red_led.stop_simulation()
+    green_led.stop_simulation()
+    yellow_led.stop_simulation()
+    red_led.close()
+    gree_led.close()
+    yellow_led.close()

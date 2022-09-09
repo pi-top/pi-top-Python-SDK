@@ -75,25 +75,3 @@ class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
             ...
         """
         super(LED, self).close()
-
-    def _create_sprite(self):
-        return LEDSprite(self)
-
-
-class LEDSprite(pygame.sprite.Sprite):
-    def __init__(self, led):
-        super().__init__()
-
-        self.led_ref = ref(led)
-        self.image = pygame.image.load(getattr(Images, f"LED_{led.color}_off"))
-        self.rect = self.image.get_rect()
-
-    def update(self):
-        led = self.led_ref()
-        if led is None:
-            return
-
-        if led.state.get("value", False):
-            self.image = pygame.image.load(getattr(Images, f"LED_{led.color}_on"))
-        else:
-            self.image = pygame.image.load(getattr(Images, f"LED_{led.color}_off"))

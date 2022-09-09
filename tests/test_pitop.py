@@ -4,8 +4,6 @@ from time import sleep
 import pytest
 import pygame
 
-from tests.utils import snapshot_simulation
-
 
 @pytest.fixture
 def pitop_mocks():
@@ -124,8 +122,8 @@ def test_blockpi_rover(pitop_mocks):
     del BlockPiRover.instance
 
 
-def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
-    mocker.patch("pitop.pma.button.using_virtual_hardware", new=True)
+def test_pitop_simulate(pitop_mocks, mocker, snapshot):
+    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", new=True)
 
     from pitop import Pitop
     from pitop.pma import LED, Button
@@ -141,26 +139,19 @@ def test_pitop_virtualize(pitop_mocks, mocker, snapshot):
 
     # give time for the screen and sprites to be set up
     sleep(0.5)
-    snapshot.assert_match(snapshot_simulation(pitop), "default.png")
+    snapshot.assert_match(pitop.snapshot(), "default.png")
 
     # simulate a button click
-    pos = (pitop.button._sprite.rect.x, pitop.button._sprite.rect.y)
-    #pygame.mouse.set_pos(pos)
-
-    mouse_motion_event = pygame.fastevent.Event(pygame.MOUSEMOTION, {'pos': pos, 'rel': pos, 'buttons': (0, 0, 0), 'touch': False, 'window': None})
-    pygame.fastevent.post(mouse_motion_event)
-
-    mouse_down_event = pygame.fastevent.Event(pygame.MOUSEBUTTONDOWN, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
-    pygame.fastevent.post(mouse_down_event)
+    pitop.sim_event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
     sleep(0.1)
-    snapshot.assert_match(snapshot_simulation(pitop), "button_pressed.png")
+    snapshot.assert_match(pitop.snapshot(), "button_pressed.png")
 
-    mouse_up_event = pygame.fastevent.Event(pygame.MOUSEBUTTONUP, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+    pitop.sim_event(pygame.MOUSEBUTTONUP, pitop.button.name)
     pygame.fastevent.post(mouse_up_event)
 
     sleep(0.1)
-    snapshot.assert_match(snapshot_simulation(pitop), "button_released.png")
+    snapshot.assert_match(pitop.snapshot(), "button_released.png")
 
     # delete refs to trigger component cleanup
     pitop.stop_simulation()

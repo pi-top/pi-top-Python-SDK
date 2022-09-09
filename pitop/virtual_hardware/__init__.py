@@ -7,11 +7,15 @@ from gpiozero.pins.mock import MockFactory
 import Mock.GPIO
 
 
-using_virtual_hardware = False
+__using_virtual_hardware = False
+
+
+def is_virtual_hardware():
+    return __using_virtual_hardware
 
 
 def use_virtual_hardware():
-    global using_virtual_hardware
+    global __using_virtual_hardware
 
     environ["GPIOZERO_PIN_FACTORY"] = "mock"
 
@@ -20,7 +24,7 @@ def use_virtual_hardware():
     patch("pitop.system.pitop.SupportsMiniscreen").start()
     patch("pitop.system.pitop.SupportsBattery").start()
 
-    using_virtual_hardware = True
+    __using_virtual_hardware = True
 
 
 if environ.get("PITOP_VIRTUAL_HARDWARE") is not None:
