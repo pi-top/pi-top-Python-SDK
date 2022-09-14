@@ -1,7 +1,6 @@
 import numpy as np
 
-from pitop.common.firmware_device import DeviceInfo
-from pitop.common.i2c_device import I2CDevice
+from pitop.common.firmware_device import FirmwareDevice, FirmwareDeviceID
 
 from .common.imu_registers import (
     ImuRegisters,
@@ -26,9 +25,8 @@ class ImuController:
     __SOFT_IRON_SCALE_FACTOR = 1000.0
 
     def __init__(self):
-        i2c_device = I2CDevice("/dev/i2c-1", 0x04)
-        i2c_device.connect()
-        if i2c_device.read_unsigned_byte(DeviceInfo.ID__SCH_REV_MAJOR) == 4:
+        device = FirmwareDevice(FirmwareDeviceID.pt4_expansion_plate)
+        if device.get_sch_hardware_version_major() == 4:
             raise Exception("This Expansion Plate doesn't have an IMU")
 
         self.__data_registers = ImuRegisters.DATA
