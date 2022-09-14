@@ -19,6 +19,11 @@ jobs:
         with:
           python-version: 3.7
 
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install setuptools wheel twine
+
       - name: Get version from changelog and set package version env variable
         run: |
           set -x
@@ -26,10 +31,15 @@ jobs:
           changelog_version=$(dpkg-parsechangelog -Sversion)
           echo "PYTHON_PACKAGE_VERSION=${changelog_version}" >> $GITHUB_ENV
 
-      - name: Upload to PyPI
-        uses: casperdcl/deploy-pypi@v2
-        with:
-          user: ${{ secrets.PYPI_USERNAME }}
-          password: ${{ secrets.PYPI_PASSWORD }}
-          build: true
-          upload: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+      - name: Build and upload to PyPI
+        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+        run: |
+          for subpackage_folder in packages/* ; do
+            cd $subpackage_folder
+            python3 setup.py sdist bdist_wheel
+            python3 -m twine upload dist/*
+            cd -
+          done
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
