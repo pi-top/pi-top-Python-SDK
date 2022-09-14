@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
 __project__ = "pitop"
@@ -61,19 +61,19 @@ __requires__ = [
     # PROTO #
     #########
     # To use GPIO & components
-    "gpiozero>=1.6.2,<1.7",
+    "gpiozero>=1.6.2,<2.0.0",
     #########
     # Pulse #
     #########
-    "pyserial>=3.4,<3.5",
+    "pyserial>=3.5,<4.0",
     #############
     # Webserver #
     #############
-    "flask>=1.0.2,<1.1",
-    "flask-cors>=3.0.7,<3.1",
-    "flask-sockets>=0.2.1,<0.3",
-    "gevent>=1.3.7,<1.4",
-    "gevent-websocket>=0.10.1,<0.11.0",
+    "flask>=1.1.2,<2.0.0",
+    "flask-cors>=3.0.9,<4.0.0",
+    "flask-sockets>=0.2.1,<1.0",
+    "gevent>=20.9.0,<21.0.0",
+    "gevent-websocket>=0.10.1,<1.0.0",
 ]
 
 
@@ -96,7 +96,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

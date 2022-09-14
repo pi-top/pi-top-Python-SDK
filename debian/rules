@@ -1,15 +1,30 @@
 #!/usr/bin/make -f
 
-export PYBUILD_NAME=pitop
+export DH_VERBOSE=1
+DEBIAN_PACKAGE_PREFIX := python3-pitop
+BUILD_FOLDER := $(CURDIR)/debian/tmp/
+LIB_FOLDER := $(shell mktemp -d)
 
 %:
-	dh $@ --buildsystem=pybuild
+	dh $@
 
 override_dh_auto_test:
 	# Don't run the tests!
 
-override_dh_auto_build:
-	dh_auto_build
+override_dh_install:
+	set -ex ;\
+
+	for SUBPACKAGE_FOLDER in $(wildcard packages/*) ; do \
+		cd $$SUBPACKAGE_FOLDER ;\
+		SUBPACKAGE_NAME=`echo $$SUBPACKAGE_FOLDER | cut -d/ -f 2` ;\
+		DEBIAN_PACKAGE_NAME=$(DEBIAN_PACKAGE_PREFIX) ;\
+		[ $$SUBPACKAGE_NAME != "pitop" ] && DEBIAN_PACKAGE_NAME=$(DEBIAN_PACKAGE_PREFIX)-$$SUBPACKAGE_NAME ;\
+		python3 -B setup.py install --root $(BUILD_FOLDER)/$$DEBIAN_PACKAGE_NAME --install-layout deb --verbose ;\
+		cp -r $(BUILD_FOLDER)/$$DEBIAN_PACKAGE_NAME/* $(LIB_FOLDER) ;\
+		cd - ;\
+		dh_install -p $$DEBIAN_PACKAGE_NAME $$DEBIAN_PACKAGE_NAME/* / ;\
+	done
+
 	# Fail on warnings; make verbose
-	PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
-	PYTHONPATH=. sphinx-build -W -v -bman  docs/ build/man
+	PYTHONPATH=$(LIB_FOLDER)/usr/lib/python3/dist-packages/ sphinx-build -W -v -bhtml docs/ build/html
+	PYTHONPATH=$(LIB_FOLDER)/usr/lib/python3/dist-packages/ sphinx-build -W -v -bman  docs/ build/man

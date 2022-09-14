@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
 __project__ = "pitop.common"
@@ -42,15 +42,15 @@ __keywords__ = [
 
 __requires__ = [
     # For reviewing DHCP leases
-    "isc_dhcp_leases>=0.9.1,<0.10.0",
+    "isc_dhcp_leases>=0.9.1,<1.0.0",
     # For network interface checking
-    "netifaces>=0.10.4,<0.11.0",
+    "netifaces>=0.10.4,<1.0.0",
     # For journal logging
     "systemd-python>=234,<235",
     # SMBusDevice (PMA)
-    "smbus2>=0.4.0,<0.5.0",
+    "smbus2>=0.4.0,<1.0.0",
     # Device Communication
-    "pyzmq>=17.1.2,<17.2.0",
+    "pyzmq>=20.0.0,<21.0.0",
 ]
 
 
@@ -73,7 +73,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop.common"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

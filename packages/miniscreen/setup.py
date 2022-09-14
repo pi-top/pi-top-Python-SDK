@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
 __project__ = "pitop.miniscreen"
@@ -43,10 +43,11 @@ __keywords__ = [
 __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.core=={__version__}",
-    "Pillow>=5.4.0,<5.5",
-    "luma.core>=2.3.1,<2.4",
-    "luma.oled>=3.8.1,<3.9" "monotonic>=1.1,<1.2",
-    "pyinotify>=0.9.6,<0.10",
+    "Pillow>=8.1.2,<9.0",
+    "RPi.GPIO>=0.7.0,<1.0.0",
+    "monotonic>=1.5,<2.0",
+    "pyinotify>=0.9.6,<1.0",
+    "spidev>=3.5,<4.0",
 ]
 
 
@@ -69,7 +70,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop.miniscreen"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

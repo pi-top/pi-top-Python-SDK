@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
 __project__ = "pitop.pma"
@@ -43,8 +43,8 @@ __keywords__ = [
 __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.core=={__version__}",
-    "gpiozero>=1.6.2,<1.7",
-    "numpy>=1.16.0,<1.17",
+    "gpiozero>=1.6.2,<2.0",
+    "numpy>=1.19.5,<2.0",
 ]
 
 
@@ -67,7 +67,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop.pma"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

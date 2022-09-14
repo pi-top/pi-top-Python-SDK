@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
 __project__ = "pitop.camera"
@@ -45,16 +45,10 @@ __requires__ = [
     f"pitop.core=={__version__}",
     f"pitop.pma=={__version__}",
     f"pitop.processing=={__version__}",
-    "imageio>=2.4.1,<2.5",
-    "numpy>=1.16.0,<1.17",
-    "Pillow>=5.4.0,<5.5",
-    # Camera communication
-    # Release version is '0.1a2', but Debian package is '0.1.2'
-    # so we allow for both here
-    #
-    # TODO: build '0.1~a2' Debian package
-    "PyV4L2Camera>=0.1a2,<0.2",
-    "PyV4L2Camera>=0.1a2,<0.2",
+    "imageio>=2.4.1,<3.0.0",
+    "numpy>=1.19.5,<2.0.0",
+    "Pillow>=8.1.2,<9.0.0",
+    "opencv-python>=4.5.1,<5.0.0",
 ]
 
 
@@ -77,7 +71,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop.camera"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

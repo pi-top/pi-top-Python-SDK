@@ -3,14 +3,14 @@
 import os
 import sys
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 if not sys.version_info >= (3, 7):
     raise ValueError("This package requires Python 3.7 or above")
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
-__version__ = os.environ.get("CURRENT_VERSION")
+__version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
 __project__ = "pitop.processing"
@@ -44,16 +44,16 @@ __requires__ = [
     f"pitop.common=={__version__}",
     f"pitop.pma=={__version__}",
     f"pitop.core=={__version__}",
-    "numpy>=1.16.0,<1.17",
-    "imutils>=0.5.4,<0.6.0",
-    "matplotlib>=3.0.0,<3.1",
-    "onnxruntime>=1.7.2,<1.9",
+    "imutils>=0.5.4,<1.0.0",
+    "matplotlib>=3.3.4,<4.0",
+    "numpy>=1.19.5,<2.0",
+    "onnxruntime>=1.8.1,<2.0",
+    "opencv-python>=4.5.1,<5.0.0",
     "wget>=3.2,<4.0",
     #############################
     # Advanced image processing #
     #############################
-    "dlib>=19.22.0,<19.23.0",
-    "scikit-learn>=0.20.2,<0.21.0",
+    "dlib>=19.22.0,<20.0.0",
 ]
 
 
@@ -76,7 +76,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=find_packages(),
+            packages=["pitop.processing"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,
