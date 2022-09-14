@@ -46,7 +46,7 @@ Depends:
 # Miniscreen fonts
  fonts-roboto,
  ttf-bitstream-vera,
- i2c-tools,
+ i2c-tools-extra,
 # 'ping' command
  iputils-ping,
 # Required for hub communication; such as getting case button state
