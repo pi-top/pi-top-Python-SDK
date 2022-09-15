@@ -3,6 +3,7 @@ from queue import Queue
 from threading import Thread, Event as ThreadEvent
 from multiprocessing import Process, Pipe, Event as ProcessEvent
 from math import cos, sin, radians, sqrt
+import sys
 
 import pygame
 from PIL import Image
@@ -26,6 +27,7 @@ def to_bytes(image):
 def _run_sim(size, config, stop_event, conn):
     pygame.init()
     pygame.fastevent.init()
+    pygame.display.init()
     clock = pygame.time.Clock()
 
     width, height = size
@@ -42,6 +44,7 @@ def _run_sim(size, config, stop_event, conn):
     while not stop_event.is_set():
         for event in pygame.fastevent.get():
             if event.type == pygame.QUIT:
+                stop_event.set()
                 break
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for sprite in sprite_group.sprites():
@@ -86,8 +89,9 @@ def _run_sim(size, config, stop_event, conn):
         pygame.display.flip()
         clock.tick(20)
 
+    pygame.quit()
     conn.close()
-    exit(exit_code)
+    sys.exit(exit_code)
 
 
 def _generate_sprite_centres(sim_size, main_sprite):
@@ -228,7 +232,6 @@ class Simulatable:
 
     def simulate(self):
         self.stop_simulation()
-        self._sim_stop_event.clear()
 
         parent_conn, child_conn = Pipe()
 
@@ -237,24 +240,21 @@ class Simulatable:
             self.config,
             self._sim_stop_event,
             child_conn,
-        )).start()
+        ))
+        self._sim_process.daemon = True
+        self._sim_process.start()
 
         Thread(target=self.__sim_communicate, args=(parent_conn,), daemon=True).start()
 
     def stop_simulation(self):
         if self._sim_process is not None:
             self._sim_stop_event.set()
-            self._sim_process.join(1)
-
-            if self._sim_process.is_alive():
-                self._sim_process.kill()
-
-            self._sim_stop_event.clear()
-            self._sim_snapshot_request.clear()
-            self._sim_snapshot_received.clear()
-            self._sim_conn.close()
-            self._sim_conn = None
+            self._sim_process.join()
             self._sim_process = None
+
+        self._sim_stop_event.clear()
+        self._sim_snapshot_request.clear()
+        self._sim_snapshot_received.clear()
 
     def snapshot(self):
         self._sim_snapshot_request.set()
@@ -266,10 +266,14 @@ class Simulatable:
         self._sim_event_queue.put((type, target))
 
     def __sim_communicate(self, conn):
-        while not self._sim_stop_event.is_set():
+        while True:
+            if self._sim_stop_event.is_set():
+                break
+            if self._sim_process is None or not self._sim_process.is_alive():
+                break
             try:
                 conn.send(("state", self.state))
-            except BrokenPipeError:
+            except (BrokenPipeError, ConnectionResetError):
                 break
 
             while not self._sim_event_queue.empty():
@@ -293,7 +297,9 @@ class Simulatable:
                     self._handle_event(data)
 
             sleep(0.05)
+
         conn.close()
+        self.stop_simulation()
 
     def _handle_event(self, event):
         if not is_virtual_hardware():
