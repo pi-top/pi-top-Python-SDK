@@ -65,6 +65,7 @@ def test_pitop(pitop_mocks):
             },
             "led": {
                 "classname": "LED",
+                "color": "red",
                 "module": "pitop.pma.led",
                 "name": "led",
                 "port_name": "D0",

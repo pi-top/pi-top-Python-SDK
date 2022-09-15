@@ -11,6 +11,7 @@ def test_led():
 
     assert led.config == {
         "classname": "LED",
+        "color": "red",
         "module": "pitop.pma.led",
         "name": "led",
         "port_name": "D0",
@@ -74,7 +75,7 @@ def test_led_color(snapshot):
     snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
 
     red_led.on()
-    gree_led.on()
+    green_led.on()
     yellow_led.on()
 
     sleep(0.1)
@@ -82,7 +83,9 @@ def test_led_color(snapshot):
     snapshot.assert_match(green_led.snapshot(), "green_led_on.png")
     snapshot.assert_match(yellow_led.snapshot(), "yellow_led_on.png")
 
-    led.off()
+    red_led.off()
+    green_led.off()
+    yellow_led.off()
 
     sleep(0.1)
     snapshot.assert_match(red_led.snapshot(), "red_led_off.png")
@@ -90,8 +93,12 @@ def test_led_color(snapshot):
     snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
 
     red_led.stop_simulation()
+    # stopping simulations at the same time can cause issues (crashes vcxsrv)
+    sleep(0.5)
     green_led.stop_simulation()
+    sleep(0.5)
     yellow_led.stop_simulation()
+
     red_led.close()
-    gree_led.close()
+    green_led.close()
     yellow_led.close()
