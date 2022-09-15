@@ -22,7 +22,7 @@ repos:
     hooks:
     - id: rstcheck
       args: [
-        "--report", "warning",
+        "--report-level", "warning",
         "--ignore-roles", "class",
         "--ignore-directives", "autoclass,automodule",
       ]
