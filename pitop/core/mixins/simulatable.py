@@ -88,7 +88,7 @@ def _run_sim(size, config, stop_event, conn):
         pygame.display.flip()
         clock.tick(20)
 
-    pygame.quit()
+    # Don't pygame.quit() - isn't needed and can cause X server to crash
     conn.close()
     sys.exit(exit_code)
 

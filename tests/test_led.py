@@ -93,10 +93,7 @@ def test_led_color(snapshot):
     snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
 
     red_led.stop_simulation()
-    # stopping simulations at the same time can cause issues (crashes vcxsrv)
-    sleep(0.5)
     green_led.stop_simulation()
-    sleep(0.5)
     yellow_led.stop_simulation()
 
     red_led.close()
