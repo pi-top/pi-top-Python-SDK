@@ -23,8 +23,8 @@ repos:
     - id: rstcheck
       args: [
         "--report-level", "warning",
-        "--ignore-roles", "class",
-        "--ignore-directives", "autoclass,automodule",
+        "--ignore-roles", "class,ref",
+        "--ignore-directives", "autoclass,automodule,literalinclude,toctree",
       ]
 
 -   repo: https://github.com/pycqa/isort
