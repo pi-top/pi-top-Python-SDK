@@ -124,7 +124,7 @@ def test_blockpi_rover(pitop_mocks):
 
 
 def test_pitop_simulate(pitop_mocks, mocker, snapshot):
-    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", new=True)
+    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
 
     from pitop import Pitop
     from pitop.pma import LED, Button
@@ -145,16 +145,17 @@ def test_pitop_simulate(pitop_mocks, mocker, snapshot):
     # simulate a button click
     pitop.sim_event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
-    sleep(0.1)
+    # these events are a bit slow
+    sleep(0.5)
     snapshot.assert_match(pitop.snapshot(), "button_pressed.png")
 
     pitop.sim_event(pygame.MOUSEBUTTONUP, pitop.button.name)
-    pygame.fastevent.post(mouse_up_event)
 
-    sleep(0.1)
-    snapshot.assert_match(pitop.snapshot(), "button_released.png")
+    sleep(0.5)
+    snapshot.assert_match(pitop.snapshot(), "default.png")
 
     # delete refs to trigger component cleanup
+    # TODO do these as a cleanup fixture so it happens when test fails
     pitop.stop_simulation()
     del pitop
     del Pitop.instance

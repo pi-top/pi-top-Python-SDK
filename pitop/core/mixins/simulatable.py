@@ -12,9 +12,9 @@ import pitop.common.images as Images
 from pitop.virtual_hardware import is_virtual_hardware
 
 
-# this is based on the inital further-link graphics area dimensions of 720x680
+# this is based on the inital further-link graphics area dimensions of 780x620
 # multiplied by 2 to leave plenty space around our pi-top image of 435x573
-DEFAULT_SIZE = (1440, 1360)
+DEFAULT_SIZE = (1560, 1240)
 
 import os
 from io import BytesIO
@@ -26,7 +26,6 @@ def to_bytes(image):
 
 def _run_sim(size, config, stop_event, conn):
     pygame.init()
-    pygame.fastevent.init()
     pygame.display.init()
     clock = pygame.time.Clock()
 
@@ -42,7 +41,7 @@ def _run_sim(size, config, stop_event, conn):
         exit_code = 1
 
     while not stop_event.is_set():
-        for event in pygame.fastevent.get():
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_event.set()
                 break
@@ -68,8 +67,8 @@ def _run_sim(size, config, stop_event, conn):
                 if not len(target):
                     continue
                 pos = (target[0].rect.x, target[0].rect.y)
-                event = pygame.fastevent.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
-                pygame.fastevent.post(event)
+                event = pygame.event.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+                pygame.event.post(event)
 
             elif type == "snapshot":
                 pygame.image.save(screen, "temp_snapshot.png")
@@ -303,6 +302,7 @@ class Simulatable:
 
     def _handle_event(self, event):
         if not is_virtual_hardware():
+            print("Ignoring virtual input while physcial hardware is enabled")
             return
 
         type = event.get("type")

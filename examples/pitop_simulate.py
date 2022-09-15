@@ -26,6 +26,10 @@ pitop.button4.when_released = pitop.led4.off
 
 pitop.simulate()
 pitop.led4.simulate()
-pitop.button4.simulate()
-while True:
-    sleep(0.1)
+##pitop.button4.simulate()
+sleep(10)
+pitop.stop_simulation()
+sleep(1)
+## TODO stopping multiple sims at the same tim kills the xserver
+pitop.led4.stop_simulation()
+##pitop.button4.stop_simulation()
