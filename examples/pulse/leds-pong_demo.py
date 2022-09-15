@@ -115,7 +115,6 @@ class PongGameState:
 
 
 def draw_bats():
-
     for y in range(7):
         ledmatrix.set_pixel(
             0, y, background_color[0], background_color[1], background_color[2]
@@ -144,7 +143,6 @@ def draw_bats():
 
 
 def draw_ball():
-
     ledmatrix.set_pixel(
         game_state.ball_x,
         game_state.ball_y,
@@ -155,7 +153,6 @@ def draw_ball():
 
 
 def flash_screen(rgb_tuple):
-
     for i in range(5):
         ledmatrix.set_all(rgb_tuple[0], rgb_tuple[1], rgb_tuple[2])
         ledmatrix.show()

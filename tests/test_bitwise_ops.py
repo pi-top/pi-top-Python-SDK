@@ -27,7 +27,6 @@ Tested:
     ],
 )
 def test_split_into_bytes_unsigned(data: int, no_of_bytes: int, expected_list):
-
     test_bytes_list = bitwise.split_into_bytes(data, no_of_bytes)
     assert expected_list == test_bytes_list
 
@@ -47,7 +46,6 @@ def test_split_into_bytes_unsigned(data: int, no_of_bytes: int, expected_list):
     ],
 )
 def test_split_into_bytes_signed(data: int, no_of_bytes: int, expected_list):
-
     test_bytes_list = bitwise.split_into_bytes(data, no_of_bytes, signed=True)
     assert expected_list == test_bytes_list
 
