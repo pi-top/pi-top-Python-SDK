@@ -159,3 +159,47 @@ def test_pitop_simulate(pitop_mocks, mocker, snapshot):
     pitop.stop_simulation()
     del pitop
     del Pitop.instance
+
+
+def test_pitop_visualize(pitop_mocks, mocker, snapshot):
+    # with is_virtual_hardware False, pygame button events will not work
+    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
+
+    from pitop import Pitop
+    from pitop.pma import LED, Button
+
+    pitop = Pitop()
+    pitop.add_component(LED("D0"))
+    pitop.add_component(Button("D1"))
+
+    pitop.button.when_pressed = pitop.led.on
+    pitop.button.when_released = pitop.led.off
+
+    pitop.simulate()
+
+    # give time for the screen and sprites to be set up
+    sleep(0.5)
+    snapshot.assert_match(pitop.snapshot(), "default.png")
+
+    # simulate a button click
+    pitop.sim_event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+
+    # these events are a bit slow
+    sleep(0.5)
+    # should not have changed
+    snapshot.assert_match(pitop.snapshot(), "default.png")
+
+    pitop.button.pin.drive_low()
+    sleep(0.1)
+    snapshot.assert_match(pitop.snapshot(), "button_pressed.png")
+
+
+    pitop.button.pin.drive_high()
+    sleep(0.1)
+    snapshot.assert_match(pitop.snapshot(), "default.png")
+
+    # delete refs to trigger component cleanup
+    # TODO do these as a cleanup fixture so it happens when test fails
+    pitop.stop_simulation()
+    del pitop
+    del Pitop.instance
