@@ -208,6 +208,12 @@ class ButtonSprite(pygame.sprite.Sprite):
         self.image = pygame.image.load(Images.Button)
         self.rect = self.image.get_rect()
 
+    def update(self):
+        if self.state and self.state.get("is_pressed", False):
+            self.image = pygame.image.load(Images.Button_pressed)
+        else:
+            self.image = pygame.image.load(Images.Button)
+
 
 class Simulatable:
     """Represents an object that can be simulated on a digital canvas."""

@@ -162,7 +162,7 @@ def test_pitop_simulate(pitop_mocks, mocker, snapshot):
 
 
 def test_pitop_visualize(pitop_mocks, mocker, snapshot):
-    # with is_virtual_hardware False, pygame button events will not work
+    # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
 
     from pitop import Pitop
@@ -192,7 +192,6 @@ def test_pitop_visualize(pitop_mocks, mocker, snapshot):
     pitop.button.pin.drive_low()
     sleep(0.1)
     snapshot.assert_match(pitop.snapshot(), "button_pressed.png")
-
 
     pitop.button.pin.drive_high()
     sleep(0.1)
