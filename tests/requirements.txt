@@ -8,17 +8,19 @@ pytest-snapshot
 pytest-xdist
 # Dependencies
 dlib
+flask
+flask_sockets
+flask_cors
 gpiozero
 imutils
 isc_dhcp_leases
 matplotlib
+Mock.GPIO
 numpy
 netifaces
 onnxruntime
 opencv-python
-flask
-flask_sockets
-flask_cors
+pygame
 Pillow
 scipy
 wget
