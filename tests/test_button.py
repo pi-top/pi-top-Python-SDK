@@ -59,7 +59,7 @@ def test_button_simulate(mocker, snapshot):
 
 def test_button_visualize(mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
-    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
+    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
 
     from pitop import Button
 
