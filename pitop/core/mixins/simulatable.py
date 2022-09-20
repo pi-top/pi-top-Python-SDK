@@ -236,7 +236,6 @@ class Simulatable:
         self._sim_process = None
 
     def __del__(self):
-        # TODO what about when this is overridden?
         self.stop_simulation()
 
     def simulate(self):

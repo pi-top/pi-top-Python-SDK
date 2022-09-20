@@ -41,12 +41,35 @@ def pitop_mocks():
     mocks["set_target_speed"].stop()
 
 
-def test_pitop(pitop_mocks):
+@pytest.fixture
+def pitop_instance(pitop_mocks):
     from pitop import Pitop
+    pitop = Pitop()
+
+    yield pitop
+
+    pitop.close()
+    Pitop.instance = None
+    del pitop
+
+
+@pytest.fixture
+def rover_instance(pitop_mocks):
+    from pitop import BlockPiRover
+    rover = BlockPiRover()
+
+    yield rover
+
+    rover.close()
+    BlockPiRover.instance = None
+    del rover
+
+
+def test_pitop(pitop_instance):
     from pitop.pma import LED
     from pitop.robotics.drive_controller import DriveController
 
-    pitop = Pitop()
+    pitop = pitop_instance
     drive = DriveController()
     pitop.add_component(drive)
     led = LED("D0")
@@ -87,15 +110,9 @@ def test_pitop(pitop_mocks):
     pitop.drive.left_motor.set_target_speed.assert_called()
     pitop.drive.right_motor.set_target_speed.assert_called()
 
-    # delete refs to trigger component cleanup
-    del pitop
-    del Pitop.instance
 
-
-def test_blockpi_rover(pitop_mocks):
-    from pitop import BlockPiRover
-
-    rover = BlockPiRover()
+def test_blockpi_rover(rover_instance):
+    rover = rover_instance
 
     assert rover.config == {
         "classname": "BlockPiRover",
@@ -118,18 +135,13 @@ def test_blockpi_rover(pitop_mocks):
     rover.drive.left_motor.set_target_speed.assert_called()
     rover.drive.right_motor.set_target_speed.assert_called()
 
-    # delete refs to trigger component cleanup
-    del rover
-    del BlockPiRover.instance
 
-
-def test_pitop_simulate(pitop_mocks, mocker, snapshot):
+def test_pitop_simulate(pitop_instance, mocker, snapshot):
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
 
-    from pitop import Pitop
     from pitop.pma import LED, Button
 
-    pitop = Pitop()
+    pitop = pitop_instance
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
 
@@ -154,21 +166,16 @@ def test_pitop_simulate(pitop_mocks, mocker, snapshot):
     sleep(0.5)
     snapshot.assert_match(pitop.snapshot(), "default.png")
 
-    # delete refs to trigger component cleanup
-    # TODO do these as a cleanup fixture so it happens when test fails
     pitop.stop_simulation()
-    del pitop
-    del Pitop.instance
 
 
-def test_pitop_visualize(pitop_mocks, mocker, snapshot):
+def test_pitop_visualize(pitop_instance, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
 
-    from pitop import Pitop
     from pitop.pma import LED, Button
 
-    pitop = Pitop()
+    pitop = pitop_instance
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
 
@@ -197,8 +204,4 @@ def test_pitop_visualize(pitop_mocks, mocker, snapshot):
     sleep(0.1)
     snapshot.assert_match(pitop.snapshot(), "default.png")
 
-    # delete refs to trigger component cleanup
-    # TODO do these as a cleanup fixture so it happens when test fails
     pitop.stop_simulation()
-    del pitop
-    del Pitop.instance
