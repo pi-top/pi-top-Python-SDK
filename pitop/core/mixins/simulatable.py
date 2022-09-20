@@ -147,7 +147,7 @@ def _create_sprite_group(sim_size, config):
 
     sprite = _create_sprite(config)
     if not sprite:
-        return (None, None)
+        return None
 
     # position main sprite in center
     center = int(sim_size[0] / 2), int(sim_size[1]/ 2)
@@ -276,6 +276,7 @@ class Simulatable:
                 break
             if self._sim_process is None or not self._sim_process.is_alive():
                 break
+
             try:
                 conn.send(("state", self.state))
             except (BrokenPipeError, ConnectionResetError):
@@ -288,7 +289,7 @@ class Simulatable:
             if self._sim_snapshot_request.is_set():
                 try:
                     conn.send(("snapshot", None))
-                except BrokenPipeError:
+                except (BrokenPipeError, ConnectionResetError):
                     break
                 self._sim_snapshot_request.clear()
 
