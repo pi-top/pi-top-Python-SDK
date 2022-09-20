@@ -71,10 +71,8 @@ def _run_sim(size, config, stop_event, conn):
                 pygame.event.post(event)
 
             elif type == "snapshot":
-                pygame.image.save(screen, "temp_snapshot.png")
-                snapshot = to_bytes(Image.open("temp_snapshot.png"))
+                snapshot = to_bytes(Image.frombytes("RGB", size, bytes(pygame.image.tostring(screen, "RGB"))))
                 conn.send(("snapshot", snapshot))
-                os.remove("temp_snapshot.png")
 
             elif type == "state":
                 for sprite in sprite_group.sprites():
@@ -83,9 +81,10 @@ def _run_sim(size, config, stop_event, conn):
                     else:
                         sprite.state = data.get(sprite.name)
 
-        sprite_group.update()
-        sprite_group.draw(screen)
-        pygame.display.flip()
+                sprite_group.update()
+                sprite_group.draw(screen)
+                pygame.display.flip()
+
         clock.tick(20)
 
     # Don't pygame.quit() - isn't needed and can cause X server to crash
@@ -177,12 +176,17 @@ def _create_sprite_group(sim_size, config):
 
     return sprite_group
 
+def remove_alpha(image):
+    new = image.copy()
+    new.fill((255, 255, 255))
+    new.blit(image, (0, 0))
+    return new.convert()
 
 class PitopSprite(pygame.sprite.Sprite):
     def __init__(self, config):
         super().__init__()
 
-        self.image = pygame.image.load(Images.Pitop)
+        self.image = remove_alpha(pygame.image.load(Images.Pitop))
         self.rect = self.image.get_rect()
 
 
@@ -191,28 +195,28 @@ class LEDSprite(pygame.sprite.Sprite):
         super().__init__()
 
         self.color = config.get("color", "red")
-        self.image = pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
+        self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
         self.rect = self.image.get_rect()
 
     def update(self):
         if self.state and self.state.get("value", False):
-            self.image = pygame.image.load(getattr(Images, f"LED_{self.color}_on"))
+            self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_on")))
         else:
-            self.image = pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
+            self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
 
 
 class ButtonSprite(pygame.sprite.Sprite):
     def __init__(self, config):
         super().__init__()
 
-        self.image = pygame.image.load(Images.Button)
+        self.image = remove_alpha(pygame.image.load(Images.Button))
         self.rect = self.image.get_rect()
 
     def update(self):
         if self.state and self.state.get("is_pressed", False):
-            self.image = pygame.image.load(Images.Button_pressed)
+            self.image = remove_alpha(pygame.image.load(Images.Button_pressed))
         else:
-            self.image = pygame.image.load(Images.Button)
+            self.image = remove_alpha(pygame.image.load(Images.Button))
 
 
 class Simulatable:
