@@ -46,9 +46,9 @@ __requires__ = [
     f"pitop.pma=={__version__}",
     f"pitop.processing=={__version__}",
     "imageio>=2.4.1,<3.0.0",
-    "numpy>=1.19.5,<2.0.0",
+    "numpy>1.19.5,<2.0.0",
     "Pillow>=8.1.2,<9.0.0",
-    "opencv-python>=4.5.1,<5.0.0",
+    "opencv-python>=4.5.1,<4.6.0",
 ]
 
 
