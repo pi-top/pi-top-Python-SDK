@@ -1,14 +1,16 @@
+import grp
 import os
 import pwd
-import grp
 
 
 def env_for_user(user, env=None):
     """Returns an environment variables dictionary, intended for use as the env
-    parameter when spawining a process as another user. Takes the initial env
-    as a param or from the current environment and modifies user-specific parts
-    to suit the new user. Use-case specific variables such as DISPLAY should be
-    set outside."""
+    parameter when spawining a process as another user.
+
+    Takes the initial env as a param or from the current environment and
+    modifies user-specific parts to suit the new user. Use-case specific
+    variables such as DISPLAY should be set outside.
+    """
 
     if get_uid(user) is None:
         raise Exception(f"User not found: {user}")
@@ -29,8 +31,11 @@ def env_for_user(user, env=None):
 
 def switch_user(user):
     """Primarily intended for use as the preexec_fn when spawning a process as
-    another user. In combination with env_for_user this is equivalent to
-    running the process with `su` or `sudo -u`."""
+    another user.
+
+    In combination with env_for_user this is equivalent to running the
+    process with `su` or `sudo -u`.
+    """
 
     if get_uid(user) is None:
         raise Exception(f"User not found: {user}")
