@@ -66,16 +66,7 @@ jobs:
 
      - name: Run Python tests and generate coverage report
        run: |
-         sudo apt-get install xvfb
-         export DISPLAY=:99
-         sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-         echo mhmmm
-         cd graphics-test
-         echo letsgo
-         python3 pygame_draw_pitop.py
-         echo ok?
          python3 -m pytest --verbose
-
 
      - name: Upload Python test coverage reports to Codecov
        uses: codecov/codecov-action@v2.1.0

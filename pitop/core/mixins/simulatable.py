@@ -253,7 +253,6 @@ class Simulatable:
         self._sim_process.start()
 
         Thread(target=self.__sim_communicate, args=(parent_conn,), daemon=True).start()
-        return self._sim_process
 
     def stop_simulation(self):
         if self._sim_process is not None:
