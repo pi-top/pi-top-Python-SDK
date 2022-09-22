@@ -24,10 +24,15 @@ pitop.button3.when_released = pitop.led3.off
 pitop.button4.when_pressed = pitop.led4.on
 pitop.button4.when_released = pitop.led4.off
 
-pitop.simulate()
-pitop.led4.simulate()
-pitop.button4.simulate()
+print('starting pitop sim')
+p = pitop.simulate()
+print('started pitop sim')
+print(p)
+print('sleeping for 10')
 sleep(10)
+print('slept for 10')
+print(p)
+print('stopping pitop sim')
 pitop.stop_simulation()
-pitop.led4.stop_simulation()
-pitop.button4.stop_simulation()
+print('stopped pitop sim')
+print(p)
