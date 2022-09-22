@@ -42,34 +42,36 @@ def pitop_mocks():
 
 
 @pytest.fixture
-def pitop_instance(pitop_mocks):
+def pitop(pitop_mocks):
     from pitop import Pitop
     pitop = Pitop()
 
     yield pitop
 
+    pitop.stop_simulation()
     pitop.close()
     Pitop.instance = None
     del pitop
 
 
 @pytest.fixture
-def rover_instance(pitop_mocks):
+def rover(pitop_mocks):
     from pitop import BlockPiRover
     rover = BlockPiRover()
 
     yield rover
 
+    rover.stop_simulation()
     rover.close()
     BlockPiRover.instance = None
     del rover
 
 
-def test_pitop(pitop_instance):
+def test_pitop(pitop):
     from pitop.pma import LED
     from pitop.robotics.drive_controller import DriveController
 
-    pitop = pitop_instance
+    pitop = pitop
     drive = DriveController()
     pitop.add_component(drive)
     led = LED("D0")
@@ -111,8 +113,8 @@ def test_pitop(pitop_instance):
     pitop.drive.right_motor.set_target_speed.assert_called()
 
 
-def test_blockpi_rover(rover_instance):
-    rover = rover_instance
+def test_blockpi_rover(rover):
+    rover = rover
 
     assert rover.config == {
         "classname": "BlockPiRover",
@@ -136,12 +138,12 @@ def test_blockpi_rover(rover_instance):
     rover.drive.right_motor.set_target_speed.assert_called()
 
 
-def test_pitop_simulate(pitop_instance, mocker, snapshot):
+def test_pitop_simulate(pitop, mocker, snapshot):
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
 
     from pitop.pma import LED, Button
 
-    pitop = pitop_instance
+    pitop = pitop
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
 
@@ -166,16 +168,14 @@ def test_pitop_simulate(pitop_instance, mocker, snapshot):
     sleep(0.5)
     snapshot.assert_match(pitop.snapshot(), "default.png")
 
-    pitop.stop_simulation()
 
-
-def test_pitop_visualize(pitop_instance, mocker, snapshot):
+def test_pitop_visualize(pitop, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
 
     from pitop.pma import LED, Button
 
-    pitop = pitop_instance
+    pitop = pitop
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
 
@@ -203,5 +203,3 @@ def test_pitop_visualize(pitop_instance, mocker, snapshot):
     pitop.button.pin.drive_high()
     sleep(0.1)
     snapshot.assert_match(pitop.snapshot(), "default.png")
-
-    pitop.stop_simulation()

@@ -4,10 +4,25 @@ import pytest
 import pygame
 
 
-def test_button():
-    from pitop import Button
+@pytest.fixture
+def make_button():
+    buttons = []
 
-    button = Button("D0")
+    def _make_button(port="D0", name="button"):
+        from pitop import Button
+        button = Button(port, name=name)
+        buttons.append(button)
+        return button
+
+    yield _make_button
+
+    for button in buttons:
+        button.stop_simulation()
+        button.close()
+
+
+def test_button(make_button):
+    button = make_button()
 
     assert button.config == {
         "classname": "Button",
@@ -25,15 +40,11 @@ def test_button():
     assert button.value
     assert button.state["is_pressed"]
 
-    button.close()
 
-
-def test_button_simulate(mocker, snapshot):
+def test_button_simulate(make_button, mocker, snapshot):
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
 
-    from pitop import Button
-
-    button = Button("D0")
+    button = make_button()
 
     button.simulate()
 
@@ -53,17 +64,12 @@ def test_button_simulate(mocker, snapshot):
     sleep(0.5)
     snapshot.assert_match(button.snapshot(), "default.png")
 
-    button.stop_simulation()
-    button.close()
 
-
-def test_button_visualize(mocker, snapshot):
+def test_button_visualize(make_button, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
 
-    from pitop import Button
-
-    button = Button("D0")
+    button = make_button()
 
     button.simulate()
 
@@ -86,6 +92,3 @@ def test_button_visualize(mocker, snapshot):
     button.pin.drive_high()
     sleep(0.1)
     snapshot.assert_match(button.snapshot(), "default.png")
-
-    button.stop_simulation()
-    button.close()
