@@ -89,9 +89,12 @@ def main():
 from threading import Thread
 t = Thread(target=main, daemon=True)
 
+print('runnung  sim', flush=True)
 t.start()
-#main()
-
-from signal import pause
-pause()
+print('sleeping 10')
+sleep(10)
+print('quitting pygame')
+running = False
+sleep(1)
 pygame.quit()
+print('done')
