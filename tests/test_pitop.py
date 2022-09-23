@@ -48,7 +48,6 @@ def pitop(pitop_mocks):
 
     yield pitop
 
-    pitop.stop_simulation()
     pitop.close()
     Pitop.instance = None
     del pitop
@@ -61,7 +60,6 @@ def rover(pitop_mocks):
 
     yield rover
 
-    rover.stop_simulation()
     rover.close()
     BlockPiRover.instance = None
     del rover
@@ -138,8 +136,8 @@ def test_blockpi_rover(rover):
     rover.drive.right_motor.set_target_speed.assert_called()
 
 
-def test_pitop_simulate(pitop, mocker, snapshot):
-    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
+def test_pitop_simulate(pitop, mocker, create_sim, snapshot):
+    mocker.patch("pitop.virtual_hardware.simulation.simulation.is_virtual_hardware", return_value=True)
 
     from pitop.pma import LED, Button
 
@@ -150,28 +148,28 @@ def test_pitop_simulate(pitop, mocker, snapshot):
     pitop.button.when_pressed = pitop.led.on
     pitop.button.when_released = pitop.led.off
 
-    pitop.simulate()
+    sim = create_sim(pitop)
 
     # give time for the screen and sprites to be set up
-    sleep(1)
-    snapshot.assert_match(pitop.snapshot(), "default.png")
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     # simulate a button click
-    pitop.sim_event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+    sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
     # these events are a bit slow
     sleep(0.5)
-    snapshot.assert_match(pitop.snapshot(), "button_pressed.png")
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
-    pitop.sim_event(pygame.MOUSEBUTTONUP, pitop.button.name)
+    sim.event(pygame.MOUSEBUTTONUP, pitop.button.name)
 
     sleep(0.5)
-    snapshot.assert_match(pitop.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
 
-def test_pitop_visualize(pitop, mocker, snapshot):
+def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
-    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
+    mocker.patch("pitop.virtual_hardware.simulation.simulation.is_virtual_hardware", return_value=False)
 
     from pitop.pma import LED, Button
 
@@ -182,24 +180,24 @@ def test_pitop_visualize(pitop, mocker, snapshot):
     pitop.button.when_pressed = pitop.led.on
     pitop.button.when_released = pitop.led.off
 
-    pitop.simulate()
+    sim = create_sim(pitop)
 
     # give time for the screen and sprites to be set up
-    sleep(1)
-    snapshot.assert_match(pitop.snapshot(), "default.png")
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     # simulate a button click
-    pitop.sim_event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+    sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
     # these events are a bit slow
     sleep(0.5)
     # should not have changed
-    snapshot.assert_match(pitop.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     pitop.button.pin.drive_low()
     sleep(0.1)
-    snapshot.assert_match(pitop.snapshot(), "button_pressed.png")
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
     pitop.button.pin.drive_high()
     sleep(0.1)
-    snapshot.assert_match(pitop.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")

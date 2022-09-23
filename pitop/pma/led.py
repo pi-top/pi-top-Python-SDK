@@ -3,15 +3,14 @@ from weakref import ref
 import pygame
 from gpiozero import LED as gpiozero_LED
 
-import pitop.common.images as Images
-from pitop.core.mixins import Recreatable, Simulatable, Stateful
+from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 
 LED_COLORS = ["red", "green", "yellow"]
 
 
-class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
+class LED(Stateful, Recreatable, gpiozero_LED):
     """Encapsulates the behaviour of an LED.
 
     An LED (Light Emitting Diode) is a simple light source that can be controlled directly.
@@ -26,7 +25,6 @@ class LED(Stateful, Recreatable, Simulatable, gpiozero_LED):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name, "color": self.color})
-        Simulatable.__init__(self, size=(122, 122))
         gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))
 
     @property

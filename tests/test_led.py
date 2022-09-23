@@ -17,7 +17,6 @@ def make_led():
     yield _make_led
 
     for led in leds:
-        led.stop_simulation()
         led.close()
 
 
@@ -42,26 +41,27 @@ def test_led(make_led):
     assert led.state["is_lit"]
 
 
-def test_led_simulate(make_led, snapshot):
+def test_led_simulate(make_led, create_sim, snapshot):
     led = make_led()
 
-    led.simulate()
+    sim = create_sim(led)
 
     # give time for the screen and sprites to be set up
-    sleep(1)
-    snapshot.assert_match(led.snapshot(), "default.png")
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     led.on()
 
     sleep(0.1)
-    snapshot.assert_match(led.snapshot(), "led_on.png")
+    snapshot.assert_match(sim.snapshot(), "led_on.png")
 
     led.off()
 
     sleep(0.1)
-    snapshot.assert_match(led.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
-def test_led_color(make_led, snapshot):
+
+def test_led_color(make_led, create_sim, snapshot):
     red_led = make_led("D0")
     green_led = make_led("D1", color="green")
     yellow_led = make_led("D2", color="yellow")
@@ -70,30 +70,30 @@ def test_led_color(make_led, snapshot):
     assert green_led.color == "green"
     assert yellow_led.color == "yellow"
 
-    red_led.simulate()
-    green_led.simulate()
-    yellow_led.simulate()
+    red_sim = create_sim(red_led)
+    green_sim = create_sim(green_led)
+    yellow_sim = create_sim(yellow_led)
 
     # give time for the screen and sprites to be set up
-    sleep(1)
-    snapshot.assert_match(red_led.snapshot(), "red_led_off.png")
-    snapshot.assert_match(green_led.snapshot(), "green_led_off.png")
-    snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
+    sleep(3)
+    snapshot.assert_match(red_sim.snapshot(), "red_led_off.png")
+    snapshot.assert_match(green_sim.snapshot(), "green_led_off.png")
+    snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_off.png")
 
     red_led.on()
     green_led.on()
     yellow_led.on()
 
     sleep(0.1)
-    snapshot.assert_match(red_led.snapshot(), "red_led_on.png")
-    snapshot.assert_match(green_led.snapshot(), "green_led_on.png")
-    snapshot.assert_match(yellow_led.snapshot(), "yellow_led_on.png")
+    snapshot.assert_match(red_sim.snapshot(), "red_led_on.png")
+    snapshot.assert_match(green_sim.snapshot(), "green_led_on.png")
+    snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_on.png")
 
     red_led.off()
     green_led.off()
     yellow_led.off()
 
     sleep(0.1)
-    snapshot.assert_match(red_led.snapshot(), "red_led_off.png")
-    snapshot.assert_match(green_led.snapshot(), "green_led_off.png")
-    snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")
+    snapshot.assert_match(red_sim.snapshot(), "red_led_off.png")
+    snapshot.assert_match(green_sim.snapshot(), "green_led_off.png")
+    snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_off.png")

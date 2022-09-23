@@ -17,7 +17,6 @@ def make_button():
     yield _make_button
 
     for button in buttons:
-        button.stop_simulation()
         button.close()
 
 
@@ -41,54 +40,54 @@ def test_button(make_button):
     assert button.state["is_pressed"]
 
 
-def test_button_simulate(make_button, mocker, snapshot):
-    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=True)
+def test_button_simulate(make_button, create_sim, mocker, snapshot):
+    mocker.patch("pitop.virtual_hardware.simulation.simulation.is_virtual_hardware", return_value=True)
 
     button = make_button()
 
-    button.simulate()
+    sim = create_sim(button)
 
     # give time for the screen and sprites to be set up
-    sleep(1)
-    snapshot.assert_match(button.snapshot(), "default.png")
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     # simulate a button click
-    button.sim_event(pygame.MOUSEBUTTONDOWN, "main")
+    sim.event(pygame.MOUSEBUTTONDOWN, "main")
 
     # these events are a bit slow
     sleep(0.5)
-    snapshot.assert_match(button.snapshot(), "button_pressed.png")
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
-    button.sim_event(pygame.MOUSEBUTTONUP, "main")
+    sim.event(pygame.MOUSEBUTTONUP, "main")
 
     sleep(0.5)
-    snapshot.assert_match(button.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
 
-def test_button_visualize(make_button, mocker, snapshot):
+def test_button_visualize(make_button, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
-    mocker.patch("pitop.core.mixins.simulatable.is_virtual_hardware", return_value=False)
+    mocker.patch("pitop.virtual_hardware.simulation.simulation.is_virtual_hardware", return_value=False)
 
     button = make_button()
 
-    button.simulate()
+    sim = create_sim(button)
 
     # give time for the screen and sprites to be set up
-    sleep(1)
-    snapshot.assert_match(button.snapshot(), "default.png")
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     # simulate a button click
-    button.sim_event(pygame.MOUSEBUTTONDOWN, "main")
+    sim.event(pygame.MOUSEBUTTONDOWN, "main")
 
     # these events are a bit slow
     sleep(0.5)
     # should not have changed
-    snapshot.assert_match(button.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")
 
     button.pin.drive_low()
     sleep(0.1)
-    snapshot.assert_match(button.snapshot(), "button_pressed.png")
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
     button.pin.drive_high()
     sleep(0.1)
-    snapshot.assert_match(button.snapshot(), "default.png")
+    snapshot.assert_match(sim.snapshot(), "default.png")

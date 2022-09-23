@@ -7,13 +7,10 @@ import sys
 import pygame
 from PIL import Image
 
-import pitop.common.images as Images
 from pitop.virtual_hardware import is_virtual_hardware
+import pitop.virtual_hardware.simulation.sprites as Sprites
+from pitop.core.mixins import Recreatable, Stateful
 
-
-# this is based on the inital further-link graphics area dimensions of 780x620
-# multiplied by 2 to leave plenty space around our pi-top image of 435x573
-DEFAULT_SIZE = (1560, 1240)
 
 import os
 from io import BytesIO
@@ -22,7 +19,7 @@ def to_bytes(image):
     image.save(img_byte_arr, format="PNG")
     return img_byte_arr.getvalue()
 
-def _run_sim(size, config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapshot_q):
+def _run(size, config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapshot_q):
     pygame.init()
     pygame.display.init()
     clock = pygame.time.Clock()
@@ -45,7 +42,7 @@ def _run_sim(size, config, stop_ev, state_q, out_event_q, in_event_q, snapshot_e
                 break
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for sprite in sprite_group.sprites():
-                    if not isinstance(sprite, ButtonSprite):
+                    if not isinstance(sprite, Sprites.Button):
                         continue
                     rect = sprite.rect
                     if (
@@ -129,9 +126,8 @@ def _generate_sprite_centres(sim_size, main_sprite):
 
 
 def _create_sprite(config):
-    sprite_class = f"{config.get('classname')}Sprite"
     try:
-        return globals()[sprite_class](config)
+        return getattr(Sprites, config.get('classname'))(config)
     except Exception as e:
         print(f"Error creating sprite for {config.get('classname')}, {e}")
         return None
@@ -172,122 +168,90 @@ def _create_sprite_group(sim_size, config):
 
     return sprite_group
 
-def remove_alpha(image):
-    new = image.copy()
-    new.fill((255, 255, 255))
-    new.blit(image, (0, 0))
-    return new.convert()
+# this is based on the inital further-link graphics area dimensions of 720x680
+# multiplied by 2 to leave plenty space around our pi-top image of 435x573
+PITOP_SIM_SIZE = (1560, 1240)
+PMA_CUBE_SIM_SIZE = (122, 122)
 
-class PitopSprite(pygame.sprite.Sprite):
-    def __init__(self, config):
-        super().__init__()
+sizes = {
+    "Pitop": PITOP_SIM_SIZE,
+    "LED": PMA_CUBE_SIM_SIZE,
+    "Button": PMA_CUBE_SIM_SIZE,
+}
 
-        self.image = remove_alpha(pygame.image.load(Images.Pitop))
-        self.rect = self.image.get_rect()
+def simulate(component):
+    return Simulation(component)
 
-
-class LEDSprite(pygame.sprite.Sprite):
-    def __init__(self, config):
-        super().__init__()
-
-        self.color = config.get("color", "red")
-        self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
-        self.rect = self.image.get_rect()
-
-    def update(self):
-        if self.state and self.state.get("value", False):
-            self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_on")))
-        else:
-            self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
-
-
-class ButtonSprite(pygame.sprite.Sprite):
-    def __init__(self, config):
-        super().__init__()
-
-        self.image = remove_alpha(pygame.image.load(Images.Button))
-        self.rect = self.image.get_rect()
-
-    def update(self):
-        if self.state and self.state.get("is_pressed", False):
-            self.image = remove_alpha(pygame.image.load(Images.Button_pressed))
-        else:
-            self.image = remove_alpha(pygame.image.load(Images.Button))
-
-
-class Simulatable:
-    """Represents an object that can be simulated on a digital canvas."""
-
-    def __init__(self, size=DEFAULT_SIZE):
-        # TODO must be Recreatable and Stateful
-        self._sim_size = size
-
-        self._sim_process = None
-        self._sim_stop_ev = None
-        self._sim_state_q = None
-        self._sim_out_event_q = None
-        self._sim_in_event_q = None
-        self._sim_snapshot_ev = None
-        self._sim_snapshot_q = None
-
+class Simulation:
     def __del__(self):
-        self.stop_simulation()
+        self.stop()
 
-    def simulate(self):
-        self.stop_simulation()
+    def __init__(self, component, size=None):
+        if not isinstance(component, Recreatable):
+            raise Exception("Component must inherit Recreatable to be simulated")
 
-        self._sim_stop_ev = Event()
-        self._sim_state_q = Queue()
-        self._sim_out_event_q = Queue()
-        self._sim_in_event_q = Queue()
-        self._sim_snapshot_ev = Event()
-        self._sim_snapshot_q = Queue()
+        if not isinstance(component, Stateful):
+            raise Exception("Component must inherit Stateful to be simulated")
 
-        self._sim_process = Process(target=_run_sim, args=(
-            self._sim_size,
-            self.config,
-            self._sim_stop_ev,
-            self._sim_state_q,
-            self._sim_out_event_q,
-            self._sim_in_event_q,
-            self._sim_snapshot_ev,
-            self._sim_snapshot_q,
+        component_classname = component.config.get("classname")
+
+        if not getattr(Sprites, component_classname, None):
+            raise Exception(f"No simulation sprite defined for '{component_classname}'")
+
+        self.component = component
+
+        self.size = sizes.get(component_classname, PITOP_SIM_SIZE)
+
+        self._stop_ev = Event()
+        self._state_q = Queue()
+        self._out_event_q = Queue()
+        self._in_event_q = Queue()
+        self._snapshot_ev = Event()
+        self._snapshot_q = Queue()
+
+        self._process = Process(target=_run, args=(
+            self.size,
+            self.component.config,
+            self._stop_ev,
+            self._state_q,
+            self._out_event_q,
+            self._in_event_q,
+            self._snapshot_ev,
+            self._snapshot_q,
         ))
-        self._sim_process.daemon = True
-        self._sim_process.start()
+        self._process.daemon = True
+        self._process.start()
 
-        Thread(target=self.__sim_communicate, daemon=True).start()
+        Thread(target=self.__communicate, daemon=True).start()
 
-        return self._sim_process
-
-    def stop_simulation(self):
-        if self._sim_process is not None:
-            self._sim_stop_ev.set()
-            self._sim_process.join()
-            self._sim_process = None
+    def stop(self):
+        if self._process is not None:
+            self._stop_ev.set()
+            self._process.join()
+            self._process = None
 
     def snapshot(self):
-        self._sim_snapshot_ev.set()
-        return self._sim_snapshot_q.get()
+        self._snapshot_ev.set()
+        return self._snapshot_q.get()
 
-    def sim_event(self, type, target):
-        self._sim_in_event_q.put((type, target))
+    def event(self, type, target):
+        self._in_event_q.put((type, target))
 
-    def __sim_communicate(self):
+    def __communicate(self):
         while True:
-            if self._sim_stop_ev.is_set():
+            if self._stop_ev.is_set():
                 break
-            if self._sim_process is None or not self._sim_process.is_alive():
+            if self._process is None or not self._process.is_alive():
                 break
 
-            self._sim_state_q.put(self.state)
+            self._state_q.put(self.component.state)
 
-            while not self._sim_out_event_q.empty():
-                self._handle_event(*self._sim_out_event_q.get_nowait())
+            while not self._out_event_q.empty():
+                self._handle_event(*self._out_event_q.get_nowait())
 
             sleep(0.05)
 
-        self.stop_simulation()
+        self.stop()
 
     def _handle_event(self, type, target_name=''):
         if not is_virtual_hardware():
@@ -295,16 +259,16 @@ class Simulatable:
             return
 
         if type == pygame.MOUSEBUTTONDOWN:
-            target = self if target_name == "main" else getattr(self, target_name, None)
+            target = self.component if target_name == "main" else getattr(self.component, target_name, None)
             try:
                 target.pin.drive_low()
             except AttributeError:
                 pass
 
         elif type == pygame.MOUSEBUTTONUP:
-            if self.config.get("classname") == "Button":
-                self.pin.drive_high()
-            elif callable(getattr(self, 'children_gen', None)):
-                for _, child in self.children_gen():
+            if self.component.config.get("classname") == "Button":
+                self.component.pin.drive_high()
+            elif callable(getattr(self.component, 'children_gen', None)):
+                for _, child in self.component.children_gen():
                     if child.config.get("classname") == "Button":
                         child.pin.drive_high()
