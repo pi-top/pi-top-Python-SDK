@@ -1,3 +1,12 @@
+pi-top-python-sdk (0.25.0-1) bullseye; urgency=medium
+
+  * Fix default array and dict parameters
+  * Add close method to Componentable and call it on del
+  * Add BlockPiRover with preconfigured components for Further BlockPi use
+  * Add switch_user common helpers, drawn from further-link
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 23 Sep 2022 13:43:37 +0000
+
 pi-top-python-sdk (0.24.3-1) bullseye; urgency=medium
 
   * Set package version using environment variable (#551)
