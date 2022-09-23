@@ -48,7 +48,7 @@ def test_led_simulate(make_led, snapshot):
     led.simulate()
 
     # give time for the screen and sprites to be set up
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(led.snapshot(), "default.png")
 
     led.on()
@@ -75,7 +75,7 @@ def test_led_color(make_led, snapshot):
     yellow_led.simulate()
 
     # give time for the screen and sprites to be set up
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(red_led.snapshot(), "red_led_off.png")
     snapshot.assert_match(green_led.snapshot(), "green_led_off.png")
     snapshot.assert_match(yellow_led.snapshot(), "yellow_led_off.png")

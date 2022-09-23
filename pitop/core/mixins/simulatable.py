@@ -22,7 +22,7 @@ def to_bytes(image):
     image.save(img_byte_arr, format="PNG")
     return img_byte_arr.getvalue()
 
-def _run_sim(size, config, stop_event, conn, event_queue, snapshot_request, snapshot_queue):
+def _run_sim(size, config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapshot_q):
     pygame.init()
     pygame.display.init()
     clock = pygame.time.Clock()
@@ -31,17 +31,17 @@ def _run_sim(size, config, stop_event, conn, event_queue, snapshot_request, snap
     screen = pygame.display.set_mode([width, height])
     screen.fill((255, 255, 255))
 
-    exit_code = 0
-
     sprite_group = _create_sprite_group(size, config)
     if not sprite_group:
-        stop_event.set()
-        exit_code = 1
+        stop_ev.set()
 
-    while not stop_event.is_set():
+    OUTBOUND_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
+
+    while not stop_ev.is_set():
         for event in pygame.event.get():
+            target = None
             if event.type == pygame.QUIT:
-                stop_event.set()
+                stop_ev.set()
                 break
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for sprite in sprite_group.sprites():
@@ -52,12 +52,12 @@ def _run_sim(size, config, stop_event, conn, event_queue, snapshot_request, snap
                         rect.x <= event.pos[0] <= rect.x + rect.width and
                         rect.y <= event.pos[1] <= rect.y + rect.height
                     ):
-                        conn.send(("event", { "type": event.type, "target": sprite.name }))
-            elif event.type == pygame.MOUSEBUTTONUP:
-                conn.send(("event", { "type": event.type, "dict": event.dict }))
+                        target = sprite.name
+            if (event.type in OUTBOUND_EVENTS):
+                out_event_q.put((event.type, target))
 
-        while not event_queue.empty():
-            type, target_name = event_queue.get_nowait()
+        while not in_event_q.empty():
+            type, target_name = in_event_q.get_nowait()
             target = [s for s in sprite_group.sprites() if s.name == target_name]
             if not len(target):
                 continue
@@ -65,30 +65,27 @@ def _run_sim(size, config, stop_event, conn, event_queue, snapshot_request, snap
             event = pygame.event.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
             pygame.event.post(event)
 
-        if snapshot_request.is_set():
+        if snapshot_ev.is_set():
             snapshot = to_bytes(Image.frombytes("RGB", size, bytes(pygame.image.tostring(screen, "RGB"))))
-            snapshot_queue.put(snapshot)
-            snapshot_request.clear()
+            snapshot_q.put(snapshot)
+            snapshot_ev.clear()
 
-        while conn.poll(0):
-            msg = conn.recv()
-            type, data = msg
-            if type == "state":
-                for sprite in sprite_group.sprites():
-                    if sprite.name == "main":
-                        sprite.state = data
-                    else:
-                        sprite.state = data.get(sprite.name)
+        while not state_q.empty():
+            state = state_q.get_nowait()
+            for sprite in sprite_group.sprites():
+                if sprite.name == "main":
+                    sprite.state = state
+                else:
+                    sprite.state = state.get(sprite.name)
 
-                sprite_group.update()
-                sprite_group.draw(screen)
-                pygame.display.flip()
+        sprite_group.update()
+        sprite_group.draw(screen)
+        pygame.display.flip()
 
         clock.tick(20)
 
     # Don't pygame.quit() - isn't needed and can cause X server to crash
-    conn.close()
-    sys.exit(exit_code)
+    sys.exit()
 
 
 def _generate_sprite_centres(sim_size, main_sprite):
@@ -225,13 +222,13 @@ class Simulatable:
         # TODO must be Recreatable and Stateful
         self._sim_size = size
 
-        self._sim_snapshot_request = Event()
-        self._sim_snapshot_queue = None
-
-        self._sim_event_queue = None
-        self._sim_stop_event = Event()
-
         self._sim_process = None
+        self._sim_stop_ev = None
+        self._sim_state_q = None
+        self._sim_out_event_q = None
+        self._sim_in_event_q = None
+        self._sim_snapshot_ev = None
+        self._sim_snapshot_q = None
 
     def __del__(self):
         self.stop_simulation()
@@ -239,74 +236,65 @@ class Simulatable:
     def simulate(self):
         self.stop_simulation()
 
-        parent_conn, child_conn = Pipe()
-        self._sim_event_queue = Queue()
-        self._sim_snapshot_queue = Queue()
+        self._sim_stop_ev = Event()
+        self._sim_state_q = Queue()
+        self._sim_out_event_q = Queue()
+        self._sim_in_event_q = Queue()
+        self._sim_snapshot_ev = Event()
+        self._sim_snapshot_q = Queue()
 
         self._sim_process = Process(target=_run_sim, args=(
             self._sim_size,
             self.config,
-            self._sim_stop_event,
-            child_conn,
-            self._sim_event_queue,
-            self._sim_snapshot_request,
-            self._sim_snapshot_queue,
+            self._sim_stop_ev,
+            self._sim_state_q,
+            self._sim_out_event_q,
+            self._sim_in_event_q,
+            self._sim_snapshot_ev,
+            self._sim_snapshot_q,
         ))
         self._sim_process.daemon = True
         self._sim_process.start()
 
-        Thread(target=self.__sim_communicate, args=(parent_conn,), daemon=True).start()
+        Thread(target=self.__sim_communicate, daemon=True).start()
 
         return self._sim_process
 
     def stop_simulation(self):
         if self._sim_process is not None:
-            self._sim_stop_event.set()
+            self._sim_stop_ev.set()
             self._sim_process.join()
             self._sim_process = None
 
-        self._sim_stop_event.clear()
-        self._sim_snapshot_request.clear()
-
     def snapshot(self):
-        self._sim_snapshot_request.set()
-        return self._sim_snapshot_queue.get()
+        self._sim_snapshot_ev.set()
+        return self._sim_snapshot_q.get()
 
     def sim_event(self, type, target):
-        self._sim_event_queue.put((type, target))
+        self._sim_in_event_q.put((type, target))
 
-    def __sim_communicate(self, conn):
+    def __sim_communicate(self):
         while True:
-            if self._sim_stop_event.is_set():
+            if self._sim_stop_ev.is_set():
                 break
             if self._sim_process is None or not self._sim_process.is_alive():
                 break
 
-            try:
-                conn.send(("state", self.state))
-            except (BrokenPipeError, ConnectionResetError):
-                break
+            self._sim_state_q.put(self.state)
 
-            while conn.poll(0):
-                msg = conn.recv()
-                type, data = msg
-                if type == "event":
-                    self._handle_event(data)
+            while not self._sim_out_event_q.empty():
+                self._handle_event(*self._sim_out_event_q.get_nowait())
 
             sleep(0.05)
 
-        conn.close()
         self.stop_simulation()
 
-    def _handle_event(self, event):
+    def _handle_event(self, type, target_name=''):
         if not is_virtual_hardware():
             print("Ignoring virtual input while physcial hardware is enabled")
             return
 
-        type = event.get("type")
-
         if type == pygame.MOUSEBUTTONDOWN:
-            target_name = event.get("target")
             target = self if target_name == "main" else getattr(self, target_name, None)
             try:
                 target.pin.drive_low()

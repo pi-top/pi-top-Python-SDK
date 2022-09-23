@@ -49,7 +49,7 @@ def test_button_simulate(make_button, mocker, snapshot):
     button.simulate()
 
     # give time for the screen and sprites to be set up
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(button.snapshot(), "default.png")
 
     # simulate a button click
@@ -74,7 +74,7 @@ def test_button_visualize(make_button, mocker, snapshot):
     button.simulate()
 
     # give time for the screen and sprites to be set up
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(button.snapshot(), "default.png")
 
     # simulate a button click

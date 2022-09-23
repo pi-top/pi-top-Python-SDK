@@ -153,7 +153,7 @@ def test_pitop_simulate(pitop, mocker, snapshot):
     pitop.simulate()
 
     # give time for the screen and sprites to be set up
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(pitop.snapshot(), "default.png")
 
     # simulate a button click
@@ -185,7 +185,7 @@ def test_pitop_visualize(pitop, mocker, snapshot):
     pitop.simulate()
 
     # give time for the screen and sprites to be set up
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(pitop.snapshot(), "default.png")
 
     # simulate a button click
