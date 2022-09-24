@@ -21,6 +21,20 @@ class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
         self.image = remove_alpha(pygame.image.load(Images.Pitop))
         self.rect = self.image.get_rect()
 
+    def update(self):
+        if not hasattr(self, 'state'):
+            return
+
+        miniscreen_image = self.state.get('miniscreen_image', False)
+        if miniscreen_image:
+            rgb = miniscreen_image.convert("RGB")
+            miniscreen_surface = pygame.image.fromstring(
+                rgb.tobytes(),
+                rgb.size,
+                rgb.mode
+            )
+            self.image.blit(miniscreen_surface, Images.pitop_miniscreen_pos)
+
 
 class LED(pygame.sprite.Sprite, SimSprite):
     def __init__(self, config):
@@ -33,7 +47,10 @@ class LED(pygame.sprite.Sprite, SimSprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        if self.state and self.state.get("value", False):
+        if not hasattr(self, 'state'):
+            return
+
+        if self.state.get("value", False):
             self.image = remove_alpha(
                 pygame.image.load(getattr(Images, f"LED_{self.color}_on"))
             )
@@ -51,7 +68,10 @@ class Button(pygame.sprite.Sprite, SimSprite):
         self.rect = self.image.get_rect()
 
     def update(self):
-        if self.state and self.state.get("is_pressed", False):
+        if not hasattr(self, 'state'):
+            return
+
+        if self.state.get("is_pressed", False):
             self.image = remove_alpha(pygame.image.load(Images.Button_pressed))
         else:
             self.image = remove_alpha(pygame.image.load(Images.Button))

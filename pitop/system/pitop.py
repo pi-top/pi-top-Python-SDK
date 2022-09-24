@@ -34,3 +34,9 @@ class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Single
         SupportsMiniscreen.__init__(self)
         SupportsBattery.__init__(self)
         Componentable.__init__(self)
+
+    @property
+    def own_state(self):
+        return {
+            "miniscreen_image": self.miniscreen.image,
+        }
