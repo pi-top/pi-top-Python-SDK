@@ -3,6 +3,7 @@ from pitop.virtual_hardware import simulate, use_virtual_hardware
 use_virtual_hardware()
 
 from time import sleep
+
 from pitop import Pitop
 from pitop.pma import LED, Button
 
