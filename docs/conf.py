@@ -118,8 +118,10 @@ autodoc_mock_imports = [
     "imageio",
     "imutils",
     "matplotlib",
+    "Mock.GPIO",
     "mpl_toolkits",
     "PIL",
+    "pygame",
     "pyinotify",
     "RPi",
     "scipy",
@@ -127,7 +129,6 @@ autodoc_mock_imports = [
     "smbus",
     "smbus2",
     "spidev",
-    "tkinter",
     "zmq",
     "wget",
 ]
