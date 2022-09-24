@@ -118,7 +118,7 @@ autodoc_mock_imports = [
     "imageio",
     "imutils",
     "matplotlib",
-    "Mock.GPIO",
+    "Mock",
     "mpl_toolkits",
     "PIL",
     "pygame",
