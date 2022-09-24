@@ -137,7 +137,7 @@ def test_blockpi_rover(rover):
 
 
 def test_pitop_simulate(pitop, mocker, create_sim, snapshot):
-    mocker.patch("pitop.virtual_hardware.simulation.simulation.is_virtual_hardware", return_value=True)
+    mocker.patch("pitop.virtual_hardware.simulation.sprites.is_virtual_hardware", return_value=True)
 
     from pitop.pma import LED, Button
 
@@ -169,7 +169,7 @@ def test_pitop_simulate(pitop, mocker, create_sim, snapshot):
 
 def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
-    mocker.patch("pitop.virtual_hardware.simulation.simulation.is_virtual_hardware", return_value=False)
+    mocker.patch("pitop.virtual_hardware.simulation.sprites.is_virtual_hardware", return_value=False)
 
     from pitop.pma import LED, Button
 

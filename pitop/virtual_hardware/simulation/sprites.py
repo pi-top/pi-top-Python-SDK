@@ -1,6 +1,8 @@
 import pygame
 
-import pitop.virtual_hardware.simulation.images as Images
+from . import images as Images
+from .simsprite import SimSprite, ComponentableSimSprite
+from .. import is_virtual_hardware
 
 
 def remove_alpha(image):
@@ -12,17 +14,17 @@ def remove_alpha(image):
     return new.convert()
 
 
-class Pitop(pygame.sprite.Sprite):
+class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
     def __init__(self, config):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.image = remove_alpha(pygame.image.load(Images.Pitop))
         self.rect = self.image.get_rect()
 
 
-class LED(pygame.sprite.Sprite):
+class LED(pygame.sprite.Sprite, SimSprite):
     def __init__(self, config):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.color = config.get("color", "red")
         self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
@@ -35,9 +37,9 @@ class LED(pygame.sprite.Sprite):
             self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
 
 
-class Button(pygame.sprite.Sprite):
+class Button(pygame.sprite.Sprite, SimSprite):
     def __init__(self, config):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.image = remove_alpha(pygame.image.load(Images.Button))
         self.rect = self.image.get_rect()
@@ -47,3 +49,15 @@ class Button(pygame.sprite.Sprite):
             self.image = remove_alpha(pygame.image.load(Images.Button_pressed))
         else:
             self.image = remove_alpha(pygame.image.load(Images.Button))
+
+    @staticmethod
+    def handle_event(type, target_name, component):
+        if not is_virtual_hardware():
+            print("Ignoring virtual input while physcial hardware is enabled")
+            return
+
+        if type == pygame.MOUSEBUTTONDOWN and target_name == "main":
+            component.pin.drive_low()
+
+        elif type == pygame.MOUSEBUTTONUP:
+            component.pin.drive_high()
