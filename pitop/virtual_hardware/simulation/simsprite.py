@@ -96,17 +96,5 @@ class ComponentableSimSprite(SimSprite):
             return x,y
 
         # clockwise from top right
-        return {
-            "A1": point_on_circle(-75),
-            "A0": point_on_circle(-45),
-            "D3": point_on_circle(-15),
-            "D2": point_on_circle(15),
-            "D1": point_on_circle(45),
-            "D0": point_on_circle(75),
-            "A3": point_on_circle(180-75),
-            "A2": point_on_circle(180-45),
-            "D7": point_on_circle(180 -15),
-            "D6": point_on_circle(180+15),
-            "D5": point_on_circle(180+45),
-            "D4": point_on_circle(180+75),
-        }
+        ports = ["A1", "A0", "D3", "D2", "D1", "D0", "A3", "A2", "D7", "D6", "D5", "D4"]
+        return {port: point_on_circle(-75 + 30 * i) for i, port in enumerate(ports)}

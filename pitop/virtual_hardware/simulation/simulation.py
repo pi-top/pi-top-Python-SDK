@@ -2,85 +2,13 @@ from time import sleep
 from threading import Thread
 from multiprocessing import Process, Pipe, Queue, Event
 import sys
+from io import BytesIO
 
 import pygame
 from PIL import Image
 
 from . import sprites as Sprites
 from pitop.core.mixins import Recreatable, Stateful
-
-
-import os
-from io import BytesIO
-def to_bytes(image):
-    img_byte_arr = BytesIO()
-    image.save(img_byte_arr, format="PNG")
-    return img_byte_arr.getvalue()
-
-
-def _run(config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapshot_q):
-    pygame.init()
-    pygame.display.init()
-    clock = pygame.time.Clock()
-
-    sprite_class = getattr(Sprites, config.get('classname'))
-    size = sprite_class.Size
-
-    screen = pygame.display.set_mode(size)
-    screen.fill((255, 255, 255))
-
-    sprite_group = sprite_class.create_sprite_group(size, config)
-
-    OUTBOUND_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
-
-    while not stop_ev.is_set():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                stop_ev.set()
-                break
-            elif (event.type in OUTBOUND_EVENTS):
-                target_name = None
-                if hasattr(event, 'pos'):
-                    for sprite in sprite_group.sprites():
-                        rect = sprite.rect
-                        if (
-                            rect.x <= event.pos[0] <= rect.x + rect.width and
-                            rect.y <= event.pos[1] <= rect.y + rect.height
-                        ):
-                            target_name = sprite.name
-                            break
-                out_event_q.put((event.type, target_name))
-
-        while not in_event_q.empty():
-            type, target_name = in_event_q.get_nowait()
-            target = [s for s in sprite_group.sprites() if s.name == target_name]
-            if not len(target):
-                continue
-            pos = (target[0].rect.x, target[0].rect.y)
-            event = pygame.event.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
-            pygame.event.post(event)
-
-        if snapshot_ev.is_set():
-            snapshot = to_bytes(Image.frombytes("RGB", size, bytes(pygame.image.tostring(screen, "RGB"))))
-            snapshot_q.put(snapshot)
-            snapshot_ev.clear()
-
-        while not state_q.empty():
-            state = state_q.get_nowait()
-            for sprite in sprite_group.sprites():
-                if sprite.name == "main":
-                    sprite.state = state
-                else:
-                    sprite.state = state.get(sprite.name)
-
-        sprite_group.update()
-        sprite_group.draw(screen)
-        pygame.display.flip()
-
-        clock.tick(20)
-
-    # Don't pygame.quit() - isn't needed and can cause X server to crash
-    sys.exit()
 
 
 def simulate(component):
@@ -156,3 +84,75 @@ class Simulation:
             sleep(0.05)
 
         self.stop()
+
+
+def to_bytes(surface):
+    image_string = pygame.image.tostring(surface, "RGB")
+    image = Image.frombytes("RGB", surface.get_size(), bytes(image_string))
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format="PNG")
+    return img_byte_arr.getvalue()
+
+
+def _run(config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapshot_q):
+    pygame.init()
+    pygame.display.init()
+    clock = pygame.time.Clock()
+
+    sprite_class = getattr(Sprites, config.get('classname'))
+    size = sprite_class.Size
+
+    screen = pygame.display.set_mode(size)
+    screen.fill((255, 255, 255))
+
+    sprite_group = sprite_class.create_sprite_group(size, config)
+
+    OUTBOUND_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
+
+    while not stop_ev.is_set():
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                stop_ev.set()
+                break
+            elif (event.type in OUTBOUND_EVENTS):
+                target_name = None
+                if hasattr(event, 'pos'):
+                    for sprite in sprite_group.sprites():
+                        rect = sprite.rect
+                        if (
+                            rect.x <= event.pos[0] <= rect.x + rect.width and
+                            rect.y <= event.pos[1] <= rect.y + rect.height
+                        ):
+                            target_name = sprite.name
+                            break
+                out_event_q.put((event.type, target_name))
+
+        while not in_event_q.empty():
+            type, target_name = in_event_q.get_nowait()
+            target = [s for s in sprite_group.sprites() if s.name == target_name]
+            if not len(target):
+                continue
+            pos = (target[0].rect.x, target[0].rect.y)
+            event = pygame.event.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+            pygame.event.post(event)
+
+        if snapshot_ev.is_set():
+            snapshot_q.put(to_bytes(screen))
+            snapshot_ev.clear()
+
+        while not state_q.empty():
+            state = state_q.get_nowait()
+            for sprite in sprite_group.sprites():
+                if sprite.name == "main":
+                    sprite.state = state
+                else:
+                    sprite.state = state.get(sprite.name)
+
+        sprite_group.update()
+        sprite_group.draw(screen)
+        pygame.display.flip()
+
+        clock.tick(20)
+
+    # Don't pygame.quit() - isn't needed and can cause X server to crash
+    sys.exit()
