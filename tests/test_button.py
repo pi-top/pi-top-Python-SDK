@@ -1,7 +1,7 @@
 from time import sleep
 
-import pytest
 import pygame
+import pytest
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ def make_button():
 
     def _make_button(port="D0", name="button"):
         from pitop import Button
+
         button = Button(port, name=name)
         buttons.append(button)
         return button
@@ -41,7 +42,10 @@ def test_button(make_button):
 
 
 def test_button_simulate(make_button, create_sim, mocker, snapshot):
-    mocker.patch("pitop.virtual_hardware.simulation.sprites.is_virtual_hardware", return_value=True)
+    mocker.patch(
+        "pitop.virtual_hardware.simulation.sprites.is_virtual_hardware",
+        return_value=True,
+    )
 
     button = make_button()
 
@@ -66,7 +70,10 @@ def test_button_simulate(make_button, create_sim, mocker, snapshot):
 
 def test_button_visualize(make_button, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
-    mocker.patch("pitop.virtual_hardware.simulation.sprites.is_virtual_hardware", return_value=False)
+    mocker.patch(
+        "pitop.virtual_hardware.simulation.sprites.is_virtual_hardware",
+        return_value=False,
+    )
 
     button = make_button()
 

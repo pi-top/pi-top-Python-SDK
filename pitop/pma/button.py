@@ -1,9 +1,10 @@
+import pygame
 from gpiozero import Button as gpiozero_Button
 from PIL import Image
-import pygame
 
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
+
 
 class Button(Stateful, Recreatable, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.

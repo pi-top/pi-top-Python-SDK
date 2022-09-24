@@ -6,7 +6,6 @@ from gpiozero import LED as gpiozero_LED
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
-
 LED_COLORS = ["red", "green", "yellow"]
 
 
@@ -24,7 +23,9 @@ class LED(Stateful, Recreatable, gpiozero_LED):
         self.color = color if color in LED_COLORS else LED_COLORS[0]
 
         Stateful.__init__(self)
-        Recreatable.__init__(self, {"port_name": port_name, "name": self.name, "color": self.color})
+        Recreatable.__init__(
+            self, {"port_name": port_name, "name": self.name, "color": self.color}
+        )
         gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))
 
     @property

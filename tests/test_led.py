@@ -1,7 +1,7 @@
 from time import sleep
 
-import pytest
 import pygame
+import pytest
 
 
 @pytest.fixture
@@ -10,6 +10,7 @@ def make_led():
 
     def _make_led(port="D0", name="led", color=None):
         from pitop import LED
+
         led = LED(port, name=name, color=color)
         leds.append(led)
         return led

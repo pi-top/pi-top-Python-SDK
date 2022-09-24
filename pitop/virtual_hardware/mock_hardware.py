@@ -1,8 +1,8 @@
-from os import environ
 import sys
-import Mock.GPIO
-
+from os import environ
 from unittest.mock import patch
+
+import Mock.GPIO
 
 __using_virtual_hardware = False
 

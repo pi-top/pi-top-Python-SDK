@@ -1,18 +1,12 @@
-from math import cos, sin, radians, sqrt
+from math import cos, radians, sin, sqrt
 
 import pygame
 
 from pitop.common.singleton import Singleton
-from pitop.core.mixins import (
-    Componentable,
-    SupportsBattery,
-    SupportsMiniscreen,
-)
+from pitop.core.mixins import Componentable, SupportsBattery, SupportsMiniscreen
 
 
-class Pitop(
-    SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton
-):
+class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):
     """Represents a pi-top Device.
 
     When creating a `Pitop` object, multiple properties will be set,

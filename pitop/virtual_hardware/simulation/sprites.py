@@ -1,8 +1,8 @@
 import pygame
 
-from . import images as Images
-from .simsprite import SimSprite, ComponentableSimSprite
 from .. import is_virtual_hardware
+from . import images as Images
+from .simsprite import ComponentableSimSprite, SimSprite
 
 
 def remove_alpha(image):
@@ -27,14 +27,20 @@ class LED(pygame.sprite.Sprite, SimSprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = config.get("color", "red")
-        self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
+        self.image = remove_alpha(
+            pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
+        )
         self.rect = self.image.get_rect()
 
     def update(self):
         if self.state and self.state.get("value", False):
-            self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_on")))
+            self.image = remove_alpha(
+                pygame.image.load(getattr(Images, f"LED_{self.color}_on"))
+            )
         else:
-            self.image = remove_alpha(pygame.image.load(getattr(Images, f"LED_{self.color}_off")))
+            self.image = remove_alpha(
+                pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
+            )
 
 
 class Button(pygame.sprite.Sprite, SimSprite):

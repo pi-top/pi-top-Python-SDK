@@ -1,14 +1,15 @@
-from time import sleep
-from threading import Thread
-from multiprocessing import Process, Pipe, Queue, Event
 import sys
 from io import BytesIO
+from multiprocessing import Event, Pipe, Process, Queue
+from threading import Thread
+from time import sleep
 
 import pygame
 from PIL import Image
 
-from . import sprites as Sprites
 from pitop.core.mixins import Recreatable, Stateful
+
+from . import sprites as Sprites
 
 
 def simulate(component):
@@ -41,15 +42,18 @@ class Simulation:
         self._snapshot_ev = Event()
         self._snapshot_q = Queue()
 
-        self._process = Process(target=_run, args=(
-            self.component.config,
-            self._stop_ev,
-            self._state_q,
-            self._out_event_q,
-            self._in_event_q,
-            self._snapshot_ev,
-            self._snapshot_q,
-        ))
+        self._process = Process(
+            target=_run,
+            args=(
+                self.component.config,
+                self._stop_ev,
+                self._state_q,
+                self._out_event_q,
+                self._in_event_q,
+                self._snapshot_ev,
+                self._snapshot_q,
+            ),
+        )
         self._process.daemon = True
         self._process.start()
 
@@ -99,7 +103,7 @@ def _run(config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapsho
     pygame.display.init()
     clock = pygame.time.Clock()
 
-    sprite_class = getattr(Sprites, config.get('classname'))
+    sprite_class = getattr(Sprites, config.get("classname"))
     size = sprite_class.Size
 
     screen = pygame.display.set_mode(size)
@@ -114,14 +118,14 @@ def _run(config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapsho
             if event.type == pygame.QUIT:
                 stop_ev.set()
                 break
-            elif (event.type in OUTBOUND_EVENTS):
+            elif event.type in OUTBOUND_EVENTS:
                 target_name = None
-                if hasattr(event, 'pos'):
+                if hasattr(event, "pos"):
                     for sprite in sprite_group.sprites():
                         rect = sprite.rect
                         if (
-                            rect.x <= event.pos[0] <= rect.x + rect.width and
-                            rect.y <= event.pos[1] <= rect.y + rect.height
+                            rect.x <= event.pos[0] <= rect.x + rect.width
+                            and rect.y <= event.pos[1] <= rect.y + rect.height
                         ):
                             target_name = sprite.name
                             break
@@ -133,7 +137,9 @@ def _run(config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapsho
             if not len(target):
                 continue
             pos = (target[0].rect.x, target[0].rect.y)
-            event = pygame.event.Event(type, {'pos': pos, 'button': 1, 'touch': False, 'window': None})
+            event = pygame.event.Event(
+                type, {"pos": pos, "button": 1, "touch": False, "window": None}
+            )
             pygame.event.post(event)
 
         if snapshot_ev.is_set():
