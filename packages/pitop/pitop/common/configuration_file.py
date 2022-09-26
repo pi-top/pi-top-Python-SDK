@@ -1,5 +1,5 @@
-from re import compile
 from pathlib import Path
+from re import compile
 
 
 def add_section(
@@ -54,7 +54,11 @@ def remove_section(filename: str, title: str) -> None:
         lines = fr.readlines()
         with open(filename, "w") as fw:
             for i, line in enumerate(lines):
-                if line.strip() == "" and i + 1 < len(lines) and start_pattern.search(lines[i + 1]) is not None:
+                if (
+                    line.strip() == ""
+                    and i + 1 < len(lines)
+                    and start_pattern.search(lines[i + 1]) is not None
+                ):
                     delete_line = True
                 if not delete_line:
                     fw.write(line)
