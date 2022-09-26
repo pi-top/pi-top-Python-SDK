@@ -6,16 +6,19 @@ def add_section(
     filename: str, title: str, description: str, content: str, notes: str = ""
 ) -> None:
     """Add a section to a configuration file with the following format:
-# [<TITLE>] START
-#
-# <DESCRIPTION>
-#
-# Notes:
-# <NOTES>
-#
-<CONTENT>
-#
-# [<APP_NAME>] END
+
+    .. code-block:: python
+
+        # [<TITLE>] START
+        #
+        # <DESCRIPTION>
+        #
+        # Notes:
+        # <NOTES>
+        #
+        <CONTENT>
+        #
+        # [<APP_NAME>] END
     """
     text = f"""
 # [{title}] START
@@ -33,18 +36,21 @@ def add_section(
 
 
 def remove_section(filename: str, title: str) -> None:
-    """Removes a section of the provided title from the given filename.
-    It assumes that the format of the block to remove is the following:
-# [<TITLE>] START
-#
-# <DESCRIPTION>
-#
-# Notes:
-# <NOTES>
-#
-<CONTENT>
-#
-# [<APP_NAME>] END
+    """Removes a section of the provided title from the given filename. It
+    assumes that the format of the block to remove is the following:
+
+    .. code-block:: python
+
+        # [<TITLE>] START
+        #
+        # <DESCRIPTION>
+        #
+        # Notes:
+        # <NOTES>
+        #
+        <CONTENT>
+        #
+        # [<APP_NAME>] END
     """
     start_pattern = compile(rf"^(# \[{title}\] START)\n")
     finish_pattern = compile(rf"^(# \[{title}\] END)\n")
