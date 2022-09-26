@@ -27,8 +27,7 @@ def add_section(
 #
 {content}
 #
-# [{title}] END
-"""
+# [{title}] END"""
     with open(filename, "a") as f:
         f.write(text)
 
@@ -54,8 +53,8 @@ def remove_section(filename: str, title: str) -> None:
     with open(filename, "r") as fr:
         lines = fr.readlines()
         with open(filename, "w") as fw:
-            for line in lines:
-                if start_pattern.search(line) is not None:
+            for i, line in enumerate(lines):
+                if line.strip() == "" and i + 1 < len(lines) and start_pattern.search(lines[i + 1]) is not None:
                     delete_line = True
                 if not delete_line:
                     fw.write(line)
