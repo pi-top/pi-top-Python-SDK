@@ -1,8 +1,9 @@
 from signal import pause
 
 import cv2
-from pitop import Camera, PanTiltController
 from pitop.processing.algorithms.faces import FaceDetector
+
+from pitop import Camera, PanTiltController
 
 
 def track_face(frame):

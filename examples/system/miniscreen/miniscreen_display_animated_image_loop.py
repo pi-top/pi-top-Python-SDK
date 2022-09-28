@@ -1,4 +1,5 @@
 from PIL import Image, ImageSequence
+
 from pitop import Pitop
 
 pitop = Pitop()

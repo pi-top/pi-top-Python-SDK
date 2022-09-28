@@ -1,4 +1,5 @@
 from PIL import Image
+
 from pitop import Pitop
 
 pitop = Pitop()

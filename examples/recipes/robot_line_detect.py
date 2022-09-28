@@ -1,7 +1,8 @@
 from signal import pause
 
-from pitop import Camera, DriveController, Pitop
 from pitop.processing.algorithms.line_detect import process_frame_for_line
+
+from pitop import Camera, DriveController, Pitop
 
 # Assemble a robot
 robot = Pitop()

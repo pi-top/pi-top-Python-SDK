@@ -40,9 +40,10 @@ def pitop_mocks():
 
 
 def test_pitop(pitop_mocks):
-    from pitop import Pitop
     from pitop.pma import LED
     from pitop.robotics.drive_controller import DriveController
+
+    from pitop import Pitop
 
     pitop = Pitop()
     drive = DriveController()

@@ -1,8 +1,9 @@
 from signal import pause
 
 from PIL import Image, ImageDraw, ImageFont
-from pitop import Camera, Pitop
 from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
+
+from pitop import Camera, Pitop
 
 """
 Designed for the Prax robot configuration, this example will use the camera module to detect face emotions.

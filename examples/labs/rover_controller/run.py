@@ -1,5 +1,6 @@
-from pitop import Camera, DriveController, Pitop
 from pitop.labs import RoverWebController
+
+from pitop import Camera, DriveController, Pitop
 
 rover = Pitop()
 rover.add_component(DriveController())

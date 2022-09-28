@@ -1,6 +1,7 @@
-from pitop.common.common_names import DeviceName
 from pitop.core.exceptions import UnavailableComponent
 from pitop.system import device_type
+
+from pitop.common.common_names import DeviceName
 
 
 class SupportsBattery:

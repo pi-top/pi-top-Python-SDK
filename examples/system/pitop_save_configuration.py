@@ -1,7 +1,8 @@
 from time import sleep
 
-from pitop import LED, Pitop
 from pitop.robotics.drive_controller import DriveController
+
+from pitop import LED, Pitop
 
 pitop = Pitop()
 drive_controller = DriveController()

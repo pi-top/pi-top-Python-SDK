@@ -2,6 +2,7 @@ from signal import pause
 from threading import Lock
 
 from bluedot import BlueDot
+
 from pitop import DriveController
 
 bd = BlueDot()

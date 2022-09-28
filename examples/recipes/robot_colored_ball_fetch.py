@@ -1,8 +1,9 @@
 from signal import pause
 from time import sleep
 
-from pitop import Camera, NavigationController, PincerController, Pitop
 from pitop.processing.algorithms import BallDetector
+
+from pitop import Camera, NavigationController, PincerController, Pitop
 
 
 def assemble_robot():

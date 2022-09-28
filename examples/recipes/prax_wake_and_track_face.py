@@ -9,8 +9,9 @@ Note: make sure to connect the Ultrasonic Sensor to port A1.
 
 from time import sleep
 
-from pitop import Camera, Pitop, TiltRollHeadController, UltrasonicSensor
 from pitop.processing.algorithms.faces import FaceDetector
+
+from pitop import Camera, Pitop, TiltRollHeadController, UltrasonicSensor
 
 
 def assemble_robot():
