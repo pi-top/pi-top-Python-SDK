@@ -46,9 +46,9 @@ __requires__ = [
     f"pitop.core=={__version__}",
     "imutils>=0.5.4,<1.0.0",
     "matplotlib>=3.3.4,<4.0",
-    "numpy>=1.19.5,<2.0",
+    "numpy>1.19.5,<2.0.0",
     "onnxruntime>=1.8.1,<2.0",
-    "opencv-python>=4.5.1,<5.0.0",
+    "opencv-python>=4.5.1,<4.6.0",
     "wget>=3.2,<4.0",
     #############################
     # Advanced image processing #
