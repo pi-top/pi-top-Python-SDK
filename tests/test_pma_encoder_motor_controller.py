@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 
 import pytest
+from pitop.common.bitwise_ops import join_bytes, split_into_bytes
 from pitop.pma.common.encoder_motor_registers import (
     EncoderMotorM1,
     MotorControlModes,
@@ -10,8 +11,6 @@ from pitop.pma.common.encoder_motor_registers import (
 )
 from pitop.pma.encoder_motor_controller import EncoderMotorController
 from pitop.pma.parameters import BrakingType
-
-from pitop.common.bitwise_ops import join_bytes, split_into_bytes
 
 
 class EncoderMotorControllerTestCase(TestCase):

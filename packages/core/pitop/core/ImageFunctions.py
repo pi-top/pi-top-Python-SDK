@@ -2,9 +2,8 @@ from urllib.request import urlopen
 
 from numpy import asarray, ndarray
 from PIL import Image
-from pitop.core.import_opencv import import_opencv
-
 from pitop.common.formatting import is_url
+from pitop.core.import_opencv import import_opencv
 
 
 def image_format_check(format):

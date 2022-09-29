@@ -1,9 +1,8 @@
 from signal import pause
 
 import cv2
-from pitop.processing.algorithms.faces import FaceDetector
-
 from pitop import Camera
+from pitop.processing.algorithms.faces import FaceDetector
 
 
 def find_faces(frame):

@@ -7,7 +7,6 @@ from typing import Dict, Union
 
 import netifaces
 from isc_dhcp_leases import IscDhcpLeases
-
 from pitop.common.command_runner import run_command
 
 

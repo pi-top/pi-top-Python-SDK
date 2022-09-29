@@ -6,7 +6,6 @@ from time import sleep
 from traceback import format_exc
 
 import zmq
-
 from pitop.common.type_helper import TypeHelper
 
 logger = logging.getLogger(__name__)

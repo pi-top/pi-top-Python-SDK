@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from PIL import Image, ImageDraw
-
 from pitop import Pitop
 
 pitop = Pitop()

@@ -1,7 +1,6 @@
 from typing import Union
 
 from numpy import interp
-
 from pitop.common.bitwise_ops import split_into_bytes
 
 from .common import type_check

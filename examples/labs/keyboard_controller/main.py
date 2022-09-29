@@ -1,6 +1,5 @@
-from pitop.labs import WebController
-
 from pitop import Camera, DriveController, Pitop
+from pitop.labs import WebController
 
 robot = Pitop()
 robot.add_component(DriveController())

@@ -7,9 +7,8 @@ during navigation. If one is found, the robot will move onto the next navigation
 
 from time import sleep
 
-from pitop.pma import UltrasonicSensor
-
 from pitop import NavigationController, Pitop
+from pitop.pma import UltrasonicSensor
 
 
 def navigation_finished():

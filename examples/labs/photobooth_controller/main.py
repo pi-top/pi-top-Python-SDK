@@ -1,6 +1,5 @@
-from pitop.labs import WebController
-
 from pitop import Camera, Pitop
+from pitop.labs import WebController
 
 photobooth = Pitop()
 photobooth.add_component(Camera())

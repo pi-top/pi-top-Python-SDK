@@ -1,7 +1,6 @@
 from os import environ
 
 import numpy as np
-
 from pitop.common.current_session_info import get_first_display
 
 if not environ.get("DISPLAY"):
