@@ -4,7 +4,7 @@ from json import dump, dumps, load
 
 class Recreatable:
     """Represents an object that keeps track of a set of parameters that will
-    allow to be recreate it in the future.
+    allow it to be recreated in the future.
 
     The values for each key provided in the :param:`config_dict`
     parameter can be a constant value or a reference to a function,

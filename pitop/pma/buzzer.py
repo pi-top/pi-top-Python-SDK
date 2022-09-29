@@ -1,10 +1,10 @@
 from gpiozero import Buzzer as gpiozero_Buzzer
 
-from pitop.core.mixins import Recreatable, Stateful
+from pitop.core.mixins import DigitalComponentChecks, Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 
-class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
+class Buzzer(Stateful, Recreatable, DigitalComponentChecks, gpiozero_Buzzer):
     """Encapsulates the behaviour of a simple buzzer that can be turned on and
     off.
 
@@ -17,6 +17,7 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        DigitalComponentChecks.__init__(self, self._pma_port)
         gpiozero_Buzzer.__init__(self, get_pin_for_port(self._pma_port))
 
     @property

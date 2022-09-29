@@ -1,10 +1,10 @@
 from gpiozero import LED as gpiozero_LED
 
-from pitop.core.mixins import Recreatable, Stateful
+from pitop.core.mixins import DigitalComponentChecks, Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 
-class LED(Stateful, Recreatable, gpiozero_LED):
+class LED(Stateful, Recreatable, DigitalComponentChecks, gpiozero_LED):
     """Encapsulates the behaviour of an LED.
 
     An LED (Light Emitting Diode) is a simple light source that can be controlled directly.
@@ -18,6 +18,7 @@ class LED(Stateful, Recreatable, gpiozero_LED):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        DigitalComponentChecks.__init__(self, self._pma_port)
         gpiozero_LED.__init__(self, get_pin_for_port(self._pma_port))
 
     @property

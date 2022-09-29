@@ -1,10 +1,10 @@
 from gpiozero import Button as gpiozero_Button
 
-from pitop.core.mixins import Recreatable, Stateful
+from pitop.core.mixins import DigitalComponentChecks, Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 
 
-class Button(Stateful, Recreatable, gpiozero_Button):
+class Button(Stateful, Recreatable, DigitalComponentChecks, gpiozero_Button):
     """Encapsulates the behaviour of a push-button.
 
     A push-button is a simple switch mechanism for controlling some aspect of a circuit.
@@ -18,6 +18,7 @@ class Button(Stateful, Recreatable, gpiozero_Button):
 
         Stateful.__init__(self)
         Recreatable.__init__(self, {"port_name": port_name, "name": self.name})
+        DigitalComponentChecks.__init__(self, self._pma_port)
         gpiozero_Button.__init__(self, get_pin_for_port(self._pma_port))
 
     @property
