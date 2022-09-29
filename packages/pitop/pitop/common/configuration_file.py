@@ -56,20 +56,21 @@ def remove_section(filename: str, title: str) -> None:
     finish_pattern = compile(rf"^(# \[{title}\] END)\n")
     delete_line = False
 
-    with open(filename, "r") as fr:
-        lines = fr.readlines()
-        with open(filename, "w") as fw:
-            for i, line in enumerate(lines):
-                if (
-                    line.strip() == ""
-                    and i + 1 < len(lines)
-                    and start_pattern.search(lines[i + 1]) is not None
-                ):
-                    delete_line = True
-                if not delete_line:
-                    fw.write(line)
-                if finish_pattern.search(line) is not None:
-                    delete_line = False
+    with open(filename, "r+") as f:
+        lines = f.readlines()
+        f.seek(0)
+        for i, line in enumerate(lines):
+            if (
+                line.strip() == ""
+                and i + 1 < len(lines)
+                and start_pattern.search(lines[i + 1]) is not None
+            ):
+                delete_line = True
+            if not delete_line:
+                f.write(line)
+            if finish_pattern.search(line) is not None:
+                delete_line = False
+        f.truncate()
 
 
 def has_section(filename: str, title: str) -> bool:
