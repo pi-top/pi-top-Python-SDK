@@ -1,7 +1,6 @@
+from pitop import Camera
 from pitop.labs import MessagingBlueprint, VideoBlueprint, WebServer
 from pitop.processing.algorithms import BallDetector, process_frame_for_line
-
-from pitop import Camera
 
 camera = Camera()
 ball_detector = BallDetector(format="PIL")

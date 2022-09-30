@@ -1,6 +1,5 @@
-from pitop.core.mixins import Componentable, SupportsBattery, SupportsMiniscreen
-
 from pitop.common.singleton import Singleton
+from pitop.core.mixins import Componentable, SupportsBattery, SupportsMiniscreen
 
 
 class Pitop(SupportsMiniscreen, SupportsBattery, Componentable, metaclass=Singleton):

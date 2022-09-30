@@ -1,4 +1,5 @@
 from gpiozero import LED as gpiozero_LED
+
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma.common import get_pin_for_port
 

@@ -1,9 +1,9 @@
 from signal import pause
 
 import cv2
-from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
 
 from pitop import Camera
+from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
 
 
 def detect_emotion(frame):

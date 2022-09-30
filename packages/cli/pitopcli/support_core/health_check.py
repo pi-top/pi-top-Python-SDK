@@ -2,7 +2,6 @@ from os import uname
 from time import strftime
 
 from netifaces import AF_INET, AF_INET6, AF_LINK, ifaddresses, interfaces
-from pitop.system import device_type, pitop_peripherals
 
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
@@ -12,6 +11,7 @@ from pitop.common.sys_info import (
     get_uname_release,
     get_uname_version,
 )
+from pitop.system import device_type, pitop_peripherals
 
 from ..formatter import StdoutFormat, StdoutTable
 from .hub_communication import HubCommunication

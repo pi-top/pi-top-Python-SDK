@@ -1,7 +1,6 @@
+from pitop import Camera, DriveController, PanTiltController, Pitop
 from pitop.labs import RoverWebController
 from pitop.labs.web.blueprints.rover import drive_handler, pan_tilt_handler
-
-from pitop import Camera, DriveController, PanTiltController, Pitop
 
 rover = Pitop()
 rover.add_component(DriveController())

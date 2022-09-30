@@ -29,6 +29,7 @@ import threading
 import unicodedata
 
 import six
+
 from pitop.keyboard.vendor.pynput._logger import _logger
 from pitop.keyboard.vendor.pynput._util import AbstractListener
 

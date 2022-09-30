@@ -1,4 +1,5 @@
 import numpy as np
+
 from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.emotion import Emotion
 from pitop.processing.core.load_models import load_emotion_model

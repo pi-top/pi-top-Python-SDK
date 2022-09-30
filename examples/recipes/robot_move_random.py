@@ -1,9 +1,8 @@
 from random import randint
 from time import sleep
 
-from pitop.robotics.drive_controller import DriveController
-
 from pitop import Pitop
+from pitop.robotics.drive_controller import DriveController
 
 # Create a basic robot
 robot = Pitop()

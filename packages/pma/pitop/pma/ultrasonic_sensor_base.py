@@ -8,7 +8,6 @@ from threading import Event, Lock, Thread
 
 import numpy as np
 from gpiozero import SmoothedInputDevice
-from pitop.pma.common.utils import get_pin_for_port
 
 from pitop.common.common_ids import FirmwareDeviceID
 from pitop.common.firmware_device import (
@@ -16,6 +15,7 @@ from pitop.common.firmware_device import (
     PTInvalidFirmwareDeviceException,
 )
 from pitop.common.singleton import Singleton
+from pitop.pma.common.utils import get_pin_for_port
 
 from .common.ultrasonic_registers import (
     UltrasonicConfigSettings,

@@ -1,9 +1,9 @@
 from time import sleep
 
 import gevent
-from pitop.labs import WebController
 
 from pitop import LED, Button, Pitop, UltrasonicSensor
+from pitop.labs import WebController
 
 robot = Pitop()
 robot.add_component(Button("D1"))

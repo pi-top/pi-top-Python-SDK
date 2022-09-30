@@ -1,4 +1,5 @@
 from numpy import array
+
 from pitop.core import ImageFunctions
 from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (

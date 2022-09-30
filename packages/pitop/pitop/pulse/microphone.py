@@ -9,6 +9,7 @@ from threading import Thread
 from time import sleep
 
 import serial
+
 from pitop.pulse import configuration
 
 logger = logging.getLogger(__name__)

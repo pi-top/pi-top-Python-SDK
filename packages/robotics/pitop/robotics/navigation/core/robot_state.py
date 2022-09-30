@@ -3,6 +3,7 @@ from collections import deque
 from enum import IntEnum
 
 import numpy as np
+
 from pitop.core.mixins import Stateful
 from pitop.robotics.navigation.core.utils import normalize_angle
 

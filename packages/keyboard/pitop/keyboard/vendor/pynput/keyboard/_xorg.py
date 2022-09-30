@@ -32,6 +32,7 @@ import Xlib.keysymdef.xkb
 import Xlib.protocol
 import Xlib.X
 import Xlib.XK
+
 from pitop.keyboard.vendor.pynput._util import NotifierMixin
 from pitop.keyboard.vendor.pynput._util.xorg import (
     ListenerMixin,
