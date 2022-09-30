@@ -1,3 +1,4 @@
+from io import BytesIO
 from time import sleep
 from typing import Callable
 
@@ -12,3 +13,9 @@ def wait_until(condition: Callable, on_wait: Callable = None, timeout: int = 5) 
             on_wait()
     if t > timeout:
         raise TimeoutError("wait_until: timeout expired")
+
+
+def to_bytes(image):
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format="PNG")
+    return img_byte_arr.getvalue()

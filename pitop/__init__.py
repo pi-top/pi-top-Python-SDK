@@ -1,3 +1,5 @@
+import pitop.virtual_hardware
+
 # System Devices
 from .camera import Camera
 from .keyboard import KeyboardButton

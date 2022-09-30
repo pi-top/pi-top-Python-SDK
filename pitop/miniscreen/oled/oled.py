@@ -473,47 +473,42 @@ class OLED:
         self.__display(self._image, force=force)
 
     def draw(self):
-        """..
-
-        warning::
-        This method is deprecated in favor of :func:`display_image` and
-        :func:`display_text`, and will be deleted on the next major release of the SDK.
+        """
+        .. warning::
+           This method is deprecated in favor of :func:`display_image` and
+           :func:`display_text`, and will be deleted on the next major release of the SDK.
         """
         print("'draw()' is now deprecated. Using 'display()'...")
         self.display()
 
     def draw_image_file(self, file_path_or_url, xy=None):
-        """..
-
-        warning::
-        This method is deprecated in favor of :func:`display_image_file`, and will be deleted on the next major release of the SDK.
+        """
+        .. warning::
+           This method is deprecated in favor of :func:`display_image_file`, and will be deleted on the next major release of the SDK.
         """
         print("draw_image_file is now deprecated. Using display_image_file...")
         self.display_image_file(file_path_or_url, xy)
 
     def draw_image(self, image, xy=None):
-        """..
-
-        warning::
-        This method is deprecated in favor of :func:`display_image`, and will be deleted on the next major release of the SDK.
+        """
+        .. warning::
+           This method is deprecated in favor of :func:`display_image`, and will be deleted on the next major release of the SDK.
         """
         print("draw_image is now deprecated. Using display_image...")
         self.display_image(image, xy)
 
     def draw_text(self, text, xy=None, font_size=None):
-        """..
-
-        warning::
-        This method is deprecated in favor of :func:`display_text`, and will be deleted on the next major release of the SDK.
+        """
+        .. warning::
+           This method is deprecated in favor of :func:`display_text`, and will be deleted on the next major release of the SDK.
         """
         print("draw_text is now deprecated. Using display_text...")
         self.display_text(text, xy, font_size)
 
     def draw_multiline_text(self, text, xy=None, font_size=None):
-        """..
-
-        warning::
-        This method is deprecated in favor of :func:`display_multiline_text`, and will be deleted on the next major release of the SDK.
+        """
+        .. warning::
+           This method is deprecated in favor of :func:`display_multiline_text`, and will be deleted on the next major release of the SDK.
         """
         print("draw_multiline_text is now deprecated. Using display_multiline_text...")
         self.display_multiline_text(text, xy, font_size)

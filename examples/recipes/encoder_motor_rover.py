@@ -16,24 +16,28 @@ motor_right.braking_type = BrakingType.COAST
 
 
 def drive(target_rpm: float):
+
     print("Start driving at target", target_rpm, "rpm...")
     motor_left.set_target_rpm(target_rpm)
     motor_right.set_target_rpm(target_rpm)
 
 
 def stop_rover():
+
     print("Stopping rover...")
     motor_left.stop()
     motor_right.stop()
 
 
 def turn_left(rotation_speed: float):
+
     print("Turning left...")
     motor_left.stop()
     motor_right.set_target_rpm(rotation_speed)
 
 
 def turn_right(rotation_speed: float):
+
     print("Turning right...")
     motor_right.stop()
     motor_left.set_target_rpm(rotation_speed)
