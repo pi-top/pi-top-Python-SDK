@@ -1,5 +1,7 @@
+from time import sleep
 from unittest.mock import patch
 
+import pygame
 import pytest
 
 
@@ -39,12 +41,37 @@ def pitop_mocks():
     mocks["set_target_speed"].stop()
 
 
-def test_pitop(pitop_mocks):
+@pytest.fixture
+def pitop(pitop_mocks):
     from pitop import Pitop
+
+    pitop = Pitop()
+
+    yield pitop
+
+    pitop.close()
+    Pitop.instance = None
+    del pitop
+
+
+@pytest.fixture
+def rover(pitop_mocks):
+    from pitop import BlockPiRover
+
+    rover = BlockPiRover()
+
+    yield rover
+
+    rover.close()
+    BlockPiRover.instance = None
+    del rover
+
+
+def test_pitop(pitop):
     from pitop.pma import LED
     from pitop.robotics.drive_controller import DriveController
 
-    pitop = Pitop()
+    pitop = pitop
     drive = DriveController()
     pitop.add_component(drive)
     led = LED("D0")
@@ -63,6 +90,7 @@ def test_pitop(pitop_mocks):
             },
             "led": {
                 "classname": "LED",
+                "color": "red",
                 "module": "pitop.pma.led",
                 "name": "led",
                 "port_name": "D0",
@@ -84,15 +112,9 @@ def test_pitop(pitop_mocks):
     pitop.drive.left_motor.set_target_speed.assert_called()
     pitop.drive.right_motor.set_target_speed.assert_called()
 
-    # delete refs to trigger component cleanup
-    del pitop
-    del Pitop.instance
 
-
-def test_blockpi_rover(pitop_mocks):
-    from pitop import BlockPiRover
-
-    rover = BlockPiRover()
+def test_blockpi_rover(rover):
+    rover = rover
 
     assert rover.config == {
         "classname": "BlockPiRover",
@@ -115,6 +137,75 @@ def test_blockpi_rover(pitop_mocks):
     rover.drive.left_motor.set_target_speed.assert_called()
     rover.drive.right_motor.set_target_speed.assert_called()
 
-    # delete refs to trigger component cleanup
-    del rover
-    del BlockPiRover.instance
+
+def test_pitop_simulate(pitop, mocker, create_sim, snapshot):
+    mocker.patch(
+        "pitop.virtual_hardware.simulation.sprites.is_virtual_hardware",
+        return_value=True,
+    )
+
+    from pitop.pma import LED, Button
+
+    pitop = pitop
+    pitop.add_component(LED("D0"))
+    pitop.add_component(Button("D1"))
+
+    pitop.button.when_pressed = pitop.led.on
+    pitop.button.when_released = pitop.led.off
+
+    sim = create_sim(pitop)
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    # simulate a button click
+    sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+
+    # these events are a bit slow
+    sleep(0.5)
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
+
+    sim.event(pygame.MOUSEBUTTONUP, pitop.button.name)
+
+    sleep(0.5)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+
+def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
+    # with is_virtual_hardware False, pygame button events will not be handled
+    mocker.patch(
+        "pitop.virtual_hardware.simulation.sprites.is_virtual_hardware",
+        return_value=False,
+    )
+
+    from pitop.pma import LED, Button
+
+    pitop = pitop
+    pitop.add_component(LED("D0"))
+    pitop.add_component(Button("D1"))
+
+    pitop.button.when_pressed = pitop.led.on
+    pitop.button.when_released = pitop.led.off
+
+    sim = create_sim(pitop)
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    # simulate a button click
+    sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+
+    # these events are a bit slow
+    sleep(0.5)
+    # should not have changed
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    pitop.button.pin.drive_low()
+    sleep(0.1)
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
+
+    pitop.button.pin.drive_high()
+    sleep(0.1)
+    snapshot.assert_match(sim.snapshot(), "default.png")

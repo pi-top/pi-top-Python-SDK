@@ -33,7 +33,7 @@ class ImuCLI(CliBaseClass):
         i2c_address = expansion_plate_info.get("i2c_addr")
         try:
             expansion_plate_connected = (
-                getstatusoutput(f"i2cping {i2c_address}")[0] == 0
+                getstatusoutput(f"pt-i2cdetect {i2c_address}")[0] == 0
             )
         except Exception:
             expansion_plate_connected = False

@@ -1,4 +1,3 @@
-from io import BytesIO
 from os import environ, path
 from sys import modules
 from unittest.mock import Mock, patch
@@ -89,16 +88,6 @@ def oled(oled_mocks):
     yield oled_mocks.get("oled")
 
 
-@pytest.fixture
-def to_bytes():
-    def to_bytes(image):
-        img_byte_arr = BytesIO()
-        image.save(img_byte_arr, format="PNG")
-        return img_byte_arr.getvalue()
-
-    return to_bytes
-
-
 TESTS_FONT_DIR = f"{path.dirname(path.realpath(__file__))}/tests/fonts"
 VERA_DIR = f"{TESTS_FONT_DIR}/ttf-bitstream-vera/"
 ROBOTO_DIR = f"{TESTS_FONT_DIR}/roboto/"
@@ -110,3 +99,21 @@ def fonts_mock(mocker):
 
     mocker.patch.object(Fonts, "_roboto_directory", ROBOTO_DIR)
     mocker.patch.object(Fonts, "_vera_directory", VERA_DIR)
+
+
+@pytest.fixture
+def create_sim():
+    # this is used to ensure sim teardown
+    from pitop.virtual_hardware import simulate
+
+    sims = []
+
+    def _create_sim(component):
+        sim = simulate(component)
+        sims.append(sim)
+        return sim
+
+    yield _create_sim
+
+    for sim in sims:
+        sim.stop()
