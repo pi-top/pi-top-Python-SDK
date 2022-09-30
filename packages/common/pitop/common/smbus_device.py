@@ -1,7 +1,8 @@
 import logging
 
-from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
 from smbus2 import SMBus
+
+from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
 
 logger = logging.getLogger(__name__)
 

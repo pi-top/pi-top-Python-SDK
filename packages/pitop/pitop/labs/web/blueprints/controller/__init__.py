@@ -1,4 +1,5 @@
 from flask import Blueprint
+
 from pitop.labs.web.blueprints.base import BaseBlueprint
 from pitop.labs.web.blueprints.messaging import MessagingBlueprint
 from pitop.labs.web.blueprints.video import VideoBlueprint

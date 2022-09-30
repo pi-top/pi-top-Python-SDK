@@ -5,6 +5,7 @@ from unittest import TestCase
 from unittest.mock import mock_open, patch
 
 import pytest
+
 from pitop.common.lock import PTLock  # noqa: E402
 
 

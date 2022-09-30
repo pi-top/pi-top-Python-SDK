@@ -1,4 +1,5 @@
 from flask import Blueprint, g
+
 from pitop.labs.web.blueprints.controller import ControllerBlueprint
 
 from .helpers import calculate_pan_tilt_angle, calculate_velocity_twist

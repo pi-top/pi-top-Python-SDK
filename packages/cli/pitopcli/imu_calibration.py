@@ -10,13 +10,14 @@ import numpy as np
 
 # Enables "add_subplot(projection='3d')"
 from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
+from scipy.linalg import sqrtm
+
 from pitop.pma.common.math_functions.ellipsoid_functions import (
     get_ellipsoid_geometric_params,
     least_squares_ellipsoid_fit,
     plot_ellipsoid,
 )
 from pitop.pma.imu_controller import ImuController
-from scipy.linalg import sqrtm
 
 logger = logging.getLogger(__name__)
 

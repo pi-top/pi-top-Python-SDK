@@ -7,8 +7,9 @@ from sys import exit
 from threading import Timer
 from time import sleep
 
-from pitop.pulse import configuration
 from serial import Serial, serialutil
+
+from pitop.pulse import configuration
 
 logger = logging.getLogger(__name__)
 

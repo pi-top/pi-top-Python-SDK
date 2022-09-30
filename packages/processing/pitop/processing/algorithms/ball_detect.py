@@ -5,6 +5,7 @@ from typing import Union
 
 import numpy as np
 from imutils.video import FPS
+
 from pitop.core import ImageFunctions
 from pitop.core.data_structures import DotDict
 from pitop.processing.core.vision_functions import (

@@ -2,6 +2,7 @@ from os import uname
 from time import strftime
 
 from netifaces import AF_INET, AF_INET6, AF_LINK, ifaddresses, interfaces
+
 from pitop.common.command_runner import run_command
 from pitop.common.common_names import DeviceName
 from pitop.common.pt_os import get_pitopOS_info

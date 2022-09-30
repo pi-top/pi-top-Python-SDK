@@ -9,8 +9,9 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 
 from PIL import Image
-from pitop.miniscreen import Miniscreen
 from requests.models import PreparedRequest
+
+from pitop.miniscreen import Miniscreen
 
 
 def is_root():

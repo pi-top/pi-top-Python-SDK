@@ -1,5 +1,6 @@
-import pitop.common.bitwise_ops as bitwise  # noqa: E402
 import pytest
+
+import pitop.common.bitwise_ops as bitwise  # noqa: E402
 
 """
 split_into_bytes tests

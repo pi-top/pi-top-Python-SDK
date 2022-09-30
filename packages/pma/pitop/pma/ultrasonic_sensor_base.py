@@ -8,6 +8,7 @@ from threading import Event, Lock, Thread
 
 import numpy as np
 from gpiozero import SmoothedInputDevice
+
 from pitop.common.common_ids import FirmwareDeviceID
 from pitop.common.firmware_device import (
     FirmwareDevice,

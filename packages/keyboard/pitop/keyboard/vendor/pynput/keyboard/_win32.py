@@ -27,8 +27,9 @@ import ctypes
 import enum
 from ctypes import wintypes
 
-import pitop.keyboard.vendor.pynput._util.win32_vks as VK
 import six
+
+import pitop.keyboard.vendor.pynput._util.win32_vks as VK
 from pitop.keyboard.vendor.pynput._util import AbstractListener
 from pitop.keyboard.vendor.pynput._util.win32 import (
     INPUT,

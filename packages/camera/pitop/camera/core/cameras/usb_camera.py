@@ -1,6 +1,7 @@
 from os import listdir
 
 from PIL import Image
+
 from pitop.core.ImageFunctions import convert
 from pitop.core.import_opencv import import_opencv
 

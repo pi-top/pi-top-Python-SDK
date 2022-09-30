@@ -25,6 +25,7 @@
 import enum
 
 import Quartz
+
 from pitop.keyboard.vendor.pynput._util.darwin import (
     ListenerMixin,
     get_unicode_to_keycode_map,

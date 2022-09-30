@@ -3,6 +3,7 @@ from os import getenv
 from typing import Union
 
 from imutils.video import FPS
+
 from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.face import Face
 from pitop.processing.core.load_models import load_face_landmark_predictor

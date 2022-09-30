@@ -1,6 +1,7 @@
 from unittest.mock import Mock, patch
 
 import pytest
+
 from pitop.pma.common.servo_motor_registers import (
     ServoMotorS0,
     ServoMotorSetup,
