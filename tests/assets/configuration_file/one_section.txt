@@ -1,6 +1,5 @@
 SOME_VARIABLE=1
 ANOTHER_VARIABLE=2
-
 # [test-add-section] START
 #
 # This is a description

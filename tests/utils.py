@@ -22,7 +22,7 @@ def to_bytes(image):
     return img_byte_arr.getvalue()
 
 
-def file_content_is_identical(filename1, filename2, match_eof=True) -> bool:
+def file_content_is_identical(filename1, filename2, match_eof=False) -> bool:
     """Compares the contents of two files."""
     if match_eof:
         return filecmp.cmp(filename1, filename2)

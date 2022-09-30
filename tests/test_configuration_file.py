@@ -74,7 +74,8 @@ def test_remove_section_on_file_with_several_sections():
         )
         assert (
             file_content_is_identical(
-                tmp_file.name, file_with_one_section, match_eof=False
+                tmp_file.name,
+                file_with_one_section,
             )
             is True
         )
