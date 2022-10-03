@@ -90,9 +90,9 @@ Depends:
  fonts-roboto,
  ttf-bitstream-vera,
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Main
  Python library for controlling the pi-top miniscreen
  .
@@ -116,9 +116,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Camera
  Python library for controlling the pi-top camera.
  .
@@ -133,9 +133,9 @@ Depends:
  ${python3:Depends},
  raspi-config,
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - CLI
  General purpose CLI to interact with a pi-top.
  .
@@ -156,9 +156,9 @@ Depends:
 # ZMQ for messaging
  python3-zmq,
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Suggests:
 # Required for OS notifications
  notify-send-ng,
@@ -176,9 +176,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Core
  General purpose Python library to interact with a pi-top.
  .
@@ -192,9 +192,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Display
  Python library for interacting with a pi-top display.
  .
@@ -207,9 +207,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Keyboard
  Keyboard simulator tool.
  .
@@ -223,9 +223,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - PMA
  Python library for interacting with PMA Components.
  .
@@ -239,9 +239,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Processing
  Python library that provides a set of image processing algorithms.
  .
@@ -255,9 +255,9 @@ Depends:
  ${misc:Depends},
  ${python3:Depends},
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - Robotics
  Python library for creating and controlling pi-top based robots.
  .
@@ -273,9 +273,9 @@ Depends:
 # Required for hub communication; such as getting case button state
  pi-topd | pt-device-manager,
 Replaces:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Breaks:
- python3-pitop (<= 0.24.3-1)
+ python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - System
  Python library for interacting with a pi-top hub and other peripherals.
  .
