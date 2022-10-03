@@ -86,12 +86,12 @@ def setmode(mode):
     time.sleep(1)
     if mode == BCM:
         setModeDone = True
-        _mode = mode
+        _mode = mode  # noqa: F841
 
     elif mode == BOARD:
         setModeDone = True
     else:
-        setModeDone = False
+        setModeDone = False  # noqa: F841
 
 
 def getmode():
