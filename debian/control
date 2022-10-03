@@ -150,7 +150,7 @@ Depends:
  ${python3:Depends},
 # 'arping' command
  arping,
- i2c-tools,
+ i2c-tools-extra,
 # 'ping' command
  iputils-ping,
 # ZMQ for messaging
