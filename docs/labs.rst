@@ -227,13 +227,13 @@ BaseBlueprint provides a layout and styles that are the base of the
 templates found in other blueprints. It adds a :code:`base.html` template which
 has the following structure:
 
-.. literalinclude:: ../pitop/labs/web/blueprints/base/templates/base.html
+.. literalinclude:: ../packages/pitop/pitop/labs/web/blueprints/base/templates/base.html
     :language: jinja
 
 The :code:`base.html` adds some basic styles and variables to the page by
 linking the :code:`index.css` static file.
 
-.. literalinclude:: ../pitop/labs/web/blueprints/base/base/index.css
+.. literalinclude:: ../packages/pitop/pitop/labs/web/blueprints/base/base/index.css
 
 Adding the BaseBlueprint to a WebServer is done as follows:
 
@@ -504,7 +504,7 @@ page:
 
 This adds a set of classes that can be used to style your video:
 
-.. literalinclude:: ../pitop/labs/web/blueprints/video/video/styles.css
+.. literalinclude:: ../packages/pitop/pitop/labs/web/blueprints/video/video/styles.css
 
 In order to render the video on the page you must use an :code:`img` tag with
 the :code:`src` attribute of :code:`video.mjpg`:
@@ -582,7 +582,7 @@ that interact with your pi-top. The blueprints it combines are the
 To simplify setup ControllerBlueprint provides a :code:`base-controller.html`
 template which includes all the setup snippets for it's children blueprints:
 
-.. literalinclude:: ../pitop/labs/web/blueprints/controller/templates/base-controller.html
+.. literalinclude:: ../packages/pitop/pitop/labs/web/blueprints/controller/templates/base-controller.html
     :language: jinja
 
 :code:`base-controller.html` extends :code:`base.html`, this means you can use

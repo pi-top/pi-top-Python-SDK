@@ -3,13 +3,14 @@ Forwarded: not-needed
 Author: pi-top <deb-maintainers@pi-top.com>
 Last-Update: 2021-09-05
 
---- a/pitop/common/smbus_device.py
-+++ b/pitop/common/smbus_device.py
-@@ -1,6 +1,6 @@
+--- a/packages/common/pitop/common/smbus_device.py
++++ b/packages/common/pitop/common/smbus_device.py
+@@ -1,8 +1,8 @@
  import logging
  
 -from smbus2 import SMBus
 +from smbus import SMBus
- 
+
  from pitop.common.bitwise_ops import get_bits, join_bytes, split_into_bytes
  
+ logger = logging.getLogger(__name__)
