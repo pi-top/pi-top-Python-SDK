@@ -2,10 +2,10 @@ from pitop.virtual_hardware import simulate, use_virtual_hardware
 
 use_virtual_hardware()
 
-from time import sleep
+from time import sleep  # noqa: E402
 
-from pitop import Pitop
-from pitop.pma import LED, Button
+from pitop import Pitop  # noqa: E402
+from pitop.pma import LED, Button  # noqa: E402
 
 pitop = Pitop()
 pitop.add_component(LED("D0", name="led1"))
@@ -33,7 +33,7 @@ pitop_sim = simulate(pitop)
 led_sim = simulate(pitop.led4)
 button_sim = simulate(pitop.button4)
 
-import pygame
+import pygame  # noqa: E402
 
 for i in range(30):
     pitop_sim.event(pygame.MOUSEBUTTONDOWN, "button4")
