@@ -1,22 +1,9 @@
-pi-top-python-sdk (0.25.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.26.0-1) bullseye; urgency=medium
 
-  * Detect and raise exception when IMU is used with new Expansion Plate (#555)
   * Add pygame-based simulation of pi-top hardware
-  * Fix accidental reverts
-  * fix: ignore intentional precommit linter errors (#565)
-  * fix: add pygame to py3dist-overrides and allow use of pygame v1.9.6 (#564)
-  * feat: subpackages (#421)
-  * Depend on i2c-tools-extra
-  * Add functions to manage sections in config files (#559)
-  * Add virtual_hardware as a separate subpackage
-  * Deb build handles converting underscores to dashes in package names
-  * Readd IMU hardware check accidentally removed in 69e9a92
-  * Readd change to i2cping from b8e144f, accidentally removed in 69e9a92
-  * Add switch_user helpers accidentally removed in 69e9a92
-  * [pre-commit.ci] auto fixes from pre-commit.com hooks
-  * Add subpackages missing from main package dependencies
-  * Improve subpackage readmes
-  * Add missing debian control info to battery package
+  * Add functions to manage sections in config files
+  * Detect and raise exception when IMU is used with new Expansion Plate
+  * Structure and publish SDK as several subpackages
 
  -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Oct 2022 14:53:08 +0000
 
