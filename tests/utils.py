@@ -1,5 +1,5 @@
-from io import BytesIO
 import filecmp
+from io import BytesIO
 from time import sleep
 from typing import Callable
 
