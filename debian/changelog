@@ -1,3 +1,12 @@
+pi-top-python-sdk (0.26.0-1) bullseye; urgency=medium
+
+  * Add pygame-based simulation of pi-top hardware
+  * Add functions to manage sections in config files
+  * Detect and raise exception when IMU is used with new Expansion Plate
+  * Structure and publish SDK as several subpackages
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Oct 2022 14:53:08 +0000
+
 pi-top-python-sdk (0.25.0-1) bullseye; urgency=medium
 
   * Fix default array and dict parameters
