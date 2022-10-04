@@ -13,7 +13,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 __version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
-__project__ = "pitop"
+__project__ = "pitop.virtual_hardware"
 __author__ = "pi-top"
 __author_email__ = "deb-maintainers@pi-top.com"
 
@@ -37,43 +37,13 @@ __classifiers__ = [
 __keywords__ = [
     "pi-top",
     "raspberrypi",
-    "gpio",
+    "virtual",
 ]
 
-__extra_requires__ = {
-    "computer_vision": ["opencv"],
-    "doc": ["sphinx"],
-}
-
 __requires__ = [
-    ###############
-    # Subpackages #
-    ###############
-    f"pitop.common=={__version__}",
-    f"pitop.system=={__version__}",
     f"pitop.core=={__version__}",
-    f"pitop.pma=={__version__}",
-    f"pitop.camera=={__version__}",
-    f"pitop.keyboard=={__version__}",
-    f"pitop.robotics=={__version__}",
-    f"pitop.processing=={__version__}",
-    #########
-    # PROTO #
-    #########
-    # To use GPIO & components
-    "gpiozero>=1.6.2,<2.0.0",
-    #########
-    # Pulse #
-    #########
-    "pyserial>=3.5,<4.0",
-    #############
-    # Webserver #
-    #############
-    "flask>=1.1.2,<2.0.0",
-    "flask-cors>=3.0.9,<4.0.0",
-    "flask-sockets>=0.2.1,<1.0",
-    "gevent>=20.9.0,<21.0.0",
-    "gevent-websocket>=0.10.1,<1.0.0",
+    "pygame>=1.9.6,<3",
+    "Pillow>=8.1.2,<9.0",
 ]
 
 
@@ -96,11 +66,10 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=["pitop"],
+            packages=["pitop.virtual_hardware"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,
-            extras_require=__extra_requires__,
         )
 
 

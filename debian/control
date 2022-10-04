@@ -281,3 +281,21 @@ Description: pi-top Python 3 Library - System
  .
  Provides utilities to interact with a pi-top hub and other peripherals
  that can be attached to a device.
+
+
+Package: python3-pitop-virtual-hardware
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python3:Depends},
+# Required for hub communication; such as getting case button state
+ pi-topd | pt-device-manager,
+Replaces:
+ python3-pitop (<= 0.25.0-1)
+Breaks:
+ python3-pitop (<= 0.25.0-1)
+Description: pi-top Python 3 Library - System
+ Python library for visualising and mocking pi-top hardware.
+ .
+ Provides a utility to visualise real, or interatively simulate mock
+ pi-top components with a pygame-based GUI.
