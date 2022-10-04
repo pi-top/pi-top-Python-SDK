@@ -27,6 +27,7 @@ pitop.pma python3-pitop-pma
 pitop.processing python3-pitop-processing
 pitop.robotics python3-pitop-robotics
 pitop.system python3-pitop-system
+pitop.virtual_hardware python3-pitop-virtual-hardware
 pitop python3-pitop
 pyinotify python3-pyinotify; PEP386
 RPi.GPIO python3-rpi.gpio; PEP386
