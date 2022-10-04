@@ -1,3 +1,11 @@
+pi-top-python-sdk (0.26.1-1) bullseye; urgency=medium
+
+  * Allow to continue release to PyPI on upload error
+  * Update condition checks to upload packages to PyPI
+  * Add 'virtual_hardware' as dependency for 'pitop' package (#573)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Oct 2022 19:32:17 +0000
+
 pi-top-python-sdk (0.26.0-1) bullseye; urgency=medium
 
   * Add pygame-based simulation of pi-top hardware
