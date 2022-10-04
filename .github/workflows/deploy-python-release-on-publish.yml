@@ -33,7 +33,7 @@ jobs:
           echo "PYTHON_PACKAGE_VERSION=${changelog_version}" >> $GITHUB_ENV
 
       - name: Build and upload to PyPI
-        if: ${{ github.event_name == 'release' && github.event.action == 'published' }}
+        if: ${{ (github.event_name == 'release' && github.event.action == 'published') || github.event_name == 'workflow_dispatch' }}
         run: |
           for subpackage_folder in packages/* ; do
             cd $subpackage_folder
