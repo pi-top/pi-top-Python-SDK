@@ -2,4 +2,5 @@
 pi-top Python PMA
 ===========================
 
-A set of pma components used by the pi-top Python SDK.
+A set of components classes for using pi-top PMA components from the
+Electronics and Robotics kits.

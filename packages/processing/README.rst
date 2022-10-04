@@ -1,5 +1,5 @@
 ===========================
-pi-top Python Robotics
+pi-top Python Processing
 ===========================
 
-A simple interface for interacting with a pi-top robotics.
+A set of processing utilities for use with pi-top camera and robotics.
