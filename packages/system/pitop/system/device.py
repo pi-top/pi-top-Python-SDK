@@ -49,7 +49,7 @@ def device_firmware(device_id):
     device_address = device_info.get("i2c_addr")
 
     fw_version = None
-    if getstatusoutput(f"pt-i2cdetect {device_address}"):
+    if getstatusoutput(f"i2cping {device_address}"):
         try:
             fw_device = FirmwareDevice(fw_device_id)
             fw_version = fw_device.get_fw_version()
