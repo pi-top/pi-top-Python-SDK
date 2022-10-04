@@ -4,6 +4,7 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
 
 jobs:
   deploy-python-release:
@@ -37,7 +38,7 @@ jobs:
           for subpackage_folder in packages/* ; do
             cd $subpackage_folder
             python3 setup.py sdist bdist_wheel
-            python3 -m twine upload dist/*
+            python3 -m twine upload dist/* || true
             cd -
           done
         env:
