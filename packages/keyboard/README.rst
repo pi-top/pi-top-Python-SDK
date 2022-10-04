@@ -1,5 +1,5 @@
 ===========================
-pi-top Python Core
+pi-top Python Keyboard
 ===========================
 
-A set of core utilties used by the pi-top Python SDK.
+A simple interface for using pi-top keyboards.
