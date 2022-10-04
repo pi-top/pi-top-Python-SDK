@@ -1,5 +1,7 @@
 import numpy as np
 
+from pitop.common.firmware_device import FirmwareDevice, FirmwareDeviceID
+
 from .common.imu_registers import (
     ImuRegisters,
     MagCalHardTypes,
@@ -23,6 +25,10 @@ class ImuController:
     __SOFT_IRON_SCALE_FACTOR = 1000.0
 
     def __init__(self):
+        device = FirmwareDevice(FirmwareDeviceID.pt4_expansion_plate)
+        if device.get_sch_hardware_version_major() == 4:
+            raise Exception("This Expansion Plate doesn't have an IMU")
+
         self.__data_registers = ImuRegisters.DATA
         self.__enable_registers = ImuRegisters.ENABLE
         self.__config_registers = ImuRegisters.CONFIG
