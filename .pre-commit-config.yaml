@@ -8,6 +8,7 @@ repos:
       # debian/patches needs whitespace at end of line
       exclude: ^debian/patches/smbus2-to-smbus.patch
     - id: end-of-file-fixer
+      exclude: ^tests/assets/
     - id: check-yaml
     - id: check-symlinks
     - id: check-added-large-files

@@ -1,0 +1,16 @@
+SOME_VARIABLE=1
+ANOTHER_VARIABLE=2
+# [test-add-section] START
+#
+# This is a description
+#
+# Notes:
+# this is a note
+#
+
+A=1
+B=2
+C=3
+
+#
+# [test-add-section] END
