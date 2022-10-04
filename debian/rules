@@ -16,7 +16,7 @@ override_dh_install:
 
 	for SUBPACKAGE_FOLDER in $(wildcard packages/*) ; do \
 		cd $$SUBPACKAGE_FOLDER ;\
-		SUBPACKAGE_NAME=`echo $$SUBPACKAGE_FOLDER | cut -d/ -f 2` ;\
+		SUBPACKAGE_NAME=`echo $$SUBPACKAGE_FOLDER | cut -d/ -f 2 | tr '_' '-'` ;\
 		DEBIAN_PACKAGE_NAME=$(DEBIAN_PACKAGE_PREFIX) ;\
 		[ $$SUBPACKAGE_NAME != "pitop" ] && DEBIAN_PACKAGE_NAME=$(DEBIAN_PACKAGE_PREFIX)-$$SUBPACKAGE_NAME ;\
 		python3 -B setup.py install --root $(BUILD_FOLDER)/$$DEBIAN_PACKAGE_NAME --install-layout deb --verbose ;\
