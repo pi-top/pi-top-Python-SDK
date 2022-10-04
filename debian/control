@@ -34,6 +34,7 @@ Depends:
  python3-pitop-processing (= ${binary:Version}),
  python3-pitop-robotics (= ${binary:Version}),
  python3-pitop-system (= ${binary:Version}),
+ python3-pitop-virtual-hardware (= ${binary:Version}),
  python3-onnxruntime,
  libopenblas-dev,
 # Required for face detection & emotion mapping
