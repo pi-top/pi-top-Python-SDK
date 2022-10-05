@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.26.2-1) bullseye; urgency=medium
+
+  * Rename package pitop.virtual_hardware to pitop.simulation (#574)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 05 Oct 2022 13:45:20 +0000
+
 pi-top-python-sdk (0.26.1-1) bullseye; urgency=medium
 
   * Allow to continue release to PyPI on upload error
