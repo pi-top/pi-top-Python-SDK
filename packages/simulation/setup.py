@@ -13,7 +13,7 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 __version__ = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
 assert __version__ != ""
 
-__project__ = "pitop.virtual_hardware"
+__project__ = "pitop.simulation"
 __author__ = "pi-top"
 __author_email__ = "deb-maintainers@pi-top.com"
 
@@ -66,7 +66,7 @@ def main():
                 if c.startswith("License ::")
             ][0],
             keywords=__keywords__,
-            packages=["pitop.virtual_hardware"],
+            packages=["pitop.simulation"],
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,

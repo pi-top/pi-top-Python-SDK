@@ -43,7 +43,7 @@ def test_button(make_button):
 
 def test_button_simulate(make_button, create_sim, mocker, snapshot):
     mocker.patch(
-        "pitop.virtual_hardware.simulation.sprites.is_virtual_hardware",
+        "pitop.simulation.sprites.is_virtual_hardware",
         return_value=True,
     )
 
@@ -71,7 +71,7 @@ def test_button_simulate(make_button, create_sim, mocker, snapshot):
 def test_button_visualize(make_button, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch(
-        "pitop.virtual_hardware.simulation.sprites.is_virtual_hardware",
+        "pitop.simulation.sprites.is_virtual_hardware",
         return_value=False,
     )
 

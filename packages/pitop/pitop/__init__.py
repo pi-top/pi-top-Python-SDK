@@ -1,6 +1,7 @@
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
-import pitop.virtual_hardware
+# import early incase env PITOP_VIRTUAL_HARDWARE indicates to apply mocks
+import pitop.simulation
 
 # System Devices
 from pitop.camera import Camera

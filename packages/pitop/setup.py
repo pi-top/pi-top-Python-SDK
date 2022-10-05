@@ -60,8 +60,8 @@ __requires__ = [
     f"pitop.pma=={__version__}",
     f"pitop.processing=={__version__}",
     f"pitop.robotics=={__version__}",
+    f"pitop.simulation=={__version__}",
     f"pitop.system=={__version__}",
-    f"pitop.virtual_hardware=={__version__}",
     #########
     # PROTO #
     #########

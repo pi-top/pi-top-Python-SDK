@@ -1,4 +1,4 @@
-from pitop.virtual_hardware import simulate, use_virtual_hardware
+from pitop.simulation import simulate, use_virtual_hardware
 
 use_virtual_hardware()
 

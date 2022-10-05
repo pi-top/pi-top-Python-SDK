@@ -1,8 +1,8 @@
 import pygame
 
-from .. import is_virtual_hardware
 from . import images as Images
 from .simsprite import ComponentableSimSprite, SimSprite
+from .virtual_hardware import is_virtual_hardware
 
 
 def remove_alpha(image):
