@@ -34,7 +34,7 @@ Depends:
  python3-pitop-processing (= ${binary:Version}),
  python3-pitop-robotics (= ${binary:Version}),
  python3-pitop-system (= ${binary:Version}),
- python3-pitop-virtual-hardware (= ${binary:Version}),
+ python3-pitop-simulation (= ${binary:Version}),
  python3-onnxruntime,
  libopenblas-dev,
 # Required for face detection & emotion mapping
@@ -288,7 +288,7 @@ Description: pi-top Python 3 Library - System
  that can be attached to a device.
 
 
-Package: python3-pitop-virtual-hardware
+Package: python3-pitop-simulation
 Architecture: all
 Depends:
  ${misc:Depends},
@@ -300,7 +300,7 @@ Replaces:
 Breaks:
  python3-pitop (<= 0.25.0-1)
 Description: pi-top Python 3 Library - System
- Python library for visualising and mocking pi-top hardware.
+ Python library for simulating and virtualising pi-top hardware.
  .
  Provides a utility to visualise real, or interatively simulate mock
  pi-top components with a pygame-based GUI.

@@ -2,7 +2,7 @@ import sys
 from os import environ
 from unittest.mock import patch
 
-import pitop.virtual_hardware.mock_hardware.vendor.Mock.GPIO as Mock_GPIO
+from .vendor.Mock import GPIO as Mock_GPIO
 
 __using_virtual_hardware = False
 

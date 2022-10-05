@@ -111,7 +111,7 @@ def fonts_mock(mocker):
 @pytest.fixture
 def create_sim():
     # this is used to ensure sim teardown
-    from pitop.virtual_hardware import simulate
+    from pitop.simulation import simulate
 
     sims = []
 
