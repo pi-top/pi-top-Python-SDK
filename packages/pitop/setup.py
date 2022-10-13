@@ -51,7 +51,6 @@ __requires__ = [
     ###############
     f"pitop.battery=={__version__}",
     f"pitop.camera=={__version__}",
-    f"pitop.cli=={__version__}",
     f"pitop.common=={__version__}",
     f"pitop.core=={__version__}",
     f"pitop.display=={__version__}",
@@ -62,6 +61,7 @@ __requires__ = [
     f"pitop.robotics=={__version__}",
     f"pitop.simulation=={__version__}",
     f"pitop.system=={__version__}",
+    f"pitopcli=={__version__}",
     #########
     # PROTO #
     #########
