@@ -2,6 +2,9 @@ import os
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+
+Pitop_miniscreen_pos = (152, 340)
+
 Pitop = f"{HERE}/Pitop.png"
 Button = f"{HERE}/Button.png"
 Button_pressed = f"{HERE}/Button_pressed.png"

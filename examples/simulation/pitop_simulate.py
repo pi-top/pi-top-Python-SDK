@@ -1,9 +1,12 @@
+from os import path
+
+from PIL import Image
+
 from pitop.simulation import simulate, use_virtual_hardware
 
 use_virtual_hardware()
 
-from time import sleep  # noqa: E402
-
+# imported after calling use_virtual_hardware so they use the mocks
 from pitop import Pitop  # noqa: E402
 from pitop.pma import LED, Button  # noqa: E402
 
@@ -33,14 +36,9 @@ pitop_sim = simulate(pitop)
 led_sim = simulate(pitop.led4)
 button_sim = simulate(pitop.button4)
 
-import pygame  # noqa: E402
+rocket = Image.open(
+    f"{path.dirname(path.realpath(__file__))}/../../packages/miniscreen/pitop/miniscreen/images/rocket.gif"
+)
 
-for i in range(30):
-    pitop_sim.event(pygame.MOUSEBUTTONDOWN, "button4")
-    sleep(1)
-    pitop_sim.event(pygame.MOUSEBUTTONUP, "button4")
-    sleep(1)
-
-pitop_sim.stop()
-led_sim.stop()
-button_sim.stop()
+while True:
+    pitop.miniscreen.play_animated_image(rocket)
