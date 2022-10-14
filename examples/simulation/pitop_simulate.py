@@ -32,7 +32,7 @@ pitop.button3.when_released = pitop.led3.off
 pitop.button4.when_pressed = pitop.led4.on
 pitop.button4.when_released = pitop.led4.off
 
-pitop_sim = simulate(pitop)
+pitop_sim = simulate(pitop, 0.5)
 led_sim = simulate(pitop.led4)
 button_sim = simulate(pitop.button4)
 

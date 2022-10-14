@@ -230,3 +230,36 @@ def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
 
     sleep(0.1)
     snapshot.assert_match(sim.snapshot(), "image.png")
+
+
+def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot):
+    mocker.patch(
+        "pitop.simulation.sprites.is_virtual_hardware",
+        return_value=True,
+    )
+
+    from pitop.pma import LED, Button
+
+    pitop.add_component(LED("D0"))
+    pitop.add_component(Button("D1"))
+
+    pitop.button.when_pressed = pitop.led.on
+    pitop.button.when_released = pitop.led.off
+
+    sim = create_sim(pitop, 0.2, (200, 300))
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    # simulate a button click
+    sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+
+    # these events are a bit slow
+    sleep(0.5)
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
+
+    sim.event(pygame.MOUSEBUTTONUP, pitop.button.name)
+
+    sleep(0.5)
+    snapshot.assert_match(sim.snapshot(), "default.png")
