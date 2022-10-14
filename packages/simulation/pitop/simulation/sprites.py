@@ -21,6 +21,18 @@ class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
         self.image = remove_alpha(pygame.image.load(Images.Pitop))
         self.rect = self.image.get_rect()
 
+    def update(self):
+        if not hasattr(self, "state"):
+            return
+
+        miniscreen_image = self.state.get("miniscreen_image", False)
+        if miniscreen_image:
+            rgb = miniscreen_image.convert("RGB")
+            miniscreen_surface = pygame.image.fromstring(
+                rgb.tobytes(), rgb.size, rgb.mode
+            )
+            self.image.blit(miniscreen_surface, Images.Pitop_miniscreen_pos)
+
 
 class LED(pygame.sprite.Sprite, SimSprite):
     def __init__(self, config):
