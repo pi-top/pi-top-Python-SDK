@@ -1,7 +1,9 @@
 from unittest.mock import Mock, patch
 
 from pitop.common.common_names import DeviceName
+
 from .fonts import mock_fonts
+
 
 def mock_pitop():
     patch("pitop.system.pitop.SupportsBattery").start()

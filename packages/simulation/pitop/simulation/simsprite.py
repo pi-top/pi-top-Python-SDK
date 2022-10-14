@@ -14,11 +14,11 @@ class SimSprite:
     Size = PMA_CUBE_SIM_SIZE
 
     @classmethod
-    def create_sprite_group(cls, sim_size, config):
+    def create_sprite_group(cls, sim_size, config, scale):
         sprite_group = pygame.sprite.Group()
 
         # create the main sprite
-        sprite = cls(config)
+        sprite = cls(config, scale)
         sprite.name = "main"
 
         # position main sprite in center
@@ -33,13 +33,29 @@ class SimSprite:
     def handle_event(type, target_name, component):
         pass
 
+    @staticmethod
+    def _remove_alpha(image):
+        # draw a white background behind image and convert it, losing transparency
+        # this improves performance and ensures that snapshots are consistent
+        new = image.copy()
+        new.fill((255, 255, 255))
+        new.blit(image, (0, 0))
+        return new.convert()
+
+    @staticmethod
+    def _load_image(path, scale):
+        image = pygame.image.load(path)
+        size = [scale * x for x in image.get_size()]
+        scaled = pygame.transform.scale(image, size)
+        return SimSprite._remove_alpha(scaled)
+
 
 class ComponentableSimSprite(SimSprite):
     Size = PITOP_SIM_SIZE
 
     @classmethod
-    def create_sprite_group(cls, sim_size, config):
-        sprite_group = super().create_sprite_group(sim_size, config)
+    def create_sprite_group(cls, sim_size, config, scale):
+        sprite_group = super().create_sprite_group(sim_size, config, scale)
 
         main_sprite_rect = sprite_group.sprites()[0].rect
         sprite_centres = cls._generate_sprite_centres(sim_size, main_sprite_rect)
@@ -51,7 +67,7 @@ class ComponentableSimSprite(SimSprite):
             if not sprite_class:
                 continue
 
-            sprite = sprite_class(component)
+            sprite = sprite_class(component, scale)
             if not sprite:
                 continue
 
