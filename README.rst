@@ -173,6 +173,8 @@ instead of building it from scratch for some architectures.
 
 .. code-block:: bash
 
+  git clone https://github.com/pi-top/pi-top-Python-SDK.git
+  cd pi-top-Python-SDK
   pip3 install \
     --extra-index-url=https://packagecloud.io/pi-top/pypi/pypi/simple \
     -e ./packages/common \
