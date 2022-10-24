@@ -167,7 +167,7 @@ Development
 
 
 To install the SDK in development mode, the subpackages need to be handled in a particular order, given
-the dependencies between them. Also, the :code:`--extra-index-url` is added to install the :code:`onnxruntime` package
+the dependencies between them. Also, the :code:`--extra-index-url` parameter is added to install the :code:`onnxruntime` package
 instead of building it from scratch for some architectures.
 
 
