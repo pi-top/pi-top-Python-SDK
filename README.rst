@@ -161,6 +161,40 @@ You can also install a pitop subpackage directly in case you don't need the whol
 
   pip3 install pitop.pma
 
+-----------
+Development
+-----------
+
+
+To install the SDK in development mode, the subpackages need to be handled in a particular order, given
+the dependencies between them. Also, the :code:`--extra-index-url` is added to install the :code:`onnxruntime` package
+instead of building it from scratch for some architectures.
+
+
+.. code-block:: bash
+
+  pip3 install \
+    --extra-index-url=https://packagecloud.io/pi-top/pypi/pypi/simple \
+    -e ./packages/common \
+    -e ./packages/core \
+    -e ./packages/battery \
+    -e ./packages/system \
+    -e ./packages/pma \
+    -e ./packages/keyboard \
+    -e ./packages/display \
+    -e ./packages/miniscreen \
+    -e ./packages/simulation \
+    -e ./packages/robotics \
+    -e ./packages/processing \
+    -e ./packages/camera
+
+In case of build errors, you might need to install the :code:`gfortran` package:
+
+.. code-block:: bash
+
+  sudo apt install -y gfortran
+
+
 -------------
 Documentation
 -------------
