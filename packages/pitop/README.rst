@@ -126,11 +126,74 @@ Check out the `CLI`_ chapter of the documentation for ideas on how to get starte
 Installation
 ------------
 
+OS
+==
+
 The pi-top Python SDK is installed out of the box with pi-topOS, which is available from
 pi-top.com_. To install on Raspberry Pi OS or other operating systems, see the `Getting Started`_ chapter.
 
 .. _pi-top.com: https://www.pi-top.com/products/os/
 .. _Getting Started: https://docs.pi-top.com/python-sdk/en/stable/getting_started.html
+
+
+pip
+===
+
+The SDK is also available on PyPI.
+
+On ARM devices, such as the Raspberry Pi, you need to include pi-top's repository to meet all the dependencies:
+
+.. code-block:: bash
+
+  pip3 install pitop --extra-index-url=https://packagecloud.io/pi-top/pypi/pypi/simple
+
+
+On non-ARM devices, you can omit the extra-index-url flag:
+
+.. code-block:: bash
+
+  pip3 install pitop
+
+
+You can also install a pitop subpackage directly in case you don't need the whole SDK:
+
+.. code-block:: bash
+
+  pip3 install pitop.pma
+
+-----------
+Development
+-----------
+
+
+To install the SDK in development mode, the subpackages need to be handled in a particular order, given
+the dependencies between them. Also, the :code:`--extra-index-url` is added to install the :code:`onnxruntime` package
+instead of building it from scratch for some architectures.
+
+
+.. code-block:: bash
+
+  pip3 install \
+    --extra-index-url=https://packagecloud.io/pi-top/pypi/pypi/simple \
+    -e ./packages/common \
+    -e ./packages/core \
+    -e ./packages/battery \
+    -e ./packages/system \
+    -e ./packages/pma \
+    -e ./packages/keyboard \
+    -e ./packages/display \
+    -e ./packages/miniscreen \
+    -e ./packages/simulation \
+    -e ./packages/robotics \
+    -e ./packages/processing \
+    -e ./packages/camera
+
+In case of build errors, you might need to install the :code:`gfortran` package:
+
+.. code-block:: bash
+
+  sudo apt install -y gfortran
+
 
 -------------
 Documentation
@@ -139,44 +202,6 @@ Documentation
 Comprehensive documentation is available here_.
 
 .. _here: https://docs.pi-top.com/python-sdk/
-
--------------
-Development
--------------
-
-To make changes to the SDK you'll want to install it from source with the
-documentation and test dependencies:
-
-.. code-block:: bash
-
-    git clone https://github.com/pi-top/pi-top-Python-SDK.git
-    cd pi-top-Python-SDK
-    pip3 install -e ".[doc,test]"
-
-
-Changes you make to the source will be reflected in your Python environment.
-
-You may want to repeat this process for the pi-top-Python-Common-Library_ if
-it's not installed already or you need to make changes there too.
-
-.. _pi-top-Python-Common-Library: https://github.com/pi-top/pi-top-Python-Common-Library
-
-Once the SDK is installed you can run the automated test suite with:
-
-.. code-block:: bash
-
-    python3 -m pytest
-
-And you can build the docs locally by running:
-
-.. code-block:: bash
-
-    PYTHONPATH=. sphinx-build -W -v -bhtml docs/ build/html
-
-To view the generated docs open the `build/html/index.html` file in your browser.
-
-Most of the SDK requires pi-top hardware to work but it should be possible to
-run the tests and build documentation in any environment with Python3.
 
 ------------
 Contributing
