@@ -414,7 +414,7 @@ class PTDMSubscribeClient:
     def __init__(self):
         self.__thread = Thread(target=self.__thread_method, daemon=True)
 
-        self.__callback_funcs = None
+        self._callback_funcs = None
 
         self._zmq_context = None
         self._zmq_socket = None
@@ -463,9 +463,9 @@ class PTDMSubscribeClient:
                 message = Message.from_string(message_string)
 
                 id = message.message_id()
-                if id in self.__callback_funcs:
+                if id in self._callback_funcs:
                     self.invoke_callback_func_if_exists(
-                        self.__callback_funcs[id], message.parameters
+                        self._callback_funcs[id], message.parameters
                     )
 
     def invoke_callback_func_if_exists(self, func, params=list()):
@@ -485,7 +485,7 @@ class PTDMSubscribeClient:
             func(params)
 
     def initialise(self, callback_funcs):
-        self.__callback_funcs = callback_funcs
+        self._callback_funcs = callback_funcs
 
     def start_listening(self):
         if not self.__connect_to_socket():
