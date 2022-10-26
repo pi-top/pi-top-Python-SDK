@@ -1,11 +1,15 @@
+import logging
 from atexit import register
 from threading import Thread, current_thread, main_thread
 from time import sleep
 
+from pitop.common.ptdm import Message, PTDMSubscribeClient
 from pitop.core import ImageFunctions
 
 from .assistant import MiniscreenAssistant
 from .core import FPS_Regulator, MiniscreenLockFileMonitor, OledDeviceController
+
+logger = logging.getLogger(__name__)
 
 
 class OLED:
@@ -27,6 +31,24 @@ class OLED:
         self.__auto_play_thread = None
 
         self.reset()
+
+        def reset_miniscreen() -> None:
+            logger.debug("pi-topd is ready - resetting miniscreen")
+            try:
+                backup_image = self.image
+                self.reset()
+                self.display_image(backup_image)
+            except RuntimeError as e:
+                logger.error(f"Error resetting miniscreen: {e}")
+                raise Exception(
+                    "Error resetting miniscreen. Please re-create the Miniscreen object"
+                )
+
+        self._ptdm_subscribe_client = PTDMSubscribeClient()
+        self._ptdm_subscribe_client.initialise(
+            {Message.PUB_PITOPD_READY: reset_miniscreen}
+        )
+        self._ptdm_subscribe_client.start_listening()
 
         register(self.__cleanup)
 
@@ -608,3 +630,4 @@ class OLED:
     def __cleanup(self):
         self.stop_animated_image()
         self.lock_file_monitor.stop()
+        self._ptdm_subscribe_client.stop_listening()
