@@ -275,3 +275,27 @@ def test_display_multiline_text_with_newlines(oled, snapshot, fonts_mock):
     text = "Line1\nLine2\nLine3\nLine4"
     oled.display_multiline_text(text)
     snapshot.assert_match(to_bytes(oled.image), "defaults.png")
+
+
+def test_subscribes_to_pitopd_ready_event(oled):
+    from pitop.common.ptdm import Message
+
+    callback = oled._ptdm_subscribe_client._callback_funcs.get(Message.PUB_PITOPD_READY)
+    assert callback is not None
+
+
+def test_on_pitopd_initialization_callback(oled):
+    from pitop.common.ptdm import Message
+
+    oled.display_image = Mock()
+    oled.reset = Mock()
+
+    callback = oled._ptdm_subscribe_client._callback_funcs.get(Message.PUB_PITOPD_READY)
+
+    assert oled.display_image.call_count == 0
+    assert oled.reset.call_count == 0
+
+    callback()
+
+    assert oled.display_image.call_count == 1
+    assert oled.reset.call_count == 1
