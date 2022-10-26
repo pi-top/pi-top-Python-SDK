@@ -72,16 +72,13 @@ When this library reaches v1.0.0, we will aim to maintain backwards-compatibilit
 About
 -----
 
-This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
-with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
+This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes several Python 3 packages and
+modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
 to interact with your pi-top using the terminal.
 
 The SDK is included out-of-the-box with pi-topOS.
 
 Ensure that you keep your system up-to-date to enjoy the latest features and bug fixes.
-
-This library is installed as a Python 3 module called `pitop`. It includes several
-submodules that allow you to easily interact with most of the hardware inside a pi-top.
 
 You can easily connect different components of the system using the
 modules available in the library:
@@ -168,27 +165,8 @@ Development
 
 To install the SDK in development mode, the subpackages need to be handled in a particular order, given
 the dependencies between them. Also, the :code:`--extra-index-url` parameter is added to install the :code:`onnxruntime` package
-instead of building it from scratch for some architectures.
-
-
-.. code-block:: bash
-
-  git clone https://github.com/pi-top/pi-top-Python-SDK.git
-  cd pi-top-Python-SDK
-  pip3 install \
-    --extra-index-url=https://packagecloud.io/pi-top/pypi/pypi/simple \
-    -e ./packages/common \
-    -e ./packages/core \
-    -e ./packages/battery \
-    -e ./packages/system \
-    -e ./packages/pma \
-    -e ./packages/keyboard \
-    -e ./packages/display \
-    -e ./packages/miniscreen \
-    -e ./packages/simulation \
-    -e ./packages/robotics \
-    -e ./packages/processing \
-    -e ./packages/camera
+instead of building it from scratch for some architectures. You can use the :code:`dev-install.sh` script to install the SDK
+in development mode.
 
 In case of build errors, you might need to install the :code:`gfortran` package:
 
