@@ -84,7 +84,7 @@ def is_pi_using_default_password():
     if getuser() == "root":
         with open("/etc/shadow") as shadow_file:
             for line in shadow_file:
-                if "pi:" in line and "c4XjD2pO7T6KeaTJXLMFZ/" in line:
+                if "pi:" in line and "SomeSalt" in line:
                     return True
 
         return False
