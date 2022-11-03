@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.27.1-2) bullseye; urgency=medium
+pi-top-python-sdk (0.28.0-1) bullseye; urgency=medium
 
   * Update detection of pi user default password (#584)
 
