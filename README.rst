@@ -163,7 +163,7 @@ Development
 -----------
 
 
-To install the SDK in development mode run the script `dev-install.sh` in the root of the repo:
+To install the SDK in development mode run the script :code:`dev-install.sh` in the root of the repo:
 
 .. code-block:: bash
 
