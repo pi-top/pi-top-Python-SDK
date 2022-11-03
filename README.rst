@@ -72,16 +72,13 @@ When this library reaches v1.0.0, we will aim to maintain backwards-compatibilit
 About
 -----
 
-This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes a Python 3 package (`pitop`),
-with several modules for interfacing with a range of pi-top devices and peripherals It also contains CLI utilities,
-to interact with your pi-top using the terminal.
+This SDK aims to provide an easy-to-use framework for managing a pi-top. It includes several Python 3 packages and
+modules for interfacing with a range of pi-top devices and peripherals.
+It also contains CLI utilities for interacting with your pi-top using the terminal.
 
 The SDK is included out-of-the-box with pi-topOS.
 
 Ensure that you keep your system up-to-date to enjoy the latest features and bug fixes.
-
-This library is installed as a Python 3 module called `pitop`. It includes several
-submodules that allow you to easily interact with most of the hardware inside a pi-top.
 
 You can easily connect different components of the system using the
 modules available in the library:
@@ -160,6 +157,28 @@ You can also install a pitop subpackage directly in case you don't need the whol
 .. code-block:: bash
 
   pip3 install pitop.pma
+
+-----------
+Development
+-----------
+
+
+To install the SDK in development mode run the script :code:`dev-install.sh` in the root of the repo:
+
+.. code-block:: bash
+
+  ./dev-install.sh
+
+The script installs the subpackages in a particular order, given
+the dependencies between them. Also, the :code:`--extra-index-url` parameter is added to install the :code:`onnxruntime` package
+instead of building it from scratch for some architectures.
+
+In case of build errors, you might need to install the :code:`gfortran` package:
+
+.. code-block:: bash
+
+  sudo apt install -y gfortran
+
 
 -------------
 Documentation
