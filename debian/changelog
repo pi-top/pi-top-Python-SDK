@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.26.3-2) bullseye; urgency=medium
+pi-top-python-sdk (0.27.1-1) bullseye; urgency=medium
 
   * Reset miniscreen after pi-topd is initialized (#579)
   * Update README with development installation instructions (#580)
