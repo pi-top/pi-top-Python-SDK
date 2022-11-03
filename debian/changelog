@@ -1,3 +1,10 @@
+pi-top-python-sdk (0.26.3-2) bullseye; urgency=medium
+
+  * Reset miniscreen after pi-topd is initialized (#579)
+  * Update README with development installation instructions (#580)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 03 Nov 2022 13:54:18 +0000
+
 pi-top-python-sdk (0.26.3-1) bullseye; urgency=medium
 
   * Fix name of pitopcli package (#576)
