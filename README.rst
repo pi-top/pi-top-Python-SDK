@@ -163,10 +163,14 @@ Development
 -----------
 
 
-To install the SDK in development mode, the subpackages need to be handled in a particular order, given
+To install the SDK in development mode run the script `dev-install.sh` in the root of the repo:
+
+.. code-block:: bash
+  ./dev-install.sh
+
+The script installs the subpackages in a particular order, given
 the dependencies between them. Also, the :code:`--extra-index-url` parameter is added to install the :code:`onnxruntime` package
-instead of building it from scratch for some architectures. You can use the :code:`dev-install.sh` script to install the SDK
-in development mode.
+instead of building it from scratch for some architectures.
 
 In case of build errors, you might need to install the :code:`gfortran` package:
 
