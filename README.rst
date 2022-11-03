@@ -166,6 +166,7 @@ Development
 To install the SDK in development mode run the script `dev-install.sh` in the root of the repo:
 
 .. code-block:: bash
+
   ./dev-install.sh
 
 The script installs the subpackages in a particular order, given
