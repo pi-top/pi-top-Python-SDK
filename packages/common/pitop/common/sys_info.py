@@ -1,3 +1,4 @@
+import logging
 from enum import Enum, auto
 from fractions import Fraction
 from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
@@ -9,6 +10,8 @@ import netifaces
 from isc_dhcp_leases import IscDhcpLeases
 
 from pitop.common.command_runner import run_command
+
+logger = logging.getLogger(__name__)
 
 
 class NetworkInterface(Enum):
@@ -215,7 +218,14 @@ def get_address_for_connected_device(
         except Exception:
             return False
 
-    current_leases = IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
+    try:
+        current_leases = (
+            IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
+        )
+    except Exception as e:
+        logger.error(f"Error reading dhcpd leases: {e}")
+        return ""
+
     current_leases = list(current_leases)
     current_leases.reverse()
 
