@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.28.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.29.0-1) bullseye; urgency=medium
 
   * Handle errors reading when leased IPs (#586)
 
