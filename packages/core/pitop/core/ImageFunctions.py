@@ -13,7 +13,10 @@ def image_format_check(format):
 
 
 def convert(image, format="PIL"):
-    cv2 = import_opencv()
+    try:
+        cv2 = import_opencv()
+    except ModuleNotFoundError:
+        cv2 = None
 
     image_format_check(format)
     format = format.lower()
@@ -30,13 +33,21 @@ def convert(image, format="PIL"):
         # Convert PIL to OpenCV
         cv_image = asarray(image)
         if image.mode == "RGB":
-            cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
+            if cv2:
+                cv_image = cv2.cvtColor(cv_image, cv2.COLOR_RGB2BGR)
+            else:
+                cv_image = cv_image[..., ::-1].copy()
+
         return cv_image
     elif isinstance(image, ndarray) and format == "pil":
         # Convert OpenCV to PIL
         if len(image.shape) > 2 and image.shape[2] == 3:
             # If incoming image has 3 channels, convert from BGR to RGB
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            if cv2:
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            else:
+                image = image[..., ::-1].copy()
+
         return Image.fromarray(image)
 
 

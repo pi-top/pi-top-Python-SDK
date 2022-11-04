@@ -41,7 +41,7 @@ __keywords__ = [
 ]
 
 __extra_requires__ = {
-    "computer_vision": ["opencv"],
+    "computer_vision": ["opencv-python>=4.5.1,<4.6.0"],
     "doc": ["sphinx"],
 }
 
