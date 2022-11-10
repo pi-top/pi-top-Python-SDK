@@ -178,6 +178,8 @@ class Message:
     PUB_OLED_CONTROL_CHANGED = 325
     PUB_OLED_SPI_BUS_CHANGED = 326
     PUB_PITOPD_READY = 327
+    PUB_V3_BUTTON_POWER_PRESSED = 328
+    PUB_V3_BUTTON_POWER_RELEASED = 329
 
     __message_names[PUB_BRIGHTNESS_CHANGED] = "PUB_BRIGHTNESS_CHANGED"
     __message_names[PUB_PERIPHERAL_CONNECTED] = "PUB_PERIPHERAL_CONNECTED"
@@ -207,6 +209,8 @@ class Message:
     __message_names[PUB_OLED_CONTROL_CHANGED] = "PUB_OLED_CONTROL_CHANGED"
     __message_names[PUB_OLED_SPI_BUS_CHANGED] = "PUB_OLED_SPI_BUS_CHANGED"
     __message_names[PUB_PITOPD_READY] = "PUB_PITOPD_READY"
+    __message_names[PUB_V3_BUTTON_POWER_PRESSED] = "PUB_V3_BUTTON_POWER_PRESSED"
+    __message_names[PUB_V3_BUTTON_POWER_RELEASED] = "PUB_V3_BUTTON_POWER_RELEASED"
 
     __param_types[PUB_BRIGHTNESS_CHANGED] = [int]
     __param_types[PUB_PERIPHERAL_CONNECTED] = [int]
@@ -236,6 +240,8 @@ class Message:
     __param_types[PUB_OLED_CONTROL_CHANGED] = [int]
     __param_types[PUB_OLED_SPI_BUS_CHANGED] = [int]
     __param_types[PUB_PITOPD_READY] = list()
+    __param_types[PUB_V3_BUTTON_POWER_PRESSED] = list()
+    __param_types[PUB_V3_BUTTON_POWER_RELEASED] = list()
 
     def _parse(self, message_string):
         message_parts = message_string.split("|")
