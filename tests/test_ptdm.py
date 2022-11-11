@@ -8,30 +8,21 @@ class PTDMSubscribeClientTestCase(TestCase):
     def setUp(self):
         self.zmq_patch = patch("pitop.common.ptdm.zmq")
         self.zmq_mock = self.zmq_patch.start()
-        self.poller_mock = Mock()
         self.context_mock = Mock()
         self.socket_mock = Mock()
 
         self.socket_mock.recv_string.return_value = ""
         self.context_mock.socket.return_value = self.socket_mock
         self.zmq_mock.Context.return_value = self.context_mock
-        self.zmq_mock.Poller.return_value = self.poller_mock
-        self.poller_mock.poll.return_value = []
         self.addCleanup(self.zmq_patch.stop)
 
     @skip
     def test_callback_called_when_message_is_published(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
-        self.poller_mock.poll.side_effect = (
-            lambda _: [1] if self.poller_mock.poll.call_count == 1 else []
-        )
         self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
-        def callback():
-            callback.counter += 1
-
-        callback.counter = 0
+        callback = Mock()
 
         client = PTDMSubscribeClient()
         client.initialise(
@@ -39,18 +30,14 @@ class PTDMSubscribeClientTestCase(TestCase):
                 Message.PUB_LOW_BATTERY_WARNING: callback,
             }
         )
+
         client.start_listening()
-        assert callback.counter == 0
-        wait_until(lambda: callback.counter > 10, timeout=10)
-        assert callback.counter == 1
+        wait_until(lambda: callback.call_count == 1, timeout=3)
         client.stop_listening()
 
-    def test_callback_not_called_if_it_has_wrong_signature(self):
+    def test_callback_not_included_if_has_wrong_signature(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
-        self.poller_mock.poll.side_effect = (
-            lambda _: [1] if self.poller_mock.poll.call_count == 1 else []
-        )
         self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
         def callback(x, y):
@@ -64,14 +51,13 @@ class PTDMSubscribeClientTestCase(TestCase):
                 Message.PUB_LOW_BATTERY_WARNING: callback,
             }
         )
-        client.start_listening()
-        assert callback.counter == 0
-        wait_until(lambda: self.poller_mock.poll.call_count > 10, timeout=5)
-        assert callback.counter == 0
-        client.stop_listening()
+
+        assert client._callback_funcs.get(Message.PUB_LOW_BATTERY_WARNING) is None
 
     def test_subscribe_client_cleanup_closes_socket(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
+
+        self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
         client = PTDMSubscribeClient()
         client.initialise(
@@ -94,15 +80,12 @@ class PTDMRequestClientTestCase(TestCase):
     def setUp(self):
         self.zmq_patch = patch("pitop.common.ptdm.zmq")
         self.zmq_mock = self.zmq_patch.start()
-        self.poller_mock = Mock()
         self.context_mock = Mock()
         self.socket_mock = Mock()
 
         self.socket_mock.recv_string.return_value = ""
         self.context_mock.socket.return_value = self.socket_mock
         self.zmq_mock.Context.return_value = self.context_mock
-        self.zmq_mock.Poller.return_value = self.poller_mock
-        self.poller_mock.poll.return_value = []
         self.addCleanup(self.zmq_patch.stop)
 
     def test_uri(self):
