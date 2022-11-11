@@ -414,7 +414,7 @@ class PTDMSubscribeClient:
     def __init__(self):
         self.__thread = Thread(target=self.__thread_method, daemon=True)
 
-        self._callback_funcs = None
+        self._callback_funcs = {}
 
         self._zmq_context = None
         self._zmq_socket = None
@@ -429,7 +429,9 @@ class PTDMSubscribeClient:
     def __connect_to_socket(self):
         self._zmq_context = zmq.Context()
         self._zmq_socket = self._zmq_context.socket(zmq.SUB)
-        self._zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+
+        for message_id in self._callback_funcs.keys():
+            self._zmq_socket.setsockopt(zmq.SUBSCRIBE, str(message_id).encode())
 
         try:
             self._zmq_socket.connect(self.URI)
@@ -453,39 +455,37 @@ class PTDMSubscribeClient:
             self._zmq_context = None
 
     def __thread_method(self):
-        poller = zmq.Poller()
-        poller.register(self._zmq_socket, zmq.POLLIN)
         while self.__continue:
-            events = poller.poll(_TIMEOUT_MS)
+            message_string = self._zmq_socket.recv_string()
+            message = Message.from_string(message_string)
 
-            for _ in range(len(events)):
-                message_string = self._zmq_socket.recv_string()
-                message = Message.from_string(message_string)
+            callback = self._callback_funcs.get(message.message_id())
+            if callback:
+                self.invoke_callback_func_if_exists(callback, message.parameters)
 
-                id = message.message_id()
-                if id in self._callback_funcs:
-                    self.invoke_callback_func_if_exists(
-                        self._callback_funcs[id], message.parameters
-                    )
-
-    def invoke_callback_func_if_exists(self, func, params=list()):
-        if not callable(func):
-            return
-
-        func_arg_no = len(signature(func).parameters)
-        if func_arg_no > 1:
-            logger.error(
-                "Invalid callback function - it should receive at most one argument."
-            )
-            return ""
-
+    def invoke_callback_func_if_exists(self, callback, params=list()):
+        func_arg_no = len(signature(callback).parameters)
         if params == list() or func_arg_no == 0:
-            func()
+            callback()
         else:
-            func(params)
+            callback(params)
 
     def initialise(self, callback_funcs):
-        self._callback_funcs = callback_funcs
+        for message_id, callback in callback_funcs.items():
+            if not callable(callback):
+                logger.error(
+                    f"Invalid callback function for message {message_id} - not callable. Skipping..."
+                )
+                continue
+
+            func_arg_no = len(signature(callback).parameters)
+            if func_arg_no > 1:
+                logger.error(
+                    f"Invalid callback function for message {message_id} - it should receive at most one argument. Skipping..."
+                )
+                continue
+
+            self._callback_funcs.update({message_id: callback})
 
     def start_listening(self):
         if not self.__connect_to_socket():

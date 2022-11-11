@@ -31,9 +31,11 @@ class Miniscreen(OLED):
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed):
             button.is_pressed = pressed
-            self.__ptdm_subscribe_client.invoke_callback_func_if_exists(
+            callback = (
                 button.when_pressed if button.is_pressed else button.when_released
             )
+            if callable(callback):
+                callback()
 
         self.__ptdm_subscribe_client = PTDMSubscribeClient()
         self.__ptdm_subscribe_client.initialise(
