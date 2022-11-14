@@ -455,13 +455,17 @@ class PTDMSubscribeClient:
             self._zmq_context = None
 
     def __thread_method(self):
+        poller = zmq.Poller()
+        poller.register(self._zmq_socket, zmq.POLLIN)
         while self.__continue:
-            message_string = self._zmq_socket.recv_string()
-            message = Message.from_string(message_string)
+            events = poller.poll(_TIMEOUT_MS)
+            for _ in range(len(events)):
+                message_string = self._zmq_socket.recv_string()
+                message = Message.from_string(message_string)
 
-            callback = self._callback_funcs.get(message.message_id())
-            if callback:
-                self.invoke_callback_func_if_exists(callback, message.parameters)
+                callback = self._callback_funcs.get(message.message_id())
+                if callback:
+                    self.invoke_callback_func_if_exists(callback, message.parameters)
 
     def invoke_callback_func_if_exists(self, callback, params=list()):
         func_arg_no = len(signature(callback).parameters)
