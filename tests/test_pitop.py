@@ -140,19 +140,48 @@ def test_blockpi_rover(rover):
     rover.drive.right_motor.set_target_speed.assert_called()
 
 
-def test_pitop_simulate(pitop, mocker, create_sim, snapshot):
+def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
         return_value=True,
     )
 
-    from pitop.pma import LED, Button
+    from pitop.pma import (
+        LED,
+        Button,
+        Buzzer,
+        LightSensor,
+        Potentiometer,
+        SoundSensor,
+        UltrasonicSensor,
+    )
 
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
+    pitop.add_component(Buzzer("D2"))
+    pitop.add_component(UltrasonicSensor("D3"))
+    pitop.add_component(LightSensor("A0"))
+    pitop.add_component(SoundSensor("A1"))
+    pitop.add_component(Potentiometer("A3"))
 
-    pitop.button.when_pressed = pitop.led.on
-    pitop.button.when_released = pitop.led.off
+    def on_button_press():
+        pitop.led.on()
+        pitop.buzzer.on()
+        analog_sensor_mocks.get("light_sensor").return_value = 100
+        analog_sensor_mocks.get("sound_sensor").return_value = 100
+        analog_sensor_mocks.get("potentiometer").return_value = 100
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 2
+
+    def on_button_release():
+        pitop.led.off()
+        pitop.buzzer.off()
+        analog_sensor_mocks.get("light_sensor").return_value = 0
+        analog_sensor_mocks.get("sound_sensor").return_value = 0
+        analog_sensor_mocks.get("potentiometer").return_value = 0
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 0
+
+    pitop.button.when_pressed = on_button_press
+    pitop.button.when_released = on_button_release
 
     sim = create_sim(pitop)
 
@@ -180,13 +209,14 @@ def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
         return_value=False,
     )
 
-    from pitop.pma import LED, Button
+    from pitop.pma import LED, Button, Buzzer
 
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
+    pitop.add_component(Buzzer("D2"))
 
-    pitop.button.when_pressed = pitop.led.on
-    pitop.button.when_released = pitop.led.off
+    pitop.button.when_pressed = lambda: (pitop.led.on(), pitop.buzzer.on())
+    pitop.button.when_released = lambda: (pitop.led.off(), pitop.buzzer.off())
 
     sim = create_sim(pitop)
 
@@ -232,21 +262,50 @@ def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
     snapshot.assert_match(sim.snapshot(), "image.png")
 
 
-def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot):
+def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
         return_value=True,
     )
 
-    from pitop.pma import LED, Button
+    from pitop.pma import (
+        LED,
+        Button,
+        Buzzer,
+        LightSensor,
+        Potentiometer,
+        SoundSensor,
+        UltrasonicSensor,
+    )
 
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
+    pitop.add_component(Buzzer("D2"))
+    pitop.add_component(UltrasonicSensor("D3"))
+    pitop.add_component(Potentiometer("A0"))
+    pitop.add_component(SoundSensor("A1"))
+    pitop.add_component(LightSensor("A2"))
 
-    pitop.button.when_pressed = pitop.led.on
-    pitop.button.when_released = pitop.led.off
+    def on_button_press():
+        pitop.led.on()
+        pitop.buzzer.on()
+        analog_sensor_mocks.get("light_sensor").return_value = 200
+        analog_sensor_mocks.get("sound_sensor").return_value = 400
+        analog_sensor_mocks.get("potentiometer").return_value = 600
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 3
 
-    sim = create_sim(pitop, 0.2, (200, 300))
+    def on_button_release():
+        pitop.led.off()
+        pitop.buzzer.off()
+        analog_sensor_mocks.get("light_sensor").return_value = 0
+        analog_sensor_mocks.get("sound_sensor").return_value = 0
+        analog_sensor_mocks.get("potentiometer").return_value = 0
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 0
+
+    pitop.button.when_pressed = on_button_press
+    pitop.button.when_released = on_button_release
+
+    sim = create_sim(pitop, 0.5, (700, 700))
 
     # give time for the screen and sprites to be set up
     sleep(2)

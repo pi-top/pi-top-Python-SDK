@@ -10,6 +10,8 @@ from PIL import Image
 from pitop.core.mixins import Recreatable, Stateful
 
 from . import sprites as Sprites
+from .events import SimEvents
+from .utils import multiply_scalar
 
 
 def simulate(component, scale=None, size=None):
@@ -85,9 +87,15 @@ class Simulation:
 
             self._state_q.put(self.component.state)
 
+            # handle pygame events
             while not self._out_event_q.empty():
-                type, target_name = self._out_event_q.get_nowait()
-                self._main_sprite_class.handle_event(type, target_name, self.component)
+                event_data = self._out_event_q.get_nowait()
+                self._main_sprite_class.handle_sim_event(
+                    event_data.get("type"),
+                    event_data.get("target_name"),
+                    event_data.get("value"),
+                    self.component,
+                )
 
             sleep(0.05)
 
@@ -118,32 +126,49 @@ def _run(
     clock = pygame.time.Clock()
 
     sprite_class = getattr(Sprites, config.get("classname"))
-    size = size or [scale * x for x in sprite_class.Size]
+    size = size or multiply_scalar(scale, sprite_class.Size)
 
     screen = pygame.display.set_mode(size)
     screen.fill((255, 255, 255))
 
     sprite_group = sprite_class.create_sprite_group(size, config, scale)
 
-    OUTBOUND_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
+    MOUSE_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
 
     while not stop_ev.is_set():
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 stop_ev.set()
                 break
-            elif event.type in OUTBOUND_EVENTS:
+            elif event.type in MOUSE_EVENTS:
                 target_name = None
                 if hasattr(event, "pos"):
                     for sprite in sprite_group.sprites():
+                        # allow all sprites to handle events
+                        sprite.handle_event(event)
+
+                        # find sprite based on event position
                         rect = sprite.rect
                         if (
                             rect.x <= event.pos[0] <= rect.x + rect.width
                             and rect.y <= event.pos[1] <= rect.y + rect.height
                         ):
-                            target_name = sprite.name
-                            break
-                out_event_q.put((event.type, target_name))
+                            if isinstance(sprite, Sprites.Button):
+                                target_name = sprite.name
+                                break
+
+                out_event_q.put({"type": event.type, "target_name": target_name})
+
+        for sprite in sprite_group.sprites():
+            if hasattr(sprite, "slider") and sprite.slider.selected:
+                out_event_q.put(
+                    {
+                        "type": SimEvents.SLIDER_UPDATE.value,
+                        "target_name": sprite.name,
+                        "value": sprite.slider.value,
+                    }
+                )
 
         while not in_event_q.empty():
             type, target_name = in_event_q.get_nowait()

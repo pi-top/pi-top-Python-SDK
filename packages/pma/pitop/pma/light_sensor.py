@@ -52,3 +52,10 @@ class LightSensor(ADCBase):
             return 1
         else:
             return 0
+
+    @property
+    def own_state(self):
+        return {
+            "value": lambda: self.value,
+            "reading": lambda: self.reading,
+        }

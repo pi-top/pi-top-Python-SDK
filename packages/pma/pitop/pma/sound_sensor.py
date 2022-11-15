@@ -46,3 +46,10 @@ class SoundSensor(ADCBase):
         """
         value = self.reading
         return 0 if value == 0 else 1
+
+    @property
+    def own_state(self):
+        return {
+            "value": lambda: self.value,
+            "reading": lambda: self.reading,
+        }

@@ -1,8 +1,23 @@
+from dataclasses import dataclass
+from typing import Any, Tuple
+
 import pygame
 
 from . import images as Images
+from .events import SimEvents
+from .images import PMA_CUBE_SIZE
 from .simsprite import ComponentableSimSprite, SimSprite
+from .utils import multiply_scalar
 from .virtual_hardware import is_virtual_hardware
+from .widgets.slider import Slider
+
+MARGIN = 10
+SLIDER_WIDTH = 85
+SLIDER_HORIZONTAL_OFFSET = int((PMA_CUBE_SIZE[0] - SLIDER_WIDTH) / 2)
+SLIDER_HEIGHT = 8
+SLIDER_HANDLE_RADIUS = 8
+FONT_SIZE = 22
+TEXT_OFFSET = (-13, 8)
 
 
 class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
@@ -10,7 +25,7 @@ class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.scale = scale
-        self.miniscreen_pos = [scale * x for x in Images.Pitop_miniscreen_pos]
+        self.miniscreen_pos = multiply_scalar(scale, Images.Pitop_miniscreen_pos)
 
         self.image = SimSprite._load_image(Images.Pitop, scale)
         self.rect = self.image.get_rect()
@@ -25,7 +40,7 @@ class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
             miniscreen_surface = pygame.image.fromstring(
                 rgb.tobytes(), rgb.size, rgb.mode
             )
-            size = [self.scale * x for x in rgb.size]
+            size = multiply_scalar(self.scale, rgb.size)
             image = pygame.transform.scale(miniscreen_surface, size)
             self.image.blit(image, self.miniscreen_pos)
 
@@ -75,7 +90,7 @@ class Button(pygame.sprite.Sprite, SimSprite):
             self.image = self.released_image
 
     @staticmethod
-    def handle_event(type, target_name, component):
+    def handle_sim_event(type, target_name, value, component):
         if not is_virtual_hardware():
             print("Ignoring virtual input while physcial hardware is enabled")
             return
@@ -85,3 +100,233 @@ class Button(pygame.sprite.Sprite, SimSprite):
 
         elif type == pygame.MOUSEBUTTONUP:
             component.pin.drive_high()
+
+
+class Buzzer(pygame.sprite.Sprite, SimSprite):
+    Size = ((PMA_CUBE_SIZE[0] + 2 * MARGIN) * 2, PMA_CUBE_SIZE[0] + 2 * MARGIN)
+
+    def __init__(self, config, scale):
+        pygame.sprite.Sprite.__init__(self)
+
+        def get_pos(image):
+            return (
+                int((self.Size[0] * scale - image.get_width()) / 2),
+                int((self.Size[1] * scale - image.get_height()) / 2),
+            )
+
+        self.component_image = SimSprite._load_image(Images.Buzzer, scale)
+        self.component_pos = get_pos(self.component_image)
+
+        self.buzzer_sound_image = SimSprite._load_image(Images.buzzer_sound_icon, scale)
+        self.buzzer_sound_image_pos = get_pos(self.buzzer_sound_image)
+
+        self.base_image = pygame.Surface(multiply_scalar(scale, self.Size))
+        self.base_image.fill(pygame.Color("WHITE"))
+        self.rect = self.base_image.get_rect()
+
+    def render(self):
+        value = False
+        if hasattr(self, "state"):
+            value = self.state.get("value", False)
+
+        image = self.base_image.copy()
+        if value:
+            image.blit(self.buzzer_sound_image, self.buzzer_sound_image_pos)
+
+        image.blit(self.component_image, self.component_pos)
+        return image
+
+    def update(self):
+        if not hasattr(self, "state"):
+            return
+
+        self.image = self.render()
+
+
+@dataclass
+class Component:
+    pos: Tuple
+    obj: Any
+
+
+class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
+    slider: Slider
+    font: Component
+    icon: Component
+    scale: float
+
+    image: str
+    icon: str
+    measurement_key_in_state: str
+    min_value: int = 0
+    max_value: int = 999
+    slider_step: int = 1
+
+    def __init__(self, config, scale):
+        pygame.sprite.Sprite.__init__(self)
+        self.scale = scale
+
+        self.create_components()
+
+        assert self.slider is not None
+        assert self.font is not None
+        assert self.icon is not None
+
+        self.base_image = self.draw_base_image()
+
+        if not is_virtual_hardware():
+            self.slider.disable()
+
+        self.image = self.render()
+        self.rect = self.image.get_rect()
+
+    def create_components(self):
+        right_hand_side_x_start = self.Size[0] - MARGIN - PMA_CUBE_SIZE[0]
+
+        slider_pos = (
+            right_hand_side_x_start + SLIDER_HORIZONTAL_OFFSET,
+            self.Size[1] - 2 * MARGIN - SLIDER_HEIGHT,
+        )
+        slider_pos = multiply_scalar(self.scale, slider_pos)
+
+        self.slider = Slider(
+            x=slider_pos[0],
+            y=slider_pos[1],
+            width=int(SLIDER_WIDTH * self.scale),
+            height=int(SLIDER_HEIGHT * self.scale),
+            min=self.min_value,
+            max=self.max_value,
+            step=self.slider_step,
+            initial=0,
+            handleRadius=int(SLIDER_HANDLE_RADIUS * self.scale),
+            handleColour=pygame.Color("#505050"),
+            colour=pygame.Color("#DBDEE0"),
+        )
+
+        text_pos = (
+            slider_pos[0] + self.slider.width / 2 + TEXT_OFFSET[0] * self.scale,
+            slider_pos[1] - MARGIN * 2 * self.scale,
+        )
+
+        self.font = Component(
+            text_pos, pygame.font.SysFont(None, int(FONT_SIZE * self.scale))
+        )
+
+        icon_image = SimSprite._load_image(self.icon, self.scale)
+        icon_pos = (
+            slider_pos[0] + self.slider.width / 2 - icon_image.get_width() / 2,
+            text_pos[1] - icon_image.get_height() - self.scale * MARGIN / 2,
+        )
+        self.icon = Component(icon_pos, icon_image)
+
+    def draw_base_image(self):
+        component_image = SimSprite._load_image(self.image, self.scale)
+
+        base_image = pygame.Surface(multiply_scalar(self.scale, self.Size))
+        base_image.fill(pygame.Color("WHITE"))
+        base_image.blit(component_image, multiply_scalar(self.scale, (MARGIN, MARGIN)))
+        base_image.blit(self.icon.obj, self.icon.pos)
+        return base_image
+
+    def set_pos(self, x, y):
+        super().set_pos(x, y)
+        self.slider.parent_x = x
+        self.slider.parent_y = y
+
+    def render(self):
+        value = 0
+        if hasattr(self, "state"):
+            value = self.state.get(self.measurement_key_in_state, 0)
+
+        image = self.base_image.copy()
+        image.blit(
+            self.font.obj.render(str(value), True, pygame.Color("#505050")),
+            self.font.pos,
+        )
+
+        if not self.slider.selected:
+            self.slider.value = value
+
+        self.slider.draw(image)
+        return image
+
+    def update(self):
+        if not hasattr(self, "state"):
+            return
+
+        self.slider.update()
+        self.image = self.render()
+
+    @staticmethod
+    def handle_sim_event(type, target_name, value, component):
+        if not is_virtual_hardware():
+            return
+
+        if value is None:
+            value = 0
+        if type == SimEvents.SLIDER_UPDATE.value and target_name == "main":
+            component.read.return_value = value
+
+    def handle_event(self, e):
+        self.slider.handle_event(e)
+
+
+class LightSensor(SliderSensorSprite):
+    Size = (PMA_CUBE_SIZE[0] * 2 + MARGIN * 3, PMA_CUBE_SIZE[1] + 2 * MARGIN)
+    image = Images.LightSensor
+    measurement_key_in_state = "reading"
+    icon = Images.lightbulb_icon
+
+
+class SoundSensor(SliderSensorSprite):
+    Size = (PMA_CUBE_SIZE[0] * 2 + MARGIN * 3, PMA_CUBE_SIZE[1] + 2 * MARGIN)
+    image = Images.SoundSensor
+    max_value = 500
+    measurement_key_in_state = "reading"
+    icon = Images.speaker_icon
+
+    @staticmethod
+    def handle_sim_event(type, target_name, value, component):
+        if not is_virtual_hardware():
+            return
+
+        if value is None:
+            value = 0
+        if type == SimEvents.SLIDER_UPDATE.value and target_name == "main":
+            # since 'reading' is a property of SoundSensor, it's treated differently
+            # see 'mock_pitop()' in pitop.py
+            reading_mock = component._mock.get("reading")
+            reading_mock.return_value = value
+
+
+class Potentiometer(SliderSensorSprite):
+    Size = (PMA_CUBE_SIZE[0] * 2 + MARGIN * 3, PMA_CUBE_SIZE[1] + 2 * MARGIN)
+    image = Images.Potentiometer
+    measurement_key_in_state = "position"
+    icon = Images.angle_icon
+
+
+class UltrasonicSensor(SliderSensorSprite):
+    Size = (PMA_CUBE_SIZE[0] * 3 + MARGIN * 3, PMA_CUBE_SIZE[1] + 2 * MARGIN)
+    image = Images.UltrasonicSensor
+    max_value = 3
+    measurement_key_in_state = "distance"
+    icon = Images.distance_icon
+    slider_step = 0.1
+
+    @staticmethod
+    def handle_sim_event(type, target_name, value, component):
+        if not is_virtual_hardware():
+            return
+
+        if value is None:
+            value = 0
+        if (
+            type == SimEvents.SLIDER_UPDATE.value
+            and target_name == "main"
+            and hasattr(component, "_mock")
+        ):
+            # since 'distance' is a property of UltrasonicSensor, it's treated differently
+            # see 'mock_pitop()' in pitop.py
+            distance_mock = component._mock.get("distance")
+            distance_mock.return_value = float("{:.2f}".format(value))
