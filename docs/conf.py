@@ -17,7 +17,12 @@ import sys
 #
 HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
-sys.path.append(f"{PARENT}/packages")
+
+# Add subpackages folders to sys.path
+packages_dir = os.path.join(HERE, "../packages")
+for dir in os.listdir(packages_dir):
+    subdir = os.path.join(packages_dir, dir)
+    sys.path.append(subdir)
 
 # -- Project information -----------------------------------------------------
 
