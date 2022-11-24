@@ -13,4 +13,6 @@ pip3 install \
   -e ./packages/simulation \
   -e ./packages/robotics \
   -e ./packages/processing \
-  -e ./packages/camera
+  -e ./packages/camera \
+  -e ./packages/cli \
+  -e ./packages/pitop
