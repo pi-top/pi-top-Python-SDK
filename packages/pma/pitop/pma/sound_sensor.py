@@ -14,8 +14,16 @@ class SoundSensor(ADCBase):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name, pin_number=1, name="sound_sensor"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+    def __init__(
+        self, port_name, pin_number=1, name="sound_sensor", number_of_samples=1
+    ):
+        ADCBase.__init__(
+            self,
+            port_name=port_name,
+            pin_number=pin_number,
+            name=name,
+            number_of_samples=number_of_samples,
+        )
 
     @property
     def reading(self):

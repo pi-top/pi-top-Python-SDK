@@ -18,17 +18,23 @@ class ADCBase(Stateful, Recreatable):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name, pin_number=1, name="adcbase"):
+    def __init__(self, port_name, pin_number=1, name="adcbase", number_of_samples=1):
         self._pma_port = port_name
         self.name = name
 
-        self.is_current = False
+        self.number_of_samples = number_of_samples
         self.channel = get_pin_for_port(self._pma_port, pin_number)
         self.__adc_device = PlateInterface().get_device_mcu()
 
         Stateful.__init__(self)
         Recreatable.__init__(
-            self, {"port_name": port_name, "pin_number": pin_number, "name": self.name}
+            self,
+            {
+                "port_name": port_name,
+                "pin_number": pin_number,
+                "name": self.name,
+                "number_of_samples": self.number_of_samples,
+            },
         )
 
     @property
@@ -38,7 +44,7 @@ class ADCBase(Stateful, Recreatable):
         }
 
     def read(
-        self, number_of_samples=1, delay_between_samples=0.05, peak_detection=False
+        self, delay_between_samples=0.05, peak_detection=False, number_of_samples=None
     ):
         """Take a reading from the chosen ADC channel, or get an average value
         over multiple reads.
@@ -49,6 +55,8 @@ class ADCBase(Stateful, Recreatable):
         :return: The value read from the ADC
         :rtype: float
         """
+        if number_of_samples is None:
+            number_of_samples = self.number_of_samples
 
         value = 0
         for i in range(0, number_of_samples):

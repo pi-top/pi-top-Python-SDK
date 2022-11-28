@@ -15,8 +15,16 @@ class LightSensor(ADCBase):
     :param str port_name: The ID for the port to which this component is connected
     """
 
-    def __init__(self, port_name, pin_number=1, name="light_sensor"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+    def __init__(
+        self, port_name, pin_number=1, name="light_sensor", number_of_samples=3
+    ):
+        ADCBase.__init__(
+            self,
+            port_name=port_name,
+            pin_number=pin_number,
+            name=name,
+            number_of_samples=number_of_samples,
+        )
 
     @property
     def reading(self):
@@ -26,7 +34,7 @@ class LightSensor(ADCBase):
             from 0 to 999.
         :rtype: float
         """
-        return int(self.read(number_of_samples=3))
+        return int(self.read())
 
     @property
     def value(self):
