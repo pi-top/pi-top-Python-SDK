@@ -5,31 +5,44 @@ from .simsprite import ComponentableSimSprite, SimSprite
 from .virtual_hardware import is_virtual_hardware
 
 
-def remove_alpha(image):
-    # draw a white background behind image and convert it, losing transparency
-    # this improves performance and ensures that snapshots are consistent
-    new = image.copy()
-    new.fill((255, 255, 255))
-    new.blit(image, (0, 0))
-    return new.convert()
-
-
 class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
-    def __init__(self, config):
+    def __init__(self, config, scale):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = remove_alpha(pygame.image.load(Images.Pitop))
+        self.scale = scale
+        self.miniscreen_pos = [scale * x for x in Images.Pitop_miniscreen_pos]
+
+        self.image = SimSprite._load_image(Images.Pitop, scale)
         self.rect = self.image.get_rect()
+
+    def update(self):
+        if not hasattr(self, "state"):
+            return
+
+        miniscreen_image = self.state.get("miniscreen_image", False)
+        if miniscreen_image:
+            rgb = miniscreen_image.convert("RGB")
+            miniscreen_surface = pygame.image.fromstring(
+                rgb.tobytes(), rgb.size, rgb.mode
+            )
+            size = [self.scale * x for x in rgb.size]
+            image = pygame.transform.scale(miniscreen_surface, size)
+            self.image.blit(image, self.miniscreen_pos)
 
 
 class LED(pygame.sprite.Sprite, SimSprite):
-    def __init__(self, config):
+    def __init__(self, config, scale):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = config.get("color", "red")
-        self.image = remove_alpha(
-            pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
+        self.off_image = SimSprite._load_image(
+            getattr(Images, f"LED_{self.color}_off"), scale
         )
+        self.on_image = SimSprite._load_image(
+            getattr(Images, f"LED_{self.color}_on"), scale
+        )
+
+        self.image = self.off_image
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -37,20 +50,19 @@ class LED(pygame.sprite.Sprite, SimSprite):
             return
 
         if self.state.get("value", False):
-            self.image = remove_alpha(
-                pygame.image.load(getattr(Images, f"LED_{self.color}_on"))
-            )
+            self.image = self.on_image
         else:
-            self.image = remove_alpha(
-                pygame.image.load(getattr(Images, f"LED_{self.color}_off"))
-            )
+            self.image = self.off_image
 
 
 class Button(pygame.sprite.Sprite, SimSprite):
-    def __init__(self, config):
+    def __init__(self, config, scale):
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = remove_alpha(pygame.image.load(Images.Button))
+        self.released_image = SimSprite._load_image(Images.Button, scale)
+        self.pressed_image = SimSprite._load_image(Images.Button_pressed, scale)
+
+        self.image = self.released_image
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -58,9 +70,9 @@ class Button(pygame.sprite.Sprite, SimSprite):
             return
 
         if self.state.get("is_pressed", False):
-            self.image = remove_alpha(pygame.image.load(Images.Button_pressed))
+            self.image = self.pressed_image
         else:
-            self.image = remove_alpha(pygame.image.load(Images.Button))
+            self.image = self.released_image
 
     @staticmethod
     def handle_event(type, target_name, component):
