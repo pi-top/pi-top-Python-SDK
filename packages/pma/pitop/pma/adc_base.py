@@ -44,7 +44,7 @@ class ADCBase(Stateful, Recreatable):
         }
 
     def read(
-        self, delay_between_samples=0.05, peak_detection=False, number_of_samples=None
+        self, number_of_samples=None, delay_between_samples=0.05, peak_detection=False
     ):
         """Take a reading from the chosen ADC channel, or get an average value
         over multiple reads.
