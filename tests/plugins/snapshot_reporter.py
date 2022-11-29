@@ -1,9 +1,31 @@
 import pickle
 from io import BytesIO
+from os import environ
 
 import pytest
-from imgcat import imgcat
+from imgcat import imgcat as pyimgcat
 from PIL import Image, ImageChops
+
+from tests.utils import to_bytes
+
+if not environ.get("PITOP_ALT_IMGCAT"):
+    imgcat = pyimgcat
+else:
+    # pypi imgcat only supports iTerm2 so for other terminals set
+    # PITOP_ALT_IMGCAT to the path of an executable which supports reading
+    # image bytes from stdin (eg https://github.com/danielgatis/imgcat)
+    # eg PITOP_ALT_IMGCAT=~/go/bin/imgcat
+    import sys
+    from subprocess import PIPE, Popen
+
+    def imgcat(image):
+        Popen(
+            environ["PITOP_ALT_IMGCAT"],
+            shell=True,
+            stdin=PIPE,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+        ).communicate(input=image)
 
 
 def is_master(config):
@@ -89,6 +111,6 @@ class SnapshotReporter:
                     difference = ImageChops.difference(image_received, image_expected)
 
                     terminalreporter.write_line("Difference:")
-                    imgcat(difference)
+                    imgcat(to_bytes(difference))
                 except Exception:
                     pass

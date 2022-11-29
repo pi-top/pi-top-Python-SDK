@@ -1,7 +1,7 @@
 import sys
 from os import environ
-from unittest.mock import patch
 
+from .pitop import mock_pitop
 from .vendor.Mock import GPIO as Mock_GPIO
 
 __using_virtual_hardware = False
@@ -15,11 +15,9 @@ def use_virtual_hardware():
     global __using_virtual_hardware
 
     environ["GPIOZERO_PIN_FACTORY"] = "mock"
-
     sys.modules["RPi.GPIO"] = Mock_GPIO
 
-    patch("pitop.system.pitop.SupportsMiniscreen").start()
-    patch("pitop.system.pitop.SupportsBattery").start()
+    mock_pitop()
 
     __using_virtual_hardware = True
 

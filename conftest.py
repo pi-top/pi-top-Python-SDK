@@ -115,8 +115,8 @@ def create_sim():
 
     sims = []
 
-    def _create_sim(component):
-        sim = simulate(component)
+    def _create_sim(component, scale=None, size=None):
+        sim = simulate(component, scale, size)
         sims.append(sim)
         return sim
 

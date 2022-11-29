@@ -12,15 +12,15 @@ from pitop.core.mixins import Recreatable, Stateful
 from . import sprites as Sprites
 
 
-def simulate(component):
-    return Simulation(component)
+def simulate(component, scale=None, size=None):
+    return Simulation(component, scale, size)
 
 
 class Simulation:
     def __del__(self):
         self.stop()
 
-    def __init__(self, component):
+    def __init__(self, component, scale=None, size=None):
         if not isinstance(component, Recreatable):
             raise Exception("Component must inherit Recreatable to be simulated")
 
@@ -34,6 +34,8 @@ class Simulation:
             raise Exception(f"No simulation sprite defined for '{component_classname}'")
 
         self.component = component
+        self.scale = scale or 1  # full scale is approx life size
+        self.size = size
 
         self._stop_ev = Event()
         self._state_q = Queue()
@@ -46,6 +48,8 @@ class Simulation:
             target=_run,
             args=(
                 self.component.config,
+                self.scale,
+                self.size,
                 self._stop_ev,
                 self._state_q,
                 self._out_event_q,
@@ -98,18 +102,28 @@ def to_bytes(surface):
     return img_byte_arr.getvalue()
 
 
-def _run(config, stop_ev, state_q, out_event_q, in_event_q, snapshot_ev, snapshot_q):
+def _run(
+    config,
+    scale,
+    size,
+    stop_ev,
+    state_q,
+    out_event_q,
+    in_event_q,
+    snapshot_ev,
+    snapshot_q,
+):
     pygame.init()
     pygame.display.init()
     clock = pygame.time.Clock()
 
     sprite_class = getattr(Sprites, config.get("classname"))
-    size = sprite_class.Size
+    size = size or [scale * x for x in sprite_class.Size]
 
     screen = pygame.display.set_mode(size)
     screen.fill((255, 255, 255))
 
-    sprite_group = sprite_class.create_sprite_group(size, config)
+    sprite_group = sprite_class.create_sprite_group(size, config, scale)
 
     OUTBOUND_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
 
