@@ -2,6 +2,8 @@ name: Debian Package Build
 
 on:
   pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
@@ -15,10 +17,37 @@ env:
   PACKAGECLOUD_REPO: "experimental"
   OS: "debian"
   DISTRO: "bullseye"
+  HOST_COMPILE: "{\"architecture\":[\"amd64\"]}"
+  X_COMPILE: "{\"architecture\":[\"armhf\", \"arm64\"]}"  # ARM 32 and 64 bit
 
 jobs:
-  build-debian-package:
+  check-architecture:
     runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Determine target architecture
+        id: set-matrix
+        # If any packages define architecture as other than 'all'
+        # then it can't be compiled on host architecture
+        run: |
+          if grep '^Architecture:' debian/control | grep -q -v 'all'; then
+            echo "matrix=$X_COMPILE" >>$GITHUB_OUTPUT
+          else
+            echo "matrix=$HOST_COMPILE" >>$GITHUB_OUTPUT
+          fi
+
+  build-debian-package:
+    needs: check-architecture
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJSON(needs.check-architecture.outputs.matrix)}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -37,24 +66,12 @@ jobs:
           snapshot_number: ${{ steps.version.outputs.distance }}
           since: ${{ steps.version.outputs.tag_latest }}
 
-      # We only want ARM builds. This step is here to provide the option of
-      # using a strategy matrix if additional builds (e.g. `arm64`) are desired
-      - name: Determine architecture to use from package info
-        # If architecture is 'all', then it can be compiled on host architecture
-        # All other pi-topOS cases require 'armhf'
-        run: |
-          target_architecture=amd64
-          if grep '^Architecture:' debian/control | grep -q -v 'all'; then
-            target_architecture=armhf
-          fi
-          echo "TARGET_ARCHITECTURE=${target_architecture}" >> $GITHUB_ENV
-
       - name: Build Debian package
         uses: pi-top/debian-package-build-action@master
         with:
           # https://github.com/pi-top/debian-package-build-action/pull/19
           # lintian_check_changelog_spelling: false
-          target_architecture: ${{ env.TARGET_ARCHITECTURE }}
+          target_architecture: ${{ matrix.architecture }}
           docker_image: ${{ env.DEB_BUILD_DOCKER_IMAGE }}:${{ env.DEB_BUILD_DOCKER_TAG }}
           signing_key: ${{ secrets.DEB_SIGNING_GPG_KEY }}
           signing_passphrase: ${{ secrets.DEB_SIGNING_GPG_PASSPHRASE }}
@@ -90,12 +107,30 @@ jobs:
             !./artifacts/*.deb
             !./artifacts/*.tar.xz
 
-      - uses: pi-top/ghaction-packagecloud@main
-        if: github.ref == 'refs/heads/master'
+      - name: Upload .dsc to PackageCloud
+        uses: pi-top/ghaction-packagecloud@main
+        # Only 1 .dsc is required for source so take armhf if there's multiple
+        if: |
+          (
+            github.ref == 'refs/heads/master' &&
+            (
+              matrix.architecture == 'amd64' ||
+              matrix.architecture == 'armhf'
+            )
+          )
         with:
           repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
           files: |
             ./artifacts/*.dsc
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+
+      - name: Upload .deb to PackageCloud
+        uses: pi-top/ghaction-packagecloud@main
+        if: github.ref == 'refs/heads/master'
+        with:
+          repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ env.DISTRO }}
+          files: |
             ./artifacts/*.deb
         env:
           PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
