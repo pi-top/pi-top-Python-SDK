@@ -1,15 +1,7 @@
-from sys import modules
-from unittest.mock import Mock
-
-modules_to_patch = [
-    "imageio",
-    "pitop.common",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
-
-
 from unittest import TestCase
+
+import cv2
+import numpy as np
 
 from pitop.core.ImageFunctions import convert
 from pitop.processing.algorithms.ball_detect import BallDetector
@@ -17,13 +9,6 @@ from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
 )
-
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
-
-import cv2
-import numpy as np
 
 color = {"red": (0, 0, 255), "green": (0, 255, 0), "blue": (255, 0, 0)}
 

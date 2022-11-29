@@ -1,3 +1,156 @@
+pi-top-python-sdk (0.29.0-2) bullseye; urgency=medium
+
+  * Fix docs building for readthedocs (#591)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 18 Nov 2022 17:06:04 +0000
+
+pi-top-python-sdk (0.29.0-1) bullseye; urgency=medium
+
+  * Handle errors reading when leased IPs (#586)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Nov 2022 13:19:42 +0000
+
+pi-top-python-sdk (0.28.0-1) bullseye; urgency=medium
+
+  * Update detection of pi user default password (#584)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 03 Nov 2022 18:24:52 +0000
+
+pi-top-python-sdk (0.27.1-1) bullseye; urgency=medium
+
+  * Reset miniscreen after pi-topd is initialized (#579)
+  * Update README with development installation instructions (#580)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 03 Nov 2022 13:54:18 +0000
+
+pi-top-python-sdk (0.26.3-1) bullseye; urgency=medium
+
+  * Fix name of pitopcli package (#576)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 13 Oct 2022 11:15:39 +0000
+
+pi-top-python-sdk (0.26.2-1) bullseye; urgency=medium
+
+  * Rename package pitop.virtual_hardware to pitop.simulation (#574)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 05 Oct 2022 13:45:20 +0000
+
+pi-top-python-sdk (0.26.1-1) bullseye; urgency=medium
+
+  * Allow to continue release to PyPI on upload error
+  * Update condition checks to upload packages to PyPI
+  * Add 'virtual_hardware' as dependency for 'pitop' package (#573)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Oct 2022 19:32:17 +0000
+
+pi-top-python-sdk (0.26.0-1) bullseye; urgency=medium
+
+  * Add pygame-based simulation of pi-top hardware
+  * Add functions to manage sections in config files
+  * Detect and raise exception when IMU is used with new Expansion Plate
+  * Structure and publish SDK as several subpackages
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Oct 2022 14:53:08 +0000
+
+pi-top-python-sdk (0.25.0-1) bullseye; urgency=medium
+
+  * Fix default array and dict parameters
+  * Add close method to Componentable and call it on del
+  * Add BlockPiRover with preconfigured components for Further BlockPi use
+  * Add switch_user common helpers, drawn from further-link
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 23 Sep 2022 13:43:37 +0000
+
+pi-top-python-sdk (0.24.3-1) bullseye; urgency=medium
+
+  * Set package version using environment variable (#551)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 18 Aug 2022 19:53:37 +0000
+
+pi-top-python-sdk (0.24.2-1) bullseye; urgency=medium
+
+  * Test runner improvements (#536)
+  * Add OLED & MiniscreenAssistant tests (#541)
+  * fix: sudden exit caused by pyinotify.Notifier.loop daemonize option
+  * Check for image attribute before using it (#546)
+  * Respect newlines in miniscreen.display_text (#547)
+  * Specify V4L camera backend on cv.VideoCapture (#548)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 08 Aug 2022 10:57:05 +0000
+
+pi-top-python-sdk (0.24.1-3) bullseye; urgency=medium
+
+  * Automatically create release on changelog PR merge (#537)
+  * New changelog entry: v0.24.1-2 (#538)
+  * Fix run of release workflow on changelog PR merge
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 09 Jun 2022 21:56:41 +0000
+
+pi-top-python-sdk (0.24.1-2) bullseye; urgency=medium
+
+  * Automatically create release on changelog PR merge (#537)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 09 Jun 2022 20:12:27 +0000
+
+pi-top-python-sdk (0.24.1-1) bullseye; urgency=medium
+
+  * Add module folder to sys.path (#530)
+  * fix: update forgotten version number file (#531)
+  * Use PAT when creating release (#533)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 10 May 2022 17:03:51 +0000
+
+pi-top-python-sdk (0.24.0-1) bullseye; urgency=medium
+
+  * Remove distutils dependency (#519)
+  * Fix pyinput references (#518)
+  * Add helper to get pi-top IP address (#521)
+  * Fix D7 port secondary GPIO pin (#524)
+  * Improve SDK test coverage (#522)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 4 May 2022 16:21:30 +0000
+
+pi-top-python-sdk (0.23.0-1) bullseye; urgency=medium
+
+  * Improve EncoderMotor class error messages (#515)
+  * Re-enable test CI runs (#516)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 08 Mar 2022 12:55:55 +0000
+
+pi-top-python-sdk (0.22.0-1) bullseye; urgency=medium
+
+  * Fix function names and params when calling miniscreen assistant (#509)
+  * Filter devices connected to a pi-top by network (#508)
+  * Set output of command runner to english (#510)
+  * Add missing `distutils` dependency (#513)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 04 Feb 2022 12:10:06 +0000
+
+pi-top-python-sdk (0.21.0-1) bullseye; urgency=medium
+
+  * Fix path to default font in oled assistant (#465)
+  * Drop shebangs (#468)
+  * [pre-commit.ci] pre-commit autoupdate (#464)
+  * Miniscreen text centering (#463)
+  * Update references to `pt-device-manager`: `pi-topd` (#472)
+  * Miniscreen: move lockfile management to another file (#471)
+  * Move rendering from miniscreen to assistant (#470)
+  * Correct name of opencv-python in setup.cfg and py3dist-overrides (#474)
+  * Assistant handles Image and ImageDraw
+  * Add formatting options to mono font path
+  * MiniscreenAssistant: unified text function (#475)
+  * Use __main__.py (#477)
+  * Use short links
+  * Add battery capacity event (#484)
+  * Set battery params to int
+  * Remove PTLogger (#488)
+  * Update README.rst (#492)
+  * Add examples to OS package (#493)
+  * Navigation controller (#334)
+  * Specify mono font properties when retrieving from assistant (#487)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 10 Nov 2021 15:11:01 +0000
+
 pi-top-python-sdk (0.20.3-3) bullseye; urgency=medium
 
   * Fix path to default font in oled assistant (#465)

@@ -28,6 +28,8 @@ var
 sdist
 develop-eggs
 .installed.cfg
+Pipfile
+Pipfile.lock
 
 # Unit test / coverage reports
 coverage

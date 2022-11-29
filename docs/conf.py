@@ -6,6 +6,7 @@
 
 import importlib.util
 import os
+import sys
 
 # -- Path setup --------------------------------------------------------------
 
@@ -17,20 +18,28 @@ import os
 HERE = os.path.abspath(os.path.dirname(__file__))
 PARENT = os.path.dirname(HERE)
 
+# Add subpackages folders to sys.path
+packages_dir = os.path.join(HERE, "../packages")
+for dir in os.listdir(packages_dir):
+    subdir = os.path.join(packages_dir, dir)
+    sys.path.append(subdir)
+
 # -- Project information -----------------------------------------------------
 
 # Get package version directly from file
 #
 # Importing 'pitop' requires all core dependencies to be installed
 # which is impractical for building docs
-spec = importlib.util.spec_from_file_location("version", f"{PARENT}/pitop/version.py")
+spec = importlib.util.spec_from_file_location(
+    "version", f"{PARENT}/packages/pitop/pitop/version.py"
+)
 modulevar = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(modulevar)
 
 project = "pitop"
 author = "pi-top (CEED Ltd)"
-release = modulevar.__version__
-copyright = "pi-top 2021"
+release = os.environ.get("PYTHON_PACKAGE_VERSION", "0.0.1.dev1")
+copyright = "pi-top 2022"
 
 # -- General configuration ---------------------------------------------------
 
@@ -116,13 +125,14 @@ autodoc_mock_imports = [
     "imageio",
     "imutils",
     "matplotlib",
+    "Mock",
     "mpl_toolkits",
     "PIL",
+    "pygame",
     "pyinotify",
     "RPi",
     "scipy",
     "serial",
-    # Mock python-smbus and pure-Python implementation
     "smbus",
     "smbus2",
     "spidev",

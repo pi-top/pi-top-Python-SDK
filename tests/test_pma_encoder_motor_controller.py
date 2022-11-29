@@ -1,15 +1,7 @@
-from sys import modules
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
-modules_to_patch = [
-    "pitop.camera",
-    "pitop.common",
-    "numpy",
-]
-for module in modules_to_patch:
-    modules[module] = Mock()
-
+import pytest
 
 from pitop.common.bitwise_ops import join_bytes, split_into_bytes
 from pitop.pma.common.encoder_motor_registers import (
@@ -21,10 +13,6 @@ from pitop.pma.common.encoder_motor_registers import (
 from pitop.pma.encoder_motor_controller import EncoderMotorController
 from pitop.pma.parameters import BrakingType
 
-# Avoid getting the mocked modules in other tests
-for patched_module in modules_to_patch:
-    del modules[patched_module]
-
 
 class EncoderMotorControllerTestCase(TestCase):
     @patch.object(EncoderMotorController, "set_braking_type")
@@ -33,8 +21,8 @@ class EncoderMotorControllerTestCase(TestCase):
 
         controller = EncoderMotorController(port="M1", braking_type=braking_type)
 
-        self.assertEquals(controller.registers, EncoderMotorM1)
-        self.assertEquals(controller._MAX_DC_MOTOR_RPM, 6000)
+        self.assertEqual(controller.registers, EncoderMotorM1)
+        self.assertEqual(controller._MAX_DC_MOTOR_RPM, 6000)
         set_braking_type_mock.assert_called_once_with(braking_type)
 
     def test_constructor_fails_on_incorrect_port(self):
@@ -66,7 +54,7 @@ class EncoderMotorControllerTestCase(TestCase):
 
         for mode in (MotorControlModes.MODE_1, MotorControlModes.MODE_2):
             mode_mock.return_value = mode
-            self.assertEquals(controller.power(), None)
+            self.assertEqual(controller.power(), None)
 
     def test_rpm_control_returns_none_if_not_on_mode_1(self):
         """rpm_control() returns None if not on Mode 1."""
@@ -75,7 +63,7 @@ class EncoderMotorControllerTestCase(TestCase):
 
         for mode in (MotorControlModes.MODE_0, MotorControlModes.MODE_2):
             mode_mock.return_value = mode
-            self.assertEquals(controller.rpm_control(), None)
+            self.assertEqual(controller.rpm_control(), None)
 
     def test_rpm_with_rotations_returns_none_if_not_on_mode_2(self):
         """rpm_with_rotations() returns None if not on Mode 1."""
@@ -84,7 +72,7 @@ class EncoderMotorControllerTestCase(TestCase):
 
         for mode in (MotorControlModes.MODE_0, MotorControlModes.MODE_1):
             mode_mock.return_value = mode
-            self.assertEquals(controller.rpm_with_rotations(), None)
+            self.assertEqual(controller.rpm_with_rotations(), None)
 
     def test_stop_works_on_all_modes(self):
         """stop() stops the motor in all modes."""
@@ -129,9 +117,10 @@ class EncoderMotorControllerTestCase(TestCase):
                 controller.set_braking_type(braking_type)
                 write_byte_mock.assert_called_with(brake_type_register, braking_type)
 
-                self.assertEquals(controller.braking_type(), braking_type)
+                self.assertEqual(controller.braking_type(), braking_type)
                 read_unsigned_byte_mock.assert_called_with(brake_type_register)
 
+    @pytest.mark.flaky(reruns=3)
     def test_control_mode_read_write(self):
         """Registers read/written when setting/reading control modes from
         MCU."""
@@ -157,7 +146,7 @@ class EncoderMotorControllerTestCase(TestCase):
                     control_mode_register, control_mode.value
                 )
 
-                self.assertEquals(controller.control_mode(), control_mode)
+                self.assertEqual(controller.control_mode(), control_mode)
                 read_unsigned_byte_mock.assert_called_with(control_mode_register)
 
     def test_control_mode_0_read_write(self):
@@ -186,7 +175,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 mode_0_power_register, power_value, little_endian=True, signed=True
             )
 
-            self.assertEquals(controller.power(), power_value)
+            self.assertEqual(controller.power(), power_value)
             read_signed_word_mock.assert_called_with(
                 mode_0_power_register, little_endian=True
             )
@@ -217,7 +206,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 mode_1_register, rpm_value, little_endian=True, signed=True
             )
 
-            self.assertEquals(controller.rpm_control(), rpm_value)
+            self.assertEqual(controller.rpm_control(), rpm_value)
             read_signed_word_mock.assert_called_with(
                 mode_1_register, little_endian=True
             )
@@ -259,7 +248,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 mode_1_register, rpm_and_rotations_in_bytes
             )
 
-            self.assertEquals(
+            self.assertEqual(
                 controller.rpm_with_rotations(), (rpm_value, rotations_value)
             )
             read_n_unsigned_bytes_mock.assert_called_with(

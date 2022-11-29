@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
     branches:
       - master
+  pull_request:
+    branches:
+      - master
+    types: [closed]
+
 
 env:
   DEB_BUILD_DOCKER_IMAGE: "pitop/pi-top-os-deb-build"
@@ -15,13 +20,13 @@ env:
 jobs:
   release:
     runs-on: ubuntu-20.04
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v3
         with:
           submodules: true
           fetch-depth: 0
-
 
       - name: Get latest semver tag and latest version in changelog
         run: |
@@ -55,14 +60,17 @@ jobs:
         with:
           target_architecture: ${{ env.TARGET_ARCHITECTURE }}
           docker_image: ${{ env.DEB_BUILD_DOCKER_IMAGE }}:${{ env.DEB_BUILD_DOCKER_TAG }}
+          signing_key: ${{ secrets.DEB_SIGNING_GPG_KEY }}
+          signing_passphrase: ${{ secrets.DEB_SIGNING_GPG_PASSPHRASE }}
           build_directory: ./artifacts
           # Optional, repo-specific build environment variables
           additional_env: |
             DATA="${{ secrets.DATA }}"
             TLS_KEY="${{ secrets.TLS_KEY }}"
+            PYTHON_PACKAGE_VERSION="${{ env.CURRENT_VERSION }}"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "dsc"
           path: "./artifacts"
@@ -84,5 +92,4 @@ jobs:
           draft: false
           prerelease: false
           files: ./artifacts/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PUBLISH_PAT }}
+          token: ${{ secrets.PAT_GITHUB }}
