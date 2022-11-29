@@ -12,7 +12,12 @@ class LightSensor(ADCBase):
     Uses an Analog-to-Digital Converter (ADC) to turn the analog reading from the sensor
     into a digital value.
 
+    By default, the sensor uses 3 samples to report a :attr:`~.LightSensor.reading`, which takes around 0.5s.
+    This can be changed by modifying the parameter :attr:`~.LightSensor.number_of_samples` in the constructor.
+
     :param str port_name: The ID for the port to which this component is connected
+    :param str number_of_samples: Amount of sensor samples used to report a :attr:`~.LightSensor.reading`. Defaults to 3.
+    :param str name: Component name, defaults to `light_sensor`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
     def __init__(

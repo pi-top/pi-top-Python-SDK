@@ -12,6 +12,8 @@ class SoundSensor(ADCBase):
     into a digital value.
 
     :param str port_name: The ID for the port to which this component is connected
+    :param str number_of_samples: Amount of sensor samples used to report a :attr:`~.SoundSensor.reading`. Defaults to 1.
+    :param str name: Component name, defaults to `sound_sensor`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
     def __init__(
