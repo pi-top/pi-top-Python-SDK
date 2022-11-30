@@ -9,6 +9,7 @@ class Buzzer(Stateful, Recreatable, gpiozero_Buzzer):
     off.
 
     :param str port_name: The ID for the port to which this component is connected
+    :param str name: Component name, defaults to `buzzer`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
     def __init__(self, port_name, name="buzzer"):
