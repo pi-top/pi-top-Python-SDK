@@ -10,7 +10,7 @@ from PIL import Image
 from pitop.core.mixins import Recreatable, Stateful
 
 from . import sprites as Sprites
-from .events import SimEvents
+from .events import SimEvent, SimEventTypes
 from .utils import multiply_scalar
 
 
@@ -89,11 +89,9 @@ class Simulation:
 
             # handle pygame events
             while not self._out_event_q.empty():
-                event_data = self._out_event_q.get_nowait()
+                sim_event = self._out_event_q.get_nowait()
                 self._main_sprite_class.handle_sim_event(
-                    event_data.get("type"),
-                    event_data.get("target_name"),
-                    event_data.get("value"),
+                    sim_event,
                     self.component,
                 )
 
@@ -133,41 +131,45 @@ def _run(
 
     sprite_group = sprite_class.create_sprite_group(size, config, scale)
 
-    MOUSE_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
-
     while not stop_ev.is_set():
-        events = pygame.event.get()
-        for event in events:
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_ev.set()
                 break
-            elif event.type in MOUSE_EVENTS:
-                target_name = None
-                if hasattr(event, "pos"):
-                    for sprite in sprite_group.sprites():
-                        # allow all sprites to handle events
-                        sprite.handle_event(event)
 
-                        # find sprite based on event position
-                        rect = sprite.rect
-                        if (
-                            rect.x <= event.pos[0] <= rect.x + rect.width
-                            and rect.y <= event.pos[1] <= rect.y + rect.height
-                        ):
-                            if isinstance(sprite, Sprites.Button):
-                                target_name = sprite.name
-                                break
+            # mouse events are dispatched to our sprite.handle_pygame_event
+            # methods for UI uses, such as activating slider inputs...
+            # but they are also forwarded through out_event_q for interacting
+            # with the pitop components, such as for virtual PMA button presses
 
-                out_event_q.put({"type": event.type, "target_name": target_name})
+            elif event.type == pygame.MOUSEBUTTONUP:
+                # may be relevant to any clickable sprite or component
+                for sprite in sprite_group.sprites():
+                    sprite.handle_pygame_event(event)
+                out_event_q.put(SimEvent(SimEventTypes.MOUSE_UP))
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # relevant to targeted sprite and component only
+                target = None
+                pos = event.pos or (0, 0)
+                for sprite in sprite_group.sprites():
+                    # only handle if click pos is in sprite rect
+                    rect = sprite.rect
+                    if (
+                        rect.x <= pos[0] <= rect.x + rect.width
+                        and rect.y <= pos[1] <= rect.y + rect.height
+                    ):
+                        sprite.handle_pygame_event(event)
+                        out_event_q.put(SimEvent(SimEventTypes.MOUSE_DOWN, sprite.name))
 
         for sprite in sprite_group.sprites():
             if hasattr(sprite, "slider") and sprite.slider.selected:
                 out_event_q.put(
-                    {
-                        "type": SimEvents.SLIDER_UPDATE.value,
-                        "target_name": sprite.name,
-                        "value": sprite.slider.value,
-                    }
+                    SimEvent(
+                        SimEventTypes.SLIDER_UPDATE,
+                        sprite.name,
+                        sprite.slider.value,
+                    )
                 )
 
         while not in_event_q.empty():

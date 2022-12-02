@@ -4,7 +4,7 @@ from typing import Any, Tuple
 import pygame
 
 from . import images as Images
-from .events import SimEvents
+from .events import SimEvent, SimEventTypes
 from .images import PMA_CUBE_SIZE
 from .simsprite import ComponentableSimSprite, SimSprite
 from .utils import multiply_scalar
@@ -90,15 +90,15 @@ class Button(pygame.sprite.Sprite, SimSprite):
             self.image = self.released_image
 
     @staticmethod
-    def handle_sim_event(type, target_name, value, component):
+    def handle_sim_event(e: SimEvent, component):
         if not is_virtual_hardware():
             print("Ignoring virtual input while physcial hardware is enabled")
             return
 
-        if type == pygame.MOUSEBUTTONDOWN and target_name == "main":
+        if e.type == SimEventTypes.MOUSE_DOWN:
             component.pin.drive_low()
 
-        elif type == pygame.MOUSEBUTTONUP:
+        elif e.type == SimEventTypes.MOUSE_UP:
             component.pin.drive_high()
 
 
@@ -258,16 +258,17 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
         self.image = self.render()
 
     @staticmethod
-    def handle_sim_event(type, target_name, value, component):
+    def handle_sim_event(e: SimEvent, component):
         if not is_virtual_hardware():
             return
 
-        if value is None:
-            value = 0
-        if type == SimEvents.SLIDER_UPDATE.value and target_name == "main":
-            component.read.return_value = value
+        if e.value is None:
+            e.value = 0
 
-    def handle_event(self, e):
+        if e.type == SimEventTypes.SLIDER_UPDATE:
+            component.read.return_value = e.value
+
+    def handle_pygame_event(self, e: pygame.event.Event):
         self.slider.handle_event(e)
 
 
@@ -286,17 +287,18 @@ class SoundSensor(SliderSensorSprite):
     icon = Images.speaker_icon
 
     @staticmethod
-    def handle_sim_event(type, target_name, value, component):
+    def handle_sim_event(e: SimEvent, component):
         if not is_virtual_hardware():
             return
 
-        if value is None:
-            value = 0
-        if type == SimEvents.SLIDER_UPDATE.value and target_name == "main":
+        if e.value is None:
+            e.value = 0
+
+        if e.type == SimEventTypes.SLIDER_UPDATE:
             # since 'reading' is a property of SoundSensor, it's treated differently
             # see 'mock_pitop()' in pitop.py
             reading_mock = component._mock.get("reading")
-            reading_mock.return_value = value
+            reading_mock.return_value = e.value
 
 
 class Potentiometer(SliderSensorSprite):
@@ -315,18 +317,14 @@ class UltrasonicSensor(SliderSensorSprite):
     slider_step = 0.1
 
     @staticmethod
-    def handle_sim_event(type, target_name, value, component):
+    def handle_sim_event(e: SimEvent, component):
         if not is_virtual_hardware():
             return
 
-        if value is None:
-            value = 0
-        if (
-            type == SimEvents.SLIDER_UPDATE.value
-            and target_name == "main"
-            and hasattr(component, "_mock")
-        ):
+        if e.value is None:
+            e.value = 0
+        if e.type == SimEventTypes.SLIDER_UPDATE and hasattr(component, "_mock"):
             # since 'distance' is a property of UltrasonicSensor, it's treated differently
             # see 'mock_pitop()' in pitop.py
             distance_mock = component._mock.get("distance")
-            distance_mock.return_value = float("{:.2f}".format(value))
+            distance_mock.return_value = float("{:.2f}".format(e.value))

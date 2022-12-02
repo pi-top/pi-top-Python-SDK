@@ -3,6 +3,7 @@ from math import cos, radians, sin, sqrt
 import pygame
 
 from . import sprites as Sprites
+from .events import SimEvent
 from .images import PMA_CUBE_SIZE
 from .utils import multiply_scalar
 
@@ -35,10 +36,10 @@ class SimSprite:
         return sprite_group
 
     @staticmethod
-    def handle_sim_event(type, target_name, value, component):
+    def handle_sim_event(e: SimEvent, component):
         pass
 
-    def handle_event(self, event):
+    def handle_pygame_event(self, e: pygame.event.Event):
         pass
 
     def set_pos(self, x, y):
@@ -96,14 +97,15 @@ class ComponentableSimSprite(SimSprite):
         return sprite_group
 
     @staticmethod
-    def handle_sim_event(type, target_name, value, component):
+    def handle_sim_event(e: SimEvent, component):
         for _, child in component.children_gen():
             sprite_class = getattr(Sprites, child.config.get("classname"), None)
             if not sprite_class:
                 continue
 
-            t_name = "main" if child.config.get("name") == target_name else None
-            sprite_class.handle_sim_event(type, t_name, value, child)
+            # pass on events with no target or if this child is the target
+            if not e.target_name or child.config.get("name") == e.target_name:
+                sprite_class.handle_sim_event(e, child)
 
     @staticmethod
     def _generate_sprite_centres(sim_size, main_sprite_rect):
