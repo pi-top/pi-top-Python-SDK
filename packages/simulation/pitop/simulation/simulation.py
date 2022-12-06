@@ -10,6 +10,8 @@ from PIL import Image
 from pitop.core.mixins import Recreatable, Stateful
 
 from . import sprites as Sprites
+from .events import SimEvent, SimEventTypes
+from .utils import multiply_scalar
 
 
 def simulate(component, scale=None, size=None):
@@ -27,6 +29,8 @@ class Simulation:
         if not isinstance(component, Stateful):
             raise Exception("Component must inherit Stateful to be simulated")
 
+        # for a component to be simulated it must have a Sprite class defined
+        # with the same classname as the component class
         component_classname = component.config.get("classname")
         self._main_sprite_class = getattr(Sprites, component_classname, None)
 
@@ -37,13 +41,17 @@ class Simulation:
         self.scale = scale or 1  # full scale is approx life size
         self.size = size
 
-        self._stop_ev = Event()
-        self._state_q = Queue()
-        self._out_event_q = Queue()
-        self._in_event_q = Queue()
-        self._snapshot_ev = Event()
-        self._snapshot_q = Queue()
+        # communication channels between main process and sim
+        self._stop_ev = Event()  # stopping this simulation
+        self._state_q = Queue()  # sending component state updates into sim
+        self._out_event_q = Queue()  # sending sim events to components
+        self._in_event_q = Queue()  # artificially firing pygame events (tests)
+        self._snapshot_ev = Event()  # requesting sim snapshot images
+        self._snapshot_q = Queue()  # returning snapshot images
 
+        # pygame must be run in another process as it is designed to use the
+        # main thread, and is particularly not suited to running multiple
+        # pygame applications in one process
         self._process = Process(
             target=_run,
             args=(
@@ -61,6 +69,9 @@ class Simulation:
         self._process.daemon = True
         self._process.start()
 
+        # thread for interprocess communication with the sim, which is used to
+        # regularly synchronise the state of the components with their sprites
+        # in the simulation and dispatch input events from inside the sim
         Thread(target=self.__communicate, daemon=True).start()
 
     def stop(self):
@@ -70,24 +81,33 @@ class Simulation:
             self._process = None
 
     def snapshot(self):
+        # request an image of the sim and wait for it to arrive on the queue
         self._snapshot_ev.set()
         return self._snapshot_q.get()
 
     def event(self, type, target):
+        # send a pygame event into the sim to simulate interactions for tests
         self._in_event_q.put((type, target))
 
     def __communicate(self):
         while True:
             if self._stop_ev.is_set():
                 break
+
             if self._process is None or not self._process.is_alive():
                 break
 
+            # update the sim with the current state of the simulated component
             self._state_q.put(self.component.state)
 
+            # handle events produced by the sim which affect our simulated
+            # component (eg PMA Button presses, sensor slider updates)
             while not self._out_event_q.empty():
-                type, target_name = self._out_event_q.get_nowait()
-                self._main_sprite_class.handle_event(type, target_name, self.component)
+                sim_event = self._out_event_q.get_nowait()
+                self._main_sprite_class.handle_sim_event(
+                    sim_event,
+                    self.component,
+                )
 
             sleep(0.05)
 
@@ -113,39 +133,64 @@ def _run(
     snapshot_ev,
     snapshot_q,
 ):
+    # the pygame application - this should be a separate python process
     pygame.init()
     pygame.display.init()
     clock = pygame.time.Clock()
 
     sprite_class = getattr(Sprites, config.get("classname"))
-    size = size or [scale * x for x in sprite_class.Size]
+    size = size or multiply_scalar(scale, sprite_class.Size)
 
     screen = pygame.display.set_mode(size)
     screen.fill((255, 255, 255))
 
+    # create our sprites based on the simulated component's config
     sprite_group = sprite_class.create_sprite_group(size, config, scale)
-
-    OUTBOUND_EVENTS = [pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP]
 
     while not stop_ev.is_set():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_ev.set()
                 break
-            elif event.type in OUTBOUND_EVENTS:
-                target_name = None
-                if hasattr(event, "pos"):
-                    for sprite in sprite_group.sprites():
-                        rect = sprite.rect
-                        if (
-                            rect.x <= event.pos[0] <= rect.x + rect.width
-                            and rect.y <= event.pos[1] <= rect.y + rect.height
-                        ):
-                            target_name = sprite.name
-                            break
-                out_event_q.put((event.type, target_name))
+
+            # mouse events are dispatched to our sprite.handle_pygame_event
+            # methods for UI uses, such as activating slider inputs...
+            # but they are also forwarded through out_event_q for interacting
+            # with the pitop components, such as for virtual PMA button presses
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                # may be relevant to any clickable sprite or component
+                for sprite in sprite_group.sprites():
+                    sprite.handle_pygame_event(event)
+                out_event_q.put(SimEvent(SimEventTypes.MOUSE_UP))
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                # relevant to targeted sprite and component only
+                target = None
+                pos = event.pos or (0, 0)
+                for sprite in sprite_group.sprites():
+                    # only handle if click pos is in sprite rect
+                    rect = sprite.rect
+                    if (
+                        rect.x <= pos[0] <= rect.x + rect.width
+                        and rect.y <= pos[1] <= rect.y + rect.height
+                    ):
+                        sprite.handle_pygame_event(event)
+                        out_event_q.put(SimEvent(SimEventTypes.MOUSE_DOWN, sprite.name))
+
+        for sprite in sprite_group.sprites():
+            if hasattr(sprite, "slider") and sprite.slider.selected:
+                out_event_q.put(
+                    SimEvent(
+                        SimEventTypes.SLIDER_UPDATE,
+                        sprite.name,
+                        sprite.slider.value,
+                    )
+                )
 
         while not in_event_q.empty():
+            # find which sprite matches the target_name and translate to target
+            # the event at that sprite's position in the simulation
             type, target_name = in_event_q.get_nowait()
             target = [s for s in sprite_group.sprites() if s.name == target_name]
             if not len(target):
@@ -161,6 +206,7 @@ def _run(
             snapshot_ev.clear()
 
         while not state_q.empty():
+            # provide sprites with relevant part of the component state tree
             state = state_q.get_nowait()
             for sprite in sprite_group.sprites():
                 if sprite.name == "main":

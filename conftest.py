@@ -1,6 +1,6 @@
 import sys
 from os import environ, listdir, path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 import pytest
 
@@ -93,6 +93,60 @@ def oled_mocks():
 @pytest.fixture
 def oled(oled_mocks):
     yield oled_mocks.get("oled")
+
+
+@pytest.fixture
+def analog_sensor_mocks():
+    plate_interface_patch = patch("pitop.pma.adc_base.PlateInterface")
+
+    from pitop.pma import LightSensor, Potentiometer, SoundSensor, UltrasonicSensor
+
+    LightSensor.read = Mock(return_value=0)
+    Potentiometer.read = Mock(return_value=0)
+
+    # object properties are mocked differently.
+    # we need to keep track of the mock object to be able to modify the returned value.
+    # also, the mock  object  can't be set a s an attribute directly, since it will only store its value
+    us_patch_obj = patch.object(
+        UltrasonicSensor, "distance", return_value=0, new_callable=PropertyMock
+    )
+    us_mock_obj = us_patch_obj.start()
+    UltrasonicSensor._mock = {"distance": us_mock_obj}
+
+    ss_patch_obj = patch.object(
+        SoundSensor, "reading", return_value=0, new_callable=PropertyMock
+    )
+    ss_mock_obj = ss_patch_obj.start()
+    SoundSensor._mock = {"reading": ss_mock_obj}
+
+    plate_interface_patch.start()
+
+    yield {
+        "light_sensor": LightSensor.read,
+        "sound_sensor": SoundSensor._mock.get("reading"),
+        "potentiometer": Potentiometer.read,
+        "ultrasonic_sensor": UltrasonicSensor._mock.get("distance"),
+    }
+
+
+@pytest.fixture
+def light_sensor_mock(analog_sensor_mocks):
+    yield analog_sensor_mocks.get("light_sensor")
+
+
+@pytest.fixture
+def sound_sensor_mock(analog_sensor_mocks):
+    yield analog_sensor_mocks.get("sound_sensor")
+
+
+@pytest.fixture
+def potentiometer_mock(analog_sensor_mocks):
+    yield analog_sensor_mocks.get("potentiometer")
+
+
+@pytest.fixture
+def ultrasonic_sensor_mock(analog_sensor_mocks):
+    yield analog_sensor_mocks.get("ultrasonic_sensor")
 
 
 TESTS_FONT_DIR = f"{path.dirname(path.realpath(__file__))}/tests/fonts"

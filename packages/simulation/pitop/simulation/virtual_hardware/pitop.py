@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 from pitop.common.common_names import DeviceName
 
@@ -31,6 +31,28 @@ def mock_pitop():
     spi_client_patch = patch("pitop.miniscreen.oled.core.device_controller.spi")
     sh1106_client_patch = patch("pitop.miniscreen.oled.core.device_controller.sh1106")
 
+    plate_interface_patch = patch("pitop.pma.adc_base.PlateInterface")
+
+    from pitop.pma import LightSensor, Potentiometer, SoundSensor, UltrasonicSensor
+
+    LightSensor.read = Mock(return_value=0)
+    Potentiometer.read = Mock(return_value=0)
+
+    # object properties are mocked differently.
+    # we need to keep track of the mock object to be able to modify the returned value.
+    # also, the mock  object  can't be set a s an attribute directly, since it will only store its value
+    us_patch_obj = patch.object(
+        UltrasonicSensor, "distance", return_value=0, new_callable=PropertyMock
+    )
+    us_mock_obj = us_patch_obj.start()
+    UltrasonicSensor._mock = {"distance": us_mock_obj}
+
+    ss_patch_obj = patch.object(
+        SoundSensor, "reading", return_value=0, new_callable=PropertyMock
+    )
+    ss_mock_obj = ss_patch_obj.start()
+    SoundSensor._mock = {"reading": ss_mock_obj}
+
     miniscreen_lock_file_monitor_patch.start()
     fps_regulator_patch.start()
     ptdm_sub_client_patch.start()
@@ -38,6 +60,7 @@ def mock_pitop():
     ptlock_patch.start()
     spi_client_patch.start()
     sh1106_mock = sh1106_client_patch.start()
+    plate_interface_patch.start()
 
     device_mock = Mock()
     device_mock.mode = MODE

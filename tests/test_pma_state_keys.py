@@ -43,7 +43,7 @@ class PMAComponentStateKeysTestCase(TestCase):
         from pitop.pma import LightSensor
 
         light_sensor = LightSensor("A0")
-        self.assertEqual(set(light_sensor.own_state.keys()), {"value"})
+        self.assertEqual(set(light_sensor.own_state.keys()), {"value", "reading"})
 
     def test_potentiometer_state_keys(self):
         from pitop.pma import Potentiometer
@@ -55,7 +55,7 @@ class PMAComponentStateKeysTestCase(TestCase):
         from pitop.pma import SoundSensor
 
         sound_sensor = SoundSensor("A0")
-        self.assertEqual(set(sound_sensor.own_state.keys()), {"value"})
+        self.assertEqual(set(sound_sensor.own_state.keys()), {"value", "reading"})
 
     def test_encoder_motor_state_keys(self):
         from pitop.pma import EncoderMotor
