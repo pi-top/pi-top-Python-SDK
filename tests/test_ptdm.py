@@ -19,22 +19,38 @@ class PTDMSubscribeClientTestCase(TestCase):
         self.poller_mock.poll.return_value = []
         self.addCleanup(self.zmq_patch.stop)
 
-    def test_callback_called_when_message_is_published(self):
+    def test_correct_callback_called_when_message_is_published(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
         self.poller_mock.poll.return_value = [1]
-        self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
-        def callback():
-            callback.counter += 1
+        def callback_without_args():
+            callback_without_args.counter += 1
 
-        callback.counter = 0
+        callback_without_args.counter = 0
+
+        def callback_with_args():
+            callback_with_args.counter += 1
+
+        callback_with_args.counter = 0
 
         client = PTDMSubscribeClient()
-        client.initialise({Message.PUB_LOW_BATTERY_WARNING: callback})
+        client.initialise(
+            {
+                Message.PUB_LOW_BATTERY_WARNING: callback_without_args,
+                Message.PUB_BRIGHTNESS_CHANGED: callback_with_args,
+            }
+        )
         client.start_listening()
 
-        wait_until(lambda: callback.counter > 0, timeout=3)
+        self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
+        wait_until(lambda: callback_without_args.counter > 0, timeout=3)
+        assert callback_with_args.counter == 0
+
+        self.socket_mock.recv_string.return_value = (
+            f"{Message.PUB_BRIGHTNESS_CHANGED}|1"
+        )
+        wait_until(lambda: callback_with_args.counter > 0, timeout=3)
 
         client.stop_listening()
 
