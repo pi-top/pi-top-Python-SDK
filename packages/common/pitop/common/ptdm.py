@@ -465,9 +465,9 @@ class PTDMSubscribeClient:
 
                 callback = self._callback_funcs.get(message.message_id())
                 if callback:
-                    self.invoke_callback_func_if_exists(callback, message.parameters)
+                    self.invoke_callback(callback, message.parameters)
 
-    def invoke_callback_func_if_exists(self, callback, params=None):
+    def invoke_callback(self, callback, params=None):
         if params is None:
             params = list()
 
