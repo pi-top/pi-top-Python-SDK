@@ -14,10 +14,20 @@ class Potentiometer(ADCBase):
     into a digital value.
 
     :param str port_name: The ID for the port to which this component is connected
+    :param str number_of_samples: Amount of sensor samples used to report a :attr:`~.Potentiometer.position`. Defaults to 1.
+    :param str name: Component name, defaults to `potentiometer`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
-    def __init__(self, port_name, pin_number=1, name="potentiometer"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+    def __init__(
+        self, port_name, pin_number=1, name="potentiometer", number_of_samples=1
+    ):
+        ADCBase.__init__(
+            self,
+            port_name=port_name,
+            pin_number=pin_number,
+            name=name,
+            number_of_samples=number_of_samples,
+        )
 
     @property
     def own_state(self):

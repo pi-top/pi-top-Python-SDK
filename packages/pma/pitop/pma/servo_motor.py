@@ -25,6 +25,10 @@ class ServoMotor(Stateful, Recreatable):
     :type zero_point: int
     :param zero_point:
         A user-defined offset from 'true' zero.
+
+    :type name: str
+    :param name:
+        Component name, defaults to `servo`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
     __HARDWARE_MIN_ANGLE = -ServoHardwareSpecs.ANGLE_RANGE / 2

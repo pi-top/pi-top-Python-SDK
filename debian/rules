@@ -26,5 +26,5 @@ override_dh_install:
 	done
 
 	# Fail on warnings; make verbose
-	PYTHONPATH=$(LIB_FOLDER)/usr/lib/python3/dist-packages/ sphinx-build -W -v -bhtml docs/ build/html
-	PYTHONPATH=$(LIB_FOLDER)/usr/lib/python3/dist-packages/ sphinx-build -W -v -bman  docs/ build/man
+	sphinx-build -W -v -bhtml docs/ build/html
+	sphinx-build -W -v -bman  docs/ build/man

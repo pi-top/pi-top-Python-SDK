@@ -6,14 +6,19 @@ import pytest
 
 
 @pytest.fixture
-def pitop_mocks():
+def pitop_mocks(oled_mocks, fonts_mock):
     mocks = {}
-
-    mocks["supports_miniscreen"] = patch("pitop.system.pitop.SupportsMiniscreen")
-    mocks["supports_miniscreen"].start()
 
     mocks["supports_battery"] = patch("pitop.system.pitop.SupportsBattery")
     mocks["supports_battery"].start()
+
+    from pitop.common.common_names import DeviceName
+
+    mocks["device_type"] = patch(
+        "pitop.core.mixins.supports_miniscreen.device_type",
+        return_value=DeviceName.pi_top_4.value,
+    )
+    mocks["device_type"].start()
 
     mocks["encoder_motor_controller"] = patch(
         "pitop.pma.encoder_motor.EncoderMotorController"
@@ -33,8 +38,8 @@ def pitop_mocks():
 
     yield mocks
 
-    mocks["supports_miniscreen"].stop()
     mocks["supports_battery"].stop()
+    mocks["device_type"].stop()
     mocks["encoder_motor_controller"].stop()
     mocks["rotation_counter"].stop()
     mocks["braking_type"].stop()
@@ -71,7 +76,6 @@ def test_pitop(pitop):
     from pitop.pma import LED
     from pitop.robotics.drive_controller import DriveController
 
-    pitop = pitop
     drive = DriveController()
     pitop.add_component(drive)
     led = LED("D0")
@@ -114,8 +118,6 @@ def test_pitop(pitop):
 
 
 def test_blockpi_rover(rover):
-    rover = rover
-
     assert rover.config == {
         "classname": "BlockPiRover",
         "components": {
@@ -138,20 +140,48 @@ def test_blockpi_rover(rover):
     rover.drive.right_motor.set_target_speed.assert_called()
 
 
-def test_pitop_simulate(pitop, mocker, create_sim, snapshot):
+def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
         return_value=True,
     )
 
-    from pitop.pma import LED, Button
+    from pitop.pma import (
+        LED,
+        Button,
+        Buzzer,
+        LightSensor,
+        Potentiometer,
+        SoundSensor,
+        UltrasonicSensor,
+    )
 
-    pitop = pitop
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
+    pitop.add_component(Buzzer("D2"))
+    pitop.add_component(UltrasonicSensor("D3"))
+    pitop.add_component(LightSensor("A0"))
+    pitop.add_component(SoundSensor("A1"))
+    pitop.add_component(Potentiometer("A3"))
 
-    pitop.button.when_pressed = pitop.led.on
-    pitop.button.when_released = pitop.led.off
+    def on_button_press():
+        pitop.led.on()
+        pitop.buzzer.on()
+        analog_sensor_mocks.get("light_sensor").return_value = 100
+        analog_sensor_mocks.get("sound_sensor").return_value = 100
+        analog_sensor_mocks.get("potentiometer").return_value = 100
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 2
+
+    def on_button_release():
+        pitop.led.off()
+        pitop.buzzer.off()
+        analog_sensor_mocks.get("light_sensor").return_value = 0
+        analog_sensor_mocks.get("sound_sensor").return_value = 0
+        analog_sensor_mocks.get("potentiometer").return_value = 0
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 0
+
+    pitop.button.when_pressed = on_button_press
+    pitop.button.when_released = on_button_release
 
     sim = create_sim(pitop)
 
@@ -179,14 +209,14 @@ def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
         return_value=False,
     )
 
-    from pitop.pma import LED, Button
+    from pitop.pma import LED, Button, Buzzer
 
-    pitop = pitop
     pitop.add_component(LED("D0"))
     pitop.add_component(Button("D1"))
+    pitop.add_component(Buzzer("D2"))
 
-    pitop.button.when_pressed = pitop.led.on
-    pitop.button.when_released = pitop.led.off
+    pitop.button.when_pressed = lambda: (pitop.led.on(), pitop.buzzer.on())
+    pitop.button.when_released = lambda: (pitop.led.off(), pitop.buzzer.off())
 
     sim = create_sim(pitop)
 
@@ -208,4 +238,87 @@ def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
 
     pitop.button.pin.drive_high()
     sleep(0.1)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+
+def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
+    sim = create_sim(pitop)
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    pitop.miniscreen.display_multiline_text("are we in a simulation?")
+
+    sleep(0.1)
+    snapshot.assert_match(sim.snapshot(), "text.png")
+
+    from pitop.simulation.images import Pitop
+
+    sample_image_path = Pitop
+    pitop.miniscreen.display_image_file(sample_image_path)
+
+    sleep(0.1)
+    snapshot.assert_match(sim.snapshot(), "image.png")
+
+
+def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
+    mocker.patch(
+        "pitop.simulation.sprites.is_virtual_hardware",
+        return_value=True,
+    )
+
+    from pitop.pma import (
+        LED,
+        Button,
+        Buzzer,
+        LightSensor,
+        Potentiometer,
+        SoundSensor,
+        UltrasonicSensor,
+    )
+
+    pitop.add_component(LED("D0"))
+    pitop.add_component(Button("D1"))
+    pitop.add_component(Buzzer("D2"))
+    pitop.add_component(UltrasonicSensor("D3"))
+    pitop.add_component(Potentiometer("A0"))
+    pitop.add_component(SoundSensor("A1"))
+    pitop.add_component(LightSensor("A2"))
+
+    def on_button_press():
+        pitop.led.on()
+        pitop.buzzer.on()
+        analog_sensor_mocks.get("light_sensor").return_value = 200
+        analog_sensor_mocks.get("sound_sensor").return_value = 400
+        analog_sensor_mocks.get("potentiometer").return_value = 600
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 3
+
+    def on_button_release():
+        pitop.led.off()
+        pitop.buzzer.off()
+        analog_sensor_mocks.get("light_sensor").return_value = 0
+        analog_sensor_mocks.get("sound_sensor").return_value = 0
+        analog_sensor_mocks.get("potentiometer").return_value = 0
+        analog_sensor_mocks.get("ultrasonic_sensor").return_value = 0
+
+    pitop.button.when_pressed = on_button_press
+    pitop.button.when_released = on_button_release
+
+    sim = create_sim(pitop, 0.5, (700, 700))
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    # simulate a button click
+    sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
+
+    # these events are a bit slow
+    sleep(0.5)
+    snapshot.assert_match(sim.snapshot(), "button_pressed.png")
+
+    sim.event(pygame.MOUSEBUTTONUP, pitop.button.name)
+
+    sleep(0.5)
     snapshot.assert_match(sim.snapshot(), "default.png")

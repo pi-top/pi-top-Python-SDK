@@ -97,3 +97,13 @@ def test_led_color(make_led, create_sim, snapshot):
     snapshot.assert_match(red_sim.snapshot(), "red_led_off.png")
     snapshot.assert_match(green_sim.snapshot(), "green_led_off.png")
     snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_off.png")
+
+
+def test_led_sim_scale(make_led, create_sim, snapshot):
+    led = make_led()
+
+    sim = create_sim(led, 2, (80, 160))
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")

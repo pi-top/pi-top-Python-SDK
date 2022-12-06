@@ -12,20 +12,30 @@ class SoundSensor(ADCBase):
     into a digital value.
 
     :param str port_name: The ID for the port to which this component is connected
+    :param str number_of_samples: Amount of sensor samples used to report a :attr:`~.SoundSensor.reading`. Defaults to 1.
+    :param str name: Component name, defaults to `sound_sensor`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
-    def __init__(self, port_name, pin_number=1, name="sound_sensor"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+    def __init__(
+        self, port_name, pin_number=1, name="sound_sensor", number_of_samples=1
+    ):
+        ADCBase.__init__(
+            self,
+            port_name=port_name,
+            pin_number=pin_number,
+            name=name,
+            number_of_samples=number_of_samples,
+        )
 
     @property
     def reading(self):
-        """Take a reading from the sensor.
+        """Take a reading from the sensor. Uses a builtin peak detection system
+        to retrieve the sound level.
 
-        :return: A value representing the volume of sound detected by the sensor at the current time
+        :return: A value representing the volume of sound detected by the sensor at the current time from 0 to 500.
         :rtype: float
         """
-        reading = self.read(peak_detection=True) / 2
-        return reading
+        return self.read(peak_detection=True) / 2
 
     @property
     def value(self):
@@ -36,3 +46,10 @@ class SoundSensor(ADCBase):
         """
         value = self.reading
         return 0 if value == 0 else 1
+
+    @property
+    def own_state(self):
+        return {
+            "value": lambda: self.value,
+            "reading": lambda: self.reading,
+        }

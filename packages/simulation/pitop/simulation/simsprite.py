@@ -3,43 +3,72 @@ from math import cos, radians, sin, sqrt
 import pygame
 
 from . import sprites as Sprites
+from .events import SimEvent
+from .images import PMA_CUBE_SIZE
+from .utils import multiply_scalar
 
+MARGIN = 10
 # this is based on the inital further-link graphics area dimensions of 720x680
 # multiplied by 2 to leave plenty space around our pi-top image of 435x573
 PITOP_SIM_SIZE = (1560, 1240)
-PMA_CUBE_SIM_SIZE = (122, 122)
+PMA_CUBE_SIM_SIZE = (PMA_CUBE_SIZE[0] + MARGIN * 2, PMA_CUBE_SIZE[1] + MARGIN * 2)
 
 
 class SimSprite:
     Size = PMA_CUBE_SIM_SIZE
 
     @classmethod
-    def create_sprite_group(cls, sim_size, config):
+    def create_sprite_group(cls, sim_size, config, scale):
         sprite_group = pygame.sprite.Group()
 
         # create the main sprite
-        sprite = cls(config)
+        sprite = cls(config, scale)
         sprite.name = "main"
 
         # position main sprite in center
         center = int(sim_size[0] / 2), int(sim_size[1] / 2)
-        sprite.rect.x = center[0] - int(sprite.rect.width / 2)
-        sprite.rect.y = center[1] - int(sprite.rect.height / 2)
+        sprite.set_pos(
+            center[0] - int(sprite.rect.width / 2),
+            center[1] - int(sprite.rect.height / 2),
+        )
 
         sprite_group.add(sprite)
         return sprite_group
 
     @staticmethod
-    def handle_event(type, target_name, component):
+    def handle_sim_event(e: SimEvent, component):
         pass
+
+    def handle_pygame_event(self, e: pygame.event.Event):
+        pass
+
+    def set_pos(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
+
+    @staticmethod
+    def _remove_alpha(image):
+        # draw a white background behind image and convert it, losing transparency
+        # this improves performance and ensures that snapshots are consistent
+        new = image.copy()
+        new.fill((255, 255, 255))
+        new.blit(image, (0, 0))
+        return new.convert()
+
+    @staticmethod
+    def _load_image(path, scale):
+        image = pygame.image.load(path)
+        size = multiply_scalar(scale, image.get_size())
+        scaled = pygame.transform.scale(image, size)
+        return SimSprite._remove_alpha(scaled)
 
 
 class ComponentableSimSprite(SimSprite):
     Size = PITOP_SIM_SIZE
 
     @classmethod
-    def create_sprite_group(cls, sim_size, config):
-        sprite_group = super().create_sprite_group(sim_size, config)
+    def create_sprite_group(cls, sim_size, config, scale):
+        sprite_group = super().create_sprite_group(sim_size, config, scale)
 
         main_sprite_rect = sprite_group.sprites()[0].rect
         sprite_centres = cls._generate_sprite_centres(sim_size, main_sprite_rect)
@@ -51,14 +80,16 @@ class ComponentableSimSprite(SimSprite):
             if not sprite_class:
                 continue
 
-            sprite = sprite_class(component)
+            sprite = sprite_class(component, scale)
             if not sprite:
                 continue
 
             sprite_centre = sprite_centres.get(component.get("port_name", None), (0, 0))
 
-            sprite.rect.x = sprite_centre[0] - int(sprite.rect.width / 2)
-            sprite.rect.y = sprite_centre[1] - int(sprite.rect.height / 2)
+            sprite.set_pos(
+                sprite_centre[0] - int(sprite.rect.width / 2),
+                sprite_centre[1] - int(sprite.rect.height / 2),
+            )
 
             sprite.name = component.get("name")
             sprite_group.add(sprite)
@@ -66,14 +97,15 @@ class ComponentableSimSprite(SimSprite):
         return sprite_group
 
     @staticmethod
-    def handle_event(type, target_name, component):
+    def handle_sim_event(e: SimEvent, component):
         for _, child in component.children_gen():
             sprite_class = getattr(Sprites, child.config.get("classname"), None)
             if not sprite_class:
                 continue
 
-            t_name = "main" if child.config.get("name") == target_name else None
-            sprite_class.handle_event(type, t_name, child)
+            # pass on events with no target or if this child is the target
+            if not e.target_name or child.config.get("name") == e.target_name:
+                sprite_class.handle_sim_event(e, child)
 
     @staticmethod
     def _generate_sprite_centres(sim_size, main_sprite_rect):

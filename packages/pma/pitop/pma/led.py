@@ -12,6 +12,7 @@ class LED(Stateful, Recreatable, gpiozero_LED):
     An LED (Light Emitting Diode) is a simple light source that can be controlled directly.
 
     :param str port_name: The ID for the port to which this component is connected
+    :param str name: Component name, defaults to `led`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
     def __init__(self, port_name, name="led", color=None):

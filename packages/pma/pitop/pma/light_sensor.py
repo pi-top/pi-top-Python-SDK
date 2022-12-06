@@ -12,11 +12,24 @@ class LightSensor(ADCBase):
     Uses an Analog-to-Digital Converter (ADC) to turn the analog reading from the sensor
     into a digital value.
 
+    By default, the sensor uses 3 samples to report a :attr:`~.LightSensor.reading`, which takes around 0.5s.
+    This can be changed by modifying the parameter :attr:`~.LightSensor.number_of_samples` in the constructor.
+
     :param str port_name: The ID for the port to which this component is connected
+    :param str number_of_samples: Amount of sensor samples used to report a :attr:`~.LightSensor.reading`. Defaults to 3.
+    :param str name: Component name, defaults to `light_sensor`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
-    def __init__(self, port_name, pin_number=1, name="light_sensor"):
-        ADCBase.__init__(self, port_name=port_name, pin_number=pin_number, name=name)
+    def __init__(
+        self, port_name, pin_number=1, name="light_sensor", number_of_samples=3
+    ):
+        ADCBase.__init__(
+            self,
+            port_name=port_name,
+            pin_number=pin_number,
+            name=name,
+            number_of_samples=number_of_samples,
+        )
 
     @property
     def reading(self):
@@ -26,7 +39,7 @@ class LightSensor(ADCBase):
             from 0 to 999.
         :rtype: float
         """
-        return int(self.read(number_of_samples=3))
+        return int(self.read())
 
     @property
     def value(self):
@@ -39,3 +52,10 @@ class LightSensor(ADCBase):
             return 1
         else:
             return 0
+
+    @property
+    def own_state(self):
+        return {
+            "value": lambda: self.value,
+            "reading": lambda: self.reading,
+        }

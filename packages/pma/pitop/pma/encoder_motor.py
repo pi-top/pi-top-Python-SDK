@@ -42,6 +42,10 @@ class EncoderMotor(Stateful, Recreatable):
     :type wheel_diameter: int or float
     :param wheel_diameter:
         The diameter of the wheel attached to the motor.
+
+    :type name: str
+    :param name:
+        Component name, defaults to `encoder_motor`. Used to access this component when added to a :class:`pitop.Pitop` object.
     """
 
     MMK_STANDARD_GEAR_RATIO = 41.8
@@ -53,7 +57,7 @@ class EncoderMotor(Stateful, Recreatable):
         forward_direction,
         braking_type=BrakingType.BRAKE,
         wheel_diameter=0.075,
-        name=None,
+        name="encoder_motor",
     ):
         self.name = name
         self._pma_port = port_name
