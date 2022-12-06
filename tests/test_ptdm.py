@@ -22,7 +22,7 @@ class PTDMSubscribeClientTestCase(TestCase):
     def test_correct_callback_called_when_message_is_published(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
-        self.poller_mock.poll.return_value = [1]
+        self.poller_mock.poll.return_value = [2]
 
         def callback_without_args():
             callback_without_args.counter += 1
@@ -43,14 +43,19 @@ class PTDMSubscribeClientTestCase(TestCase):
         )
         client.start_listening()
 
-        self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
-        wait_until(lambda: callback_without_args.counter > 0, timeout=3)
+        assert callback_without_args.counter == 0
         assert callback_with_args.counter == 0
 
+        # Emit event that doesn't use an argument
+        self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
+        wait_until(lambda: callback_without_args.counter > 0, timeout=5)
+        assert callback_with_args.counter == 0
+
+        # Emit event that uses an argument
         self.socket_mock.recv_string.return_value = (
             f"{Message.PUB_BRIGHTNESS_CHANGED}|1"
         )
-        wait_until(lambda: callback_with_args.counter > 0, timeout=3)
+        wait_until(lambda: callback_with_args.counter > 0, timeout=5)
 
         client.stop_listening()
 
@@ -59,6 +64,7 @@ class PTDMSubscribeClientTestCase(TestCase):
 
         self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
+        # Callback should have only 1 argument
         def callback(x, y):
             callback.counter += 1
 
@@ -71,6 +77,7 @@ class PTDMSubscribeClientTestCase(TestCase):
             }
         )
 
+        # Callback wasn't saved
         assert client._callback_funcs.get(Message.PUB_LOW_BATTERY_WARNING) is None
 
     def test_subscribe_client_cleanup_closes_socket(self):

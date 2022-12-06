@@ -27,12 +27,20 @@ for module in [
 ]:
     sys.modules[module] = Mock()
 
+
 # use gpiozero fake pins
 environ["GPIOZERO_PIN_FACTORY"] = "mock"
 
 
 @pytest.fixture
-def oled_mocks():
+def zmq_poller_mock():
+    poller_mock = Mock()
+    poller_mock.poll.return_value = []
+    sys.modules["zmq"].Poller.return_value = poller_mock
+
+
+@pytest.fixture
+def oled_mocks(zmq_poller_mock):
     SIZE = (128, 64)
     MODE = "1"
     SPI_BUS = 0
