@@ -1,4 +1,4 @@
-from unittest import TestCase, skip
+from unittest import TestCase
 from unittest.mock import Mock, patch
 
 from tests.utils import wait_until
@@ -8,31 +8,34 @@ class PTDMSubscribeClientTestCase(TestCase):
     def setUp(self):
         self.zmq_patch = patch("pitop.common.ptdm.zmq")
         self.zmq_mock = self.zmq_patch.start()
+        self.poller_mock = Mock()
         self.context_mock = Mock()
         self.socket_mock = Mock()
 
         self.socket_mock.recv_string.return_value = ""
         self.context_mock.socket.return_value = self.socket_mock
         self.zmq_mock.Context.return_value = self.context_mock
+        self.zmq_mock.Poller.return_value = self.poller_mock
+        self.poller_mock.poll.return_value = []
         self.addCleanup(self.zmq_patch.stop)
 
-    @skip
     def test_callback_called_when_message_is_published(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
+        self.poller_mock.poll.return_value = [1]
         self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
-        callback = Mock()
+        def callback():
+            callback.counter += 1
+
+        callback.counter = 0
 
         client = PTDMSubscribeClient()
-        client.initialise(
-            {
-                Message.PUB_LOW_BATTERY_WARNING: callback,
-            }
-        )
-
+        client.initialise({Message.PUB_LOW_BATTERY_WARNING: callback})
         client.start_listening()
-        wait_until(lambda: callback.call_count == 1, timeout=3)
+
+        wait_until(lambda: callback.counter > 0, timeout=3)
+
         client.stop_listening()
 
     def test_callback_not_included_if_has_wrong_signature(self):
