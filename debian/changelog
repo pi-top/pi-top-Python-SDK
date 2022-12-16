@@ -1,3 +1,16 @@
+pi-top-python-sdk (0.30.0-1) bullseye; urgency=medium
+
+  * Add power button messages to ptdm (#589)
+  * Install cli and pitop on dev-install.sh
+  * feat: add miniscreen to simulation
+  * feat: allow scaling and sizing sim
+  * test: add alternative imgcat option
+  * [pre-commit.ci] pre-commit autoupdate (#556)
+  * Set 'number_of_samples' in constructor of ADCBase and subclasses (#595)
+  * Simulate PMA components (#594)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 06 Dec 2022 20:21:32 +0000
+
 pi-top-python-sdk (0.29.0-2) bullseye; urgency=medium
 
   * Fix docs building for readthedocs (#591)
