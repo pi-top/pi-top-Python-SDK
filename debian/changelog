@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.29.0-3) bullseye; urgency=medium
+pi-top-python-sdk (0.30.0-1) bullseye; urgency=medium
 
   * Add power button messages to ptdm (#589)
   * Install cli and pitop on dev-install.sh
