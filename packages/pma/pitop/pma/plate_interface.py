@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class PlateInterface(metaclass=Singleton):
     def __init__(self):
-
         self.__device_mcu = None
         self.__mcu_connected = False
         self.__mcu_thread_lock = Lock()
@@ -22,7 +21,6 @@ class PlateInterface(metaclass=Singleton):
         self.__disconnect_mcu()
 
     def get_device_mcu(self):
-
         self.__connect_mcu()
 
         # Return the SMBusDevice instance

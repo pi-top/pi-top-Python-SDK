@@ -5,17 +5,14 @@ from pitop.pulse import ledmatrix
 
 
 class PongGameState:
-
     NO_RESULT = 0
     LEFT_BAT_WIN = 1
     RIGHT_BAT_WIN = 2
 
     def __init__(self):
-
         self.reset()
 
     def reset(self):
-
         self.bat_left_y = 2
         self.bat_right_y = 2
         self.bat_left_size = 4
@@ -28,12 +25,10 @@ class PongGameState:
         self.ball_dy = 1 if randint(0, 1) == 0 else -1
 
     def __adjust_ball_y_velocity(self, change):
-
         if self.ball_dy >= -1 and (self.ball_dy <= 1):
             self.ball_dy += change
 
     def increase_difficulty_level(self):
-
         if self.bat_left_size > 1:
             self.bat_left_size -= 1
 
@@ -41,7 +36,6 @@ class PongGameState:
             self.bat_right_size -= 1
 
     def move_ball(self):
-
         if self.ball_y + self.ball_dy >= 7 or self.ball_y + self.ball_dy < 0:
             self.ball_dy *= -1
 
@@ -87,21 +81,18 @@ class PongGameState:
         return self.NO_RESULT
 
     def __move_left_bat(self, movement):
-
         if self.bat_left_y + movement >= 0 and (
             (self.bat_left_y + self.bat_left_size + movement) < 7
         ):
             self.bat_left_y += movement
 
     def __move_right_bat(self, movement):
-
         if self.bat_right_y + movement >= 0 and (
             (self.bat_right_y + self.bat_right_size + movement) < 7
         ):
             self.bat_right_y += movement
 
     def move_bats(self):
-
         if self.ball_dx < 0:
             if self.ball_y > self.bat_left_y + (self.bat_left_size / 2):
                 self.__move_left_bat(1)

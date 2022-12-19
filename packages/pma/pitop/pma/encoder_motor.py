@@ -129,7 +129,6 @@ class EncoderMotor(Stateful, Recreatable):
 
     @braking_type.setter
     def braking_type(self, braking_type):
-
         self.__motor_core.set_braking_type(braking_type.value)
 
     def set_power(self, power, direction=Direction.FORWARD):

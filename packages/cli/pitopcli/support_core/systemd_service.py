@@ -3,7 +3,6 @@ from ..formatter import StdoutFormat
 
 class SystemdService:
     def __init__(self):
-
         self._name = ""
         self._load_state = ""
         self._active_state = ""
