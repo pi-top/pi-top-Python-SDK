@@ -22,7 +22,7 @@ PITOP_GRAY_COLOR = pygame.Color("#505050")
 
 
 class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
-    def __init__(self, config, scale, draw_port=False):
+    def __init__(self, config, scale):
         pygame.sprite.Sprite.__init__(self)
 
         self.scale = scale
