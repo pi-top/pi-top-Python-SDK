@@ -4,6 +4,7 @@ from typing import Any, Tuple
 import pygame
 
 from . import images as Images
+from .color import PitopColor
 from .events import SimEvent, SimEventTypes
 from .images import PMA_CUBE_SIZE
 from .port_label import PortLabel
@@ -18,7 +19,6 @@ SLIDER_HEIGHT = 8
 SLIDER_HANDLE_RADIUS = 8
 FONT_SIZE = 22
 TEXT_OFFSET = (-13, 8)
-PITOP_GRAY_COLOR = pygame.Color("#505050")
 
 
 class Pitop(pygame.sprite.Sprite, ComponentableSimSprite):
@@ -252,7 +252,7 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
             step=self.slider_step,
             initial=0,
             handleRadius=int(SLIDER_HANDLE_RADIUS * self.scale),
-            handleColour=PITOP_GRAY_COLOR,
+            handleColour=PitopColor.CHARCOAL.value,
             colour=pygame.Color("#DBDEE0"),
         )
 
@@ -303,7 +303,7 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
 
         image = self.base_image.copy()
         image.blit(
-            self.font.obj.render(str(value), True, PITOP_GRAY_COLOR),
+            self.font.obj.render(str(value), True, PitopColor.CHARCOAL.value),
             self.font.pos,
         )
 
