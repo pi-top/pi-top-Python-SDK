@@ -252,7 +252,7 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
             step=self.slider_step,
             initial=0,
             handleRadius=int(SLIDER_HANDLE_RADIUS * self.scale),
-            handleColour=PitopColor.CHARCOAL.value,
+            handleColour=pygame.Color(PitopColor.CHARCOAL.value),
             colour=pygame.Color("#DBDEE0"),
         )
 
@@ -303,7 +303,9 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
 
         image = self.base_image.copy()
         image.blit(
-            self.font.obj.render(str(value), True, PitopColor.CHARCOAL.value),
+            self.font.obj.render(
+                str(value), True, pygame.Color(PitopColor.CHARCOAL.value)
+            ),
             self.font.pos,
         )
 

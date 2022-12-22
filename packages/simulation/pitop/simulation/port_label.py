@@ -20,7 +20,7 @@ class PortLabel:
             pos = (X_OFFSET, self.height)
 
         font = pygame.font.SysFont(None, int(FONT_SIZE * self.scale))
-        label = font.render(self.port_name, True, self.color)
+        label = font.render(self.port_name, True, pygame.Color(self.color))
         label_pos = (pos[0], (pos[1] - label.get_height() / self.scale))
 
         self.base_image = pygame.Surface(multiply_scalar(self.scale, Size))
@@ -31,7 +31,7 @@ class PortLabel:
         )
         pygame.draw.line(
             self.base_image,
-            self.color,
+            pygame.Color(self.color),
             multiply_scalar(scale, (pos[0], pos[1])),
             multiply_scalar(scale, (pos[0] + self.width, pos[1])),
         )
