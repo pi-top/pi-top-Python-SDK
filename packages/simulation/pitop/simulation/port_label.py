@@ -1,6 +1,6 @@
 import pygame
 
-from .color import PitopColor
+from .color import PitopColorScheme
 from .utils import multiply_scalar
 
 MARGIN = 10
@@ -43,10 +43,10 @@ class PortLabel:
     @property
     def color(self):
         if isinstance(self.port_name, str) and self.port_name[0] == "A":
-            return PitopColor.BLUE.value
+            return PitopColorScheme.BLUE
         if isinstance(self.port_name, str) and self.port_name[0] == "D":
-            return PitopColor.MAGENTA.value
-        return PitopColor.CHARCOAL.value
+            return PitopColorScheme.MAGENTA
+        return PitopColorScheme.CHARCOAL
 
     def render(self, image, pos=None):
         if pos is None:

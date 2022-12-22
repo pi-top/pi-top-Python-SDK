@@ -4,7 +4,7 @@ from typing import Any, Tuple
 import pygame
 
 from . import images as Images
-from .color import PitopColor
+from .color import PitopColorScheme
 from .events import SimEvent, SimEventTypes
 from .images import PMA_CUBE_SIZE
 from .port_label import PortLabel
@@ -252,8 +252,8 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
             step=self.slider_step,
             initial=0,
             handleRadius=int(SLIDER_HANDLE_RADIUS * self.scale),
-            handleColour=pygame.Color(PitopColor.CHARCOAL.value),
-            colour=pygame.Color("#DBDEE0"),
+            handleColour=pygame.Color(PitopColorScheme.CHARCOAL),
+            colour=pygame.Color(PitopColorScheme.GRAY),
         )
 
         text_pos = (
@@ -304,7 +304,7 @@ class SliderSensorSprite(pygame.sprite.Sprite, SimSprite):
         image = self.base_image.copy()
         image.blit(
             self.font.obj.render(
-                str(value), True, pygame.Color(PitopColor.CHARCOAL.value)
+                str(value), True, pygame.Color(PitopColorScheme.CHARCOAL)
             ),
             self.font.pos,
         )
