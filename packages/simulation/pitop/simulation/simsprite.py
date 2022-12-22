@@ -80,7 +80,7 @@ class ComponentableSimSprite(SimSprite):
             if not sprite_class:
                 continue
 
-            sprite = sprite_class(component, scale)
+            sprite = sprite_class(component, scale, draw_port=True)
             if not sprite:
                 continue
 
