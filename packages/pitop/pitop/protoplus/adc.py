@@ -5,20 +5,17 @@ from pitop.common.i2c_device import I2CDevice
 
 
 class ADCProbe:
-
     __device_address = 0x2A
     __register_address = 0
     __channel_count = 6
     __adc_ratio = 20
 
     def __init__(self, i2c_device_name="/dev/i2c-1"):
-
         self.__i2c_device_name = i2c_device_name
         self.__device = None
         self.__error_array = [-1] * self.__channel_count
 
     def read_value(self, channel):
-
         if (channel < 0) or (channel > self.__channel_count):
             print("Invalid channel - use 0 to " + str(self.__channel_count - 1))
             return -1
@@ -28,7 +25,6 @@ class ADCProbe:
         return results[channel]
 
     def read_all(self):
-
         if self.__connect() is False:
             print("Could not connect to device")
             return self.__error_array
@@ -56,7 +52,6 @@ class ADCProbe:
         return results
 
     def poll(self, delay=0.5):
-
         print("| ADC0\t| ADC1\t| ADC2\t| ADC3\t| ADC4\t| ADC5\t|")
         print("-------------------------------------------------")
 
@@ -82,7 +77,6 @@ class ADCProbe:
             sleep(delay)
 
     def __connect(self):
-
         try:
             self.__device = I2CDevice(self.__i2c_device_name, self.__device_address)
             self.__device.connect()
@@ -94,6 +88,5 @@ class ADCProbe:
         return True
 
     def __disconnect(self):
-
         if self.__device is not None:
             self.__device.disconnect()

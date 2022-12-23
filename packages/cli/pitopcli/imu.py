@@ -55,7 +55,6 @@ class ImuCLI(CliBaseClass):
 
     @classmethod
     def add_parser_arguments(cls, parser) -> None:
-
         subparser = parser.add_subparsers(
             title="IMU utility", description=cls.parser_help, dest="imu_subcommand"
         )
