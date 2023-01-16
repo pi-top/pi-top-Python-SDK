@@ -84,7 +84,7 @@ def test_led_color(make_led, create_sim, snapshot):
     green_led.on()
     yellow_led.on()
 
-    sleep(0.1)
+    sleep(0.2)
     snapshot.assert_match(red_sim.snapshot(), "red_led_on.png")
     snapshot.assert_match(green_sim.snapshot(), "green_led_on.png")
     snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_on.png")
@@ -93,7 +93,7 @@ def test_led_color(make_led, create_sim, snapshot):
     green_led.off()
     yellow_led.off()
 
-    sleep(0.1)
+    sleep(0.2)
     snapshot.assert_match(red_sim.snapshot(), "red_led_off.png")
     snapshot.assert_match(green_sim.snapshot(), "green_led_off.png")
     snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_off.png")
