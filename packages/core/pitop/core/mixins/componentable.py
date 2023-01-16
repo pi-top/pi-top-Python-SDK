@@ -74,6 +74,7 @@ class Componentable(Stateful, Recreatable):
 
         if name and is_recreatable:
             component.name = name
+            component._config["name"] = name
 
         component_name = component.name if is_recreatable else name
         if component_name in self.children:
