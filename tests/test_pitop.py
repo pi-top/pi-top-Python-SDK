@@ -322,3 +322,31 @@ def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor
 
     sleep(0.5)
     snapshot.assert_match(sim.snapshot(), "default.png")
+
+
+def test_pitop_simulate_add_component(
+    pitop, mocker, create_sim, snapshot, analog_sensor_mocks
+):
+    mocker.patch(
+        "pitop.simulation.sprites.is_virtual_hardware",
+        return_value=True,
+    )
+
+    from pitop.pma import LED, Button
+
+    pitop.add_component(LED("D0"))
+
+    sim = create_sim(pitop)
+
+    # give time for the screen and sprites to be set up
+    sleep(2)
+    snapshot.assert_match(sim.snapshot(), "default.png")
+
+    pitop.add_component(Button("D1"))
+    sleep(0.5)  # some time for button to be added
+    snapshot.assert_match(sim.snapshot(), "with_button.png")
+
+    pitop.add_component(Button("D2"), name="button2")
+    print(pitop.config)
+    sleep(0.5)  # some time for button to be added
+    snapshot.assert_match(sim.snapshot(), "with_2_button.png")

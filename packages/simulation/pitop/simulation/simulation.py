@@ -43,6 +43,7 @@ class Simulation:
 
         # communication channels between main process and sim
         self._stop_ev = Event()  # stopping this simulation
+        self._config_q = Queue()  # sending component config updates into sim
         self._state_q = Queue()  # sending component state updates into sim
         self._out_event_q = Queue()  # sending sim events to components
         self._in_event_q = Queue()  # artificially firing pygame events (tests)
@@ -59,6 +60,7 @@ class Simulation:
                 self.scale,
                 self.size,
                 self._stop_ev,
+                self._config_q,
                 self._state_q,
                 self._out_event_q,
                 self._in_event_q,
@@ -90,6 +92,9 @@ class Simulation:
         self._in_event_q.put((type, target))
 
     def __communicate(self):
+        # store config as a string (not reference) to easily check if it's changed
+        str_config = str(self.component.config)
+
         while True:
             if self._stop_ev.is_set():
                 break
@@ -97,8 +102,13 @@ class Simulation:
             if self._process is None or not self._process.is_alive():
                 break
 
-            # update the sim with the current state of the simulated component
+            # update sim with current state of simulated component
             self._state_q.put(self.component.state)
+
+            # update sim with current config only if it's changed
+            if str(self.component.config) != str_config:
+                str_config = str(self.component.config)
+                self._config_q.put(self.component.config)
 
             # handle events produced by the sim which affect our simulated
             # component (eg PMA Button presses, sensor slider updates)
@@ -109,6 +119,7 @@ class Simulation:
                     self.component,
                 )
 
+            # sleep - timed to match pygame loop
             sleep(0.05)
 
         self.stop()
@@ -127,6 +138,7 @@ def _run(
     scale,
     size,
     stop_ev,
+    config_q,
     state_q,
     out_event_q,
     in_event_q,
@@ -145,9 +157,10 @@ def _run(
     screen.fill((255, 255, 255))
 
     # create our sprites based on the simulated component's config
-    sprite_group = sprite_class.create_sprite_group(size, config, scale)
+    sprite_group, main_sprite = sprite_class.create_sprite_group(size, config, scale)
 
     while not stop_ev.is_set():
+        # handle pygame events eg UI
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_ev.set()
@@ -178,6 +191,7 @@ def _run(
                         sprite.handle_pygame_event(event)
                         out_event_q.put(SimEvent(SimEventTypes.MOUSE_DOWN, sprite.name))
 
+        # send out postion update events for selected sliders
         for sprite in sprite_group.sprites():
             if hasattr(sprite, "slider") and sprite.slider.selected:
                 out_event_q.put(
@@ -188,6 +202,7 @@ def _run(
                     )
                 )
 
+        # handle incoming simulated ui events
         while not in_event_q.empty():
             # find which sprite matches the target_name and translate to target
             # the event at that sprite's position in the simulation
@@ -201,10 +216,24 @@ def _run(
             )
             pygame.event.post(event)
 
+        # respond to screenshot requests
         if snapshot_ev.is_set():
             snapshot_q.put(to_bytes(screen))
             snapshot_ev.clear()
 
+        # check changes to component config eg newly added sprites
+        while not config_q.empty():
+            new_config = config_q.get_nowait()
+            components = new_config.get("components", {})
+
+            sprite_names = [sprite.name for sprite in sprite_group.sprites()]
+
+            for component in components.values():
+                if component.get("name") not in sprite_names:
+                    component_sprite = main_sprite.create_child_sprite(component, scale)
+                    sprite_group.add(component_sprite)
+
+        # forward inbound component state updates
         while not state_q.empty():
             # provide sprites with relevant part of the component state tree
             state = state_q.get_nowait()
@@ -214,10 +243,12 @@ def _run(
                 else:
                     sprite.state = state.get(sprite.name)
 
+        # draw
         sprite_group.update()
         sprite_group.draw(screen)
         pygame.display.flip()
 
+        # sleep - timed to match controlling thread
         clock.tick(20)
 
     # Don't pygame.quit() - isn't needed and can cause X server to crash

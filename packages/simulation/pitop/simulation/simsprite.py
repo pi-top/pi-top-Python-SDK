@@ -33,7 +33,7 @@ class SimSprite:
         )
 
         sprite_group.add(sprite)
-        return sprite_group
+        return sprite_group, sprite
 
     @staticmethod
     def handle_sim_event(e: SimEvent, component):
@@ -68,33 +68,40 @@ class ComponentableSimSprite(SimSprite):
 
     @classmethod
     def create_sprite_group(cls, sim_size, config, scale):
-        sprite_group = super().create_sprite_group(sim_size, config, scale)
+        sprite_group, main_sprite = super().create_sprite_group(sim_size, config, scale)
 
-        main_sprite_rect = sprite_group.sprites()[0].rect
-        sprite_centres = cls._generate_sprite_centres(sim_size, main_sprite_rect)
+        sprite_centres = cls._generate_sprite_centres(sim_size, main_sprite.rect)
+        main_sprite.sprite_centres = sprite_centres
 
         components = config.get("components", {})
         for component in components.values():
-            sprite_class = getattr(Sprites, component.get("classname"), None)
+            component_sprite = main_sprite.create_child_sprite(component, scale)
+            if component_sprite is not None:
+                sprite_group.add(component_sprite)
 
-            if not sprite_class:
-                continue
+        return sprite_group, main_sprite
 
-            sprite = sprite_class(component, scale, draw_port=True)
-            if not sprite:
-                continue
+    def create_child_sprite(self, component, scale):
+        sprite_class = getattr(Sprites, component.get("classname"), None)
 
-            sprite_centre = sprite_centres.get(component.get("port_name", None), (0, 0))
+        if not sprite_class:
+            return None
 
-            sprite.set_pos(
-                sprite_centre[0] - int(sprite.rect.width / 2),
-                sprite_centre[1] - int(sprite.rect.height / 2),
-            )
+        sprite = sprite_class(component, scale, draw_port=True)
+        if not sprite:
+            return None
 
-            sprite.name = component.get("name")
-            sprite_group.add(sprite)
+        sprite_centre = self.sprite_centres.get(
+            component.get("port_name", None), (0, 0)
+        )
 
-        return sprite_group
+        sprite.set_pos(
+            sprite_centre[0] - int(sprite.rect.width / 2),
+            sprite_centre[1] - int(sprite.rect.height / 2),
+        )
+
+        sprite.name = component.get("name")
+        return sprite
 
     @staticmethod
     def handle_sim_event(e: SimEvent, component):
