@@ -23,7 +23,7 @@ jobs:
           submodules: true
 
       - id: version
-        uses: docker://lpenz/ghaction-version-gen:0.3
+        uses: docker://lpenz/ghaction-version-gen:0.11.0
 
       - name: Add changelog entry for release version
         id: bump_changelog
