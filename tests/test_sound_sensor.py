@@ -35,6 +35,7 @@ def test_sound_sensor(make_sound_sensor, sound_sensor_mock):
     assert sound_sensor.state["reading"] == 100
 
 
+@pytest.mark.xdist_group(name="sim-group")
 def test_sound_sensor_simulate(
     make_sound_sensor, create_sim, mocker, snapshot, sound_sensor_mock
 ):

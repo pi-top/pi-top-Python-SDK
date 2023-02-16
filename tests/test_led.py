@@ -41,6 +41,7 @@ def test_led(make_led):
     assert led.state["is_lit"]
 
 
+@pytest.mark.xdist_group(name="sim-group")
 def test_led_simulate(make_led, create_sim, snapshot):
     led = make_led()
 
@@ -61,6 +62,7 @@ def test_led_simulate(make_led, create_sim, snapshot):
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.xdist_group(name="sim-group")
 def test_led_color(make_led, create_sim, snapshot):
     red_led = make_led("D0")
     green_led = make_led("D1", color="green")
@@ -99,6 +101,7 @@ def test_led_color(make_led, create_sim, snapshot):
     snapshot.assert_match(yellow_sim.snapshot(), "yellow_led_off.png")
 
 
+@pytest.mark.xdist_group(name="sim-group")
 def test_led_sim_scale(make_led, create_sim, snapshot):
     led = make_led()
 

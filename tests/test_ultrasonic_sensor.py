@@ -42,6 +42,7 @@ def test_ultrasonic_sensor(make_ultrasonic_sensor, ultrasonic_sensor_mock):
     assert ultrasonic_sensor.state["distance"] == 100
 
 
+@pytest.mark.xdist_group(name="sim-group")
 def test_ultrasonic_sensor_simulate(
     make_ultrasonic_sensor, create_sim, mocker, snapshot, ultrasonic_sensor_mock
 ):

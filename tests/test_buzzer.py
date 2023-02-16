@@ -40,6 +40,7 @@ def test_buzzer(make_buzzer):
     assert buzzer.state["is_active"]
 
 
+@pytest.mark.xdist_group(name="sim-group")
 def test_buzzer_simulate(make_buzzer, create_sim, mocker, snapshot):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
