@@ -1,6 +1,6 @@
 import sys
 from os import environ, listdir, path
-from unittest.mock import Mock, PropertyMock, patch
+from unittest.mock import MagicMock, Mock, PropertyMock, patch
 
 import pytest
 
@@ -14,7 +14,6 @@ for dir in listdir(packages_dir):
 
 # mock modules that are not installed but need to be impored
 for module in [
-    "pitop.common.ptdm.zmq",
     "imageio",
     "zmq",
     "smbus2",
@@ -25,7 +24,7 @@ for module in [
     "spidev",
     "pyinotify",
 ]:
-    sys.modules[module] = Mock()
+    sys.modules[module] = MagicMock()
 
 # use gpiozero fake pins
 environ["GPIOZERO_PIN_FACTORY"] = "mock"
@@ -60,16 +59,16 @@ def oled_mocks():
     spi_client_patch.start()
     sh1106_mock = sh1106_client_patch.start()
 
-    device_mock = Mock()
+    device_mock = MagicMock()
     device_mock.mode = MODE
     device_mock.size = SIZE
     device_mock.spi_bus = SPI_BUS
-    device_mock.contrast = Mock()
+    device_mock.contrast = MagicMock()
     device_mock.bounding_box = (0, 0, SIZE[0] - 1, SIZE[1] - 1)
 
     sh1106_mock.return_value = device_mock
 
-    controller = Mock()
+    controller = MagicMock()
     controller.get_device.return_value = sh1106_mock
 
     from pitop.miniscreen.oled import OLED  # noqa: E402
