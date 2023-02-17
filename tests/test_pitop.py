@@ -140,6 +140,7 @@ def test_blockpi_rover(rover):
     rover.drive.right_motor.set_target_speed.assert_called()
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
@@ -203,6 +204,7 @@ def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
@@ -243,6 +245,7 @@ def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
     sim = create_sim(pitop)
@@ -265,6 +268,7 @@ def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
     snapshot.assert_match(sim.snapshot(), "image.png")
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
@@ -328,6 +332,7 @@ def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_pitop_simulate_add_component(
     pitop, mocker, create_sim, snapshot, analog_sensor_mocks

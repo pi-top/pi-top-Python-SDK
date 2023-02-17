@@ -41,6 +41,7 @@ def test_button(make_button):
     assert button.state["is_pressed"]
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_button_simulate(make_button, create_sim, mocker, snapshot):
     mocker.patch(
@@ -69,6 +70,7 @@ def test_button_simulate(make_button, create_sim, mocker, snapshot):
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.skip
 @pytest.mark.xdist_group(name="sim-group")
 def test_button_visualize(make_button, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled

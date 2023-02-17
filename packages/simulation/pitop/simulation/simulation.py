@@ -1,3 +1,4 @@
+import sys
 from io import BytesIO
 from multiprocessing import Event, Process, Queue
 from threading import Thread
@@ -250,4 +251,5 @@ def _run(
         # sleep - timed to match controlling thread
         clock.tick(20)
 
-    pygame.quit()
+    # Don't pygame.quit() - isn't needed and can cause X server to crash
+    sys.exit()
