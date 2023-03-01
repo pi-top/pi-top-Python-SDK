@@ -32,15 +32,28 @@ jobs:
           changelog_version=$(dpkg-parsechangelog -Sversion)
           echo "PYTHON_PACKAGE_VERSION=${changelog_version}" >> $GITHUB_ENV
 
-      - name: Build and upload to PyPI
+      - name: Build dist
         if: ${{ (github.event_name == 'release' && github.event.action == 'published') || github.event_name == 'workflow_dispatch' }}
         run: |
+          mkdir -p dist
           for subpackage_folder in packages/* ; do
             cd $subpackage_folder
             python3 setup.py sdist bdist_wheel
-            python3 -m twine upload dist/* || true
+            cp dist/* ../../dist/
             cd -
           done
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: "dist"
+          path: "./dist/*"
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.6.4
+        with:
+          username: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
+          skip_existing: true
+          verbose: true
+
