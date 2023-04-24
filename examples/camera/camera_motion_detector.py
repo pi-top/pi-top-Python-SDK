@@ -17,7 +17,6 @@ def motion_detected():
     last_motion_detected = datetime.now().timestamp()
 
     if cam.is_recording() is False:
-
         print("Motion detected! Starting recording...")
         output_file_name = f"/home/pi/Desktop/My Motion Recording {strftime('%Y-%m-%d %H:%M:%S', localtime(last_motion_detected))}.avi"
         cam.start_video_capture(output_file_name=output_file_name)

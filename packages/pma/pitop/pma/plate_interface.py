@@ -76,7 +76,6 @@ class PlateInterface(metaclass=Singleton):
 
     def __heartbeat_thread_loop(self):
         while self.__mcu_connected:
-
             with self.__mcu_thread_lock:
                 self.__send_heartbeat()
 

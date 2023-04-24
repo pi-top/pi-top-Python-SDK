@@ -109,7 +109,6 @@ class TiltRollHeadController(Stateful, Recreatable):
     def __start_servo_oscillation(
         self, oscillate_request: OscillateRequest, thread_control: ThreadControl
     ):
-
         if thread_control.thread.is_alive():
             thread_control.cancel = True
             thread_control.thread.join()

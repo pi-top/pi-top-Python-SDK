@@ -235,9 +235,9 @@ class KalmanFilter(object):
         self.inv = np.linalg.inv
 
     def predict(self, u=None, B=None, F=None, Q=None):
-        """
-        Predict next state (prior) using the Kalman filter state propagation
+        """Predict next state (prior) using the Kalman filter state propagation
         equations.
+
         Parameters
         ----------
         u : np.array, default 0
@@ -276,10 +276,10 @@ class KalmanFilter(object):
         self.P_prior = self.P.copy()
 
     def update(self, z, R=None, H=None):
-        """
-        Add a new measurement (z) to the Kalman filter.
-        If z is None, nothing is computed. However, x_post and P_post are
-        updated with the prior (x_prior, P_prior), and self.z is set to None.
+        """Add a new measurement (z) to the Kalman filter. If z is None,
+        nothing is computed. However, x_post and P_post are updated with the
+        prior (x_prior, P_prior), and self.z is set to None.
+
         Parameters
         ----------
         z : (dim_z, 1): array_like
@@ -349,11 +349,11 @@ class KalmanFilter(object):
         self.P_post = self.P.copy()
 
     def predict_steadystate(self, u=0, B=None):
-        """
-        Predict state (prior) using the Kalman filter state propagation
+        """Predict state (prior) using the Kalman filter state propagation
         equations. Only x is updated, P is left unchanged. See
         update_steadstate() for a longer explanation of when to use this
         method.
+
         Parameters
         ----------
         u : np.array
@@ -378,18 +378,16 @@ class KalmanFilter(object):
         self.P_prior = self.P.copy()
 
     def update_steadystate(self, z):
-        """
-        Add a new measurement (z) to the Kalman filter without recomputing
-        the Kalman gain K, the state covariance P, or the system
-        uncertainty S.
+        """Add a new measurement (z) to the Kalman filter without recomputing
+        the Kalman gain K, the state covariance P, or the system uncertainty S.
         You can use this for LTI systems since the Kalman gain and covariance
         converge to a fixed value. Precompute these and assign them explicitly,
         or run the Kalman filter using the normal predict()/update(0 cycle
-        until they converge.
-        The main advantage of this call is speed. We do significantly less
-        computation, notably avoiding a costly matrix inversion.
-        Use in conjunction with predict_steadystate(), otherwise P will grow
-        without bound.
+        until they converge. The main advantage of this call is speed. We do
+        significantly less computation, notably avoiding a costly matrix
+        inversion. Use in conjunction with predict_steadystate(), otherwise P
+        will grow without bound.
+
         Parameters
         ----------
         z : (dim_z, 1): array_like
@@ -445,11 +443,11 @@ class KalmanFilter(object):
         self._mahalanobis = None
 
     def update_correlated(self, z, R=None, H=None):
-        """Add a new measurement (z) to the Kalman filter assuming that
-        process noise and measurement noise are correlated as defined in
-        the `self.M` matrix.
-        A partial derivation can be found in [1]
-        If z is None, nothing is changed.
+        """Add a new measurement (z) to the Kalman filter assuming that process
+        noise and measurement noise are correlated as defined in the `self.M`
+        matrix. A partial derivation can be found in [1] If z is None, nothing
+        is changed.
+
         Parameters
         ----------
         z : (dim_z, 1): array_like
@@ -534,6 +532,7 @@ class KalmanFilter(object):
         saver=None,
     ):
         """Batch processes a sequences of measurements.
+
          Parameters
          ----------
          zs : list-like
@@ -639,7 +638,6 @@ class KalmanFilter(object):
 
         if update_first:
             for i, (z, F, Q, H, R, B, u) in enumerate(zip(zs, Fs, Qs, Hs, Rs, Bs, us)):
-
                 self.update(z, R=R, H=H)
                 means[i, :] = self.x
                 covariances[i, :, :] = self.P
@@ -652,7 +650,6 @@ class KalmanFilter(object):
                     saver.save()
         else:
             for i, (z, F, Q, H, R, B, u) in enumerate(zip(zs, Fs, Qs, Hs, Rs, Bs, us)):
-
                 self.predict(u=u, B=B, F=F, Q=Q)
                 means_p[i, :] = self.x
                 covariances_p[i, :, :] = self.P
@@ -667,10 +664,10 @@ class KalmanFilter(object):
         return (means, covariances, means_p, covariances_p)
 
     def rts_smoother(self, Xs, Ps, Fs=None, Qs=None, inv=np.linalg.inv):
-        """
-        Runs the Rauch-Tung-Striebel Kalman smoother on a set of
-        means and covariances computed by a Kalman filter. The usual input
-        would come from the output of `KalmanFilter.batch_filter()`.
+        """Runs the Rauch-Tung-Striebel Kalman smoother on a set of means and
+        covariances computed by a Kalman filter. The usual input would come
+        from the output of `KalmanFilter.batch_filter()`.
+
         Parameters
         ----------
         Xs : numpy.array
@@ -731,9 +728,9 @@ class KalmanFilter(object):
         return (x, P, K, Pp)
 
     def get_prediction(self, u=None, B=None, F=None, Q=None):
-        """
-        Predict next state (prior) using the Kalman filter state propagation
+        """Predict next state (prior) using the Kalman filter state propagation
         equations and returns it without modifying the object.
+
         Parameters
         ----------
         u : np.array, default 0
@@ -774,9 +771,9 @@ class KalmanFilter(object):
         return x, P
 
     def get_update(self, z=None):
-        """
-        Computes the new estimate based on measurement `z` and returns it
+        """Computes the new estimate based on measurement `z` and returns it
         without altering the state of the filter.
+
         Parameters
         ----------
         z : (dim_z, 1): array_like
@@ -827,8 +824,8 @@ class KalmanFilter(object):
         return z - dot(self.H, self.x_prior)
 
     def measurement_of_state(self, x):
-        """
-        Helper function that converts a state into a measurement.
+        """Helper function that converts a state into a measurement.
+
         Parameters
         ----------
         x : np.array
@@ -866,9 +863,9 @@ class KalmanFilter(object):
 
     @property
     def mahalanobis(self):
-        """
-        Mahalanobis distance of measurement. E.g. 3 means measurement
-        was 3 standard deviations away from the predicted value.
+        """Mahalanobis distance of measurement. E.g. 3 means measurement was 3
+        standard deviations away from the predicted value.
+
         Returns
         -------
         mahalanobis : float

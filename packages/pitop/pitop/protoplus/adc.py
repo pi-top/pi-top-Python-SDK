@@ -56,7 +56,6 @@ class ADCProbe:
         print("-------------------------------------------------")
 
         while True:
-
             results = self.read_all()
 
             print(

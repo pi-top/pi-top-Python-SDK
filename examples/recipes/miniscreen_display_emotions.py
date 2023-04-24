@@ -55,7 +55,7 @@ def update_displayed_image(face, emotion):
         scaler *= 0.8  # scale further as face rectangle is often smaller than face feature bounds
         face_features = (face.features - translation_vector) * scaler
 
-        for (x, y) in face_features:
+        for x, y in face_features:
             canvas.point((x, y), fill=1)
 
     canvas = ImageDraw.Draw(image)

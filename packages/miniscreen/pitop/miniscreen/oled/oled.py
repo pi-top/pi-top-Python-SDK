@@ -546,7 +546,6 @@ class OLED:
     def __auto_play(self, image, loop=False):
         while True:
             for frame in self.assistant.get_frame_iterator(image):
-
                 if self.__kill_thread:
                     break
 

@@ -202,7 +202,7 @@ class EmotionClassifier:
             thickness=self.font_thickness,
         )
 
-        for (x, y) in face.features:
+        for x, y in face.features:
             cv2.circle(
                 frame,
                 (int(x), int(y)),
