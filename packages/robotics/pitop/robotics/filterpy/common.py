@@ -2,12 +2,11 @@ import numpy as np
 
 
 def pretty_str(label, arr):
-    """
-    Generates a pretty printed NumPy array with an assignment. Optionally
+    """Generates a pretty printed NumPy array with an assignment. Optionally
     transposes column vectors so they are drawn on one line. Strictly speaking
-    arr can be any time convertible by `str(arr)`, but the output may not
-    be what you want if the type of the variable is not a scalar or an
-    ndarray.
+    arr can be any time convertible by `str(arr)`, but the output may not be
+    what you want if the type of the variable is not a scalar or an ndarray.
+
     Examples
     --------
     >>> pprint('cov', np.array([[4., .1], [.1, 5]]))

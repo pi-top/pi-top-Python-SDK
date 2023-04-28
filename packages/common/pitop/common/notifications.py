@@ -49,7 +49,6 @@ def send_notification(
     urgency_level: NotificationUrgencyLevel = None,
     capture_notification_id: bool = True,
 ) -> str:
-
     # Check that `notify-send-ng` is available, as it's not a hard dependency of the package
     try:
         run(["dpkg-query", "-l", "notify-send-ng"], capture_output=True, check=True)

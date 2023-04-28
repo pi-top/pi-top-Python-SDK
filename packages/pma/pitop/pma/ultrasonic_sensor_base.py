@@ -285,7 +285,6 @@ class UltrasonicSensorRPI(SmoothedInputDevice, UltrasonicSensorBase):
         partial=True,
         name="ultrasonic",
     ):
-
         self._pma_port = port_name
         self.name = name
 

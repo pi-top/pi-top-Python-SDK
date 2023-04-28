@@ -5,12 +5,13 @@ from PIL import Image, ImageDraw, ImageFont
 from pitop import Camera, Pitop
 from pitop.processing.algorithms.faces import EmotionClassifier, FaceDetector
 
-"""
-Designed for the Prax robot configuration, this example will use the camera module to detect face emotions.
-The emotion will be displayed on the miniscreen alongside a confidence level. Also displayed is a live 68-point facial
-landmark detection of the face being detected.
+"""Designed for the Prax robot configuration, this example will use the camera
+module to detect face emotions. The emotion will be displayed on the miniscreen
+alongside a confidence level. Also displayed is a live 68-point facial landmark
+detection of the face being detected.
 
-To change emoji's, go here to see a list of unicodes: https://unicode.org/emoji/charts/full-emoji-list.html
+To change emoji's, go here to see a list of unicodes:
+https://unicode.org/emoji/charts/full-emoji-list.html
 """
 
 emoji_unicodes = {
@@ -55,7 +56,7 @@ def update_displayed_image(face, emotion):
         scaler *= 0.8  # scale further as face rectangle is often smaller than face feature bounds
         face_features = (face.features - translation_vector) * scaler
 
-        for (x, y) in face_features:
+        for x, y in face_features:
             canvas.point((x, y), fill=1)
 
     canvas = ImageDraw.Draw(image)

@@ -19,7 +19,7 @@ repos:
     - id: docformatter
 
 -   repo: https://github.com/rstcheck/rstcheck
-    rev: 'v6.1.1'
+    rev: 'v6.1.2'
     hooks:
     - id: rstcheck
       args: [
@@ -29,12 +29,12 @@ repos:
       ]
 
 -   repo: https://github.com/pycqa/isort
-    rev: v5.11.3
+    rev: 5.12.0
     hooks:
     - id: isort
 
 -   repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.3.0
     hooks:
     - id: black
 

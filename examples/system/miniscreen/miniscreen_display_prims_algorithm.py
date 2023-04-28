@@ -27,7 +27,6 @@ width = (miniscreen.width // 2) * 2 - 1
 height = (miniscreen.height // 2) * 2 - 1
 
 while True:
-
     print("Initialising...")
     canvas.rectangle(miniscreen.bounding_box, fill=0)
 

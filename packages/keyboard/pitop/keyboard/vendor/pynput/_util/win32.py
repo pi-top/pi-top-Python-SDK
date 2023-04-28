@@ -386,7 +386,8 @@ class ListenerMixin(object):
         This method calls the appropriate callback registered when this
         listener was created based on the event.
 
-        This method is only called if :meth:`_convert` is not implemented.
+        This method is only called if :meth:`_convert` is not
+        implemented.
         """
         raise NotImplementedError()
 
