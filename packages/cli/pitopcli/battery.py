@@ -42,7 +42,6 @@ class BatteryCLI(CliBaseClass):
                 if arg == "wattage":
                     print(wattage)
         else:
-
             if self.args.charging_state:
                 print(charging_state)
             elif self.args.capacity:

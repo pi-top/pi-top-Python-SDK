@@ -157,7 +157,6 @@ def __finalise_wav_file(file_path):
         remove(file_path)
     else:
         with open(file_path, "rb+") as file:
-
             logger.debug("Updating header information...")
 
             __update_header_in_file(file, 4, size_of_data + 36)
@@ -186,7 +185,6 @@ def __record_audio():
     _temp_file_path = temp_file_tuple[1]
 
     if path.exists("/dev/serial0"):
-
         logger.debug("Opening serial device...")
 
         serial_device = serial.Serial(
@@ -200,12 +198,10 @@ def __record_audio():
         serial_device_open = serial_device.isOpen()
 
         if serial_device_open is True:
-
             try:
                 logger.debug("Start recording")
 
                 with open(_temp_file_path, "wb") as file:
-
                     logger.debug("WRITING: initial header information")
                     file.write(__init_header_information())
 
@@ -223,9 +219,7 @@ def __record_audio():
                         bytes_to_write = bytearray()
 
                         for pcm_data_block in audio_output:
-
                             if _bitrate == 16:
-
                                 pcm_data_int = 0
                                 pcm_data_int = pcm_data_block
                                 scaled_val = int((pcm_data_int * 32768) / 255)
@@ -234,7 +228,6 @@ def __record_audio():
                                 )
 
                             else:
-
                                 pcm_data_int = pcm_data_block
                                 bytes_to_write += __from_hex(
                                     __space_separated_little_endian(pcm_data_int, 1)
@@ -308,7 +301,6 @@ def save(file_path, overwrite=False):
     if _thread_running is False:
         if _temp_file_path != "" and path.exists(_temp_file_path):
             if path.exists(file_path) is False or overwrite is True:
-
                 if path.exists(file_path):
                     remove(file_path)
 

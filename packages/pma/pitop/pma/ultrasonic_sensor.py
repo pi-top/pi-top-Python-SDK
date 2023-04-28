@@ -16,7 +16,6 @@ class UltrasonicSensor(Stateful, Recreatable):
         partial=False,
         name="ultrasonic",
     ):
-
         assert port_name in Port
         self._pma_port = port_name
         self.name = name

@@ -40,15 +40,12 @@ class PongGameState:
             self.ball_dy *= -1
 
         if self.ball_x + self.ball_dx >= 7:
-
             return self.LEFT_BAT_WIN
 
         elif self.ball_x + self.ball_dx < 0:
-
             return self.RIGHT_BAT_WIN
 
         elif self.ball_x + self.ball_dx == 0:
-
             if self.ball_y == self.bat_left_y:
                 self.ball_dx *= -1
                 self.__adjust_ball_y_velocity(1)
@@ -62,7 +59,6 @@ class PongGameState:
                 self.ball_dx *= -1
 
         elif self.ball_x + self.ball_dx == 6:
-
             if self.ball_y == self.bat_right_y:
                 self.ball_dx *= -1
                 self.__adjust_ball_y_velocity(1)
@@ -162,7 +158,6 @@ ball_color = (200, 200, 200)
 turn_counter = 0
 
 while True:
-
     ledmatrix.set_all(background_color[0], background_color[1], background_color[2])
 
     turn_counter += 1
@@ -171,30 +166,25 @@ while True:
         game_state.increase_difficulty_level()
 
     if turn_counter > 150:
-
         flash_screen(ball_color)
         turn_counter = 0
         game_state.reset()
 
     else:
-
         game_state.move_bats()
         result = game_state.move_ball()
 
         if result == game_state.LEFT_BAT_WIN:
-
             flash_screen(left_bat_color)
             turn_counter = 0
             game_state.reset()
 
         elif result == game_state.RIGHT_BAT_WIN:
-
             flash_screen(right_bat_color)
             turn_counter = 0
             game_state.reset()
 
         else:
-
             draw_ball()
             draw_bats()
             ledmatrix.show()

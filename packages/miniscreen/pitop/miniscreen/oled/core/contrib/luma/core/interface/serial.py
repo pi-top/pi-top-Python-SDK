@@ -48,7 +48,6 @@ class bitbang(object):
     def __init__(
         self, transfer_size=4096, reset_hold_time=0, reset_release_time=0, **kwargs
     ):
-
         self._transfer_size = transfer_size
 
         self._SCLK = self._configure(kwargs.get("SCLK"))

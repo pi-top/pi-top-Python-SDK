@@ -866,7 +866,6 @@ def run_tests():
         temp_map = deepcopy(life_map)
         for x in range(_w):
             for y in range(_h):
-
                 current_cell = temp_map[x][y]
                 neighbours = 0
                 neighbours = neighbours + temp_map[(x - 1) % _w][(y - 1) % _h]

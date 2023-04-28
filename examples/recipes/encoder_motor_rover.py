@@ -59,7 +59,6 @@ monitor_thread.start()
 
 rpm_speed = 100
 for _ in range(4):
-
     drive(rpm_speed)
     sleep(5)
 

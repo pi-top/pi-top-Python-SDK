@@ -105,10 +105,10 @@ class AbstractListener(threading.Thread):
     def stop(self):
         """Stops listening for events.
 
-        When this method returns, no more events will be delivered. Once this
-        method has been called, the listener instance cannot be used any more,
-        since a listener is a :class:`threading.Thread`, and once stopped it
-        cannot be restarted.
+        When this method returns, no more events will be delivered. Once
+        this method has been called, the listener instance cannot be
+        used any more, since a listener is a :class:`threading.Thread`,
+        and once stopped it cannot be restarted.
 
         To resume listening for event, a new listener must be created.
         """
