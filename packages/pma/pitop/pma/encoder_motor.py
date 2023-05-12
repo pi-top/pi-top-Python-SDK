@@ -62,7 +62,10 @@ class EncoderMotor(Stateful, Recreatable):
         self.name = name
         self._pma_port = port_name
 
-        self.__motor_core = EncoderMotorController(self._pma_port, braking_type.value)
+        if isinstance(braking_type, BrakingType):
+            braking_type = braking_type.value
+
+        self.__motor_core = EncoderMotorController(self._pma_port, braking_type)
         self.__forward_direction = forward_direction
         self.__wheel_diameter = wheel_diameter
 
