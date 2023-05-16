@@ -2,8 +2,6 @@ name: Debian Package Build
 
 on:
   pull_request:
-    branches:
-      - master
   push:
     branches:
       - master
@@ -79,7 +77,7 @@ jobs:
           # Optional, repo-specific build environment variables
           additional_env: |
             DATA="${{ secrets.DATA }}"
-            TLS_KEY="${{ secrets.TLS_KEY }}"
+            TLS_KEY="${{ secrets.CERT_PRIVATE_KEY }}"
             PYTHON_PACKAGE_VERSION="${{ steps.version.outputs.tag_latest_ltrimv }}"
 
 
