@@ -3,6 +3,7 @@ from enum import Enum, auto
 from fractions import Fraction
 from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
 from os import path, uname
+from pathlib import Path
 from subprocess import DEVNULL, PIPE, CalledProcessError, Popen, check_output
 from typing import Dict, Union
 
@@ -219,9 +220,10 @@ def get_address_for_connected_device(
             return False
 
     try:
-        current_leases = (
-            IscDhcpLeases("/var/lib/dhcp/dhcpd.leases").get_current().values()
-        )
+        leases_file = "/var/lib/dhcp/dhcpd.leases"
+        current_leases = ""
+        if Path(leases_file).exists():
+            current_leases = IscDhcpLeases(leases_file).get_current().values()
     except Exception as e:
         logger.error(f"Error reading dhcpd leases: {e}")
         return ""
