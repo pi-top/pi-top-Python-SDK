@@ -1,18 +1,12 @@
-pi-top-python-sdk (0.30.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.31.0-1) bullseye; urgency=medium
 
   * Display port label on top of components when simulating (#598)
-  * [pre-commit.ci] pre-commit autoupdate (#597)
   * Remove smbus2 to smbus patch (#603)
   * Fix updating name of Recreatables when used with add_component
   * Simulation of Componentables will render components added after starting
-  * Updated master workflow files
-  * Updated master workflow files
-  * Update codecov version used in test workflow
   * Fix deprecation warnings in test workflow
   * Deploy to pypi using Github action (#605)
-  * [pre-commit.ci] pre-commit autoupdate (#600)
   * Fix EncoderMotor class recreating from file (#607)
-  * Updated master workflow files
   * Add additional exports to the pitop and robotics modules
   * Reduce logging when dhcp leases file doesn't exist (#609)
 
