@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.31.0-2) bullseye; urgency=medium
+
+  * Fix 'deploy-to-pypi' GitHub workflow
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 22 May 2023 19:04:44 +0000
+
 pi-top-python-sdk (0.31.0-1) bullseye; urgency=medium
 
   * Display port label on top of components when simulating (#598)
