@@ -1,3 +1,17 @@
+pi-top-python-sdk (0.31.0-1) bullseye; urgency=medium
+
+  * Display port label on top of components when simulating (#598)
+  * Remove smbus2 to smbus patch (#603)
+  * Fix updating name of Recreatables when used with add_component
+  * Simulation of Componentables will render components added after starting
+  * Fix deprecation warnings in test workflow
+  * Deploy to pypi using Github action (#605)
+  * Fix EncoderMotor class recreating from file (#607)
+  * Add additional exports to the pitop and robotics modules
+  * Reduce logging when dhcp leases file doesn't exist (#609)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 19 May 2023 17:18:24 +0000
+
 pi-top-python-sdk (0.30.0-1) bullseye; urgency=medium
 
   * Add power button messages to ptdm (#589)
