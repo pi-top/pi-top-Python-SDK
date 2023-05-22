@@ -52,7 +52,7 @@ jobs:
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@v1.6.4
         with:
-          username: ${{ secrets.PYPI_USERNAME }}
+          user: ${{ secrets.PYPI_USERNAME }}
           password: ${{ secrets.PYPI_PASSWORD }}
           skip_existing: true
           verbose: true
