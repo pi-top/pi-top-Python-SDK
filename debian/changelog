@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.31.0-4) bullseye; urgency=medium
+
+  * Remove quotes from version environment variable (#614)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 13 Jun 2023 18:21:42 +0000
+
 pi-top-python-sdk (0.31.0-3) bullseye; urgency=medium
 
   * Set correct python package version on release (#612)
