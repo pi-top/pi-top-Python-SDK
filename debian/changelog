@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.31.0-3) bullseye; urgency=medium
+
+  * Set correct python package version on release (#612)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 13 Jun 2023 16:33:35 +0000
+
 pi-top-python-sdk (0.31.0-2) bullseye; urgency=medium
 
   * Fix 'deploy-to-pypi' GitHub workflow
