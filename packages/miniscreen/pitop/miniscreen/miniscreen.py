@@ -1,8 +1,13 @@
 import atexit
+import logging
+from os import environ
+from time import sleep
 
+from pitop.common.lock import PTLock
 from pitop.common.ptdm import Message, PTDMSubscribeClient
 
 from .oled import OLED
+from .oled.core import MiniscreenLockFileMonitor
 
 
 class Miniscreen(OLED):
@@ -16,6 +21,21 @@ class Miniscreen(OLED):
     """
 
     def __init__(self):
+        self.lock = PTLock("miniscreen")
+
+        # When running user or system miniscreen apps, wait until
+        # lock is released to continue
+        if self.lock.is_locked():
+            logging.info(
+                "There's another miniscreen instance running; sleeping until it's released"
+            )
+            while self.lock.is_locked():
+                sleep(1)
+
+        self.lock_file_monitor = MiniscreenLockFileMonitor(self.lock.path)
+        if environ.get("PT_MINISCREEN_SYSTEM", "0") != "1":
+            self.lock.acquire()
+
         super(Miniscreen, self).__init__()
 
         self._up_button = MiniscreenButton()
@@ -44,21 +64,18 @@ class Miniscreen(OLED):
                 Message.PUB_V3_BUTTON_UP_RELEASED: lambda: set_button_state(
                     self._up_button, pressed=False
                 ),
-                # ----------------------------------------------------------------------------------
                 Message.PUB_V3_BUTTON_DOWN_PRESSED: lambda: set_button_state(
                     self._down_button, pressed=True
                 ),
                 Message.PUB_V3_BUTTON_DOWN_RELEASED: lambda: set_button_state(
                     self._down_button, pressed=False
                 ),
-                # ----------------------------------------------------------------------------------
                 Message.PUB_V3_BUTTON_SELECT_PRESSED: lambda: set_button_state(
                     self._select_button, pressed=True
                 ),
                 Message.PUB_V3_BUTTON_SELECT_RELEASED: lambda: set_button_state(
                     self._select_button, pressed=False
                 ),
-                # ----------------------------------------------------------------------------------
                 Message.PUB_V3_BUTTON_CANCEL_PRESSED: lambda: set_button_state(
                     self._cancel_button, pressed=True
                 ),
@@ -70,10 +87,24 @@ class Miniscreen(OLED):
         self.__ptdm_subscribe_client.start_listening()
 
     def __clean_up(self):
+        self.lock_file_monitor.stop()
+        if self.lock.is_locked():
+            self.lock.release()
+
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
             pass
+
+    @property
+    def is_active(self):
+        """Determine if the current miniscreen instance is in control of the
+        miniscreen hardware.
+
+        :return: whether the miniscreen instance is in control of the miniscreen hardware.
+        :rtype: bool
+        """
+        return self.lock.is_locked()
 
     @property
     def up_button(self):
@@ -110,6 +141,75 @@ class Miniscreen(OLED):
         :rtype: :class:`pitop.miniscreen.miniscreen.MiniscreenButton`
         """
         return self._cancel_button
+
+    @property
+    def when_user_controlled(self):
+        """Function to call when user takes control of the miniscreen.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        return self.lock_file_monitor.when_user_starts_using_oled
+
+    @when_user_controlled.setter
+    def when_user_controlled(self, callback):
+        """Setter for function to call when user takes control of the
+        miniscreen.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.lock_file_monitor.when_user_starts_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.lock_file_monitor.start()
+
+    @property
+    def when_system_controlled(self):
+        """Function to call when user gives back control of the miniscreen to
+        the system.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        return self.lock_file_monitor.when_user_stops_using_oled
+
+    @when_system_controlled.setter
+    def when_system_controlled(self, callback):
+        """Setter for function to call when user gives back control of the
+        miniscreen to the system.
+
+        This is used by pt-miniscreen to update its 'user-controlled'
+        application state.
+        """
+        if not callable(callback):
+            raise ValueError("Callback must be callable")
+
+        self.lock_file_monitor.when_user_stops_using_oled = callback
+        # Lockfile thread needs to be restarted to get updated callback reference
+        self.lock_file_monitor.start()
+
+    @property
+    def _when_user_starts_using_oled(self):
+        """Deprecated function."""
+        return self.when_user_controlled
+
+    @_when_user_starts_using_oled.setter
+    def _when_user_starts_using_oled(self, callback):
+        """Deprecated function."""
+        self.when_user_controlled = callback
+
+    @property
+    def _when_user_stops_using_oled(self):
+        """Deprecated function."""
+        return self.when_system_controlled
+
+    @_when_user_stops_using_oled.setter
+    def _when_user_stops_using_oled(self, callback):
+        """Deprecated function."""
+        self.when_system_controlled = callback
 
 
 class MiniscreenButton:

@@ -1,7 +1,5 @@
 import atexit
-from os import getenv
 
-from pitop.common.lock import PTLock
 from pitop.common.ptdm import Message, PTDMSubscribeClient
 from pitop.common.singleton import Singleton
 from pitop.miniscreen import MiniscreenButton
@@ -35,19 +33,6 @@ class Buttons(metaclass=Singleton):
         self.__setup_subscribe_client()
 
         atexit.register(self.__clean_up)
-
-        self.lock = PTLock("pt-buttons")
-
-        if getenv("PT_MINISCREEN_SYSTEM", "0") != "1":
-            self.lock.acquire()
-
-    @property
-    def is_active(self):
-        """Determine if the current instance is in control of the buttons.
-
-        :rtype: bool
-        """
-        return self.lock.is_locked()
 
     def __setup_subscribe_client(self):
         def set_button_state(button, pressed):
@@ -90,13 +75,7 @@ class Buttons(metaclass=Singleton):
         )
         self.__ptdm_subscribe_client.start_listening()
 
-    def __clean_up_lock(self):
-        if self.is_active:
-            self.lock.release()
-
     def __clean_up(self):
-        self.__clean_up_lock()
-
         try:
             self.__ptdm_subscribe_client.stop_listening()
         except Exception:
