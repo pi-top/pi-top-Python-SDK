@@ -7,7 +7,7 @@ from pitop.common.ptdm import Message, PTDMSubscribeClient
 from pitop.core import ImageFunctions
 
 from .assistant import MiniscreenAssistant
-from .core import FPS_Regulator, MiniscreenLockFileMonitor, OledDeviceController
+from .core import FPS_Regulator, OledDeviceController
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,6 @@ class OLED:
 
     def __init__(self):
         self._controller = OledDeviceController(self._redraw_last_image)
-        self.lock_file_monitor = MiniscreenLockFileMonitor(self._controller.lock.path)
 
         self.assistant = MiniscreenAssistant(self.mode, self.size)
 
@@ -130,16 +129,6 @@ class OLED:
     @property
     def mode(self):
         return self.device.mode
-
-    @property
-    def is_active(self):
-        """Determine if the current OLED instance is in control of the OLED
-        hardware.
-
-        :return: whether the OLED instance is in control of the OLED hardware.
-        :rtype: bool
-        """
-        return self._controller.device_is_active()
 
     @property
     def visible(self):
@@ -557,76 +546,6 @@ class OLED:
                 self.reset()
                 break
 
-    @property
-    def when_user_controlled(self):
-        """Function to call when user takes control of the miniscreen.
-
-        This is used by pt-miniscreen to update its 'user-controlled'
-        application state.
-        """
-        return self.lock_file_monitor.when_user_starts_using_oled
-
-    @when_user_controlled.setter
-    def when_user_controlled(self, callback):
-        """Setter for function to call when user takes control of the
-        miniscreen.
-
-        This is used by pt-miniscreen to update its 'user-controlled'
-        application state.
-        """
-        if not callable(callback):
-            raise ValueError("Callback must be callable")
-
-        self.lock_file_monitor.when_user_starts_using_oled = callback
-        # Lockfile thread needs to be restarted to get updated callback reference
-        self.lock_file_monitor.start()
-
-    @property
-    def when_system_controlled(self):
-        """Function to call when user gives back control of the miniscreen to
-        the system.
-
-        This is used by pt-miniscreen to update its 'user-controlled'
-        application state.
-        """
-        return self.lock_file_monitor.when_user_stops_using_oled
-
-    @when_system_controlled.setter
-    def when_system_controlled(self, callback):
-        """Setter for function to call when user gives back control of the
-        miniscreen to the system.
-
-        This is used by pt-miniscreen to update its 'user-controlled'
-        application state.
-        """
-        if not callable(callback):
-            raise ValueError("Callback must be callable")
-
-        self.lock_file_monitor.when_user_stops_using_oled = callback
-        # Lockfile thread needs to be restarted to get updated callback reference
-        self.lock_file_monitor.start()
-
-    @property
-    def _when_user_starts_using_oled(self):
-        """Deprecated function."""
-        return self.when_user_controlled
-
-    @_when_user_starts_using_oled.setter
-    def _when_user_starts_using_oled(self, callback):
-        """Deprecated function."""
-        self.when_user_controlled = callback
-
-    @property
-    def _when_user_stops_using_oled(self):
-        """Deprecated function."""
-        return self.when_system_controlled
-
-    @_when_user_stops_using_oled.setter
-    def _when_user_stops_using_oled(self, callback):
-        """Deprecated function."""
-        self.when_system_controlled = callback
-
     def __cleanup(self):
         self.stop_animated_image()
-        self.lock_file_monitor.stop()
         self._ptdm_subscribe_client.stop_listening()
