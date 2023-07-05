@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.32.0-1) bullseye; urgency=medium
+
+  * Handle locks in main Miniscreen class (#616)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 04 Jul 2023 17:57:08 +0000
+
 pi-top-python-sdk (0.31.0-4) bullseye; urgency=medium
 
   * Remove quotes from version environment variable (#614)
