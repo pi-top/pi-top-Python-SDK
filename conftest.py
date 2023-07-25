@@ -1,6 +1,6 @@
 import sys
 from os import environ, listdir, path
-from unittest.mock import Mock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -25,7 +25,7 @@ for module in [
     "spidev",
     "pyinotify",
 ]:
-    sys.modules[module] = Mock()
+    sys.modules[module] = MagicMock()
 
 # use gpiozero fake pins
 environ["GPIOZERO_PIN_FACTORY"] = "mock"
@@ -37,62 +37,62 @@ def oled_mocks():
     MODE = "1"
     SPI_BUS = 0
 
-    miniscreen_lock_file_monitor_patch = patch(
-        "pitop.miniscreen.oled.oled.MiniscreenLockFileMonitor"
+    patches = {}
+    patches["miniscreen_lock_file_monitor"] = patch(
+        "pitop.miniscreen.miniscreen.MiniscreenLockFileMonitor"
     )
-    fps_regulator_patch = patch("pitop.miniscreen.oled.oled.FPS_Regulator")
-    ptdm_sub_client_patch = patch(
+    patches["fps_regulator"] = patch("pitop.miniscreen.oled.oled.FPS_Regulator")
+    patches["ptdm_sub_client"] = patch(
         "pitop.miniscreen.oled.core.device_controller.PTDMSubscribeClient"
     )
-    ptdm_req_client_patch = patch(
+    patches["ptdm_req_client_device_controller"] = patch(
         "pitop.miniscreen.oled.core.device_controller.PTDMRequestClient"
     )
-    ptlock_patch = patch("pitop.miniscreen.oled.core.device_controller.PTLock")
+    patches["ptdm_subscribe_client_oled"] = patch(
+        "pitop.miniscreen.oled.oled.PTDMSubscribeClient"
+    )
+    patches["ptdm_subscribe_client_miniscreen"] = patch(
+        "pitop.miniscreen.miniscreen.PTDMSubscribeClient"
+    )
+    patches["ptlock"] = patch("pitop.miniscreen.miniscreen.PTLock")
 
-    spi_client_patch = patch("pitop.miniscreen.oled.core.device_controller.spi")
-    sh1106_client_patch = patch("pitop.miniscreen.oled.core.device_controller.sh1106")
+    patches["spi_client"] = patch("pitop.miniscreen.oled.core.device_controller.spi")
+    patches["sh1106_client"] = patch(
+        "pitop.miniscreen.oled.core.device_controller.sh1106"
+    )
 
-    miniscreen_lock_file_monitor_patch.start()
-    fps_regulator_patch.start()
-    ptdm_sub_client_patch.start()
-    ptdm_req_client_mock = ptdm_req_client_patch.start()
-    ptlock_patch.start()
-    spi_client_patch.start()
-    sh1106_mock = sh1106_client_patch.start()
+    mocks = {}
+    for p in patches:
+        mocks[p] = patches[p].start()
 
-    device_mock = Mock()
+    device_mock = MagicMock()
     device_mock.mode = MODE
     device_mock.size = SIZE
     device_mock.spi_bus = SPI_BUS
-    device_mock.contrast = Mock()
+    device_mock.contrast = MagicMock()
     device_mock.bounding_box = (0, 0, SIZE[0] - 1, SIZE[1] - 1)
 
+    sh1106_mock = mocks["sh1106_client"]
     sh1106_mock.return_value = device_mock
 
-    controller = Mock()
+    controller = MagicMock()
     controller.get_device.return_value = sh1106_mock
 
-    from pitop.miniscreen.oled import OLED  # noqa: E402
-
-    oled = OLED()
-
     yield {
-        "oled": oled,
-        "ptdm_req_client_mock": ptdm_req_client_mock,
+        "ptdm_req_client_mock": mocks["ptdm_req_client_device_controller"],
     }
 
-    miniscreen_lock_file_monitor_patch.stop()
-    fps_regulator_patch.stop()
-    ptdm_sub_client_patch.stop()
-    ptdm_req_client_patch.stop()
-    ptlock_patch.stop()
-    spi_client_patch.stop()
-    sh1106_client_patch.stop()
+    for p in patches:
+        patches[p].stop()
 
 
 @pytest.fixture
 def oled(oled_mocks):
-    yield oled_mocks.get("oled")
+    from pitop.miniscreen.oled import OLED  # noqa: E402
+
+    oled = OLED()
+    yield oled
+    del oled
 
 
 @pytest.fixture
@@ -101,8 +101,8 @@ def analog_sensor_mocks():
 
     from pitop.pma import LightSensor, Potentiometer, SoundSensor, UltrasonicSensor
 
-    LightSensor.read = Mock(return_value=0)
-    Potentiometer.read = Mock(return_value=0)
+    LightSensor.read = MagicMock(return_value=0)
+    Potentiometer.read = MagicMock(return_value=0)
 
     # object properties are mocked differently.
     # we need to keep track of the mock object to be able to modify the returned value.

@@ -1,5 +1,5 @@
 from unittest import TestCase, skip
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 from tests.utils import wait_until
 
@@ -8,15 +8,16 @@ class PTDMSubscribeClientTestCase(TestCase):
     def setUp(self):
         self.zmq_patch = patch("pitop.common.ptdm.zmq")
         self.zmq_mock = self.zmq_patch.start()
-        self.poller_mock = Mock()
-        self.context_mock = Mock()
-        self.socket_mock = Mock()
+        self.poller_mock = MagicMock()
+        self.context_mock = MagicMock()
+        self.socket_mock = MagicMock()
 
         self.socket_mock.recv_string.return_value = ""
         self.context_mock.socket.return_value = self.socket_mock
         self.zmq_mock.Context.return_value = self.context_mock
         self.zmq_mock.Poller.return_value = self.poller_mock
         self.poller_mock.poll.return_value = []
+
         self.addCleanup(self.zmq_patch.stop)
 
     @skip
@@ -94,9 +95,9 @@ class PTDMRequestClientTestCase(TestCase):
     def setUp(self):
         self.zmq_patch = patch("pitop.common.ptdm.zmq")
         self.zmq_mock = self.zmq_patch.start()
-        self.poller_mock = Mock()
-        self.context_mock = Mock()
-        self.socket_mock = Mock()
+        self.poller_mock = MagicMock()
+        self.context_mock = MagicMock()
+        self.socket_mock = MagicMock()
 
         self.socket_mock.recv_string.return_value = ""
         self.context_mock.socket.return_value = self.socket_mock
@@ -126,7 +127,7 @@ class PTDMRequestClientTestCase(TestCase):
         self.socket_mock.recv_string.return_value = f"{Message.RSP_SET_OLED_CONTROL}"
 
         client = PTDMRequestClient()
-        client.send_message = Mock()
+        client.send_message = MagicMock()
 
         message = Message.from_parts(Message.REQ_SET_OLED_CONTROL, [0])
         assert client.send_message.call_count == 0

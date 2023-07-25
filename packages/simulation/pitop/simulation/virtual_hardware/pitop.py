@@ -17,16 +17,16 @@ def mock_pitop():
     SPI_BUS = 0
 
     miniscreen_lock_file_monitor_patch = patch(
-        "pitop.miniscreen.oled.oled.MiniscreenLockFileMonitor"
+        "pitop.miniscreen.miniscreen.MiniscreenLockFileMonitor"
     )
     fps_regulator_patch = patch("pitop.miniscreen.oled.oled.FPS_Regulator")
+    ptlock_patch = patch("pitop.miniscreen.miniscreen.PTLock")
     ptdm_sub_client_patch = patch(
         "pitop.miniscreen.oled.core.device_controller.PTDMSubscribeClient"
     )
     ptdm_req_client_patch = patch(
         "pitop.miniscreen.oled.core.device_controller.PTDMRequestClient"
     )
-    ptlock_patch = patch("pitop.miniscreen.oled.core.device_controller.PTLock")
 
     spi_client_patch = patch("pitop.miniscreen.oled.core.device_controller.spi")
     sh1106_client_patch = patch("pitop.miniscreen.oled.core.device_controller.sh1106")
@@ -40,7 +40,7 @@ def mock_pitop():
 
     # object properties are mocked differently.
     # we need to keep track of the mock object to be able to modify the returned value.
-    # also, the mock  object  can't be set a s an attribute directly, since it will only store its value
+    # also, the mock object can't be set as an attribute directly since it will only store its value
     us_patch_obj = patch.object(
         UltrasonicSensor, "distance", return_value=0, new_callable=PropertyMock
     )

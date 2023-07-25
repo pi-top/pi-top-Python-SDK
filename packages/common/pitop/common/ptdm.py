@@ -414,7 +414,7 @@ class PTDMRequestClient:
 
 
 class PTDMSubscribeClient:
-    __thread = Thread()
+    __thread: Thread
     URI = "tcp://127.0.0.1:3781"
 
     def __init__(self):

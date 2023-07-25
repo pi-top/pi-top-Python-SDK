@@ -270,7 +270,7 @@ def record():
     if _thread_running is False:
         _thread_running = True
         _continue_writing = True
-        _recording_thread = Thread(group=None, target=__thread_method)
+        _recording_thread = Thread(group=None, target=__thread_method, daemon=True)
         _recording_thread.start()
     else:
         logger.info("Microphone is already recording!")

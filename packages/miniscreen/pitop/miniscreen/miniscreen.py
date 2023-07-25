@@ -25,7 +25,7 @@ class Miniscreen(OLED):
 
         # When running user or system miniscreen apps, wait until
         # lock is released to continue
-        if self.lock.is_locked():
+        if self.lock.is_locked() is True:
             logging.info(
                 "There's another miniscreen instance running; sleeping until it's released"
             )
@@ -33,7 +33,7 @@ class Miniscreen(OLED):
                 sleep(1)
 
         self.lock_file_monitor = MiniscreenLockFileMonitor(self.lock.path)
-        if environ.get("PT_MINISCREEN_SYSTEM", "0") != "1":
+        if environ.get("PT_MINISCREEN_SYSTEM", "") != "1":
             self.lock.acquire()
 
         super(Miniscreen, self).__init__()

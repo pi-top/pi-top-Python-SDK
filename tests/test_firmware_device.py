@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -9,7 +9,7 @@ from pitop.common.firmware_device import PTInvalidFirmwareDeviceException  # noq
 
 def get_mocked_firmware_device(part_name):
     cls = FirmwareDevice
-    cls.get_part_name = Mock(return_value=part_name)
+    cls.get_part_name = MagicMock(return_value=part_name)
     return cls
 
 

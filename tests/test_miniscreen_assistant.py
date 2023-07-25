@@ -221,28 +221,28 @@ def test_mono_font_path():
         assert assistant.get_mono_font_path(bold, italics) == expected_font
 
 
-def test_top_right(oled):
+def test_top_right():
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
     assert assistant.top_right() == (SIZE[0] - 1, 0)
 
 
-def test_top_left(oled):
+def test_top_left():
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
     assert assistant.top_left() == (0, 0)
 
 
-def test_bottom_right(oled):
+def test_bottom_right():
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)
     assert assistant.bottom_right() == (SIZE[0] - 1, SIZE[1] - 1)
 
 
-def test_bottom_left(oled):
+def test_bottom_left():
     from pitop.miniscreen.oled.assistant import MiniscreenAssistant
 
     assistant = MiniscreenAssistant(MODE, SIZE)

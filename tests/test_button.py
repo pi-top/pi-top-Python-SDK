@@ -41,6 +41,7 @@ def test_button(make_button):
     assert button.state["is_pressed"]
 
 
+@pytest.mark.simulationtest
 def test_button_simulate(make_button, create_sim, mocker, snapshot):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
@@ -59,15 +60,16 @@ def test_button_simulate(make_button, create_sim, mocker, snapshot):
     sim.event(pygame.MOUSEBUTTONDOWN, "main")
 
     # these events are a bit slow
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
     sim.event(pygame.MOUSEBUTTONUP, "main")
 
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.simulationtest
 def test_button_visualize(make_button, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch(

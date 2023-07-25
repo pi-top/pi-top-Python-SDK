@@ -5,6 +5,7 @@ pytest-cov
 pytest-mock
 pytest-rerunfailures
 pytest-snapshot
+pytest-timeout
 pytest-xdist
 # Dependencies
 Pillow>=8.1.2,<9.0

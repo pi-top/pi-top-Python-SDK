@@ -5,10 +5,10 @@ from pitop.system import device_type
 
 class SupportsMiniscreen:
     def __init__(self):
-        from pitop.miniscreen import Miniscreen
-
         self._miniscreen = None
         if device_type() == DeviceName.pi_top_4.value:
+            from pitop.miniscreen import Miniscreen
+
             self._miniscreen = Miniscreen()
 
     @property
