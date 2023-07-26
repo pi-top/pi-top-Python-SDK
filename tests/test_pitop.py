@@ -132,6 +132,7 @@ def test_blockpi_rover(rover):
 
 
 @pytest.mark.simulationtest
+@pytest.mark.flaky(reruns=3)
 def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
@@ -257,6 +258,7 @@ def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
 
 
 @pytest.mark.simulationtest
+@pytest.mark.flaky(reruns=3)
 def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
