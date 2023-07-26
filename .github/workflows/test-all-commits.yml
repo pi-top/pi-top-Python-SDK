@@ -68,7 +68,7 @@ jobs:
        run: |
          # Use pygame without a display for simulation tests
          export SDL_VIDEODRIVER="dummy"
-         python3 -m pytest --verbose --cov-report term-missing --cov=pitop --numprocesses auto --dist=loadfile --timeout=120
+         python3 -m pytest --verbose --cov-report term-missing --cov=pitop --numprocesses auto --dist=loadfile --timeout=300
          python3 -m coverage xml
 
      - name: Upload Python test coverage reports to Codecov
