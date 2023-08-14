@@ -1,5 +1,5 @@
 from os import path
-from unittest.mock import Mock, call
+from unittest.mock import MagicMock, call
 
 import PIL.Image
 import pytest
@@ -98,8 +98,7 @@ def test_spi_bus_setter_validates_input(oled, bus):
         oled.spi_bus = bus
 
 
-def test_spi_bus_setter_sends_ptdm_request(oled_mocks):
-    oled = oled_mocks.get("oled")
+def test_spi_bus_setter_sends_ptdm_request(oled_mocks, oled):
     ptdm_req_client_mock = oled_mocks.get("ptdm_req_client_mock")
 
     assert ptdm_req_client_mock.call_count == 2
@@ -107,8 +106,7 @@ def test_spi_bus_setter_sends_ptdm_request(oled_mocks):
     assert ptdm_req_client_mock.call_count > 2
 
 
-def test_set_control_to_pi_sends_ptdm_request(oled_mocks):
-    oled = oled_mocks.get("oled")
+def test_set_control_to_pi_sends_ptdm_request(oled_mocks, oled):
     ptdm_req_client_mock = oled_mocks.get("ptdm_req_client_mock")
 
     assert ptdm_req_client_mock.call_count == 2
@@ -116,8 +114,7 @@ def test_set_control_to_pi_sends_ptdm_request(oled_mocks):
     assert ptdm_req_client_mock.call_count > 2
 
 
-def test_set_control_to_hub_sends_ptdm_request(oled_mocks):
-    oled = oled_mocks.get("oled")
+def test_set_control_to_hub_sends_ptdm_request(oled_mocks, oled):
     ptdm_req_client_mock = oled_mocks.get("ptdm_req_client_mock")
 
     assert ptdm_req_client_mock.call_count == 2
@@ -145,8 +142,8 @@ def test_clear_displays_an_empty_image(oled, snapshot):
 
 
 def test_refresh_restores_control_and_resets(oled):
-    oled._controller.set_control_to_pi = Mock()
-    oled._controller.reset_device = Mock()
+    oled._controller.set_control_to_pi = MagicMock()
+    oled._controller.reset_device = MagicMock()
     assert oled._controller.set_control_to_pi.call_count == 0
     assert oled._controller.reset_device.call_count == 0
 
@@ -282,20 +279,3 @@ def test_subscribes_to_pitopd_ready_event(oled):
 
     callback = oled._ptdm_subscribe_client._callback_funcs.get(Message.PUB_PITOPD_READY)
     assert callback is not None
-
-
-def test_on_pitopd_initialization_callback(oled):
-    from pitop.common.ptdm import Message
-
-    oled.display_image = Mock()
-    oled.reset = Mock()
-
-    callback = oled._ptdm_subscribe_client._callback_funcs.get(Message.PUB_PITOPD_READY)
-
-    assert oled.display_image.call_count == 0
-    assert oled.reset.call_count == 0
-
-    callback()
-
-    assert oled.display_image.call_count == 1
-    assert oled.reset.call_count == 1

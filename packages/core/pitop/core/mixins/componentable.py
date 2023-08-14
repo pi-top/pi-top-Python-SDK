@@ -17,6 +17,8 @@ class Componentable(Stateful, Recreatable):
         self.close()
 
     def children_gen(self):
+        if not hasattr(self, "children"):
+            return
         for child_name in self.children:
             if hasattr(self, child_name):
                 child = getattr(self, child_name)

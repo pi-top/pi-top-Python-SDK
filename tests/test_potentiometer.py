@@ -35,6 +35,7 @@ def test_potentiometer(make_potentiometer, potentiometer_mock):
     assert potentiometer.state["position"] == 100
 
 
+@pytest.mark.simulationtest
 def test_potentiometer_simulate(
     make_potentiometer, create_sim, mocker, snapshot, potentiometer_mock
 ):

@@ -35,6 +35,7 @@ def test_light_sensor(make_light_sensor, light_sensor_mock):
     assert light_sensor.state["reading"] == 100
 
 
+@pytest.mark.simulationtest
 def test_light_sensor_simulate(
     make_light_sensor, create_sim, mocker, snapshot, light_sensor_mock
 ):

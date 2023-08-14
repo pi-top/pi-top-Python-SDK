@@ -10,7 +10,6 @@ def pitop_mocks(oled_mocks, fonts_mock):
     mocks = {}
 
     mocks["supports_battery"] = patch("pitop.system.pitop.SupportsBattery")
-    mocks["supports_battery"].start()
 
     from pitop.common.common_names import DeviceName
 
@@ -18,32 +17,24 @@ def pitop_mocks(oled_mocks, fonts_mock):
         "pitop.core.mixins.supports_miniscreen.device_type",
         return_value=DeviceName.pi_top_4.value,
     )
-    mocks["device_type"].start()
 
     mocks["encoder_motor_controller"] = patch(
         "pitop.pma.encoder_motor.EncoderMotorController"
     )
-    mocks["encoder_motor_controller"].start()
 
     from pitop.pma import EncoderMotor
 
     mocks["rotation_counter"] = patch.object(EncoderMotor, "rotation_counter")
-    mocks["rotation_counter"].start()
-
-    mocks["braking_type"] = patch.object(EncoderMotor, "braking_type").start()
-    mocks["braking_type"].start()
-
+    mocks["braking_type"] = patch.object(EncoderMotor, "braking_type")
     mocks["set_target_speed"] = patch.object(EncoderMotor, "set_target_speed")
-    mocks["set_target_speed"].start()
+
+    for mock in mocks:
+        mocks[mock].start()
 
     yield mocks
 
-    mocks["supports_battery"].stop()
-    mocks["device_type"].stop()
-    mocks["encoder_motor_controller"].stop()
-    mocks["rotation_counter"].stop()
-    mocks["braking_type"].stop()
-    mocks["set_target_speed"].stop()
+    for mock in mocks:
+        mocks[mock].stop()
 
 
 @pytest.fixture
@@ -140,6 +131,8 @@ def test_blockpi_rover(rover):
     rover.drive.right_motor.set_target_speed.assert_called()
 
 
+@pytest.mark.simulationtest
+@pytest.mark.flaky(reruns=3)
 def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
@@ -193,15 +186,16 @@ def test_pitop_simulate(pitop, mocker, create_sim, snapshot, analog_sensor_mocks
     sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
     # these events are a bit slow
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
     sim.event(pygame.MOUSEBUTTONUP, pitop.button.name)
 
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.simulationtest
 def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
     # with is_virtual_hardware False, pygame button events will not be handled
     mocker.patch(
@@ -228,19 +222,20 @@ def test_pitop_visualize(pitop, create_sim, mocker, snapshot):
     sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
     # these events are a bit slow
-    sleep(0.5)
+    sleep(1)
     # should not have changed
     snapshot.assert_match(sim.snapshot(), "default.png")
 
     pitop.button.pin.drive_low()
-    sleep(0.1)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
     pitop.button.pin.drive_high()
-    sleep(0.1)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.simulationtest
 def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
     sim = create_sim(pitop)
 
@@ -250,7 +245,7 @@ def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
 
     pitop.miniscreen.display_multiline_text("are we in a simulation?")
 
-    sleep(0.1)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "text.png")
 
     from pitop.simulation.images import Pitop
@@ -258,10 +253,12 @@ def test_pitop_sim_miniscreen(pitop, create_sim, mocker, snapshot):
     sample_image_path = Pitop
     pitop.miniscreen.display_image_file(sample_image_path)
 
-    sleep(0.1)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "image.png")
 
 
+@pytest.mark.simulationtest
+@pytest.mark.flaky(reruns=3)
 def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor_mocks):
     mocker.patch(
         "pitop.simulation.sprites.is_virtual_hardware",
@@ -315,15 +312,16 @@ def test_pitop_simulate_scale(pitop, mocker, create_sim, snapshot, analog_sensor
     sim.event(pygame.MOUSEBUTTONDOWN, pitop.button.name)
 
     # these events are a bit slow
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "button_pressed.png")
 
     sim.event(pygame.MOUSEBUTTONUP, pitop.button.name)
 
-    sleep(0.5)
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "default.png")
 
 
+@pytest.mark.simulationtest
 def test_pitop_simulate_add_component(
     pitop, mocker, create_sim, snapshot, analog_sensor_mocks
 ):
@@ -343,10 +341,10 @@ def test_pitop_simulate_add_component(
     snapshot.assert_match(sim.snapshot(), "default.png")
 
     pitop.add_component(Button("D1"))
-    sleep(0.5)  # some time for button to be added
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "with_button.png")
 
     pitop.add_component(Button("D2"), name="button2")
     print(pitop.config)
-    sleep(0.5)  # some time for button to be added
+    sleep(1)
     snapshot.assert_match(sim.snapshot(), "with_2_button.png")

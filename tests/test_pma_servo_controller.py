@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -75,8 +75,8 @@ def test_set_pwm_frequency_read_write(servo_controller):
     pwm_frequency_value = 200
     with patch.object(controller, "_mcu_device") as mcu_device_mock:
         # setup r/w mocks
-        write_byte_mock = mcu_device_mock.write_byte = Mock()
-        read_unsigned_byte_mock = mcu_device_mock.read_unsigned_byte = Mock(
+        write_byte_mock = mcu_device_mock.write_byte = MagicMock()
+        read_unsigned_byte_mock = mcu_device_mock.read_unsigned_byte = MagicMock(
             return_value=pwm_frequency_value
         )
 
@@ -101,8 +101,8 @@ def test_acceleration_mode_read_write(servo_controller):
     with patch.object(controller, "_mcu_device") as mcu_device_mock:
         for acceleration_mode in (0, 1):
             # setup r/w mocks
-            write_byte_mock = mcu_device_mock.write_byte = Mock()
-            read_unsigned_byte_mock = mcu_device_mock.read_unsigned_byte = Mock(
+            write_byte_mock = mcu_device_mock.write_byte = MagicMock()
+            read_unsigned_byte_mock = mcu_device_mock.read_unsigned_byte = MagicMock(
                 return_value=acceleration_mode
             )
 

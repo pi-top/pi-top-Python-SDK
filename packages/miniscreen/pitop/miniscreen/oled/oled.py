@@ -389,7 +389,7 @@ class OLED:
         self.__kill_thread = False
         if background is True:
             self.__auto_play_thread = Thread(
-                target=self.__auto_play, args=(image, loop)
+                target=self.__auto_play, args=(image, loop), daemon=True
             )
             self.__auto_play_thread.start()
         else:

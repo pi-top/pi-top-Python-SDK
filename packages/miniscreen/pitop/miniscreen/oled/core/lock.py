@@ -35,8 +35,7 @@ class MiniscreenLockFileMonitor:
 
     def start(self):
         self.stop()
-        self.thread = Thread(target=self._monitor_lockfile)
-        self.thread.daemon = True
+        self.thread = Thread(target=self._monitor_lockfile, daemon=True)
         self.thread.start()
 
     def stop(self):

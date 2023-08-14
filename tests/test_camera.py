@@ -1,7 +1,7 @@
 from threading import Thread
 from time import perf_counter
 from unittest import TestCase, skip
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 import numpy
 from PIL import Image
@@ -17,9 +17,9 @@ class CameraTestCase(TestCase):
         self.cv2_patch = patch("pitop.camera.core.cameras.usb_camera.import_opencv")
         self.cv2_mock = self.cv2_patch.start()
 
-        self.read_mock = Mock()
+        self.read_mock = MagicMock()
         self.read_mock.read.return_value = [1, image.data]
-        self.vc_mock = Mock()
+        self.vc_mock = MagicMock()
         self.vc_mock.VideoCapture.return_value = self.read_mock
         self.cv2_mock.return_value = self.vc_mock
         self.addCleanup(self.cv2_patch.stop)
@@ -77,7 +77,7 @@ class CameraTestCase(TestCase):
     def test_stops_background_thread_if_camera_is_not_opened(self):
         c = self.Camera()
         self.assertTrue(c._process_image_thread.is_alive())
-        c._camera.is_opened = Mock(return_value=False)
+        c._camera.is_opened = MagicMock(return_value=False)
         wait_until(lambda: c._process_image_thread.is_alive() is False)
 
     def test_current_frame_pil(self):

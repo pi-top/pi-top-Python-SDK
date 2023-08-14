@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -25,9 +25,9 @@ def setup_mocks():
 
     ptlock_mock.assert_called_once_with(f"i2c_{hex(_dummy_device_address)}")
 
-    mock_read_device = Mock()
-    _mock_write_device = Mock()
-    ptlock_mock = Mock(__enter__=Mock(), __exit__=Mock())
+    mock_read_device = MagicMock()
+    _mock_write_device = MagicMock()
+    ptlock_mock = MagicMock(__enter__=MagicMock(), __exit__=MagicMock())
 
     i2c_device._lock = ptlock_mock
 
