@@ -20,32 +20,63 @@ class PitopSoftware:
         services = {}
 
         for service_name in pt_service_names:
-            output = check_output(
-                [
-                    "systemctl",
-                    "show",
-                    service_name,
-                    "--full",
-                    "--no-legend",
-                    "--lines=0",
-                    "--no-pager",
-                ]
-            )
-            output = output.decode("UTF-8")
-            lines = output.split("\n")
-            service = SystemdService.from_lines(lines)
+            try:
+                output = check_output(
+                    [
+                        "systemctl",
+                        "show",
+                        service_name,
+                        "--full",
+                        "--no-legend",
+                        "--lines=0",
+                        "--no-pager",
+                    ]
+                )
+                output = output.decode("UTF-8")
+                lines = output.split("\n")
+                service = SystemdService.from_lines(lines)
 
-            active_state = service.active_state
-            if active_state not in services:
-                services[active_state] = []
-            services[active_state].append(service)
+                active_state = service.active_state
+                if active_state not in services:
+                    services[active_state] = []
+                services[active_state].append(service)
+            except Exception:
+                continue
 
         return services
+
+    def _get_service_instances(self, name: str) -> list:
+        instances = []
+        try:
+            output = (
+                check_output(
+                    [
+                        "systemctl",
+                        "list-units",
+                    ]
+                )
+                .decode("UTF-8")
+                .split("\n")
+            )
+            for line in output:
+                data = line.strip().split(" ")
+                if data[0].startswith(name):
+                    instances.append(data[0])
+        except Exception:
+            pass
+        return instances
 
     def get_pt_systemd_service_names(self):
         pt_service_names = []
         for systemd_service_file in sorted(listdir("/lib/systemd/system")):
-            if systemd_service_file.startswith("pt-"):
+            if not systemd_service_file.startswith("pt-"):
+                continue
+            if systemd_service_file.endswith("@.service"):
+                # found a template service, that runs with parameters
+                # eg: pt-usb-setup
+                instances = self._get_service_instances(systemd_service_file)
+                pt_service_names += instances
+            else:
                 pt_service_names.append(systemd_service_file)
         return pt_service_names
 
