@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.32.0-2) bullseye; urgency=medium
+pi-top-python-sdk (0.32.1-1) bullseye; urgency=medium
 
   * Fix test runs  (#620)
   * Support CLI handles systemd template units (#624)
