@@ -44,8 +44,11 @@ __requires__ = [
     f"pitop.common=={__version__}",
     "Pillow>=8.1.2,<9.0",
     "numpy>1.19.5,<2.0.0",
-    "opencv-python>=4.5.1,<4.6.0",
 ]
+
+__extra_requires__ = {
+    "computer_vision": ["opencv-python>=4.5.1,<4.6.0"],
+}
 
 
 def main():
@@ -71,6 +74,7 @@ def main():
             include_package_data=True,
             platforms=__platforms__,
             install_requires=__requires__,
+            extras_require=__extra_requires__,
         )
 
 
