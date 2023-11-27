@@ -58,7 +58,7 @@ jobs:
       - name: Get latest semver tag and latest version in changelog
         run: |
           set -x
-
+          sudo apt update
           sudo apt install -y --no-install-recommends dpkg-dev npm
           npm install -g git-latest-semver-tag
 
