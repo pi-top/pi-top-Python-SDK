@@ -1,0 +1,2 @@
+python3-pitop-cli: no-manual-page usr/bin/pi-top
+python3-pitop-cli: no-manual-page usr/bin/pt

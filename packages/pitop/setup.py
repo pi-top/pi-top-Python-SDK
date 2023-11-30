@@ -75,10 +75,12 @@ __requires__ = [
     #############
     # Webserver #
     #############
-    "flask>=1.1.2,<2.0.0",
+    "flask>=2.0.0,<3.0.0;python_version=='3.11'",
+    "flask>=1.1.2,<2.0.0;python_version=='3.9'",
     "flask-cors>=3.0.9,<4.0.0",
     "flask-sockets>=0.2.1,<1.0",
-    "gevent>=20.9.0,<21.0.0",
+    "gevent>=20.9.0,<21.0.0;python_version=='3.9'",
+    "gevent>=22.0.0,<23.0.0;python_version==3.11'",
     "gevent-websocket>=0.10.1,<1.0.0",
 ]
 
