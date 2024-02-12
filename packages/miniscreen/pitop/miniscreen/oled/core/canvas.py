@@ -265,7 +265,8 @@ class Canvas:
     def top_left(self):
         """Gets the top left corner of the pi-top OLED display.
 
-        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :return: The top-left coordinates of the canvas bounding box as
+            a tuple
         :rtype: tuple
         """
         return self.__get_corner(0, 1)
@@ -273,7 +274,8 @@ class Canvas:
     def top_right(self):
         """Gets the top-right corner of the pi-top OLED display.
 
-        :return: The top-right coordinates of the canvas bounding box as a tuple
+        :return: The top-right coordinates of the canvas bounding box as
+            a tuple
         :rtype: tuple
         """
         return self.__get_corner(2, 1)
@@ -281,7 +283,8 @@ class Canvas:
     def bottom_left(self):
         """Gets the bottom-left corner of the pi-top OLED display.
 
-        :return: The bottom-left coordinates of the canvas bounding box as a tuple
+        :return: The bottom-left coordinates of the canvas bounding box
+            as a tuple
         :rtype: tuple
         """
         return self.__get_corner(0, 3)
@@ -289,7 +292,8 @@ class Canvas:
     def bottom_right(self):
         """Gets the bottom-right corner of the pi-top OLED display.
 
-        :return: The bottom-right coordinates of the canvas bounding box as a tuple
+        :return: The bottom-right coordinates of the canvas bounding box
+            as a tuple
         :rtype: tuple
         """
         return self.__get_corner(2, 3)
@@ -398,8 +402,9 @@ class Canvas:
         """Return the size of the given string, in pixels, as it would be
         rendered to the canvas.
 
-        :param string text:  Text to be measured. If it contains any newline
-            characters, the text is passed on to multiline_textsize()
+        :param string text: Text to be measured. If it contains any
+            newline characters, the text is passed on to
+            multiline_textsize()
         :param int spacing: The number of pixels between lines
         :return: int
         """
@@ -412,8 +417,9 @@ class Canvas:
         """Return the size of the given string, in pixels, as it would be
         rendered to the canvas.
 
-        :param string text:  Text to be measured. If it contains any newline
-            characters, the text is passed on to multiline_textsize()
+        :param string text: Text to be measured. If it contains any
+            newline characters, the text is passed on to
+            multiline_textsize()
         :param int spacing: The number of pixels between lines
         :return: int
         """

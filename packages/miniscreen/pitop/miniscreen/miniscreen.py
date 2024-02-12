@@ -101,7 +101,8 @@ class Miniscreen(OLED):
         """Determine if the current miniscreen instance is in control of the
         miniscreen hardware.
 
-        :return: whether the miniscreen instance is in control of the miniscreen hardware.
+        :return: whether the miniscreen instance is in control of the
+            miniscreen hardware.
         :rtype: bool
         """
         return self.lock.is_locked()
@@ -244,8 +245,8 @@ class MiniscreenButton:
         set, this callback function will be invoked when this event happens.
 
         :type callback: Function
-        :param callback:
-            Callback function to run when a button is pressed.
+        :param callback: Callback function to run when a button is
+            pressed.
         """
         return self._when_pressed
 
@@ -259,8 +260,8 @@ class MiniscreenButton:
         set, this callback function will be invoked when this event happens.
 
         :type callback: Function
-        :param callback:
-            Callback function to run when a button is released.
+        :param callback: Callback function to run when a button is
+            released.
         """
         return self._when_released
 

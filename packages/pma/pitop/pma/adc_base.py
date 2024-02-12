@@ -10,12 +10,13 @@ class ADCBase(Stateful, Recreatable):
 
     An internal class used as a base for other components.
 
-    Contains logic to read from an Analog-to-Digital Converter. An ADC is a electronic
-    component that converts an analog signal, such as a sound picked up by a microphone
-    or light entering a digital camera, into a digital signal which can be processed by
-    a digital circuit.
+    Contains logic to read from an Analog-to-Digital Converter. An ADC
+    is a electronic component that converts an analog signal, such as a
+    sound picked up by a microphone or light entering a digital camera,
+    into a digital signal which can be processed by a digital circuit.
 
-    :param str port_name: The ID for the port to which this component is connected
+    :param str port_name: The ID for the port to which this component is
+        connected
     """
 
     def __init__(self, port_name, pin_number=1, name="adcbase", number_of_samples=1):
@@ -50,7 +51,8 @@ class ADCBase(Stateful, Recreatable):
         over multiple reads.
 
         :param number_of_samples: Number of samples to take.
-        :param delay_between_samples: Delay between taking samples (if more than one)
+        :param delay_between_samples: Delay between taking samples (if
+            more than one)
         :param peak_detection: Use peak detection registers (advanced)
         :return: The value read from the ADC
         :rtype: float

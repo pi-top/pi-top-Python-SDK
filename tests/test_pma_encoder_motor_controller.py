@@ -48,7 +48,7 @@ class EncoderMotorControllerTestCase(TestCase):
                 controller.set_braking_type(brake_type)
 
     def test_power_returns_none_if_not_on_mode_0(self):
-        """power() returns None if not on Mode 0."""
+        """Power() returns None if not on Mode 0."""
         controller = EncoderMotorController(port="M1")
         mode_mock = controller.control_mode = MagicMock()
 
@@ -75,7 +75,7 @@ class EncoderMotorControllerTestCase(TestCase):
             self.assertEqual(controller.rpm_with_rotations(), None)
 
     def test_stop_works_on_all_modes(self):
-        """stop() stops the motor in all modes."""
+        """Stop() stops the motor in all modes."""
         controller = EncoderMotorController(port="M1")
         mode_mock = controller.control_mode = MagicMock()
 
@@ -108,9 +108,9 @@ class EncoderMotorControllerTestCase(TestCase):
 
                 # setup r/w mocks
                 write_byte_mock = controller._mcu_device.write_byte = MagicMock()
-                read_unsigned_byte_mock = (
-                    controller._mcu_device.read_unsigned_byte
-                ) = MagicMock()
+                read_unsigned_byte_mock = controller._mcu_device.read_unsigned_byte = (
+                    MagicMock()
+                )
                 read_unsigned_byte_mock.return_value = braking_type
 
                 # test
@@ -135,9 +135,9 @@ class EncoderMotorControllerTestCase(TestCase):
 
                 # setup r/w mocks
                 write_byte_mock = controller._mcu_device.write_byte = MagicMock()
-                read_unsigned_byte_mock = (
-                    controller._mcu_device.read_unsigned_byte
-                ) = MagicMock()
+                read_unsigned_byte_mock = controller._mcu_device.read_unsigned_byte = (
+                    MagicMock()
+                )
                 read_unsigned_byte_mock.return_value = control_mode.value
 
                 # test
@@ -166,9 +166,9 @@ class EncoderMotorControllerTestCase(TestCase):
 
             # setup r/w mocks
             write_word_mock = controller._mcu_device.write_word = MagicMock()
-            read_signed_word_mock = (
-                controller._mcu_device.read_signed_word
-            ) = MagicMock()
+            read_signed_word_mock = controller._mcu_device.read_signed_word = (
+                MagicMock()
+            )
             read_signed_word_mock.return_value = power_value
 
             # test
@@ -199,9 +199,9 @@ class EncoderMotorControllerTestCase(TestCase):
 
             # setup r/w mocks
             write_word_mock = controller._mcu_device.write_word = MagicMock()
-            read_signed_word_mock = (
-                controller._mcu_device.read_signed_word
-            ) = MagicMock()
+            read_signed_word_mock = controller._mcu_device.read_signed_word = (
+                MagicMock()
+            )
             read_signed_word_mock.return_value = rpm_value
 
             # test

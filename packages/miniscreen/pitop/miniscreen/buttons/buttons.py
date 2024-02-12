@@ -83,7 +83,7 @@ class Buttons(metaclass=Singleton):
 
 
 class UpButton(MiniscreenButton):
-    """pi-top [4] Miniscreen 'Up' button."""
+    """Pi-top [4] Miniscreen 'Up' button."""
 
     def __init__(self):
         super(UpButton, self).__init__()
@@ -93,7 +93,7 @@ class UpButton(MiniscreenButton):
 
 
 class DownButton(MiniscreenButton):
-    """pi-top [4] Miniscreen 'Down' button."""
+    """Pi-top [4] Miniscreen 'Down' button."""
 
     def __init__(self):
         super(DownButton, self).__init__()
@@ -103,7 +103,7 @@ class DownButton(MiniscreenButton):
 
 
 class SelectButton(MiniscreenButton):
-    """pi-top [4] Miniscreen 'Select' button."""
+    """Pi-top [4] Miniscreen 'Select' button."""
 
     def __init__(self):
         super(SelectButton, self).__init__()
@@ -113,7 +113,7 @@ class SelectButton(MiniscreenButton):
 
 
 class CancelButton(MiniscreenButton):
-    """pi-top [4] Miniscreen 'Cancel' button."""
+    """Pi-top [4] Miniscreen 'Cancel' button."""
 
     def __init__(self):
         super(CancelButton, self).__init__()

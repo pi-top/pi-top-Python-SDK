@@ -841,7 +841,7 @@ class KalmanFilter(object):
 
     @property
     def log_likelihood(self):
-        """log-likelihood of the last measurement."""
+        """Log-likelihood of the last measurement."""
         if self._log_likelihood is None:
             self._log_likelihood = logpdf(x=self.y, cov=self.S)
         return self._log_likelihood
@@ -886,7 +886,7 @@ class KalmanFilter(object):
         return self._alpha_sq**0.5
 
     def log_likelihood_of(self, z):
-        """log likelihood of the measurement `z`.
+        """Log likelihood of the measurement `z`.
 
         This should only be called after a call to update(). Calling
         after predict() will yield an incorrect result.

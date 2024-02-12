@@ -12,9 +12,11 @@ class MotionDetector(CaptureActionBase):
     """Class that implements a motion detection algorithm. When motion is
     detected, a callback function is executed.
 
-    :param function callback_on_motion: A callback function that will be called when motion is detected.
-    :param int moving_object_minimum_area: The sensitivity of the motion detection, measured as the area of
-    pixels changing between frames that constitutes motion.
+    :param function callback_on_motion: A callback function that will be
+        called when motion is detected.
+    :param int moving_object_minimum_area: The sensitivity of the motion
+        detection, measured as the area of pixels changing between
+        frames that constitutes motion.
     """
 
     def __init__(self, callback_on_motion, moving_object_minimum_area):

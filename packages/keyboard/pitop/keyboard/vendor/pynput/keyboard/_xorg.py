@@ -62,7 +62,6 @@ class KeyCode(_base.KeyCode):
         """Creates a key from a symbol.
 
         :param str symbol: The symbol name.
-
         :return: a key code
         """
         # First try simple translation
@@ -184,7 +183,6 @@ class Controller(NotifierMixin, _base.Controller):
         """Resolves a key identifier and sends a keyboard event.
 
         :param event: The *X* keyboard event.
-
         :param int keysym: The keysym to handle.
         """
         event = (
@@ -305,7 +303,8 @@ class Controller(NotifierMixin, _base.Controller):
         """Tries to resolve a normal key.
 
         A normal key exists on the keyboard, and is typed by pressing
-        and releasing a simple key, possibly in combination with a modifier.
+        and releasing a simple key, possibly in combination with a
+        modifier.
 
         :param KeyCode key: The key to resolve.
         """
@@ -339,8 +338,8 @@ class Controller(NotifierMixin, _base.Controller):
     def _resolve_borrowing(self, key):
         """Tries to resolve a key by modifying the layout temporarily.
 
-        A borrowed *keysym* does not exist on the keyboard, but is temporarily
-        added to the layout.
+        A borrowed *keysym* does not exist on the keyboard, but is
+        temporarily added to the layout.
 
         :param KeyCode key: The key to resolve.
         """
@@ -400,7 +399,6 @@ class Controller(NotifierMixin, _base.Controller):
         """Converts a character key code to a *keysym*.
 
         :param KeyCode key: The key code.
-
         :return: a keysym if found
         :rtype: int or None
         """
@@ -421,8 +419,8 @@ class Controller(NotifierMixin, _base.Controller):
     def _shift_mask(self, modifiers):
         """The *X* modifier mask to apply for a set of modifiers.
 
-        :param set modifiers: A set of active modifiers for which to get the
-            shift mask.
+        :param set modifiers: A set of active modifiers for which to get
+            the shift mask.
         """
         return (
             0
@@ -528,7 +526,6 @@ class Listener(ListenerMixin, _base.Listener):
         """The handler for fake press events sent by the controllers.
 
         :param KeyCode key: The key pressed.
-
         :param bool is_press: Whether this is a press event.
         """
         (self.on_press if is_press else self.on_release)(

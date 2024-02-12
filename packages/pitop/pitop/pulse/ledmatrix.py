@@ -600,7 +600,8 @@ def get_brightness():
 def rotation(new_rotation=0):
     """Set the display rotation.
 
-    :param new_rotation: Specify the rotation in degrees: 0, 90, 180 or 270
+    :param new_rotation: Specify the rotation in degrees: 0, 90, 180 or
+        270
     """
 
     global _rotation

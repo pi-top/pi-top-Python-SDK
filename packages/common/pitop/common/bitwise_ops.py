@@ -10,10 +10,12 @@ def split_into_bytes(
     """This function will split a given integer into a integer list
     representing the bytes to be split;
 
-    :param data: A integer that represents the value of the bytes to be split
-    :param no_of_bytes: The number of bytes the integer to be converted into. If the
-     no_of_bytes is too small the method returns None.
-    :return: A integer list representing a bytes list version of the given integer
+    :param data: A integer that represents the value of the bytes to be
+        split
+    :param no_of_bytes: The number of bytes the integer to be converted
+        into. If the no_of_bytes is too small the method returns None.
+    :return: A integer list representing a bytes list version of the
+        given integer
     """
 
     byteorder_indicator = "little" if little_endian is True else "big"
@@ -78,8 +80,10 @@ def pad_bits(bin_str: str, no_of_bytes: int):
     """This function will 'left zero pad' `bin_str`, if necessary, to ensure
     that it matches length `num_of_bytes`;
 
-    :param bin_str: A binary string which will be padded with '0's if necessary
-    :param no_of_bytes: The number of bytes to determine the byte size of the return value
+    :param bin_str: A binary string which will be padded with '0's if
+        necessary
+    :param no_of_bytes: The number of bytes to determine the byte size
+        of the return value
     :return: A string representing bin_str with or without padding
     """
     difference = (no_of_bytes * 8) - len(bin_str)

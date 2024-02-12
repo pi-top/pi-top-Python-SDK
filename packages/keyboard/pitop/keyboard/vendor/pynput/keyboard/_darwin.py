@@ -40,11 +40,8 @@ class KeyCode(_base.KeyCode):
         """This key as a *Quartz* event.
 
         :param set modifiers: The currently active modifiers.
-
         :param mapping: The current keyboard mapping.
-
         :param bool is_press: Whether to generate a press event.
-
         :return: a *Quartz* event
         """
         vk = self.vk or mapping.get(self.char, 0)
