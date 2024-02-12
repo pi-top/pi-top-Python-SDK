@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
     - id: trailing-whitespace
       # debian/patches needs whitespace at end of line
@@ -14,12 +14,12 @@ repos:
     - id: check-added-large-files
 
 -   repo: https://github.com/PyCQA/docformatter
-    rev: v1.5.1
+    rev: v1.7.5
     hooks:
     - id: docformatter
 
 -   repo: https://github.com/rstcheck/rstcheck
-    rev: 'v6.1.2'
+    rev: 'v6.2.0'
     hooks:
     - id: rstcheck
       args: [
@@ -29,18 +29,18 @@ repos:
       ]
 
 -   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
     - id: isort
 
 -   repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 24.2.0
     hooks:
     - id: black
 
 # https://black.readthedocs.io/en/stable/faq.html#why-are-flake8-s-e203-and-w503-violated
 -   repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 7.0.0
     hooks:
     - id: flake8
       args: [
