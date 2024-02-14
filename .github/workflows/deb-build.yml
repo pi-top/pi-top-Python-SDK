@@ -68,7 +68,6 @@ jobs:
         if: matrix.distro  == 'bullseye'
         run:
           cp -r debian/bullseye-overrides/* debian/
-          ls -lR debian
 
       - name: Build Debian package
         uses: pi-top/debian-package-build-action@master
