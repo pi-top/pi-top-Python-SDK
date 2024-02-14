@@ -67,7 +67,7 @@ jobs:
       - name: Patch lintian-overrides
         if: matrix.distro  == 'bullseye'
         run:
-          cp debian/bullseye-overrides/*.lintian-overrides debian/ || true
+          cp -r debian/bullseye-overrides/* debian/
           ls -lR debian
 
       - name: Build Debian package
