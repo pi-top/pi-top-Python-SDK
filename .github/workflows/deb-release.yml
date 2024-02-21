@@ -12,7 +12,7 @@ on:
 
 env:
   DEB_BUILD_DOCKER_IMAGE: "pitop/pi-top-os-deb-build"
-  DEB_BUILD_DOCKER_BRANCH: "support-bookworm"  # revert to "master" once docker image is released
+  DEB_BUILD_DOCKER_BRANCH: "master"
   PACKAGECLOUD_REPO: "pi-top-os-unstable"
   OS: "debian"
   DISTROS: "\"distro\":[\"bookworm\", \"bullseye\"]"
