@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.32.1-2) bullseye; urgency=medium
+
+  * Package for bookworm (#627)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 22 Feb 2024 14:33:08 +0000
+
 pi-top-python-sdk (0.32.1-1) bullseye; urgency=medium
 
   * Fix test runs  (#620)
