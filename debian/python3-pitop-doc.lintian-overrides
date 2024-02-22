@@ -1,1 +1,1 @@
-python3-pitop-doc: extra-license-file usr/share/doc/python3-pitop/html/_sources/more/license.rst.txt
+python3-pitop-doc: extra-license-file [usr/share/doc/python3-pitop/html/_sources/more/license.rst.txt]
