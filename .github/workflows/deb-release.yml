@@ -140,5 +140,5 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.PAT_GITHUB }}
-          file: ./${{ matrix.distro}}.deb.zip
+          file: ./${{ matrix.distro}}-${{ matrix.architecture }}.deb.zip
           tag: "v${{ env.CURRENT_VERSION }}"
