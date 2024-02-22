@@ -41,13 +41,8 @@ jobs:
           fi
           echo "matrix={$architecture, $DISTROS}">>$GITHUB_OUTPUT
 
-  release:
-    needs: check-architecture
+  check-versions:
     runs-on: ubuntu-20.04
-    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
-    strategy:
-      fail-fast: false
-      matrix: ${{fromJSON(needs.check-architecture.outputs.matrix)}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -71,6 +66,20 @@ jobs:
       - name: Confirm version is higher than last tagged version
         if: ${{ env.LATEST_TAG != '' }}
         run: dpkg --compare-versions ${{ env.CURRENT_VERSION }} gt ${{ env.LATEST_TAG }}
+
+  release:
+    needs: [check-architecture, check-versions]
+    runs-on: ubuntu-20.04
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJSON(needs.check-architecture.outputs.matrix)}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
 
       - name: Patch lintian-overrides
         if: matrix.distro  == 'bullseye'
@@ -134,7 +143,7 @@ jobs:
       - name: Zip distro artifacts
         run: |
           ls -l ./artifacts
-          zip ${{ matrix.distro }}.deb.zip ./artifacts/*.deb
+          zip ${{ matrix.distro }}-${{ matrix.architecture }}.deb.zip ./artifacts/*.deb
 
       - name: Create release and upload package
         uses: svenstaro/upload-release-action@v2
