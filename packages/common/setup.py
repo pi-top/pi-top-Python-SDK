@@ -50,8 +50,7 @@ __requires__ = [
     # SMBusDevice (PMA)
     "smbus2>=0.4.0,<1.0.0",
     # Device Communication
-    "pyzmq>=20.0.0,<21.0.0;python_version=='3.9'",
-    "pyzmq>=24.0.0,<30.0.0;python_version=='3.11'",
+    "pyzmq>=20.0.0,<25.0.0",
 ]
 
 
