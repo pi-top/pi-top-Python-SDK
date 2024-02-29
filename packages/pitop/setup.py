@@ -75,8 +75,7 @@ __requires__ = [
     #############
     # Webserver #
     #############
-    "flask>=1.1.2,<3.0.0"
-    "flask-cors>=3.0.9,<4.0.0",
+    "flask>=1.1.2,<3.0.0" "flask-cors>=3.0.9,<4.0.0",
     "flask-sockets>=0.2.1,<1.0",
     "gevent>=20.9.0,<23.0.0",
     "gevent-websocket>=0.10.1,<1.0.0",
