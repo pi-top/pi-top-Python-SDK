@@ -90,9 +90,9 @@ class NavigationController(DriveController):
         a new navigation goal.
 
         :param Union[tuple, None] position: Position goal tuple in the
-        form (x, y) where x and y are in meters (int or
-        float). :param Union[float, int, None] angle: Desired angle of
-        the robot in degrees.
+        form (x, y) where x and y are in meters (int or float). :param
+        Union[float, int, None] angle: Desired angle of the robot in
+        degrees.
         :param on_finish: A callable function or class to be called when
             the navigation goal has been reached.
         :param bool backwards: Go to navigation goal in reverse by
