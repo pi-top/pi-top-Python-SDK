@@ -152,7 +152,7 @@ def test_get_recommended_font(fonts_mock):
             size = assistant.get_recommended_font_size()
         assert recommended_font.size == size
         assert expected_name in recommended_font.path
-        assert type(recommended_font) == expected_type
+        assert isinstance(recommended_font, expected_type)
 
 
 def test_recommended_font_path():
@@ -181,7 +181,7 @@ def test_regular_font(fonts_mock):
             size = assistant.get_recommended_font_size()
         assert recommended_font.size == size
         assert expected_name in recommended_font.path
-        assert type(recommended_font) == expected_type
+        assert isinstance(recommended_font, expected_type)
 
 
 def test_regular_font_path():
@@ -204,7 +204,7 @@ def test_mono_font(fonts_mock):
             size = assistant.get_recommended_font_size()
         assert recommended_font.size == size
         assert expected_name in recommended_font.path
-        assert type(recommended_font) == expected_type
+        assert isinstance(recommended_font, expected_type)
 
 
 def test_mono_font_path():
