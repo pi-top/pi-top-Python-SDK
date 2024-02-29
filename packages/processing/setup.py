@@ -48,8 +48,7 @@ __requires__ = [
     "matplotlib>=3.3.4,<4.0",
     "numpy>1.19.5,<2.0.0",
     "onnxruntime>=1.8.1,<2.0",
-    "opencv-python>=4.6.0,<5.0.0;python_version=='3.11'",
-    "opencv-python>=4.5.1,<4.6.0;python_version=='3.9'",
+    "opencv-python>=4.5.0,<5.0.0",
     "wget>=3.2,<4.0",
     #############################
     # Advanced image processing #
