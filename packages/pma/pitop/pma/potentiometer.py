@@ -39,7 +39,8 @@ class Potentiometer(ADCBase):
     def position(self):
         """Get the current reading from the sensor.
 
-        :return: A value representing the potential difference (voltage) from 0 to 999.
+        :return: A value representing the potential difference (voltage)
+            from 0 to 999.
         :rtype: float
         """
         return self.read()
@@ -48,7 +49,8 @@ class Potentiometer(ADCBase):
     def value(self):
         """Get a simple binary value based on a reading from the device.
 
-        :return: 1 if the sensor is detecting a potential difference (voltage), 0 otherwise
+        :return: 1 if the sensor is detecting a potential difference
+            (voltage), 0 otherwise
         :rtype: integer
         """
         if self.position > 0:

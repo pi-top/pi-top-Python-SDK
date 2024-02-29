@@ -35,8 +35,8 @@ class LightSensor(ADCBase):
     def reading(self):
         """Take a reading from the sensor.
 
-        :return: A value representing the amount of light striking the sensor at the current time
-            from 0 to 999.
+        :return: A value representing the amount of light striking the
+            sensor at the current time from 0 to 999.
         :rtype: float
         """
         return int(self.read())

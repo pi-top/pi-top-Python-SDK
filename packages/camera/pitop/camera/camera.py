@@ -81,9 +81,9 @@ class Camera(Stateful, Recreatable):
             config_dict={
                 "index": index,
                 "resolution": resolution,
-                "camera_type": camera_type.value
-                if isinstance(camera_type, Enum)
-                else camera_type,
+                "camera_type": (
+                    camera_type.value if isinstance(camera_type, Enum) else camera_type
+                ),
                 "path_to_images": path_to_images,
                 "format": format,
                 "name": self.name,
@@ -325,8 +325,8 @@ class Camera(Stateful, Recreatable):
         until a new frame is available.
 
         :type format: string
-        :param format:
-            DEPRECATED. Set 'camera.format' directly, and call this function directly instead.
+        :param format: DEPRECATED. Set 'camera.format' directly, and
+            call this function directly instead.
         """
         if format is not None:
             print(

@@ -489,9 +489,9 @@ class KeyTranslator(object):
     def _get_state_and_layout(self):
         """Returns the keyboard state and layout.
 
-        The state is read from the currently active window if possible. It is
-        kept in a cache, so any call to this method will invalidate return
-        values from previous invocations.
+        The state is read from the currently active window if possible.
+        It is kept in a cache, so any call to this method will
+        invalidate return values from previous invocations.
 
         :return: the tuple ``(state, layout)``
         """
@@ -512,9 +512,7 @@ class KeyTranslator(object):
         """Retrieves the scan code for a virtual key code.
 
         :param int vk: The virtual key code.
-
         :param layout: The keyboard layout.
-
         :return: the scan code
         """
         return self._MapVirtualKeyEx(vk, self._MAPVK_VK_TO_VSC, layout)
@@ -576,9 +574,7 @@ class KeyTranslator(object):
         This method will remove all dead keys from the internal state.
 
         :param int vk: The virtual key code.
-
         :param layout: The keyboard layout.
-
         :param int scan: The scan code of the key.
         """
         state = (ctypes.c_byte * 255)()

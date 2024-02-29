@@ -124,7 +124,8 @@ class ServoMotor(Stateful, Recreatable):
         """Returns the current state of the servo motor, giving current angle
         and current speed.
 
-        :return: :class:'ServoMotorSetting` object that has angle and speed attributes.
+        :return: :class:'ServoMotorSetting` object that has angle and
+            speed attributes.
         """
         if not self.__has_set_angle:
             return None, None
@@ -219,7 +220,8 @@ class ServoMotor(Stateful, Recreatable):
     def target_angle(self):
         """Returns the last target angle that has been set.
 
-        :return: float value of the target angle of the servo motor in deg.
+        :return: float value of the target angle of the servo motor in
+            deg.
         """
         return self.__target_angle
 
@@ -244,7 +246,8 @@ class ServoMotor(Stateful, Recreatable):
     def target_speed(self):
         """Returns the last target speed that has been set.
 
-        :return: float value of the target speed of the servo motor in deg/s.
+        :return: float value of the target speed of the servo motor in
+            deg/s.
         """
         return self.__target_speed
 

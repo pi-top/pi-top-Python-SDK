@@ -32,7 +32,8 @@ class SoundSensor(ADCBase):
         """Take a reading from the sensor. Uses a builtin peak detection system
         to retrieve the sound level.
 
-        :return: A value representing the volume of sound detected by the sensor at the current time from 0 to 500.
+        :return: A value representing the volume of sound detected by
+            the sensor at the current time from 0 to 500.
         :rtype: float
         """
         return self.read(peak_detection=True) / 2

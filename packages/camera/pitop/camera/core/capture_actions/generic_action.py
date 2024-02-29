@@ -10,8 +10,10 @@ class GenericAction(CaptureActionBase):
     """Class that executes the provided :data:`callback` whenever a camera
     frame is processed.
 
-    :param function callback_on_frame: A callback function that will be called with each new frame as the first argument.
-    :param int frame_interval: The callback will run every frame_interval frames, decreasing the frame rate of processing.
+    :param function callback_on_frame: A callback function that will be
+        called with each new frame as the first argument.
+    :param int frame_interval: The callback will run every
+        frame_interval frames, decreasing the frame rate of processing.
     """
 
     def __init__(self, callback_on_frame, frame_interval, format="PIL"):

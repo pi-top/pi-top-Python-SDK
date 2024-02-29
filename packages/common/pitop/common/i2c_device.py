@@ -103,10 +103,13 @@ class I2CDevice:
         """Base function to read from an I2C device.
 
         :param register_address: Register address to target for reading
-        :param number_of_bytes: Number of bytes to attempt to read from register address
-        :param signed: Indicates whether or not the value could potentially have a negative value, and is therefore
-        represented with a signed number representation
-        :param little_endian: Indicates whether the data to be read is in little-endian byte-order
+        :param number_of_bytes: Number of bytes to attempt to read from
+            register address
+        :param signed: Indicates whether or not the value could
+            potentially have a negative value, and is therefore
+            represented with a signed number representation
+        :param little_endian: Indicates whether the data to be read is
+            in little-endian byte-order
         :return: result: The response from the read attempt via I2C
         """
 

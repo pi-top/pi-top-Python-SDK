@@ -101,12 +101,13 @@ class EncoderMotor(Stateful, Recreatable):
     def forward_direction(self):
         """Represents the forward direction setting used by the motor.
 
-        Setting this property will determine on which direction the motor will turn
-        whenever a movement in a particular direction is requested.
+        Setting this property will determine on which direction the
+        motor will turn whenever a movement in a particular direction is
+        requested.
 
         :type forward_direction: ForwardDirection
-        :param forward_direction:
-            The direction that corresponds to forward motion.
+        :param forward_direction: The direction that corresponds to
+            forward motion.
         """
         return ForwardDirection(self.__forward_direction)
 

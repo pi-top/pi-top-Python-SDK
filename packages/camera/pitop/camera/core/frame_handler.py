@@ -57,7 +57,8 @@ class FrameHandler:
         using :data:`args_dict` as arguments.
 
         :param CaptureActions action: action to be registered
-        :param dict args_dict: dictionary with arguments used to create an action object instance
+        :param dict args_dict: dictionary with arguments used to create
+            an action object instance
         """
 
         if action in self._capture_actions:
@@ -97,6 +98,7 @@ class FrameHandler:
         register.
 
         :param CaptureActions action: type of action to check
-        :return: bool, True if the action is being processed, False otherwise
+        :return: bool, True if the action is being processed, False
+            otherwise
         """
         return action in self._capture_actions

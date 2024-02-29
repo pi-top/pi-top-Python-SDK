@@ -105,11 +105,12 @@ class DriveController(Stateful, Recreatable):
     def forward(self, speed_factor, hold=False):
         """Move the robot forward.
 
-        :param float speed_factor:
-            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
-            Using negative values will cause the robot to move backwards.
-        :param bool hold:
-            Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
+        :param float speed_factor: Factor relative to the maximum motor
+            speed, used to set the velocity, in the range -1.0 to 1.0.
+            Using negative values will cause the robot to move
+            backwards.
+        :param bool hold: Setting this parameter to true will cause
+            subsequent movements to use the speed set as the base speed.
         """
         linear_speed_x = self.max_motor_speed * speed_factor
         if hold:
@@ -121,22 +122,23 @@ class DriveController(Stateful, Recreatable):
     def backward(self, speed_factor, hold=False):
         """Move the robot backward.
 
-        :param float speed_factor:
-            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+        :param float speed_factor: Factor relative to the maximum motor
+            speed, used to set the velocity, in the range -1.0 to 1.0.
             Using negative values will cause the robot to move forwards.
-        :param bool hold:
-            Setting this parameter to true will cause subsequent movements to use the speed set as the base speed.
+        :param bool hold: Setting this parameter to true will cause
+            subsequent movements to use the speed set as the base speed.
         """
         self.forward(-speed_factor, hold)
 
     def left(self, speed_factor, turn_radius=0):
         """Make the robot move to the left, using a circular trajectory.
 
-        :param float speed_factor:
-            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+        :param float speed_factor: Factor relative to the maximum motor
+            speed, used to set the velocity, in the range -1.0 to 1.0.
             Using negative values will cause the robot to turn right.
-        :param float turn_radius:
-            Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
+        :param float turn_radius: Radius used by the robot to perform
+            the movement. Using `turn_radius=0` will cause the robot to
+            rotate in place.
         """
 
         self.robot_move(
@@ -148,11 +150,12 @@ class DriveController(Stateful, Recreatable):
     def right(self, speed_factor, turn_radius=0):
         """Make the robot move to the right, using a circular trajectory.
 
-        :param float speed_factor:
-            Factor relative to the maximum motor speed, used to set the velocity, in the range -1.0 to 1.0.
+        :param float speed_factor: Factor relative to the maximum motor
+            speed, used to set the velocity, in the range -1.0 to 1.0.
             Using negative values will cause the robot to turn left.
-        :param float turn_radius:
-            Radius used by the robot to perform the movement. Using `turn_radius=0` will cause the robot to rotate in place.
+        :param float turn_radius: Radius used by the robot to perform
+            the movement. Using `turn_radius=0` will cause the robot to
+            rotate in place.
         """
 
         self.left(-speed_factor, -turn_radius)
@@ -167,7 +170,8 @@ class DriveController(Stateful, Recreatable):
         """Rotate the robot in place by a given angle and stop.
 
         :param float angle: Angle of the turn.
-        :param float time_to_take: Expected duration of the rotation, in seconds.
+        :param float time_to_take: Expected duration of the rotation, in
+            seconds.
         """
         assert time_to_take > 0.0
         angle_radians = radians(angle)

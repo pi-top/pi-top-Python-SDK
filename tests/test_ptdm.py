@@ -24,8 +24,8 @@ class PTDMSubscribeClientTestCase(TestCase):
     def test_callback_called_when_message_is_published(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
-        self.poller_mock.poll.side_effect = (
-            lambda _: [1] if self.poller_mock.poll.call_count == 1 else []
+        self.poller_mock.poll.side_effect = lambda _: (
+            [1] if self.poller_mock.poll.call_count == 1 else []
         )
         self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 
@@ -49,8 +49,8 @@ class PTDMSubscribeClientTestCase(TestCase):
     def test_callback_not_called_if_it_has_wrong_signature(self):
         from pitop.common.ptdm import Message, PTDMSubscribeClient
 
-        self.poller_mock.poll.side_effect = (
-            lambda _: [1] if self.poller_mock.poll.call_count == 1 else []
+        self.poller_mock.poll.side_effect = lambda _: (
+            [1] if self.poller_mock.poll.call_count == 1 else []
         )
         self.socket_mock.recv_string.return_value = f"{Message.PUB_LOW_BATTERY_WARNING}"
 

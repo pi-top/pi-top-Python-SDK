@@ -17,7 +17,7 @@ def pretty_str(label, arr):
     """
 
     def is_col(a):
-        """return true if a is a column vector."""
+        """Return true if a is a column vector."""
         try:
             return a.shape[0] > 1 and a.shape[1] == 1
         except (AttributeError, IndexError):
@@ -45,7 +45,7 @@ def pretty_str(label, arr):
 
 
 def reshape_z(z, dim_z, ndim):
-    """ensure z is a (dim_z, 1) shaped vector."""
+    """Ensure z is a (dim_z, 1) shaped vector."""
 
     z = np.atleast_2d(z)
     if z.shape[1] == dim_z:

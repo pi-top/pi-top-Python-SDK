@@ -73,10 +73,11 @@ class EmotionClassifier:
         static images) then the apply_mean_filter class attribute should be set
         to False.
 
-        :param frame: Original camera frame used to detect the face (in OpenCV format), used for drawing robot_view.
+        :param frame: Original camera frame used to detect the face (in
+            OpenCV format), used for drawing robot_view.
         :param face: Face object obtained from FaceDetector
-        :param emotion: Emotion object to store the resulting prediction data
-
+        :param emotion: Emotion object to store the resulting prediction
+            data
         :return: Emotion object that was passed into this function.
         """
 

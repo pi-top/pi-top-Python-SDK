@@ -74,12 +74,10 @@ class Controller(object):
 
         :param int dx: The horizontal scroll. The units of scrolling is
             undefined.
-
         :param int dy: The vertical scroll. The units of scrolling is
             undefined.
-
-        :raises ValueError: if the values are invalid, for example out of
-            bounds
+        :raises ValueError: if the values are invalid, for example out
+            of bounds
         """
         self._scroll(dx, dy)
 
@@ -102,21 +100,19 @@ class Controller(object):
         position.
 
         :param int x: The horizontal offset.
-
         :param int dy: The vertical offset.
-
-        :raises ValueError: if the values are invalid, for example out of
-            bounds
+        :raises ValueError: if the values are invalid, for example out
+            of bounds
         """
         self.position = tuple(sum(i) for i in zip(self.position, (dx, dy)))
 
     def click(self, button, count=1):
         """Emits a button click event at the current position.
 
-        The default implementation sends a series of press and release events.
+        The default implementation sends a series of press and release
+        events.
 
         :param Button button: The button to click.
-
         :param int count: The number of clicks to send.
         """
         with self as controller:

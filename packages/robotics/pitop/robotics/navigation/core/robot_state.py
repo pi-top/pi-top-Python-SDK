@@ -112,8 +112,9 @@ class StateFilter(Stateful):
         self.angle_rad = normalize_angle(self.angle_rad)
 
     def __kalman_predict(self, u, dt):
-        """
-        Full predict equation is x1 = Fx0 + Bu0 where F is constant and defined in __init__
+        """Full predict equation is x1 = Fx0 + Bu0 where F is constant and
+        defined in __init__
+
         B is the control transition matrix which is multiplied by u0 (control vector)
         B is derived from basic newtonian mechanics to predict new state from the control input - in our case, we are
         using the previously measured velocities as the control input
@@ -208,8 +209,8 @@ class StateFilter(Stateful):
     def angle_tolerance(self):
         """Returns the 2-sigma value for the variance in the angle.
 
-        About 95% of the possible values for the true value of
-        the angle lie within two standard deviations of the mean.
+        About 95% of the possible values for the true value of the angle
+        lie within two standard deviations of the mean.
         :return: 2-sigma value of the angle position in degrees
         """
         return math.degrees(self.angle_rad_tolerance)
@@ -226,8 +227,8 @@ class StateFilter(Stateful):
     def angle_rad_tolerance(self):
         """Returns the 2-sigma value for the variance in the angle.
 
-        About 95% of the possible values for the true value of
-        the angle lie within two standard deviations of the mean.
+        About 95% of the possible values for the true value of the angle
+        lie within two standard deviations of the mean.
         :return: 2-sigma value of the angle position in radians
         """
         return 2 * np.sqrt(self._kalman_filter.P[State.theta, State.theta])

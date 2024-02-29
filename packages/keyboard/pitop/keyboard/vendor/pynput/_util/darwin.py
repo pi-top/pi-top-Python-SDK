@@ -42,7 +42,6 @@ def _wrap_value(value):
     """Converts a pointer to a *Python objc* value.
 
     :param value: The pointer to convert.
-
     :return: a wrapped value
     """
     return OBJC.PyObjCObject_New(value, 0, 1)
@@ -240,9 +239,11 @@ class ListenerMixin(object):
         return Quartz.CGEventTapCreate(
             Quartz.kCGSessionEventTap,
             Quartz.kCGHeadInsertEventTap,
-            Quartz.kCGEventTapOptionListenOnly
-            if (True and not self.suppress and self._intercept is None)
-            else Quartz.kCGEventTapOptionDefault,
+            (
+                Quartz.kCGEventTapOptionListenOnly
+                if (True and not self.suppress and self._intercept is None)
+                else Quartz.kCGEventTapOptionDefault
+            ),
             self._EVENTS,
             self._handler,
             None,

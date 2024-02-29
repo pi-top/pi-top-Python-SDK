@@ -31,7 +31,7 @@ class DriveControllerTestCase(TestCase):
         self.assertEqual(d._linear_speed_x_hold, expected_linear_speed)
 
     def test_turning_methods_uses_internal_linear_speed(self):
-        """turning left/right uses the internal linear speed to move."""
+        """Turning left/right uses the internal linear speed to move."""
         d = DriveController()
         speed_factor = 1
         turn_radius = 0.1
@@ -91,7 +91,7 @@ class DriveControllerTestCase(TestCase):
                 d.rotate(0, time_to_take)
 
     def test_motor_rpm_calculations_based_on_speeds(self):
-        """motor speed calculations based on linear/angular speeds."""
+        """Motor speed calculations based on linear/angular speeds."""
         d = DriveController()
 
         test_values = [

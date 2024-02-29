@@ -33,14 +33,17 @@ class FaceDetector:
         enable_tracking: bool = True,
         dlib_landmark_predictor_filename: str = "shape_predictor_68_face_landmarks.dat",
     ):
-        """
-        :param Union[int, None] image_processing_width: image width to scale to for image processing, set to None for
-        no scaling.
+        """:param Union[int, None] image_processing_width: image width to scale
+        to for image processing, set to None for no scaling.
+
         :param str format: desired output image format.
-        :param bool enable_tracking: enable dlib's correlaction tracker to track the detected face between frames.
-        :param str dlib_landmark_predictor_filename: Filename for facial features predictor. Use 5 landmark version for
-        slightly better performance whilst retaining ability to calculate face angle. May be incompatible with further
-         processing e.g. emotion detection requires the 68-landmark version.
+        :param bool enable_tracking: enable dlib's correlaction tracker
+            to track the detected face between frames.
+        :param str dlib_landmark_predictor_filename: Filename for facial
+            features predictor. Use 5 landmark version for slightly
+            better performance whilst retaining ability to calculate
+            face angle. May be incompatible with further processing e.g.
+            emotion detection requires the 68-landmark version.
         """
         self.__import_libs()
 
@@ -158,7 +161,8 @@ class FaceDetector:
         data.
 
         :param frame: OpenCV frame to use for processing
-        :param rectangles_dlib: Rectangles found using dlib's face detector in the dlib Rectangle format.
+        :param rectangles_dlib: Rectangles found using dlib's face
+            detector in the dlib Rectangle format.
         :return: Detected face data
         """
         if len(rectangles_dlib) == 0:
@@ -187,7 +191,8 @@ class FaceDetector:
 
         :param frame: frame used to detect/track face rectangle.
         :param dlib_rectangle: Face rectangle in dlib Rectangle format.
-        :return: 68x2 numpy array of x, y coordinates for facial features.
+        :return: 68x2 numpy array of x, y coordinates for facial
+            features.
         """
         face_features_dlib = self._predictor(frame, dlib_rectangle)
         return face_utils.shape_to_np(face_features_dlib)

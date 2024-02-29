@@ -212,7 +212,8 @@ class MiniscreenAssistant:
     def top_left(self):
         """Gets the top left corner of the pi-top OLED display.
 
-        :return: The top-left coordinates of the canvas bounding box as a tuple
+        :return: The top-left coordinates of the canvas bounding box as
+            a tuple
         :rtype: tuple
         """
         return self.__get_corner(0, 1)
@@ -220,7 +221,8 @@ class MiniscreenAssistant:
     def top_right(self):
         """Gets the top-right corner of the pi-top OLED display.
 
-        :return: The top-right coordinates of the canvas bounding box as a tuple
+        :return: The top-right coordinates of the canvas bounding box as
+            a tuple
         :rtype: tuple
         """
         return self.__get_corner(2, 1)
@@ -228,7 +230,8 @@ class MiniscreenAssistant:
     def bottom_left(self):
         """Gets the bottom-left corner of the pi-top OLED display.
 
-        :return: The bottom-left coordinates of the canvas bounding box as a tuple
+        :return: The bottom-left coordinates of the canvas bounding box
+            as a tuple
         :rtype: tuple
         """
         return self.__get_corner(0, 3)
@@ -236,7 +239,8 @@ class MiniscreenAssistant:
     def bottom_right(self):
         """Gets the bottom-right corner of the pi-top OLED display.
 
-        :return: The bottom-right coordinates of the canvas bounding box as a tuple
+        :return: The bottom-right coordinates of the canvas bounding box
+            as a tuple
         :rtype: tuple
         """
         return self.__get_corner(2, 3)
