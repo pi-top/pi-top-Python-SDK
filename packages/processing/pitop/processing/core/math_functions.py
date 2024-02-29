@@ -5,10 +5,14 @@ def running_mean(old_array, new_value):
     """Calculates a running mean from either a 1d numpy array of single
     measurements or a 2d numpy array of 1d numpy array measurements.
 
-    :param old_array: Stored historical values either as a 1d numpy array or a 2d numpy array
-    :param new_value: New value to add. For a 1d array this will be a single value. For a 2d Nxm numpy array, this
-    will be a 1d numpy array that has m values, where N is the number of samples to average over.
-    :return: tuple where index 0 is the new array and index 1 is the new mean.
+    :param old_array: Stored historical values either as a 1d numpy
+        array or a 2d numpy array
+    :param new_value: New value to add. For a 1d array this will be a
+        single value. For a 2d Nxm numpy array, this will be a 1d numpy
+        array that has m values, where N is the number of samples to
+        average over.
+    :return: tuple where index 0 is the new array and index 1 is the new
+        mean.
     """
 
     def calculate_mean(x, N):

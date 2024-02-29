@@ -152,8 +152,8 @@ def tuple_for_color_by_name(color_name, bgr=False):
     color model used is RGB.
 
     :param color_name: string with the color name
-    :param bgr: Boolean. If set to True, the color model of the returned tuple is
-    set to BGR.
+    :param bgr: Boolean. If set to True, the color model of the returned
+        tuple is set to BGR.
     :return: tuple
     """
     # Tested with red, green, blue

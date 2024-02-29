@@ -88,10 +88,7 @@ class FPS_Regulator(object):
         return self.total_no_of_frames / elapsed
 
     def average_transit_time(self):
-        """
-        Calculates the average transit time between the enter and exit methods,
-        and return the time in milliseconds
-        :returns: the average transit in milliseconds
-        :rtype: float
-        """
+        """Calculates the average transit time between the enter and exit
+        methods, and return the time in milliseconds :returns: the average
+        transit in milliseconds :rtype: float."""
         return self.total_transit_time * 1000.0 / self.total_no_of_frames

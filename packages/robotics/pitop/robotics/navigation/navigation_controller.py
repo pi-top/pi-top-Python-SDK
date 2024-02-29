@@ -84,14 +84,19 @@ class NavigationController(DriveController):
         assumed to be 0 degrees. Call function with .wait() appended to block
         program execution until the navigation goal has been achieved.
 
-        Calling this function whilst another navigation goal is in progress will raise an error. Use the .wait()
-        function to wait until navigation is completed or call .stop() if you wish to set a new navigation goal.
+        Calling this function whilst another navigation goal is in
+        progress will raise an error. Use the .wait() function to wait
+        until navigation is completed or call .stop() if you wish to set
+        a new navigation goal.
 
-        :param Union[tuple, None] position: Position goal tuple in the form (x, y) where x and y are in meters (int or
-                                            float).
-        :param Union[float, int, None] angle: Desired angle of the robot in degrees.
-        :param on_finish: A callable function or class to be called when the navigation goal has been reached.
-        :param bool backwards: Go to navigation goal in reverse by setting to True
+        :param Union[tuple, None] position: Position goal tuple in the
+        form (x, y) where x and y are in meters (int or float). :param
+        Union[float, int, None] angle: Desired angle of the robot in
+        degrees.
+        :param on_finish: A callable function or class to be called when
+            the navigation goal has been reached.
+        :param bool backwards: Go to navigation goal in reverse by
+            setting to True
         :return NavigationController: self
         """
         if self.in_progress:
@@ -178,8 +183,10 @@ class NavigationController(DriveController):
         increase the uncertainty in the final navigation position. Setting to
         zero is not permitted.
 
-        :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum linear
-        speed of the robot (which is based on maximum motor RPM and wheel circumference).
+        :param float speed_factor: Value greater than 0.0 and less than
+            or equal to 1.0 where 1.0 is the maximum linear speed of the
+            robot (which is based on maximum motor RPM and wheel
+            circumference).
         """
         self.navigator.linear_speed_factor = speed_factor
 
@@ -197,8 +204,10 @@ class NavigationController(DriveController):
         the uncertainty in the final navigation position and angle. Setting to
         zero is not permitted.
 
-        :param float speed_factor: Value greater than 0.0 and less than or equal to 1.0 where 1.0 is the maximum angular
-        speed of the robot (which is based on maximum motor RPM, wheel circumference and wheel-to-wheel spacing).
+        :param float speed_factor: Value greater than 0.0 and less than
+            or equal to 1.0 where 1.0 is the maximum angular speed of
+            the robot (which is based on maximum motor RPM, wheel
+            circumference and wheel-to-wheel spacing).
         """
         self.navigator.angular_speed_factor = speed_factor
 

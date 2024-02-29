@@ -54,8 +54,8 @@ class KeyboardButton:
         set, this callback function will be invoked when this event happens.
 
         :type callback: Function
-        :param callback:
-            Callback function to run when a button is pressed.
+        :param callback: Callback function to run when a button is
+            pressed.
         """
 
     @when_pressed.setter
@@ -70,8 +70,8 @@ class KeyboardButton:
         set, this callback function will be invoked when this event happens.
 
         :type callback: Function
-        :param callback:
-            Callback function to run when a button is released.
+        :param callback: Callback function to run when a button is
+            released.
         """
 
     @when_released.setter

@@ -153,10 +153,12 @@ class OLED:
         display. This method can be useful to control or limit the speed of
         animations.
 
-        This works by blocking on the OLED's display methods if called before
-        the amount of time that a frame should last is not exceeded.
+        This works by blocking on the OLED's display methods if called
+        before the amount of time that a frame should last is not
+        exceeded.
 
-        :param int max_fps: The maximum frames that can be rendered per second
+        :param int max_fps: The maximum frames that can be rendered per
+            second
         """
         self.__fps_regulator.set_max_fps(max_fps)
 
@@ -181,7 +183,8 @@ class OLED:
         """Sets the contrast value of the miniscreen display to the provided
         value.
 
-        :param int new_contrast_value: contrast value to set, between 0 and 255.
+        :param int new_contrast_value: contrast value to set, between 0
+            and 255.
         """
         assert new_contrast_value in range(0, 256)
 
@@ -366,10 +369,10 @@ class OLED:
         """Render an animated image to the screen from a file or URL.
 
         :param str file_path_or_url: A file path or URL to the image
-        :param bool background: Set whether the image should be in a background thread
-            or in the main thread.
-        :param bool loop: Set whether the image animation should start again when it
-            has finished
+        :param bool background: Set whether the image should be in a
+            background thread or in the main thread.
+        :param bool loop: Set whether the image animation should start
+            again when it has finished
         """
         image = ImageFunctions.get_pil_image_from_path(file_path_or_url)
         self.play_animated_image(image, background, loop)
@@ -380,10 +383,10 @@ class OLED:
         Use stop_animated_image() to end a background animation
 
         :param Image image: A PIL Image object to be rendered
-        :param bool background: Set whether the image should be in a background thread
-            or in the main thread.
-        :param bool loop: Set whether the image animation should start again when it
-            has finished
+        :param bool background: Set whether the image should be in a
+            background thread or in the main thread.
+        :param bool loop: Set whether the image animation should start
+            again when it has finished
         """
         self.stop_animated_image()
         self.__kill_thread = False
@@ -413,7 +416,8 @@ class OLED:
     def bounding_box(self):
         """Gets the bounding box of the miniscreen display.
 
-        :return: The device's bounding box as an (top-left x, top-left y, bottom-right x, bottom-right y) tuple.
+        :return: The device's bounding box as an (top-left x, top-left
+            y, bottom-right x, bottom-right y) tuple.
         :rtype: tuple
         """
         return self.device.bounding_box
@@ -422,7 +426,8 @@ class OLED:
     def center(self):
         """Gets the center of the miniscreen display.
 
-        :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
+        :return: The coordinates of the center of the display's bounding
+            box as an (x,y) tuple.
         :rtype: tuple
         """
         return (self.width / 2, self.height / 2)
@@ -431,7 +436,8 @@ class OLED:
     def top_left(self):
         """Gets the top left corner of the miniscreen display.
 
-        :return: The coordinates of the center of the display's bounding box as an (x,y) tuple.
+        :return: The coordinates of the center of the display's bounding
+            box as an (x,y) tuple.
         :rtype: tuple
         """
         return (self.bounding_box[0], self.bounding_box[1])
@@ -440,7 +446,8 @@ class OLED:
     def top_right(self):
         """Gets the top-right corner of the miniscreen display.
 
-        :return: The coordinates of the top right of the display's bounding box as an (x,y) tuple.
+        :return: The coordinates of the top right of the display's
+            bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (self.bounding_box[2], self.bounding_box[1])
@@ -449,7 +456,8 @@ class OLED:
     def bottom_left(self):
         """Gets the bottom-left corner of the miniscreen display.
 
-        :return: The coordinates of the bottom left of the display's bounding box as an (x,y) tuple.
+        :return: The coordinates of the bottom left of the display's
+            bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (self.bounding_box[0], self.bounding_box[3])
@@ -458,7 +466,8 @@ class OLED:
     def bottom_right(self):
         """Gets the bottom-right corner of the miniscreen display.
 
-        :return: The coordinates of the bottom right of the display's bounding box as an (x,y) tuple.
+        :return: The coordinates of the bottom right of the display's
+            bounding box as an (x,y) tuple.
         :rtype: tuple
         """
         return (self.bounding_box[2], self.bounding_box[3])

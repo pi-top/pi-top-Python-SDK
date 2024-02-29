@@ -44,8 +44,7 @@ del _check
 
 class X11Error(Exception):
     """An error that is thrown at the end of a code block managed by a
-    :func:`display_manager` if an *X11* error occurred.
-    """
+    :func:`display_manager` if an *X11* error occurred."""
 
     pass
 
@@ -83,9 +82,7 @@ def _find_mask(display, symbol):
     """Returns the mode flags to use for a modifier symbol.
 
     :param Xlib.display.Display display: The *X* display.
-
     :param str symbol: The name of the symbol.
-
     :return: the modifier mask
     """
     # Get the key code for the symbol
@@ -102,11 +99,10 @@ def _find_mask(display, symbol):
 def alt_mask(display):
     """Returns the *alt* mask flags.
 
-    The first time this function is called for a display, the value is cached.
-    Subsequent calls will return the cached value.
+    The first time this function is called for a display, the value is
+    cached. Subsequent calls will return the cached value.
 
     :param Xlib.display.Display display: The *X* display.
-
     :return: the modifier mask
     """
     if not hasattr(display, "__alt_mask"):
@@ -117,11 +113,10 @@ def alt_mask(display):
 def alt_gr_mask(display):
     """Returns the *alt* mask flags.
 
-    The first time this function is called for a display, the value is cached.
-    Subsequent calls will return the cached value.
+    The first time this function is called for a display, the value is
+    cached. Subsequent calls will return the cached value.
 
     :param Xlib.display.Display display: The *X* display.
-
     :return: the modifier mask
     """
     if not hasattr(display, "__altgr_mask"):
@@ -132,11 +127,10 @@ def alt_gr_mask(display):
 def numlock_mask(display):
     """Returns the *numlock* mask flags.
 
-    The first time this function is called for a display, the value is cached.
-    Subsequent calls will return the cached value.
+    The first time this function is called for a display, the value is
+    cached. Subsequent calls will return the cached value.
 
     :param Xlib.display.Display display: The *X* display.
-
     :return: the modifier mask
     """
     if not hasattr(display, "__numlock_mask"):
@@ -269,11 +263,9 @@ def keysym_normalize(keysym):
 def index_to_shift(display, index):
     """Converts an index in a *key code* list to the corresponding shift state.
 
-    :param Xlib.display.Display display: The display for which to retrieve the
-        shift mask.
-
+    :param Xlib.display.Display display: The display for which to
+        retrieve the shift mask.
     :param int index: The keyboard mapping *key code* index.
-
     :return: a shift mask
     """
     return (1 << 0 if index & 1 else 0) | (alt_gr_mask(display) if index & 2 else 0)
@@ -282,12 +274,10 @@ def index_to_shift(display, index):
 def shift_to_index(display, shift):
     """Converts an index in a *key code* list to the corresponding shift state.
 
-    :param Xlib.display.Display display: The display for which to retrieve the
-        shift mask.
-
-    :param int index: The keyboard mapping *key code* index.
-
-    :retur: a shift mask
+    :param Xlib.display.Display display: The display for which to
+        retrieve the shift mask.
+    :param int index: The keyboard mapping *key code* index. :retur: a
+        shift mask
     """
     return (1 if shift & 1 else 0) + (2 if shift & alt_gr_mask(display) else 0)
 
@@ -296,9 +286,8 @@ def keyboard_mapping(display):
     """Generates a mapping from *keysyms* to *key codes* and required modifier
     shift states.
 
-    :param Xlib.display.Display display: The display for which to retrieve the
-        keyboard mapping.
-
+    :param Xlib.display.Display display: The display for which to
+        retrieve the keyboard mapping.
     :return: the keyboard mapping
     """
     mapping = {}
@@ -425,16 +414,16 @@ class ListenerMixin(object):
     def _suppress_start(self, display):
         """Starts suppressing events.
 
-        :param Xlib.display.Display display: The display for which to suppress
-            events.
+        :param Xlib.display.Display display: The display for which to
+            suppress events.
         """
         raise NotImplementedError()
 
     def _suppress_stop(self, display):
         """Starts suppressing events.
 
-        :param Xlib.display.Display display: The display for which to suppress
-            events.
+        :param Xlib.display.Display display: The display for which to
+            suppress events.
         """
         raise NotImplementedError()
 
@@ -467,8 +456,8 @@ class ListenerMixin(object):
     def _initialize(self, display):
         """Initialises this listener.
 
-        This method is called immediately before the event loop, from the
-        handler thread.
+        This method is called immediately before the event loop, from
+        the handler thread.
 
         :param display: The display being used.
         """
@@ -481,7 +470,6 @@ class ListenerMixin(object):
         listener was created based on the event.
 
         :param display: The display being used.
-
         :param event: The event.
         """
         pass

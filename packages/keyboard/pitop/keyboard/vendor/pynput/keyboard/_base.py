@@ -111,9 +111,7 @@ class KeyCode(object):
         """Creates a key from a virtual key code.
 
         :param vk: The virtual key code.
-
         :param kwargs: Any other parameters to pass.
-
         :return: a key code
         """
         return cls(vk=vk, **kwargs)
@@ -123,7 +121,6 @@ class KeyCode(object):
         """Creates a key from a character.
 
         :param str char: The character.
-
         :return: a key code
         """
         return cls(char=char, **kwargs)
@@ -414,9 +411,7 @@ class Controller(object):
         of ``is_press``.
 
         :param key: The key to press or release.
-
         :param bool is_press: Whether to press the key.
-
         :raises InvalidKeyException: if the key is invalid
         """
         if is_press:
@@ -442,11 +437,10 @@ class Controller(object):
     def type(self, string):
         """Types a string.
 
-        This method will send all key presses and releases necessary to type
-        all characters in the string.
+        This method will send all key presses and releases necessary to
+        type all characters in the string.
 
         :param str string: The string to type.
-
         :raises InvalidCharacterException: if an untypable character is
             encountered
         """
@@ -593,7 +587,6 @@ class Controller(object):
         This is a platform dependent implementation.
 
         :param Key key: The key to handle.
-
         :param bool is_press: Whether this is a key press event.
         """
         raise NotImplementedError()

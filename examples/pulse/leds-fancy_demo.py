@@ -55,9 +55,7 @@ def checker(x, y, step):
     val = (
         0
         if (math.floor(xs) + math.floor(ys)) % 2
-        else 1
-        if xo > 0.1 and yo > 0.1
-        else 0.5
+        else 1 if xo > 0.1 and yo > 0.1 else 0.5
     )
 
     r, g, b = colorsys.hsv_to_rgb((step % 255) / 255.0, 1, val)

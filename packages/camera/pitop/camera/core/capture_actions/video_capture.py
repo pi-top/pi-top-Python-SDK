@@ -11,11 +11,15 @@ class VideoCapture(CaptureActionBase):
     """Class that stores camera frames as a video in the given
     :data:`output_file_name`.
 
-    :param str output_file_name: The filename into which to write the video. If not provided, the file will
-    be created in the directory ~/Camera/
-    :param float fps: (Advanced) The framerate to use for the captured video. Defaults to 20.0 fps
-    :param tuple resolution: (Advanced) The resolution to use for the captured video. Defaults to (640, 360)
-    :param str codec: (Advanced) The codec to use for the captured video. Defaults to DIVX
+    :param str output_file_name: The filename into which to write the
+        video. If not provided, the file will be created in the
+        directory ~/Camera/
+    :param float fps: (Advanced) The framerate to use for the captured
+        video. Defaults to 20.0 fps
+    :param tuple resolution: (Advanced) The resolution to use for the
+        captured video. Defaults to (640, 360)
+    :param str codec: (Advanced) The codec to use for the captured
+        video. Defaults to DIVX
     """
 
     def __init__(self, output_file_name="", fps=20.0, resolution=None):

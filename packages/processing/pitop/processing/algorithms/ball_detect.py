@@ -177,7 +177,7 @@ class BallDetector:
     def __call__(self, frame, color: Union[str, list] = "red"):
         def parse_colors(color_arg):
             colors = []
-            if type(color_arg) == str:
+            if isinstance(color_arg, str):
                 if color_arg not in VALID_COLORS:
                     raise ValueError(
                         f"Valid color values are {', '.join(VALID_COLORS[:-1])} or {VALID_COLORS[-1]}"

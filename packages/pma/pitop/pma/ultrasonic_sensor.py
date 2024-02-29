@@ -85,10 +85,11 @@ class UltrasonicSensor(Stateful, Recreatable):
 
     @property
     def threshold_distance(self):
-        """
-        The distance, measured in meters, that will trigger the
+        """The distance, measured in meters, that will trigger the
         :attr:`when_in_range` and :attr:`when_out_of_range` events when
-        crossed. This is simply a meter-scaled variant of the usual
+        crossed.
+
+        This is simply a meter-scaled variant of the usual
         :attr:`~SmoothedInputDevice.threshold` attribute.
         """
         return self.__ultrasonic_device.threshold_distance
