@@ -51,6 +51,8 @@ __requires__ = [
     "smbus2>=0.4.0,<1.0.0",
     # Device Communication
     "pyzmq>=20.0.0,<25.0.0",
+    # To determine boot partition mount point
+    "psutil",
 ]
 
 
