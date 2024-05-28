@@ -1,15 +1,18 @@
+import logging
 from dataclasses import dataclass
 from getpass import getuser
 from os import path
 
 import psutil
-import logging
 
 
 def get_boot_partition_path():
     try:
         for partition in psutil.disk_partitions():
-            if partition.mountpoint.startswith("/boot") and ".recovery" not in partition.mountpoint:
+            if (
+                partition.mountpoint.startswith("/boot")
+                and ".recovery" not in partition.mountpoint
+            ):
                 return partition.mountpoint
     except Exception as e:
         logging.error(f"Couldn't find boot partition: {e}")
