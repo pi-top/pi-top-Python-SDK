@@ -39,3 +39,4 @@ wget python3-wget; PEP386
 pyzmq python3-zmq; PEP386
 pygame python3-pygame; PEP386
 xlib python3-xlib; PEP386
+psutil python3-psutil; PEP386

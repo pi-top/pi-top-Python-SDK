@@ -1,8 +1,25 @@
+import logging
 from dataclasses import dataclass
 from getpass import getuser
 from os import path
 
-ptissue_path = "/boot/pt-issue.txt"
+import psutil
+
+
+def get_boot_partition_path():
+    try:
+        for partition in psutil.disk_partitions():
+            if (
+                partition.mountpoint.startswith("/boot")
+                and ".recovery" not in partition.mountpoint
+            ):
+                return partition.mountpoint
+    except Exception as e:
+        logging.error(f"Couldn't find boot partition: {e}")
+    return ""
+
+
+ptissue_path = f"{get_boot_partition_path()}/pt-issue.txt"
 legacy_ptissue_path = "/etc/pt-issue"
 
 
