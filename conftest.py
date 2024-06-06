@@ -17,6 +17,7 @@ for module in [
     "pitop.common.ptdm.zmq",
     "imageio",
     "zmq",
+    "zmq.green",
     "smbus2",
     "smbus",
     "atexit",
