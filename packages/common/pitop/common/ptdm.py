@@ -5,7 +5,7 @@ from threading import Thread
 from time import sleep
 from traceback import format_exc
 
-import zmq
+import zmq.green as zmq
 
 from pitop.common.type_helper import TypeHelper
 
