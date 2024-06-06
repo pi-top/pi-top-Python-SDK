@@ -68,7 +68,7 @@ jobs:
        uses: actions/upload-artifact@v3
        with:
          name: dlib.whl
-         path: $(find $HOME -name 'dlib*.whl')
+         path: $(find  /home/runner/.cache/pip/wheels -name 'dlib*.whl')
 
      - name: Run Python tests and generate coverage report
        run: |
