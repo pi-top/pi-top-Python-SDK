@@ -1,6 +1,5 @@
 from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
-from flask_sockets import Sockets
 from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 
@@ -8,6 +7,7 @@ from pitop.common.formatting import is_url
 from pitop.common.sys_info import get_internal_ip
 
 from .blueprints.base import BaseBlueprint
+from .vendor.flask_sockets import Sockets
 
 
 def create_app(
