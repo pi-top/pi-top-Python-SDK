@@ -6,6 +6,7 @@ from time import sleep
 from traceback import format_exc
 
 import zmq.green as zmq
+from zmq.error import ZMQError
 
 from pitop.common.type_helper import TypeHelper
 
@@ -346,14 +347,15 @@ class PTDMRequestClient:
     def __connect_to_socket(self):
         self._zmq_context = zmq.Context()
         self._zmq_socket = self._zmq_context.socket(zmq.REQ)
-        self._zmq_socket.sndtimeo = _TIMEOUT_MS
-        self._zmq_socket.rcvtimeo = _TIMEOUT_MS
+        # Not supported by zmq.green
+        # self._zmq_socket.sndtimeo = _TIMEOUT_MS
+        # self._zmq_socket.rcvtimeo = _TIMEOUT_MS
 
         try:
             self._zmq_socket.connect(self.URI)
             logger.debug("pi-topd request client is ready")
 
-        except zmq.error.ZMQError as e:
+        except ZMQError as e:
             logger.error("Error starting the request client: " + str(e))
             logger.info(format_exc())
             raise
@@ -441,7 +443,7 @@ class PTDMSubscribeClient:
             self._zmq_socket.connect(self.URI)
             logger.debug("pi-topd subscribe client is ready")
 
-        except zmq.error.ZMQError as e:
+        except ZMQError as e:
             logger.error("Error starting the subscribe client: " + str(e))
             logger.info(format_exc())
 
