@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Taken from https://github.com/heroku-python/flask-sockets/
-# Patched to work with Werkzeug>=2.0.0, available as a Debian apt package in Bookworm
+# Patched to work with werkzeug>=2.0.0
 
 from werkzeug.routing import Map, Rule  # isort:skip
 from werkzeug.exceptions import NotFound
@@ -15,9 +15,16 @@ try:
     from geventwebsocket.handler import WebSocketHandler
     from gunicorn.workers.ggevent import PyWSGIHandler
 
-    import gevent  # isort:skip
+    import gevent  # noqa: F401, isort:skip
 except ImportError:
     pass
+
+
+def should_patch():
+    import werkzeug
+    from packaging.version import Version
+
+    return Version(werkzeug.__version__) >= Version("2.0.0")
 
 
 class SocketMiddleware(object):
@@ -63,6 +70,14 @@ class Sockets(object):
         self.blueprints = {}
         self._blueprint_order = []
 
+        if should_patch():
+            self.before_request_funcs = {}
+            self.after_request_funcs = {}
+            self.teardown_request_funcs = {}
+            self.url_default_functions = {}
+            self.url_value_preprocessors = {}
+            self.template_context_processors = {}
+
         if app:
             self.init_app(app)
 
@@ -79,8 +94,10 @@ class Sockets(object):
         return decorator
 
     def add_url_rule(self, rule, _, f, **options):
-        # Added websocket=True to support Werkzeug>=2.0.0
-        self.url_map.add(Rule(rule, endpoint=f, websocket=True))
+        if should_patch():
+            self.url_map.add(Rule(rule, endpoint=f, websocket=True))
+        else:
+            self.url_map.add(Rule(rule, endpoint=f))
 
     def register_blueprint(self, blueprint, **options):
         """Registers a blueprint for web sockets like for 'Flask' application.
@@ -98,11 +115,17 @@ class Sockets(object):
                 % (blueprint, self.blueprints[blueprint.name], blueprint.name)
             )
         else:
-            self.blueprints[blueprint.name] = blueprint
-            self._blueprint_order.append(blueprint)
             first_registration = True
+            if should_patch():
+                self.template_context_processors[blueprint.name] = []
+            else:
+                self.blueprints[blueprint.name] = blueprint
+                self._blueprint_order.append(blueprint)
 
-        blueprint.register(self, options, first_registration)
+        if not should_patch():
+            blueprint.register(self, options, first_registration)
+        elif first_registration:
+            blueprint.register(self, options)
 
 
 # CLI sugar.
