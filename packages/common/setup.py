@@ -53,8 +53,9 @@ __requires__ = [
     "pyzmq>=20.0.0,<25.0.0",
     # To determine boot partition mount point
     "psutil",
-    # For flask sockets patch
+    # For flask sockets
     "werkzeug",
+    "gevent-websocket",
 ]
 
 

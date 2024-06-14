@@ -6,7 +6,10 @@ from werkzeug.routing import Map, Rule  # isort:skip
 from werkzeug.exceptions import NotFound
 from werkzeug.http import parse_cookie
 
-from flask import request  # isort:skip
+try:
+    from flask import request  # isort:skip
+except ModuleNotFoundError:
+    request = None
 
 
 # Monkeys are made for freedom.
@@ -45,8 +48,9 @@ class SocketMiddleware(object):
 
             with self.app.app_context():
                 with self.app.request_context(environ):
-                    # add cookie to the request to have correct session handling
-                    request.cookie = cookie
+                    if request:
+                        # add cookie to the request to have correct session handling
+                        request.cookie = cookie
 
                     handler(environment, **values)
                     return []
