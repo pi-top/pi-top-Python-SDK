@@ -1,7 +1,6 @@
 dlib python3-dlib; PEP386
 flask python3-flask; PEP386
 flask-cors python3-flask-cors; PEP386
-flask-sockets python3-flask-sockets; PEP386
 gevent python3-gevent; PEP386
 gevent-websocket python3-gevent-websocket; PEP386
 # Bullseye - `Depends: python3-gpiozero (>= 1.6.2) but 1.5.1 is to be installed`
@@ -40,3 +39,4 @@ pyzmq python3-zmq; PEP386
 pygame python3-pygame; PEP386
 xlib python3-xlib; PEP386
 psutil python3-psutil; PEP386
+werkzeug python3-werkzeug
