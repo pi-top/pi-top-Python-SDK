@@ -1,3 +1,10 @@
+pi-top-python-sdk (0.32.1-8) bullseye; urgency=medium
+
+  * Publish to PyPI using API token
+  * Add gevent-websocket dependency (#640)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 14 Jun 2024 16:07:01 +0000
+
 pi-top-python-sdk (0.32.1-7) bullseye; urgency=medium
 
   * Vendor flask-sockets to work with Werkzeug>=2.0.0 (#637)
