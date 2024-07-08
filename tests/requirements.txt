@@ -9,7 +9,8 @@ pytest-timeout
 pytest-xdist
 # Dependencies
 Pillow>=8.1.2,<9.0
-dlib>=19.22.0,<20.0.0
+# Use pre-compiled wheel from packagecloud
+dlib==19.24.2.post1
 flask-cors>=3.0.9,<4.0.0
 flask>=1.1.2,<2.0.0
 gpiozero>=1.6.2,<2.0.0
