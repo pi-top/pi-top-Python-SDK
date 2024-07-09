@@ -12,7 +12,10 @@ jobs:
      - name: Install apt dependencies
        run: |
          sudo apt update
-         DEBIAN_FRONTEND=noninteractive sudo apt install cmake python3-opencv -y
+         export DEBIAN_FRONTEND=noninteractive
+         sudo apt install -y cmake python3-opencv
+         # Required to build pillow
+         sudo apt install -y libjpeg-dev zlib1g-dev libfreetype6-dev
 
      - name: Setup Python
        uses: actions/setup-python@v4
@@ -62,20 +65,28 @@ jobs:
            ${{ runner.os }}-sdk-shape-predictors-
 
      - name: Install pip dependencies
-       run: pip3 install -r tests/requirements.txt
+       run: pip3 install -r tests/requirements.txt --extra-index-url=https://packagecloud.io/pi-top/pypi/pypi/simple
 
-     - name: Run Python tests and generate coverage report
+     - name: Run non-simulation python tests
+       run: |
+         python3 -m pytest -m "not simulationtest" --verbose --cov-report term-missing --cov=pitop --numprocesses auto --dist=loadfile --timeout=600
+
+     - name: Run simulation python tests
        run: |
          # Use pygame without a display for simulation tests
          export SDL_VIDEODRIVER="dummy"
-         python3 -m pytest --verbose --cov-report term-missing --cov=pitop --numprocesses auto --dist=loadfile --timeout=600
+         python3 -m pytest -m simulationtest --verbose --cov-report term-missing --cov=pitop --numprocesses auto --dist=loadfile --timeout=600 --cov-append || true
+
+     - name: Generate coverage report
+       run: |
          python3 -m coverage xml
 
-     - name: Upload Python test coverage reports to Codecov
-       uses: codecov/codecov-action@v3.1.1
+     - name: Upload python test coverage reports to Codecov
+       uses: codecov/codecov-action@v4
        with:
          files: ./coverage.xml
          flags: unittests
          env_vars: OS,PYTHON
          fail_ci_if_error: true
          verbose: true
+         token: ${{ secrets.CODECOV_TOKEN }}
