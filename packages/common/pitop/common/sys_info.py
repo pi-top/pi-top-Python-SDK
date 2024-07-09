@@ -235,16 +235,17 @@ class DnsmasqLease:
     id: str = ""
 
 
-def get_address_for_connected_device_dnsmasq(iface: str) -> []:
+def get_dnsmasq_leases(iface: str) -> []:
 
     def parse_dnsmasq_leases_line(line):
         pattern = r"(\d{10})\s((?:[a-zA-Z0-9]{2}[:-]){5}[a-zA-Z0-9]{2})\s((?:[0-9]{1,3}\.){3}[0-9]{1,3})\s(\S+)\s(\S+)"
         # comment = r"^\s*[//|#]"
         regex_match = re.match(pattern, line)
 
-        groups = [""] * 5
         if regex_match and len(regex_match.groups()) == 5:
             groups = regex_match.groups()
+        else:
+            return None
 
         return DnsmasqLease(
             timestamp=groups[0],
@@ -259,7 +260,9 @@ def get_address_for_connected_device_dnsmasq(iface: str) -> []:
     try:
         with open(file) as f:
             for line in f.readlines():
-                leases.append(parse_dnsmasq_leases_line(line))
+                lease = parse_dnsmasq_leases_line(line)
+                if lease:
+                    leases.append(lease)
     except Exception as e:
         logger.warning(f"Error reading dnsmasq leases: {e}")
 
@@ -278,7 +281,7 @@ def get_address_for_connected_device(
     else:
         leases = []
         for iface in (NetworkInterface.wlan_ap0.name, NetworkInterface.ptusb0.name):
-            leases += get_address_for_connected_device_dnsmasq(iface)
+            leases += get_dnsmasq_leases(iface)
 
     for lease in leases:
         if network and ip_address(lease.ip) not in network:
