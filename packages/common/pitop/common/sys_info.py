@@ -1,4 +1,6 @@
 import logging
+import re
+from dataclasses import dataclass
 from enum import Enum, auto
 from fractions import Fraction
 from ipaddress import IPv4Network, IPv6Network, ip_address, ip_network
@@ -209,31 +211,88 @@ class InterfaceNetworkData:
         return output.decode("utf-8")
 
 
-def get_address_for_connected_device(
-    network: Union[None, IPv4Network, IPv6Network] = None
-) -> str:
-    def command_succeeds(cmd, timeout):
-        try:
-            run_command(cmd, timeout=timeout, check=True, log_errors=False)
-            return True
-        except Exception:
-            return False
-
+def get_address_for_connected_device_dhcpcd() -> []:
     try:
         leases_file = "/var/lib/dhcp/dhcpd.leases"
-        current_leases = ""
+        leases = ""
         if Path(leases_file).exists():
-            current_leases = IscDhcpLeases(leases_file).get_current().values()
+            leases = IscDhcpLeases(leases_file).get_current().values()
     except Exception as e:
         logger.error(f"Error reading dhcpd leases: {e}")
         return ""
 
-    current_leases = list(current_leases)
-    current_leases.reverse()
+    leases = list(leases)
+    leases.reverse()
+    return leases
 
-    for lease in current_leases:
+
+@dataclass
+class DnsmasqLease:
+    timestamp: str = ""
+    mac: str = ""
+    ip: str = ""
+    host: str = ""
+    id: str = ""
+
+
+def get_dnsmasq_leases(iface: str) -> []:
+
+    def parse_dnsmasq_leases_line(line):
+        pattern = r"(\d{10})\s((?:[a-zA-Z0-9]{2}[:-]){5}[a-zA-Z0-9]{2})\s((?:[0-9]{1,3}\.){3}[0-9]{1,3})\s(\S+)\s(\S+)"
+        # comment = r"^\s*[//|#]"
+        regex_match = re.match(pattern, line)
+
+        if regex_match and len(regex_match.groups()) == 5:
+            groups = regex_match.groups()
+        else:
+            return None
+
+        return DnsmasqLease(
+            timestamp=groups[0],
+            mac=groups[1],
+            ip=groups[2],
+            host=groups[3],
+            id=groups[4],
+        )
+
+    file = f"/var/lib/NetworkManager/dnsmasq-{iface}.leases"
+    leases = []
+    try:
+        with open(file) as f:
+            for line in f.readlines():
+                lease = parse_dnsmasq_leases_line(line)
+                if lease:
+                    leases.append(lease)
+    except Exception as e:
+        logger.warning(f"Error reading dnsmasq leases: {e}")
+
+    return leases
+
+
+def get_address_for_connected_device(
+    network: Union[None, IPv4Network, IPv6Network] = None
+) -> str:
+
+    if (
+        run_command("systemctl is-active dhcpcd", check=False, timeout=5).strip()
+        == "active"
+    ):
+        leases = get_address_for_connected_device_dhcpcd()
+    else:
+        leases = []
+        for iface in (NetworkInterface.wlan_ap0.name, NetworkInterface.ptusb0.name):
+            leases += get_dnsmasq_leases(iface)
+
+    for lease in leases:
         if network and ip_address(lease.ip) not in network:
             continue
+
+        def command_succeeds(cmd, timeout):
+            try:
+                run_command(cmd, timeout=timeout, check=True, log_errors=False)
+                return True
+            except Exception:
+                return False
 
         # Windows machines won't respond to ping requests by default. Using arping
         # helps us on that case, but since it takes ~1.5s, it's used as a fallback

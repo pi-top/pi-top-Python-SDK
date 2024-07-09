@@ -292,10 +292,15 @@ def test_pings_to_determine_internet_connection_status(run_command_mock):
 
 
 @patch("pitop.common.sys_info.IscDhcpLeases")
+@patch("pitop.common.sys_info.run_command")
 def test_get_address_for_connected_device_checks_dhcp_leases_if_file_exists(
+    run_command_mock,
     isc_dhcp_leases_mock,
 ):
     from pitop.common.sys_info import Path, get_address_for_connected_device
+
+    # dhcpcd service is running
+    run_command_mock.return_value = "active"
 
     with patch.object(Path, "exists") as e:
         e.return_value = False
@@ -313,6 +318,9 @@ def test_get_address_for_connected_device_checks_dhcp_leases_if_file_exists(
 def test_get_address_for_connected_device_pings_leased_ips(
     isc_dhcp_leases_mock, run_command_mock
 ):
+    # dhcpcd service is running
+    run_command_mock.return_value = "active"
+
     ip = "192.168.64.1"
     lease = MagicMock()
     lease.ip = ip
@@ -331,8 +339,11 @@ def test_get_address_for_connected_device_pings_leased_ips(
         e.return_value = True
         get_address_for_connected_device()
 
-    run_command_mock.assert_called_once_with(
-        "ping -c1 192.168.64.1", timeout=0.1, check=True, log_errors=False
+    run_command_mock.assert_has_calls(
+        [
+            call("systemctl is-active dhcpcd", timeout=5, check=False),
+            call("ping -c1 192.168.64.1", timeout=0.1, check=True, log_errors=False),
+        ]
     )
 
 
@@ -341,6 +352,7 @@ def test_get_address_for_connected_device_pings_leased_ips(
 def test_get_address_for_connected_device_arpings_if_ping_failed(
     isc_dhcp_leases_mock, run_command_mock
 ):
+
     ip = "192.168.64.1"
     lease = MagicMock()
     lease.ip = ip
@@ -353,7 +365,9 @@ def test_get_address_for_connected_device_arpings_if_ping_failed(
     isc_dhcp_leases_mock.return_value = get_current_mock
     isc_dhcp_leases_mock().get_current().values()
 
-    def run_command_side_effect(command, timeout):
+    def run_command_side_effect(command, timeout, check=False):
+        if command == "systemctl is-active dhcpcd":
+            return "active"
         return "arping" in command
 
     run_command_mock.side_effect = run_command_side_effect
@@ -364,14 +378,73 @@ def test_get_address_for_connected_device_arpings_if_ping_failed(
         e.return_value = True
         get_address_for_connected_device()
 
-    assert run_command_mock.call_count == 2
+    assert run_command_mock.call_count == 3
     run_command_mock.assert_has_calls(
         [
+            call("systemctl is-active dhcpcd", timeout=5, check=False),
             call("arping -c1 192.168.64.1", timeout=2, check=True, log_errors=False),
             call("ping -c1 192.168.64.1", timeout=0.1, check=True, log_errors=False),
         ],
         any_order=True,
     )
+
+
+@patch(
+    "pitop.common.sys_info.open",
+    new_callable=mock_open,
+    read_data="1720539681 e2:0e:5f:ff:2f:24 192.168.64.11 a-laptop-hostname 02:f2:1e:2f:ee:1f:ee",
+)
+def test_dnsmasq_leases_for_connected_device_dnsmasq(open_mock):
+    from pitop.common.sys_info import get_dnsmasq_leases
+
+    leases = get_dnsmasq_leases("wlan0")
+    assert isinstance(leases, list)
+    assert len(leases) == 1
+    assert leases[0].ip == "192.168.64.11"
+
+
+@patch(
+    "pitop.common.sys_info.open",
+    new_callable=mock_open,
+    read_data="""1720539681 e2:0e:5f:ff:2f:24 192.168.64.11 a-laptop-hostname 02:f2:1e:2f:ee:1f:ee
+1720539650 e3:0e:5f:ff:2f:24 192.168.64.12 another-laptop-hostname 02:f2:1e:2f:ee:1f:aa""",
+)
+def test_dnsmasq_leases_for_connected_device_dnsmasq_multiple_lines(open_mock):
+    from pitop.common.sys_info import get_dnsmasq_leases
+
+    leases = get_dnsmasq_leases("wlan0")
+    assert isinstance(leases, list)
+    assert len(leases) == 2
+    assert leases[0].ip == "192.168.64.11"
+    assert leases[1].ip == "192.168.64.12"
+
+
+@patch(
+    "pitop.common.sys_info.open", new_callable=mock_open, read_data="blabla bla blab"
+)
+def test_dnsmasq_leases_for_connected_device_invalid_content(open_mock):
+    from pitop.common.sys_info import get_dnsmasq_leases
+
+    leases = get_dnsmasq_leases("wlan0")
+    assert isinstance(leases, list)
+    assert len(leases) == 0
+
+
+@patch("pitop.common.sys_info.open", new_callable=mock_open, read_data="")
+def test_dnsmasq_leases_for_connected_device_empty_file(open_mock):
+    from pitop.common.sys_info import get_dnsmasq_leases
+
+    leases = get_dnsmasq_leases("wlan0")
+    assert isinstance(leases, list)
+    assert len(leases) == 0
+
+
+def test_dnsmasq_leases_for_connected_device_nonexistant_file():
+    from pitop.common.sys_info import get_dnsmasq_leases
+
+    leases = get_dnsmasq_leases("wlan0")
+    assert isinstance(leases, list)
+    assert len(leases) == 0
 
 
 @patch("pitop.common.sys_info.run_command")
@@ -391,14 +464,19 @@ def test_get_address_for_connected_device_on_no_response(
     isc_dhcp_leases_mock.return_value = get_current_mock
     isc_dhcp_leases_mock().get_current().values()
 
-    run_command_mock.side_effect = lambda command, timeout: False
+    def run_command_side_effect(command, timeout, check=False):
+        if command == "systemctl is-active dhcpcd":
+            return "active"
+        return False
+
+    run_command_mock.side_effect = run_command_side_effect
 
     from pitop.common.sys_info import Path, get_address_for_connected_device
 
     with patch.object(Path, "exists") as e:
         e.return_value = True
         assert get_address_for_connected_device() == ""
-    assert run_command_mock.call_count == 2
+    assert run_command_mock.call_count == 3
 
 
 @patch("pitop.common.sys_info.ip_address")
