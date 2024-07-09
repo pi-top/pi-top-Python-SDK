@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.32.1-9) bullseye; urgency=medium
+pi-top-python-sdk (0.33.0-1) bullseye; urgency=medium
 
   * Run simulationtests separately (#648)
   * Make labs web blueprints compatible with Flask 2.0 (#646)
