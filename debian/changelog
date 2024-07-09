@@ -1,3 +1,12 @@
+pi-top-python-sdk (0.33.0-1) bullseye; urgency=medium
+
+  * Run simulationtests separately (#648)
+  * Make labs web blueprints compatible with Flask 2.0 (#646)
+  * Find Dnsmasq IP leases (#647)
+  * [pre-commit.ci] pre-commit autoupdate (#632)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 09 Jul 2024 19:07:55 +0000
+
 pi-top-python-sdk (0.32.1-8) bullseye; urgency=medium
 
   * Publish to PyPI using API token
