@@ -1,7 +1,7 @@
 from flask import Blueprint, g
 
 from pitop.labs.web.blueprints.controller import ControllerBlueprint
-from pitop.labs.web.utils import uses_flask_2
+from pitop.labs.web.utils import uses_flask_1
 
 from .helpers import calculate_pan_tilt_angle, calculate_velocity_twist
 
@@ -56,12 +56,12 @@ class RoverControllerBlueprint(Blueprint):
         )
 
     def register(self, app, options, *args, **kwargs):
-        if uses_flask_2():
-            Blueprint.register(self, app, options, *args, **kwargs)
+        if uses_flask_1():
             app.register_blueprint(self.controller_blueprint, **options)
+            Blueprint.register(self, app, options, *args, **kwargs)
         else:
-            app.register_blueprint(self.controller_blueprint, **options)
             Blueprint.register(self, app, options, *args, **kwargs)
+            app.register_blueprint(self.controller_blueprint, **options)
 
     def broadcast(self, message):
         self.controller_blueprint.broadcast(message)

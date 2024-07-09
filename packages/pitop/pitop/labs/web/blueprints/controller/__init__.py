@@ -4,7 +4,7 @@ from pitop.labs.web.blueprints.base import BaseBlueprint
 from pitop.labs.web.blueprints.messaging import MessagingBlueprint
 from pitop.labs.web.blueprints.video import VideoBlueprint
 from pitop.labs.web.blueprints.webcomponents import WebComponentsBlueprint
-from pitop.labs.web.utils import uses_flask_2
+from pitop.labs.web.utils import uses_flask_1
 
 
 class ControllerBlueprint(Blueprint):
@@ -32,12 +32,12 @@ class ControllerBlueprint(Blueprint):
             app.register_blueprint(self.video_blueprint, **options)
             app.register_blueprint(self.messaging_blueprint, **options)
 
-        if uses_flask_2():
-            Blueprint.register(self, app, options, *args, **kwargs)
+        if uses_flask_1():
             register_child_blueprints()
+            Blueprint.register(self, app, options, *args, **kwargs)
         else:
-            register_child_blueprints()
             Blueprint.register(self, app, options, *args, **kwargs)
+            register_child_blueprints()
 
     def broadcast(self, message):
         self.messaging_blueprint.broadcast(message)
