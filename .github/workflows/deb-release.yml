@@ -2,11 +2,10 @@ name: Create GitHub Release
 
 on:
   workflow_dispatch:
-    branches:
-      - master
   pull_request:
     branches:
       - master
+      - bullseye
     types: [closed]
 
 
@@ -15,7 +14,6 @@ env:
   DEB_BUILD_DOCKER_BRANCH: "master"
   PACKAGECLOUD_REPO: "pi-top-os-unstable"
   OS: "debian"
-  DISTROS: "\"distro\":[\"bookworm\", \"bullseye\"]"
   HOST_COMPILE: "\"architecture\":[\"amd64\"]"
   X_COMPILE: "\"architecture\":[\"armhf\", \"arm64\"]"  # ARM 32 and 64 bit
 
@@ -23,7 +21,7 @@ jobs:
   check-architecture:
     runs-on: ubuntu-20.04
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      architecture: ${{ steps.set-arch.outputs.architecture }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,7 +29,7 @@ jobs:
           submodules: true
 
       - name: Determine target architecture
-        id: set-matrix
+        id: set-arch
         # If any packages define architecture as other than 'all'
         # then it can't be compiled on host architecture
         run: |
@@ -39,9 +37,54 @@ jobs:
           if grep '^Architecture:' debian/control | grep -q -v 'all'; then
             architecture=$X_COMPILE
           fi
-          echo "matrix={$architecture, $DISTROS}">>$GITHUB_OUTPUT
+
+          echo "Building for $architecture"
+          echo "architecture=$architecture">>$GITHUB_OUTPUT
+
+  check-distro:
+    runs-on: ubuntu-20.04
+    outputs:
+      distros: ${{ steps.set-distros.outputs.distros }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Determine build distro
+        id: set-distros
+        run: |
+          distros="\"distro\":[\"bookworm\", \"bullseye\"]"
+
+          # if bullseye branch exists, build for bookworm only
+          if git branch -r | grep -Eq "origin/bullseye$"; then
+            distros="\"distro\":[\"bookworm\"]"
+          fi
+
+          # if pull request to bullseye branch or current branch is bullseye, build only for bullseye
+          if [ $(echo ${{ github.head_ref }} | grep -qE "bullseye$") ] || [ ${{ github.ref }} = 'refs/heads/bullseye' ]; then
+            distros="\"distro\":[\"bullseye\"]"
+          fi
+
+          echo "Building for $distros"
+          echo "distros=$distros">>$GITHUB_OUTPUT
+
+  set-build-matrix:
+    needs: [check-distro, check-architecture]
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Determine build matrix
+        id: set-matrix
+        run: |
+          matrix='{${{needs.check-distro.outputs.distros}}, ${{needs.check-architecture.outputs.architecture}}}'
+          echo "Building for $matrix"
+          echo "matrix=$matrix">>$GITHUB_OUTPUT
 
   check-versions:
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
     runs-on: ubuntu-20.04
     outputs:
       CURRENT_VERSION: ${{ steps.current_version.outputs.CURRENT_VERSION }}
@@ -75,12 +118,12 @@ jobs:
           echo "CURRENT_VERSION=${{ env.CURRENT_VERSION }}">>"$GITHUB_OUTPUT"
 
   release:
-    needs: [check-architecture, check-versions]
+    needs: [set-build-matrix, check-versions]
     runs-on: ubuntu-20.04
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
     strategy:
       fail-fast: false
-      matrix: ${{fromJSON(needs.check-architecture.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.set-build-matrix.outputs.matrix)}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -121,12 +164,14 @@ jobs:
         # Only 1 .dsc is required for source so take armhf if there's multiple
         if: |
           (
-            github.ref == 'refs/heads/master' &&
+            (
+              github.ref == 'refs/heads/master' ||
+              github.ref == 'refs/heads/bullseye'
+            ) &&
             (
               matrix.architecture == 'amd64' ||
               matrix.architecture == 'armhf'
             )
-
           )
         with:
           repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ matrix.distro }}
@@ -150,11 +195,23 @@ jobs:
       - name: Zip distro artifacts
         run: |
           ls -l ./artifacts
-          zip ${{ matrix.distro }}-${{ matrix.architecture }}.deb.zip ./artifacts/*.deb
+          zip ${{ matrix.distro }}-${{ matrix.architecture }}.deb.zip ./artifacts/*
+
+      - name: Set release tag
+        run: |
+          release_tag="v${{ needs.check-versions.outputs.CURRENT_VERSION }}"
+          matrix="${{needs.set-build-matrix.outputs.matrix}}"
+
+          # if releasing ONLY for bullseye, prepend 'bullseye' to release tag
+          if [ ${{ matrix.distro }} = 'bullseye' ] && echo "${matrix}" | grep -qv 'bookworm'; then
+            release_tag="bullseye-$release_tag"
+          fi
+
+          echo "RELEASE_TAG=${release_tag}" >> $GITHUB_ENV
 
       - name: Create release and upload package
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.PAT_GITHUB }}
           file: ./${{ matrix.distro}}-${{ matrix.architecture }}.deb.zip
-          tag: "v${{ needs.check-versions.outputs.CURRENT_VERSION }}"
+          tag: ${{ env.RELEASE_TAG }}

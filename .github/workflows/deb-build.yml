@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - bullseye
   workflow_dispatch:
 
 env:
@@ -14,7 +15,6 @@ env:
   CHANGELOG_AUTHOR_EMAIL: "deb-maintainers@pi-top.com"
   PACKAGECLOUD_REPO: "experimental"
   OS: "debian"
-  DISTROS: "\"distro\":[\"bookworm\", \"bullseye\"]"
   HOST_COMPILE: "\"architecture\":[\"amd64\"]"
   X_COMPILE: "\"architecture\":[\"armhf\", \"arm64\"]"  # ARM 32 and 64 bit
 
@@ -22,7 +22,7 @@ jobs:
   check-architecture:
     runs-on: ubuntu-20.04
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      architecture: ${{ steps.set-arch.outputs.architecture }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,7 +30,7 @@ jobs:
           submodules: true
 
       - name: Determine target architecture
-        id: set-matrix
+        id: set-arch
         # If any packages define architecture as other than 'all'
         # then it can't be compiled on host architecture
         run: |
@@ -38,14 +38,58 @@ jobs:
           if grep '^Architecture:' debian/control | grep -q -v 'all'; then
             architecture=$X_COMPILE
           fi
-          echo "matrix={$architecture, $DISTROS}">>$GITHUB_OUTPUT
+
+          echo "Building for $architecture"
+          echo "architecture=$architecture">>$GITHUB_OUTPUT
+
+  check-distro:
+    runs-on: ubuntu-20.04
+    outputs:
+      distros: ${{ steps.set-distros.outputs.distros }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Determine build distro
+        id: set-distros
+        run: |
+          distros="\"distro\":[\"bookworm\", \"bullseye\"]"
+
+          # if bullseye branch exists, build for bookworm only
+          if git branch -r | grep -Eq "origin/bullseye$"; then
+            distros="\"distro\":[\"bookworm\"]"
+          fi
+
+          # if pull request to bullseye branch or current branch is bullseye, build only for bullseye
+          if [ $(echo ${{ github.head_ref }} | grep -qE "bullseye$") ] || [ ${{ github.ref }} = 'refs/heads/bullseye' ]; then
+            distros="\"distro\":[\"bullseye\"]"
+          fi
+
+          echo "Building for $distros"
+          echo "distros=$distros">>$GITHUB_OUTPUT
+
+  set-build-matrix:
+    needs: [check-distro, check-architecture]
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Determine build matrix
+        id: set-matrix
+        run: |
+          matrix='{${{needs.check-distro.outputs.distros}}, ${{needs.check-architecture.outputs.architecture}}}'
+          echo "Building for $matrix"
+          echo "matrix=$matrix">>$GITHUB_OUTPUT
 
   build-debian-package:
-    needs: check-architecture
     runs-on: ubuntu-20.04
+    needs: set-build-matrix
     strategy:
       fail-fast: false
-      matrix: ${{fromJSON(needs.check-architecture.outputs.matrix)}}
+      matrix: ${{fromJSON(needs.set-build-matrix.outputs.matrix)}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -116,7 +160,10 @@ jobs:
         # Only 1 .dsc is required for source so take armhf if there's multiple
         if: |
           (
-            github.ref == 'refs/heads/master' &&
+            (
+              github.ref == 'refs/heads/master' ||
+              github.ref == 'refs/heads/bullseye'
+            ) &&
             (
               matrix.architecture == 'amd64' ||
               matrix.architecture == 'armhf'
@@ -131,7 +178,7 @@ jobs:
 
       - name: Upload .deb to PackageCloud
         uses: pi-top/ghaction-packagecloud@main
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/bullseye'
         with:
           repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ matrix.distro }}
           files: |
