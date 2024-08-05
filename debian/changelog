@@ -1,3 +1,10 @@
+pi-top-python-sdk (0.33.0-2) bullseye; urgency=medium
+
+  * Update workflows
+  * Fix documentation builds in readthedocs (#655)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 05 Aug 2024 22:48:53 +0000
+
 pi-top-python-sdk (0.33.0-1) bullseye; urgency=medium
 
   * Run simulationtests separately (#648)
