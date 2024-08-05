@@ -1,1 +1,2 @@
 gpiozero
+sphinx-rtd-theme
