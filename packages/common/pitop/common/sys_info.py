@@ -264,7 +264,7 @@ def get_dnsmasq_leases(iface: str) -> []:
                 if lease:
                     leases.append(lease)
     except Exception as e:
-        logger.warning(f"Error reading dnsmasq leases: {e}")
+        logger.debug(f"Error reading dnsmasq leases: {e}")
 
     return leases
 
