@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.33.0-3) bullseye; urgency=medium
+
+  * Reduce logging level when getting device IP address (#656)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 08 Aug 2024 19:42:11 +0000
+
 pi-top-python-sdk (0.33.0-2) bullseye; urgency=medium
 
   * Update workflows
