@@ -1,4 +1,5 @@
-from math import floor, radians
+import logging
+from math import copysign, floor, radians
 from time import sleep
 from typing import Optional, Union
 
@@ -8,6 +9,8 @@ from pitop.pma.common.encoder_motor_registers import MotorSyncBits, MotorSyncReg
 from pitop.pma.plate_interface import PlateInterface
 
 from .simple_pid import PID
+
+logger = logging.getLogger(__name__)
 
 
 class DriveController(Stateful, Recreatable):
@@ -116,12 +119,7 @@ class DriveController(Stateful, Recreatable):
         speed_left, speed_right = self._calculate_motor_speeds(
             linear_speed, angular_speed, turn_radius
         )
-        if distance is None:
-            # run indefinitely
-            distance = 0.0
-        self.left_motor.set_target_speed(target_speed=speed_left, distance=distance)
-        self.right_motor.set_target_speed(target_speed=speed_right, distance=distance)
-        self._start_synchronous_motor_movement()
+        self._set_motor_speeds(speed_left, speed_right, distance)
 
     def forward(
         self,
@@ -216,26 +214,39 @@ class DriveController(Stateful, Recreatable):
         angular_speed = self.__target_lock_pid_controller(angle)
         self.robot_move(self._linear_speed_x_hold, angular_speed)
 
-    def rotate(self, angle, time_to_take):
+    def rotate(
+        self, angle: Union[int, float], time_to_take: Optional[Union[int, float]] = None
+    ) -> None:
         """Rotate the robot in place by a given angle and stop.
 
         :param float angle: Angle of the turn.
         :param float time_to_take: Expected duration of the rotation, in
-            seconds.
+            seconds. If not provided, the motors will perform the
+            rotation using the maximum angular speed allowed by the
+            motors.
         """
-        assert time_to_take > 0.0
         angle_radians = radians(angle)
+        if time_to_take is None:
+            time_to_take = angle_radians / self.max_robot_angular_speed
+
+        assert time_to_take > 0.0
         angular_speed = angle_radians / time_to_take
 
+        if angular_speed > self.max_robot_angular_speed:
+            logger.info(
+                f"Provided time '{time_to_take}s' is too fast for motors; using {angle_radians / self.max_robot_angular_speed}s instead."
+            )
+            time_to_take = angle_radians / self.max_robot_angular_speed
+            angular_speed = self.max_robot_angular_speed
+
         speed_left, speed_right = self._calculate_motor_speeds(
-            0, angular_speed, turn_radius=0
+            linear_speed=0, angular_speed=angular_speed, turn_radius=0
         )
-        distance = abs(angle_radians) * self.wheel_separation / 2
-        self.left_motor.set_target_speed(
-            target_speed=speed_left, distance=distance * speed_left / abs(speed_left)
-        )
-        self.right_motor.set_target_speed(
-            target_speed=speed_right, distance=distance * speed_right / abs(speed_right)
+
+        self._set_motor_speeds(
+            speed_left,
+            speed_right,
+            distance=abs(angle_radians) * self.wheel_separation / 2,
         )
         sleep(time_to_take)
 
@@ -254,3 +265,19 @@ class DriveController(Stateful, Recreatable):
         forward.
         """
         self.robot_move(self._linear_speed_x_hold, 0)
+
+    def _set_motor_speeds(
+        self, left_speed: float, right_speed: float, distance: Optional[float] = None
+    ) -> None:
+        """Set the speed of the left and right motors.
+
+        :param float left_speed: Speed for the left motor.
+        :param float right_speed: Speed for the right motor.
+        :param float distance: Distance to travel in meters.
+        """
+        if distance is None:
+            # run indefinitely
+            distance = 0.0
+        self.left_motor.set_target_speed(left_speed, copysign(distance, left_speed))
+        self.right_motor.set_target_speed(right_speed, copysign(distance, right_speed))
+        self._start_synchronous_motor_movement()
