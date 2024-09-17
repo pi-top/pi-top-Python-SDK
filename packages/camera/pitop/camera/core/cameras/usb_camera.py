@@ -1,4 +1,4 @@
-from os import listdir
+from os import environ, listdir
 
 from PIL import Image
 
@@ -6,6 +6,9 @@ from pitop.core.ImageFunctions import convert
 from pitop.core.import_opencv import import_opencv
 
 valid_rotate_angles = [-270, -180, -90, 0, 90, 180, 270]
+
+# Only show error logs from OpenCV
+environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
 
 class UsbCamera:
@@ -18,7 +21,9 @@ class UsbCamera:
         flip_left_right: bool = False,
     ):
         self._camera = None
-        self.index = -1 if index is None else index
+        if index is None:
+            # Allow OpenCV to find the first available camera
+            index = -1
 
         self._flip_top_bottom = flip_top_bottom
         self._flip_left_right = flip_left_right
@@ -46,12 +51,19 @@ class UsbCamera:
             if cap is None or not cap.isOpened():
                 cap = cv.VideoCapture(index)
 
-            if resolution is not None:
+            if cap is not None and resolution is not None:
                 cap.set(3, resolution[0])
                 cap.set(4, resolution[1])
             return cap
 
-        self._camera = create_camera_object(self.index, resolution)
+        self._camera = create_camera_object(index, resolution)
+        if self._camera is None and index is None:
+            # If OpenCV fails to find an available camera, try to find one on our own
+            for idx in self.list_device_indexes():
+                self._camera = create_camera_object(idx, resolution)
+                if self._camera:
+                    break
+
         if not self.is_opened():
             self._camera = None
             raise IOError(
