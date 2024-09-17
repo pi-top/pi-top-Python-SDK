@@ -1,5 +1,6 @@
 from math import floor, radians
 from time import sleep
+from typing import Optional, Union
 
 from pitop.core.mixins import Recreatable, Stateful
 from pitop.pma import EncoderMotor, ForwardDirection
@@ -13,7 +14,12 @@ class DriveController(Stateful, Recreatable):
     """Represents a vehicle with two wheels connected by an axis, and an
     optional support wheel or caster."""
 
-    def __init__(self, left_motor_port="M3", right_motor_port="M0", name="drive"):
+    def __init__(
+        self,
+        left_motor_port: str = "M3",
+        right_motor_port: str = "M0",
+        name: str = "drive",
+    ):
         self.name = name
 
         # motor and wheel setup
@@ -63,21 +69,27 @@ class DriveController(Stateful, Recreatable):
             },
         )
 
-    def _set_synchronous_motor_movement_mode(self):
+    def _set_synchronous_motor_movement_mode(self) -> None:
         sync_config = (
             MotorSyncBits[self.left_motor_port].value
             | MotorSyncBits[self.right_motor_port].value
         )
         self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, sync_config)
 
-    def _start_synchronous_motor_movement(self):
+    def _start_synchronous_motor_movement(self) -> None:
         self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
 
-    def _calculate_motor_speeds(self, linear_speed, angular_speed, turn_radius):
+    def _calculate_motor_speeds(
+        self,
+        linear_speed: Union[int, float],
+        angular_speed: Union[int, float],
+        turn_radius: Union[int, float],
+    ) -> tuple:
         # if angular_speed is positive, then rotation is anti-clockwise in this coordinate frame
         speed_right = (
             linear_speed + (turn_radius + self.wheel_separation / 2) * angular_speed
         )
+
         speed_left = (
             linear_speed + (turn_radius - self.wheel_separation / 2) * angular_speed
         )
@@ -92,17 +104,31 @@ class DriveController(Stateful, Recreatable):
 
         return speed_left, speed_right
 
-    def robot_move(self, linear_speed, angular_speed, turn_radius=0.0):
+    def robot_move(
+        self,
+        linear_speed: Union[int, float],
+        angular_speed: Union[int, float],
+        turn_radius: Union[int, float] = 0.0,
+        distance: Optional[Union[int, float]] = None,
+    ) -> None:
         # TODO: turn_radius will introduce a hidden linear speed component to the robot, so params are syntactically
         #  misleading
         speed_left, speed_right = self._calculate_motor_speeds(
             linear_speed, angular_speed, turn_radius
         )
-        self.left_motor.set_target_speed(target_speed=speed_left)
-        self.right_motor.set_target_speed(target_speed=speed_right)
+        if distance is None:
+            # run indefinitely
+            distance = 0.0
+        self.left_motor.set_target_speed(target_speed=speed_left, distance=distance)
+        self.right_motor.set_target_speed(target_speed=speed_right, distance=distance)
         self._start_synchronous_motor_movement()
 
-    def forward(self, speed_factor, hold=False):
+    def forward(
+        self,
+        speed_factor: Union[int, float],
+        hold: bool = False,
+        distance: Optional[Union[int, float]] = None,
+    ) -> None:
         """Move the robot forward.
 
         :param float speed_factor: Factor relative to the maximum motor
@@ -111,15 +137,22 @@ class DriveController(Stateful, Recreatable):
             backwards.
         :param bool hold: Setting this parameter to true will cause
             subsequent movements to use the speed set as the base speed.
+        :param float distance: Distance to travel in meters. If not
+            provided, the robot will move indefinitely
         """
         linear_speed_x = self.max_motor_speed * speed_factor
         if hold:
             self._linear_speed_x_hold = linear_speed_x
         else:
             self._linear_speed_x_hold = 0
-        self.robot_move(linear_speed_x, 0)
+        self.robot_move(linear_speed=linear_speed_x, angular_speed=0, distance=distance)
 
-    def backward(self, speed_factor, hold=False):
+    def backward(
+        self,
+        speed_factor: Union[int, float],
+        hold: bool = False,
+        distance: Optional[Union[int, float]] = None,
+    ) -> None:
         """Move the robot backward.
 
         :param float speed_factor: Factor relative to the maximum motor
@@ -127,10 +160,17 @@ class DriveController(Stateful, Recreatable):
             Using negative values will cause the robot to move forwards.
         :param bool hold: Setting this parameter to true will cause
             subsequent movements to use the speed set as the base speed.
+        :param float distance: Distance to travel in meters. If not
+            provided, the robot will move indefinitely
         """
-        self.forward(-speed_factor, hold)
+        self.forward(-speed_factor, hold, distance)
 
-    def left(self, speed_factor, turn_radius=0):
+    def left(
+        self,
+        speed_factor: Union[int, float],
+        turn_radius: Union[int, float] = 0,
+        distance: Optional[Union[int, float]] = None,
+    ) -> None:
         """Make the robot move to the left, using a circular trajectory.
 
         :param float speed_factor: Factor relative to the maximum motor
@@ -139,15 +179,23 @@ class DriveController(Stateful, Recreatable):
         :param float turn_radius: Radius used by the robot to perform
             the movement. Using `turn_radius=0` will cause the robot to
             rotate in place.
+        :param float distance: Distance to travel in meters. If not
+            provided, the robot will move indefinitely
         """
 
         self.robot_move(
-            self._linear_speed_x_hold,
-            self.max_robot_angular_speed * speed_factor,
-            turn_radius,
+            linear_speed=self._linear_speed_x_hold,
+            angular_speed=self.max_robot_angular_speed * speed_factor,
+            turn_radius=turn_radius,
+            distance=distance,
         )
 
-    def right(self, speed_factor, turn_radius=0):
+    def right(
+        self,
+        speed_factor: Union[int, float],
+        turn_radius: Union[int, float] = 0,
+        distance: Optional[Union[int, float]] = None,
+    ) -> None:
         """Make the robot move to the right, using a circular trajectory.
 
         :param float speed_factor: Factor relative to the maximum motor
@@ -156,11 +204,13 @@ class DriveController(Stateful, Recreatable):
         :param float turn_radius: Radius used by the robot to perform
             the movement. Using `turn_radius=0` will cause the robot to
             rotate in place.
+        :param float distance: Distance to travel in meters. If not
+            provided, the robot will move indefinitely
         """
 
-        self.left(-speed_factor, -turn_radius)
+        self.left(-speed_factor, -turn_radius, distance)
 
-    def target_lock_drive_angle(self, angle):
+    def target_lock_drive_angle(self, angle: Union[int, float]) -> None:
         """Make the robot move in the direction of the specified angle, while
         maintaining the current linear speed."""
         angular_speed = self.__target_lock_pid_controller(angle)
@@ -189,12 +239,12 @@ class DriveController(Stateful, Recreatable):
         )
         sleep(time_to_take)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop any movement being performed by the motors."""
         self._linear_speed_x_hold = 0
         self.robot_move(0, 0)
 
-    def stop_rotation(self):
+    def stop_rotation(self) -> None:
         """Stop any angular movement performed by the robot.
 
         In the case where linear and rotational movements are being
