@@ -57,7 +57,7 @@ class UsbCamera:
             return cap
 
         self._camera = create_camera_object(index, resolution)
-        if self._camera is None and index is None:
+        if self._camera is None and index is -1:
             # If OpenCV fails to find an available camera, try to find one on our own
             for idx in self.list_device_indexes():
                 self._camera = create_camera_object(idx, resolution)
