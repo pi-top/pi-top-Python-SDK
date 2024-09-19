@@ -1,3 +1,5 @@
+from typing import Optional
+
 from numpy import array
 
 from pitop.core import ImageFunctions
@@ -32,14 +34,25 @@ def calculate_blue_limits():
     return lower_blue, upper_blue
 
 
-def process_frame_for_line(frame, image_format="PIL", process_image_width=320):
+def process_frame_for_line(
+    frame,
+    image_format: str = "PIL",
+    process_image_width: int = 320,
+    hsv_limits: Optional[tuple] = None,
+):
+    if hsv_limits is None:
+        hsv_limits = calculate_blue_limits()
+
+    assert len(hsv_limits) == 2, "hsv_limits must be a tuple of 2 elements"
+    hsv_lower, hsv_upper = [array(value) for value in hsv_limits]
+
     cv2 = import_opencv()
     cv_frame = ImageFunctions.convert(frame, format="OpenCV")
 
+    # resize frame for faster processing
     from imutils import resize
 
     resized_frame = resize(cv_frame, width=process_image_width)
-    hsv_lower, hsv_upper = calculate_blue_limits()
     image_mask = color_mask(resized_frame, hsv_lower, hsv_upper)
     line_contour = find_largest_contour(image_mask)
 
