@@ -4,6 +4,7 @@ from numpy import array
 
 from pitop.core import ImageFunctions
 from pitop.core.data_structures import DotDict
+from pitop.processing.algorithms.hsv_color_ranges import HSVColorRanges
 from pitop.processing.core.vision_functions import (
     center_reposition,
     color_mask,
@@ -38,10 +39,22 @@ def process_frame_for_line(
     frame,
     image_format: str = "PIL",
     process_image_width: int = 320,
+    color: Optional[str] = None,
     hsv_limits: Optional[tuple] = None,
 ):
+    if color and hsv_limits:
+        raise ValueError("Cannot specify both color and hsv_limits")
+
     if hsv_limits is None:
         hsv_limits = calculate_blue_limits()
+
+    if color:
+        if not HSVColorRanges.is_supported(color):
+            raise ValueError(
+                f"Color '{color}' is not supported. You can use one of '{HSVColorRanges.supported()}' or provide your own HSV limits."
+            )
+        limits = HSVColorRanges.get(color)
+        hsv_limits = limits[0]["lower"], limits[0]["upper"]
 
     assert len(hsv_limits) == 2, "hsv_limits must be a tuple of 2 elements"
     hsv_lower, hsv_upper = [array(value) for value in hsv_limits]

@@ -1,13 +1,14 @@
 import atexit
 from collections import deque
 from os import getenv
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 from imutils.video import FPS
 
 from pitop.core import ImageFunctions
 from pitop.core.data_structures import DotDict
+from pitop.processing.algorithms.hsv_color_ranges import HSVColorRanges
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
@@ -15,49 +16,6 @@ from pitop.processing.core.vision_functions import (
     import_opencv,
     tuple_for_color_by_name,
 )
-
-
-class HSVColorRanges:
-    ranges = {
-        "red": [
-            {"lower": (150, 100, 100), "upper": (179, 255, 255)},
-            {"lower": (0, 100, 100), "upper": (5, 255, 255)},
-        ],
-        "green": [{"lower": (60, 100, 100), "upper": (90, 255, 255)}],
-        "blue": [{"lower": (100, 100, 100), "upper": (130, 255, 255)}],
-    }
-
-    @classmethod
-    def supported(cls):
-        return list(cls.ranges.keys())
-
-    @classmethod
-    def get(cls, color: str) -> list:
-        return cls.ranges[color]
-
-    @classmethod
-    def add(cls, color: str, lower: tuple, upper: tuple):
-        if not all(isinstance(i, tuple) for i in (lower, upper)):
-            raise ValueError("Lower and upper must be tuples")
-
-        if color not in cls.ranges:
-            cls.ranges[color] = []
-        cls.ranges[color].append({"lower": lower, "upper": upper})
-
-    @classmethod
-    def validate(cls, color_arg: Union[str, list]) -> list:
-        colors = []
-        supported_colors = cls.supported()
-        if isinstance(color_arg, str):
-            colors = [color_arg]
-        elif type(color_arg) in (list, tuple):
-            colors = color_arg
-        if not set(colors).issubset(supported_colors):
-            raise ValueError(
-                f"Valid color values are {', '.join(supported_colors[:-1])} or {supported_colors[-1]}"
-            )
-        return colors
-
 
 DETECTION_POINTS_BUFFER_LENGTH = 16
 
@@ -310,7 +268,29 @@ class BallDetector:
     def _print_fps(self):
         self._fps.stop()
 
-    def __call__(self, frame, color: Union[str, list] = "red"):
+    def __call__(
+        self,
+        frame,
+        color: Optional[Union[str, list]] = None,
+        hsv_limits: Optional[tuple] = None,
+    ):
+        if color and hsv_limits:
+            raise ValueError("Cannot specify both color and hsv_limits")
+
+        if hsv_limits:
+            assert len(hsv_limits) == 2, "hsv_limits must be a tuple of 2 elements"
+            hsv_lower, hsv_upper = [np.array(value) for value in hsv_limits]
+            # check if the color already exists
+            color_name = HSVColorRanges.get_color_for_hsv_limits(hsv_lower, hsv_upper)
+            if color_name is None:
+                # if not, add it with a random name
+                color_name = f"pt_{np.random.randint(0, 1000)}"
+                self.add_hsv_color(color_name, hsv_lower, hsv_upper)
+            color = color_name
+
+        if color is None:
+            color = "red"
+
         frame = ImageFunctions.convert(frame, format="OpenCV")
         robot_view = frame.copy()
         data = DotDict({})

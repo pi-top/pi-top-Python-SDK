@@ -20,6 +20,10 @@ def get_processed_frame():
     try:
         if selected_image_processor == "blue_line_detect":
             return process_frame_for_line(frame=camera.current_frame()).robot_view
+        if selected_image_processor == "yellow_line_detect":
+            return process_frame_for_line(
+                frame=camera.current_frame(), color="yellow"
+            ).robot_view
         elif selected_image_processor == "red_line_detect":
             return process_frame_for_line(
                 frame=camera.current_frame(), hsv_limits=red_hsv_limits
