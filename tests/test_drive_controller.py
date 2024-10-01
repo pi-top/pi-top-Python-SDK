@@ -18,8 +18,10 @@ class DriveControllerTestCase(TestCase):
         expected_linear_speed = speed_factor * d.max_motor_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
-            d.forward(speed_factor, hold=False)
-            robot_move_mock.assert_called_once_with(expected_linear_speed, 0)
+            d.forward(speed_factor, hold=False, distance=None)
+            robot_move_mock.assert_called_once_with(
+                linear_speed=expected_linear_speed, angular_speed=0, distance=None
+            )
 
     def test_forward_hold_param_stores_speed_for_next_movements(self):
         """'forward' hold parameter stores linear speed in object."""
@@ -42,7 +44,10 @@ class DriveControllerTestCase(TestCase):
         with patch.object(d, "robot_move") as robot_move_mock:
             d.left(speed_factor, turn_radius=turn_radius)
             robot_move_mock.assert_called_once_with(
-                expected_linear_speed, expected_angular_speed, turn_radius
+                linear_speed=expected_linear_speed,
+                angular_speed=expected_angular_speed,
+                turn_radius=turn_radius,
+                distance=None,
             )
 
     def test_turn_right_calls_left_method(self):
@@ -53,17 +58,18 @@ class DriveControllerTestCase(TestCase):
 
         with patch.object(d, "left") as left_mock:
             d.right(speed_factor, turn_radius=turn_radius)
-            left_mock.assert_called_once_with(-speed_factor, -turn_radius)
+            left_mock.assert_called_once_with(-speed_factor, -turn_radius, None)
 
     def test_backward_calls_forward_method(self):
         """'backward' calls 'forward' method with inverted parameters."""
         d = DriveController()
         speed_factor = 1
         hold = False
+        distance = None
 
         with patch.object(d, "forward") as forward_mock:
             d.backward(speed_factor, hold=hold)
-            forward_mock.assert_called_once_with(-speed_factor, hold)
+            forward_mock.assert_called_once_with(-speed_factor, hold, distance)
 
     def test_stop_sets_angular_and_linear_speeds_to_zero(self):
         """'stop' method sets angular & linear speeds to zero."""
