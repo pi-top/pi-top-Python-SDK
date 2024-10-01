@@ -215,29 +215,42 @@ class DriveController(Stateful, Recreatable):
         self.robot_move(self._linear_speed_x_hold, angular_speed)
 
     def rotate(
-        self, angle: Union[int, float], time_to_take: Optional[Union[int, float]] = None
+        self,
+        angle: Union[int, float],
+        time_to_take: Optional[Union[int, float]] = None,
+        force_time_to_take: bool = False,
     ) -> None:
         """Rotate the robot in place by a given angle and stop.
 
         :param float angle: Angle of the turn.
         :param float time_to_take: Expected duration of the rotation, in
             seconds. If not provided, the motors will perform the
-            rotation using the maximum angular speed allowed by the
-            motors.
+            rotation using 30% of the maximum angular speed allowed by
+            the motors, to ensure the robot can perform the rotation
+            without issues.
+        :param bool force_time_to_take: If set to true, the provided
+            time will be used even if it is too fast for the motors to
+            handle.
         """
+        SPEED_FACTOR_FOR_ROTATION = 0.3
+        MAX_ANGULAR_SPEED_FOR_ROTATION = (
+            self.max_robot_angular_speed * SPEED_FACTOR_FOR_ROTATION
+        )
+
         angle_radians = radians(angle)
         if time_to_take is None:
-            time_to_take = angle_radians / self.max_robot_angular_speed
+            time_to_take = abs(angle_radians) / MAX_ANGULAR_SPEED_FOR_ROTATION
 
         assert time_to_take > 0.0
         angular_speed = angle_radians / time_to_take
 
-        if angular_speed > self.max_robot_angular_speed:
-            logger.info(
-                f"Provided time '{time_to_take}s' is too fast for motors; using {angle_radians / self.max_robot_angular_speed}s instead."
+        if not force_time_to_take and angular_speed > MAX_ANGULAR_SPEED_FOR_ROTATION:
+            new_time_to_take = abs(angle_radians) / MAX_ANGULAR_SPEED_FOR_ROTATION
+            logger.warning(
+                f"Provided time '{time_to_take}s' is too fast for motors; using {new_time_to_take}s instead."
             )
-            time_to_take = angle_radians / self.max_robot_angular_speed
-            angular_speed = self.max_robot_angular_speed
+            time_to_take = new_time_to_take
+            angular_speed = MAX_ANGULAR_SPEED_FOR_ROTATION
 
         speed_left, speed_right = self._calculate_motor_speeds(
             linear_speed=0, angular_speed=angular_speed, turn_radius=0
@@ -278,6 +291,10 @@ class DriveController(Stateful, Recreatable):
         if distance is None:
             # run indefinitely
             distance = 0.0
-        self.left_motor.set_target_speed(left_speed, copysign(distance, left_speed))
-        self.right_motor.set_target_speed(right_speed, copysign(distance, right_speed))
+        self.left_motor.set_target_speed(
+            left_speed, distance=copysign(distance, left_speed)
+        )
+        self.right_motor.set_target_speed(
+            right_speed, distance=copysign(distance, right_speed)
+        )
         self._start_synchronous_motor_movement()
