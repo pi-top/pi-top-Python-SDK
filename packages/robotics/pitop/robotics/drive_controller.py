@@ -218,24 +218,28 @@ class DriveController(Stateful, Recreatable):
         self,
         angle: Union[int, float],
         time_to_take: Optional[Union[int, float]] = None,
-        force_time_to_take: bool = False,
+        max_speed_factor: float = 0.3,
     ) -> None:
         """Rotate the robot in place by a given angle and stop.
 
         :param float angle: Angle of the turn.
         :param float time_to_take: Expected duration of the rotation, in
             seconds. If not provided, the motors will perform the
-            rotation using 30% of the maximum angular speed allowed by
-            the motors, to ensure the robot can perform the rotation
-            without issues.
-        :param bool force_time_to_take: If set to true, the provided
-            time will be used even if it is too fast for the motors to
-            handle.
+            rotation using % of the maximum angular speed allowed by the
+            motors, to ensure the robot can perform the rotation without
+            issues.
+        :param bool max_speed_factor: Factor relative to the maximum
+            motor speed, used to set the velocity, in the range 0 to
+            1.0.
         """
-        SPEED_FACTOR_FOR_ROTATION = 0.3
-        MAX_ANGULAR_SPEED_FOR_ROTATION = (
-            self.max_robot_angular_speed * SPEED_FACTOR_FOR_ROTATION
-        )
+
+        assert 0 <= max_speed_factor <= 1.0
+        if max_speed_factor > 0.3:
+            logger.warning(
+                "Using max_speed_factor higher than 0.3 might cause the robot to rotate inconsistently."
+            )
+
+        MAX_ANGULAR_SPEED_FOR_ROTATION = self.max_robot_angular_speed * max_speed_factor
 
         angle_radians = radians(angle)
         if time_to_take is None:
@@ -244,11 +248,15 @@ class DriveController(Stateful, Recreatable):
         assert time_to_take > 0.0
         angular_speed = angle_radians / time_to_take
 
-        if not force_time_to_take and angular_speed > MAX_ANGULAR_SPEED_FOR_ROTATION:
+        if time_to_take and angular_speed > MAX_ANGULAR_SPEED_FOR_ROTATION:
             new_time_to_take = abs(angle_radians) / MAX_ANGULAR_SPEED_FOR_ROTATION
-            logger.warning(
-                f"Provided time '{time_to_take}s' is too fast for motors; using {new_time_to_take}s instead."
-            )
+
+            time_to_take_warning = f"Provided time '{time_to_take}s' is too fast for current max_speed_factor {max_speed_factor};"
+            time_to_take_warning += f" using {new_time_to_take}s instead."
+            if max_speed_factor < 1:
+                time_to_take_warning = f"{time_to_take_warning} Pass a higher max_speed_factor to `rotate()` to use a lower time_to_take."
+            logger.warning(time_to_take_warning)
+
             time_to_take = new_time_to_take
             angular_speed = MAX_ANGULAR_SPEED_FOR_ROTATION
 

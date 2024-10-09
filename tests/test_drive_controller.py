@@ -119,3 +119,56 @@ class DriveControllerTestCase(TestCase):
             )
             self.assertEqual(round(speed_left, 3), exp_rpm_left)
             self.assertEqual(round(speed_right, 3), exp_rpm_right)
+
+    def test_rotate_speeds(self):
+        """Rotate method doesn't use max speed by default."""
+
+        sleep_mock = patch("pitop.robotics.drive_controller.sleep").start()
+        d = DriveController()
+        with patch.object(d, "_set_motor_speeds") as set_motor_speeds_mock:
+            # base case
+            d.rotate(angle=90, time_to_take=1)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.12801990063378407, 0.12801990063378407, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(1)
+            set_motor_speeds_mock.reset_mock()
+            sleep_mock.reset_mock()
+
+            # using a higher speed factor with the same time to take doesn't affect speeds
+            d.rotate(angle=90, time_to_take=1, max_speed_factor=0.9)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.12801990063378407, 0.12801990063378407, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(1)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
+
+            # using a lower speed factor with the same time to take will use lower speeds and will increase the time to take accordingly
+            d.rotate(angle=90, time_to_take=1, max_speed_factor=0.1)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.044700000000000004,
+                0.044700000000000004,
+                distance=0.12801990063378407,
+            )
+            sleep_mock.assert_called_once_with(2.8639798799504264)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
+
+            # using a small time to take with the default max speed factor will re-adjust the time to take
+            d.rotate(angle=90, time_to_take=0.3)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.1341, 0.1341, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(0.9546599599834755)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
+
+            # using a small time to take but increasing the max speed factor will achieve the expected time
+            d.rotate(angle=90, time_to_take=0.3, max_speed_factor=1)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.4267330021126136, 0.4267330021126136, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(0.3)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
