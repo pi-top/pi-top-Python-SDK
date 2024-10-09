@@ -14,7 +14,6 @@ from pitop.processing.core.vision_functions import (
     get_object_target_lock_control_angle,
     import_imutils,
     import_opencv,
-    tuple_for_color_by_name,
 )
 
 DETECTION_POINTS_BUFFER_LENGTH = 16
@@ -121,7 +120,7 @@ class Ball:
             frame,
             self.center_points[0],
             5,
-            tuple_for_color_by_name(self.color, bgr=True),
+            HSVColorRanges.to_bgr(self.color),
             -1,
         )
 
@@ -135,7 +134,7 @@ class Ball:
                 frame,
                 self.center_points[i - 1],
                 self.center_points[i],
-                tuple_for_color_by_name(self.color, bgr=True),
+                HSVColorRanges.to_bgr(self.color),
                 thickness,
             )
 
@@ -258,8 +257,8 @@ class BallDetector:
     def balls(self):
         return {c: self.detectors[c].ball for c in self.detectors}
 
-    def add_color_hsv(self, color: str, lower: tuple, upper: tuple):
-        HSVColorRanges.add(color, lower, upper)
+    def add_color(self, color: str, hsv: dict, *args, **kwargs):
+        HSVColorRanges.add(color, hsv.get("lower"), hsv.get("upper"))
         self.detectors[color] = SingleBallDetector(color, self.image_processing_width)
 
     def _print_fps(self):
@@ -276,13 +275,13 @@ class BallDetector:
 
         if hsv_limits:
             assert len(hsv_limits) == 2, "hsv_limits must be a tuple of 2 elements"
-            hsv_lower, hsv_upper = [np.array(value) for value in hsv_limits]
+            hsv_lower, hsv_upper = [list(value) for value in hsv_limits]
             # check if the color already exists
             color_name = HSVColorRanges.get_color_for_hsv_limits(hsv_lower, hsv_upper)
             if color_name is None:
                 # if not, add it with a random name
-                color_name = f"pt_{np.random.randint(0, 1000)}"
-                self.add_hsv_color(color_name, hsv_lower, hsv_upper)
+                color_name = f"color_{np.random.randint(0, 1000)}"
+                self.add_color(color_name, hsv={"lower": hsv_lower, "upper": hsv_upper})
             color = color_name
 
         if color is None:
@@ -300,6 +299,8 @@ class BallDetector:
 
             # Find ball in frame
             data[c] = detector.find(frame)
+            data["found"] = {}
+            data["found"][c] = data[c].valid
 
             # Draw ball on top of frame
             robot_view = detector.draw(robot_view)

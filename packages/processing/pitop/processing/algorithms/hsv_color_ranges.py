@@ -1,4 +1,9 @@
+import logging
 from typing import Optional, Union
+
+from ..core.vision_functions import hsv_to_rgb
+
+logger = logging.getLogger(__name__)
 
 
 class HSVColorRanges:
@@ -38,13 +43,14 @@ class HSVColorRanges:
         return cls.ranges.get(color)
 
     @classmethod
-    def add(cls, color: str, lower: tuple, upper: tuple):
-        if not all(isinstance(i, tuple) for i in (lower, upper)):
+    def add(cls, color: str, lower: Union[tuple, list], upper: Union[tuple, list]):
+        if not all(isinstance(i, tuple) or isinstance(i, list) for i in (lower, upper)):
             raise ValueError("Lower and upper must be tuples")
 
         if color not in cls.ranges:
             cls.ranges[color] = []
-        cls.ranges[color].append({"lower": lower, "upper": upper})
+        cls.ranges[color].append({"lower": tuple(lower), "upper": tuple(upper)})
+        logger.info(f"Added color {color} with lower {lower} and upper {upper}")
 
     @classmethod
     def validate(cls, color_arg: Union[str, list]) -> list:
@@ -59,3 +65,19 @@ class HSVColorRanges:
                 f"Valid color values are {', '.join(supported_colors[:-1])} or {supported_colors[-1]}"
             )
         return colors
+
+    @classmethod
+    def to_rgb(cls, color_name: str) -> list:
+        color = cls.get(color_name)
+        if color is None:
+            raise Exception(f"Color '{color_name}' not found")
+        hsv_arr = list()
+        for hsv_lower_upper in color:
+            for hsv in hsv_lower_upper.values():
+                hsv_arr.append(list(hsv))
+        return hsv_to_rgb(hsv_arr)
+
+    @classmethod
+    def to_bgr(cls, color_name: str) -> list:
+        rgb = cls.to_rgb(color_name)
+        return rgb[::-1]
