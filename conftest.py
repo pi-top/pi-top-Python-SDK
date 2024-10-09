@@ -178,3 +178,11 @@ def create_sim():
 
     for sim in sims:
         sim.stop()
+
+
+@pytest.fixture(autouse=True)
+def reload_modules():
+    modules_to_reload = ["pitop.processing"]
+    for module_to_reload in modules_to_reload:
+        if module_to_reload in sys.modules:
+            del sys.modules[module_to_reload]

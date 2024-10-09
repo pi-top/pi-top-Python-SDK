@@ -34,7 +34,7 @@ def import_dlib():
         ) from None
 
 
-def color_mask(frame, hsv_lower, hsv_upper):
+def color_mask(frame, lower, hsv_upper):
     cv2 = import_opencv()
     # apply gaussian blur to smooth out the frame
     blur = cv2.blur(frame, (9, 9))
@@ -43,7 +43,7 @@ def color_mask(frame, hsv_lower, hsv_upper):
     hsv_frame = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
 
     # Threshold the HSV image to get only blue colors
-    mask = cv2.inRange(hsv_frame, hsv_lower, hsv_upper)
+    mask = cv2.inRange(hsv_frame, lower, hsv_upper)
 
     return mask
 
@@ -168,3 +168,16 @@ def tuple_for_color_by_name(color_name, bgr=False):
     if bgr:
         return values[::-1]
     return values
+
+
+def hsv_to_rgb(hsv_color_arr: list) -> list:
+    """Returns a list with the RGB representation of the HSV colors
+    provided."""
+    cv2 = import_opencv()
+    import numpy as np
+
+    rgb_array = list()
+    for hsv in hsv_color_arr:
+        rgb = cv2.cvtColor(np.uint8([[hsv]]), cv2.COLOR_HSV2RGB)
+        rgb_array.append(rgb[0][0])
+    return [int(x) for x in np.mean(rgb_array, axis=0)]

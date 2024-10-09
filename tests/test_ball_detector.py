@@ -53,6 +53,127 @@ def test_detect_one_ball():
     assert isinstance(balls.robot_view, np.ndarray)
 
 
+def test_detection_with_new_hsv_color():
+    ball_detector = BallDetector()
+    ball_detector.add_color(
+        color="yellowish", hsv={"lower": (21, 100, 100), "upper": (36, 255, 255)}
+    )
+
+    cv_frame = _blank_cv_frame.copy()
+
+    # Draw yellow ball on frame
+    ball_radius = 80
+    yellow_ball_center = (_width // 2, _height // 2)
+    cv2.circle(cv_frame, yellow_ball_center, ball_radius, (0, 255, 255), -1)
+    yellow_ball_center = center_reposition(yellow_ball_center, cv_frame)
+    yellow_ball_angle = get_object_target_lock_control_angle(
+        yellow_ball_center, cv_frame
+    )
+
+    pil_frame = convert(cv_frame, "PIL")
+
+    balls = ball_detector(pil_frame, color=["yellowish"])
+    ball = balls.yellowish
+
+    # Check found boolean
+    assert ball.found is True
+
+    # Check ball centers
+    for u, v in zip(ball.center, yellow_ball_center):
+        assert abs(u - v) <= _MAX_DIMENSION_DIFFERENCE
+
+    # Check ball radii
+    assert abs(ball.radius - ball_radius) <= _MAX_DIMENSION_DIFFERENCE
+
+    # Check angle
+    assert abs(ball.angle - yellow_ball_angle) <= _MAX_DIMENSION_DIFFERENCE
+
+    # Check only one center point has been appended to deque
+    assert len(ball.center_points) == 1
+
+    # Check OpenCV image is returned
+    assert isinstance(balls.robot_view, np.ndarray)
+
+    # Check that a second false detection attempt still returns a longer deque
+    cv_frame = _blank_cv_frame.copy()
+    pil_frame = convert(cv_frame, "PIL")
+    balls = ball_detector(pil_frame, color=["yellowish"])
+
+    ball = balls.yellowish
+
+    # Check center points deque has been appended (even None should get appended if no ball detected)
+    assert len(ball.center_points) == 2
+
+
+def test_detection_with_custom_hsv_color():
+    ball_detector = BallDetector()
+    cv_frame = _blank_cv_frame.copy()
+
+    # Draw yellow ball on frame
+    ball_radius = 80
+    yellow_ball_center = (_width // 2, _height // 2)
+    cv2.circle(cv_frame, yellow_ball_center, ball_radius, (0, 255, 255), -1)
+    yellow_ball_center = center_reposition(yellow_ball_center, cv_frame)
+    yellow_ball_angle = get_object_target_lock_control_angle(
+        yellow_ball_center, cv_frame
+    )
+
+    pil_frame = convert(cv_frame, "PIL")
+
+    balls = ball_detector(pil_frame, hsv_limits=[(23, 100, 100), (31, 255, 255)])
+
+    # a ball with a custom color was found
+    assert len(balls.found.keys()) == 1
+    assert "color_" in list(balls.found.keys())[0]
+    assigned_color_name = list(balls.found.keys())[0]
+    ball = balls[assigned_color_name]
+
+    # Check found boolean
+    assert ball.found is True
+
+    # Check ball centers
+    for u, v in zip(ball.center, yellow_ball_center):
+        assert abs(u - v) <= _MAX_DIMENSION_DIFFERENCE
+
+    # Check ball radii
+    assert abs(ball.radius - ball_radius) <= _MAX_DIMENSION_DIFFERENCE
+
+    # Check angle
+    assert abs(ball.angle - yellow_ball_angle) <= _MAX_DIMENSION_DIFFERENCE
+
+    # Check only one center point has been appended to deque
+    assert len(ball.center_points) == 1
+
+    # Check OpenCV image is returned
+    assert isinstance(balls.robot_view, np.ndarray)
+
+    # Check that a second false detection attempt still returns a longer deque
+    cv_frame = _blank_cv_frame.copy()
+    pil_frame = convert(cv_frame, "PIL")
+    balls = ball_detector(pil_frame, color=assigned_color_name)
+
+    # assigned color was reused
+    assert len(balls.found.keys()) == 1
+    assert assigned_color_name == list(balls.found.keys())[0]
+
+    ball = balls[assigned_color_name]
+
+    # Check center points deque has been appended (even None should get appended if no ball detected)
+    assert len(ball.center_points) == 2
+
+    # Check again using the same hsv limits - should reuse the same color name as before
+    balls = ball_detector(pil_frame, hsv_limits=[(23, 100, 100), (31, 255, 255)])
+
+    # assigned color was reused
+    assert len(balls.found.keys()) == 1
+    assert assigned_color_name == list(balls.found.keys())[0]
+
+    ball = balls[assigned_color_name]
+
+    # Check center points deque has been appended (even None should get appended if no ball detected)
+    assert len(ball.center_points) == 3
+
+
 def test_detect_all_balls():
     ball_detector = BallDetector()
 
