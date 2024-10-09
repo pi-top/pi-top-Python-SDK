@@ -145,7 +145,6 @@ class SingleBallDetector:
         self.color = color
         self.ball = Ball(color)
         self._image_processing_width = image_processing_width
-        self._frame_scaler = None
 
     def draw(self, frame):
         """Draws the ball on top of the given frame."""
@@ -215,26 +214,24 @@ class SingleBallDetector:
         """
 
         # Scale image
-        if self._frame_scaler is None:
-            _, width = frame.shape[0:2]
-            self._frame_scaler = width / self._image_processing_width
+        _, width = frame.shape[0:2]
+        frame_scaler = width / self._image_processing_width
+        image = imutils.resize(frame, width=self._image_processing_width)
 
         # Find ball in frame
-        ball = self._do_find(
-            frame=imutils.resize(frame, width=self._image_processing_width)
-        )
+        ball = self._do_find(image)
 
         # If a valid ball was found, scale the center and radius back to the original frame size
         if ball.valid:
             new_center = tuple(
-                int(coordinate * self._frame_scaler) for coordinate in ball.center
+                int(coordinate * frame_scaler) for coordinate in ball.center
             )
 
             # Update ball state
             ball.center_points.appendleft(new_center)
             ball.center = center_reposition(new_center, frame)
             ball.angle = get_object_target_lock_control_angle(ball.center, frame)
-            ball.radius = int(ball.radius * self._frame_scaler)
+            ball.radius = int(ball.radius * frame_scaler)
 
         self.ball = ball
         return self.ball
