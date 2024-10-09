@@ -18,8 +18,10 @@ class DriveControllerTestCase(TestCase):
         expected_linear_speed = speed_factor * d.max_motor_speed
 
         with patch.object(d, "robot_move") as robot_move_mock:
-            d.forward(speed_factor, hold=False)
-            robot_move_mock.assert_called_once_with(expected_linear_speed, 0)
+            d.forward(speed_factor, hold=False, distance=None)
+            robot_move_mock.assert_called_once_with(
+                linear_speed=expected_linear_speed, angular_speed=0, distance=None
+            )
 
     def test_forward_hold_param_stores_speed_for_next_movements(self):
         """'forward' hold parameter stores linear speed in object."""
@@ -42,7 +44,10 @@ class DriveControllerTestCase(TestCase):
         with patch.object(d, "robot_move") as robot_move_mock:
             d.left(speed_factor, turn_radius=turn_radius)
             robot_move_mock.assert_called_once_with(
-                expected_linear_speed, expected_angular_speed, turn_radius
+                linear_speed=expected_linear_speed,
+                angular_speed=expected_angular_speed,
+                turn_radius=turn_radius,
+                distance=None,
             )
 
     def test_turn_right_calls_left_method(self):
@@ -53,17 +58,18 @@ class DriveControllerTestCase(TestCase):
 
         with patch.object(d, "left") as left_mock:
             d.right(speed_factor, turn_radius=turn_radius)
-            left_mock.assert_called_once_with(-speed_factor, -turn_radius)
+            left_mock.assert_called_once_with(-speed_factor, -turn_radius, None)
 
     def test_backward_calls_forward_method(self):
         """'backward' calls 'forward' method with inverted parameters."""
         d = DriveController()
         speed_factor = 1
         hold = False
+        distance = None
 
         with patch.object(d, "forward") as forward_mock:
             d.backward(speed_factor, hold=hold)
-            forward_mock.assert_called_once_with(-speed_factor, hold)
+            forward_mock.assert_called_once_with(-speed_factor, hold, distance)
 
     def test_stop_sets_angular_and_linear_speeds_to_zero(self):
         """'stop' method sets angular & linear speeds to zero."""
@@ -113,3 +119,56 @@ class DriveControllerTestCase(TestCase):
             )
             self.assertEqual(round(speed_left, 3), exp_rpm_left)
             self.assertEqual(round(speed_right, 3), exp_rpm_right)
+
+    def test_rotate_speeds(self):
+        """Rotate method doesn't use max speed by default."""
+
+        sleep_mock = patch("pitop.robotics.drive_controller.sleep").start()
+        d = DriveController()
+        with patch.object(d, "_set_motor_speeds") as set_motor_speeds_mock:
+            # base case
+            d.rotate(angle=90, time_to_take=1)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.12801990063378407, 0.12801990063378407, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(1)
+            set_motor_speeds_mock.reset_mock()
+            sleep_mock.reset_mock()
+
+            # using a higher speed factor with the same time to take doesn't affect speeds
+            d.rotate(angle=90, time_to_take=1, max_speed_factor=0.9)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.12801990063378407, 0.12801990063378407, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(1)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
+
+            # using a lower speed factor with the same time to take will use lower speeds and will increase the time to take accordingly
+            d.rotate(angle=90, time_to_take=1, max_speed_factor=0.1)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.044700000000000004,
+                0.044700000000000004,
+                distance=0.12801990063378407,
+            )
+            sleep_mock.assert_called_once_with(2.8639798799504264)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
+
+            # using a small time to take with the default max speed factor will re-adjust the time to take
+            d.rotate(angle=90, time_to_take=0.3)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.1341, 0.1341, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(0.9546599599834755)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
+
+            # using a small time to take but increasing the max speed factor will achieve the expected time
+            d.rotate(angle=90, time_to_take=0.3, max_speed_factor=1)
+            set_motor_speeds_mock.assert_called_once_with(
+                -0.4267330021126136, 0.4267330021126136, distance=0.12801990063378407
+            )
+            sleep_mock.assert_called_once_with(0.3)
+            sleep_mock.reset_mock()
+            set_motor_speeds_mock.reset_mock()
