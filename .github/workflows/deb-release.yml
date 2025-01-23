@@ -156,7 +156,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "dsc"
+          name: "dsc-${{ matrix.distro }}"
           path: "./artifacts"
 
       - name: Upload .dsc to PackageCloud
