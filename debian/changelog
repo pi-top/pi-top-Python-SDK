@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.33.0-5) bullseye; urgency=medium
+pi-top-python-sdk (0.34.0-1) bullseye; urgency=medium
 
   * Add distance argument to DriveController methods (#668)
   * Line & ball detector support setting a custom color (#667)
