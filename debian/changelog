@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.34.0-2) bullseye; urgency=medium
+
+  * Updated master workflow files
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 23 Jan 2025 21:21:40 +0000
+
 pi-top-python-sdk (0.34.0-1) bullseye; urgency=medium
 
   * Add distance argument to DriveController methods (#668)
