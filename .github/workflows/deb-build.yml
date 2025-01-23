@@ -25,7 +25,7 @@ jobs:
       architecture: ${{ steps.set-arch.outputs.architecture }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -48,7 +48,7 @@ jobs:
       distros: ${{ steps.set-distros.outputs.distros }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -92,7 +92,7 @@ jobs:
       matrix: ${{fromJSON(needs.set-build-matrix.outputs.matrix)}}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -135,19 +135,19 @@ jobs:
           echo "ARTIFACT_PREFIX=$(basename -s .dsc "$(find . -name "*.dsc")")" >> $GITHUB_ENV
 
       - name: Upload binary package artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.distro }}-${{ env.ARTIFACT_PREFIX }}.deb
           path: ./artifacts/*.deb
 
       - name: Upload source package artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.distro }}-${{ env.ARTIFACT_PREFIX }}.deb-src
           path: ./artifacts/*.tar.xz
 
       - name: Upload package build metadata artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_PREFIX }}.metadata
           path: |
