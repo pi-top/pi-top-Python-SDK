@@ -24,7 +24,7 @@ jobs:
       architecture: ${{ steps.set-arch.outputs.architecture }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -47,7 +47,7 @@ jobs:
       distros: ${{ steps.set-distros.outputs.distros }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -90,7 +90,7 @@ jobs:
       CURRENT_VERSION: ${{ steps.current_version.outputs.CURRENT_VERSION }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -126,7 +126,7 @@ jobs:
       matrix: ${{fromJSON(needs.set-build-matrix.outputs.matrix)}}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
@@ -154,7 +154,7 @@ jobs:
             PYTHON_PACKAGE_VERSION="${{ needs.check-versions.outputs.CURRENT_VERSION }}"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "dsc"
           path: "./artifacts"
