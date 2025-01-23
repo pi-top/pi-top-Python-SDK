@@ -19,24 +19,28 @@ def get_current_user():
         return get_user_using_first_display()
 
 
-def get_list_of_displays() -> int:
+def get_list_of_displays() -> list:
     display_file_prefix = "/tmp/.X11-unix/X"
-    return [
-        f.replace(display_file_prefix, ":")
-        for f in glob(display_file_prefix + "[0-9]*")
-    ]
+    return sorted(
+        [
+            f.replace(display_file_prefix, ":")
+            for f in glob(display_file_prefix + "[0-9]*")
+        ]
+    )
 
 
-def get_first_display() -> int:
+def get_first_display() -> str:
     displays = get_list_of_displays()
     first_display = displays[0] if len(displays) > 0 else None
     logger.debug("First display is: {}".format(first_display))
     return first_display
 
 
-def get_user_using_display(display_no):
-    """Returns the name of the user that is currently using the defined
-    display.
+def get_user_using_display(display_no: str) -> str:
+    """Returns the name of the user that is currently using the given display.
+
+    Args:
+        display_no (str): The display number to check, eg: ':0'
 
     Returns:
             user (str): String representing the user
@@ -53,7 +57,7 @@ def get_user_using_display(display_no):
     return user
 
 
-def get_user_using_first_display():
+def get_user_using_first_display() -> str:
     """Returns the name of the user that is currently using the first available
     display.
 
