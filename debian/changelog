@@ -1,3 +1,14 @@
+pi-top-python-sdk (0.33.0-5) bullseye; urgency=medium
+
+  * Add distance argument to DriveController methods (#668)
+  * Line & ball detector support setting a custom color (#667)
+  * Updated master workflow files
+  * Updated master workflow files
+  * Updated master workflow files
+  * Sort display list to determine user using display (#673)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 23 Jan 2025 21:06:24 +0000
+
 pi-top-python-sdk (0.33.0-4) bullseye; urgency=medium
 
   * Create camera using all indexes if auto detection fails (#665)
