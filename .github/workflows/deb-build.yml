@@ -149,7 +149,7 @@ jobs:
       - name: Upload package build metadata artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.ARTIFACT_PREFIX }}.metadata
+          name: ${{ matrix.distro }}-${{ env.ARTIFACT_PREFIX }}.metadata
           path: |
             ./artifacts/**
             !./artifacts/*.deb
