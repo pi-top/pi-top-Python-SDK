@@ -54,6 +54,7 @@ def main():
             version=__version__,
             description=__doc__,
             long_description=readme.read(),
+            long_description_content_type="text/markdown",
             classifiers=__classifiers__,
             author=__author__,
             author_email=__author_email__,
