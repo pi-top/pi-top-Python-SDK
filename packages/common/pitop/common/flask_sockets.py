@@ -24,10 +24,12 @@ except ImportError:
 
 
 def should_patch():
-    import werkzeug
+    import importlib.metadata
+
     from packaging.version import Version
 
-    return Version(werkzeug.__version__) >= Version("2.0.0")
+    werkzeug_version = Version(importlib.metadata.version("werkzeug"))
+    return werkzeug_version >= Version("2.0.0")
 
 
 class SocketMiddleware(object):
