@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.34.0-4) bullseye; urgency=medium
+
+  * Bump Github action upload-artifact version to v4
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 11 Feb 2025 13:21:11 +0000
+
 pi-top-python-sdk (0.34.0-3) bullseye; urgency=medium
 
   * Get werkzeug version using importlib (#677)
