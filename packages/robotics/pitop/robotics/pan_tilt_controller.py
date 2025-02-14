@@ -6,6 +6,8 @@ from .pan_tilt_object_tracker import PanTiltObjectTracker
 
 
 class PanTiltController(Stateful, Recreatable):
+    """Represents a pan-tilt using two servo motors."""
+
     CALIBRATION_FILE_NAME = "pan_tilt.conf"
     _pan_servo = None
     _tilt_servo = None
