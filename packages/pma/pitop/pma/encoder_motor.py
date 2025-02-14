@@ -56,7 +56,7 @@ class EncoderMotor(Stateful, Recreatable):
         port_name,
         forward_direction,
         braking_type=BrakingType.BRAKE,
-        wheel_diameter=0.075,
+        wheel_diameter=0.070,
         name="encoder_motor",
     ):
         self.name = name
@@ -320,14 +320,13 @@ class EncoderMotor(Stateful, Recreatable):
 
         This parameter is important if using library functions to measure speed or distance, as these rely on
         knowing the diameter of the wheel in order to function correctly.
-        Use one of the predefined pi-top wheel and tyre types, or define your own wheel size.
+        Use the predefined pi-top wheel measurement, or define your own wheel size.
 
         .. note::
-            Note the following diameters:
+            The wheel diameter changes slightly when in contact with a surface due to rubber compression.
 
-            - pi-top MMK Standard Wheel: 0.060.0m
-            - pi-top MMK Standard Wheel with Rubber Tyre: 0.065m
-            - pi-top MMK Standard Wheel with tank track: 0.070m
+            For this application, the key measurement is the diameter when the wheel rests on a flat surface.
+            Based on this, the default wheel diameter used is 0.070m.
 
         :type wheel_diameter: int or float
         :param wheel_diameter:
