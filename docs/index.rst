@@ -83,6 +83,7 @@ Table of Contents
     api_pma_components
     api_pitop_peripheral_devices
     api_system_devices
+    api_robotics
     cli_tools
     labs
     more
