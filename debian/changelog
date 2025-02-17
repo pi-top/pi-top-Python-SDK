@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.34.0-6) bullseye; urgency=medium
+pi-top-python-sdk (0.34.1-1) bullseye; urgency=medium
 
   * Update EncoderMotor default wheel diameter (#683)
   * Add robotics section to docs (#684)
