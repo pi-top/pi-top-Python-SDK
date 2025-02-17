@@ -15,8 +15,8 @@ class EncoderMotorTestCase(TestCase):
             braking_type=BrakingType.COAST,
         )
 
-        self.assertEqual(wheel.wheel_diameter, 0.075)
-        self.assertEqual(round(wheel.wheel_circumference, 3), 0.236)
+        self.assertEqual(wheel.wheel_diameter, 0.07)
+        self.assertEqual(round(wheel.wheel_circumference, 3), 0.22)
         self.assertEqual(wheel.forward_direction, ForwardDirection.CLOCKWISE)
 
     @patch("pitop.pma.EncoderMotor.max_rpm", 142)
