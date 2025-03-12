@@ -60,7 +60,6 @@ class DriveController(Stateful, Recreatable):
 
         # Motor syncing
         self.__mcu_device = PlateInterface().get_device_mcu()
-        self._set_synchronous_motor_movement_mode()
 
         Stateful.__init__(self, children=["left_motor", "right_motor"])
         Recreatable.__init__(
@@ -78,6 +77,9 @@ class DriveController(Stateful, Recreatable):
             | MotorSyncBits[self.right_motor_port].value
         )
         self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, sync_config)
+
+    def _unset_synchronous_motor_movement_mode(self) -> None:
+        self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, 0b0000000)
 
     def _start_synchronous_motor_movement(self) -> None:
         self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
@@ -299,6 +301,7 @@ class DriveController(Stateful, Recreatable):
         if distance is None:
             # run indefinitely
             distance = 0.0
+        self._set_synchronous_motor_movement_mode()
         self.left_motor.set_target_speed(
             left_speed, distance=copysign(distance, left_speed)
         )
@@ -306,3 +309,4 @@ class DriveController(Stateful, Recreatable):
             right_speed, distance=copysign(distance, right_speed)
         )
         self._start_synchronous_motor_movement()
+        self._unset_synchronous_motor_movement_mode()
