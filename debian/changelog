@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.34.1-2) bullseye; urgency=medium
+pi-top-python-sdk (0.34.2-1) bullseye; urgency=medium
 
   * DriveController set synchronous mode on each movement (#687)
 
