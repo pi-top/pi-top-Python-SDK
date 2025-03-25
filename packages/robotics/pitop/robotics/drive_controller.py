@@ -13,6 +13,9 @@ from .simple_pid import PID
 logger = logging.getLogger(__name__)
 
 
+POST_WRITE_SLEEP = 0.02
+
+
 class DriveController(Stateful, Recreatable):
     """Represents a vehicle with two wheels connected by an axis, and an
     optional support wheel or caster."""
@@ -77,12 +80,15 @@ class DriveController(Stateful, Recreatable):
             | MotorSyncBits[self.right_motor_port].value
         )
         self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, sync_config)
+        sleep(POST_WRITE_SLEEP)
 
     def _unset_synchronous_motor_movement_mode(self) -> None:
         self.__mcu_device.write_byte(MotorSyncRegisters.CONFIG.value, 0b0000000)
+        sleep(POST_WRITE_SLEEP)
 
     def _start_synchronous_motor_movement(self) -> None:
         self.__mcu_device.write_byte(MotorSyncRegisters.START.value, 1)
+        sleep(POST_WRITE_SLEEP)
 
     def _calculate_motor_speeds(
         self,
