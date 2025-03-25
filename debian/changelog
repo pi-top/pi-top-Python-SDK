@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.34.2-1) bullseye; urgency=medium
+
+  * DriveController set synchronous mode on each movement (#687)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Tue, 25 Mar 2025 13:54:33 +0000
+
 pi-top-python-sdk (0.34.1-1) bullseye; urgency=medium
 
   * Update EncoderMotor default wheel diameter (#683)
