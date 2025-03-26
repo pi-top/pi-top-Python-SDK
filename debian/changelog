@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.34.3-1) bullseye; urgency=medium
+
+  * Add post write sleep on DriveController write operations (#690)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Wed, 26 Mar 2025 18:16:56 +0000
+
 pi-top-python-sdk (0.34.2-1) bullseye; urgency=medium
 
   * DriveController set synchronous mode on each movement (#687)
