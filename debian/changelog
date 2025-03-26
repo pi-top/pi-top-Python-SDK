@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.34.2-2) bullseye; urgency=medium
+pi-top-python-sdk (0.34.3-1) bullseye; urgency=medium
 
   * Add post write sleep on DriveController write operations (#690)
 
