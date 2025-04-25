@@ -22,7 +22,7 @@ def state_manager():
 
 
 def test_singleton_pattern():
-    # Test that the state manager is a singleton
+    # Test that names refer to the same instance of state manager
     manager1 = StateManager("some_name")
     manager2 = StateManager("some_name")
     assert manager1 is manager2
@@ -31,11 +31,12 @@ def test_singleton_pattern():
     assert manager1 is not manager3
 
     # cleanup
-    state_file = Path(manager1.path)
-    if state_file.exists():
-        state_file.unlink()
-    if state_file.parent.exists():
-        state_file.parent.rmdir()
+    for manager in [manager1, manager3]:
+        state_file = Path(manager.path)
+        if state_file.exists():
+            state_file.unlink()
+        if state_file.parent.exists():
+            state_file.parent.rmdir()
 
 
 def test_state_file_creation(state_manager):

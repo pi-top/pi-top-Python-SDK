@@ -2,21 +2,21 @@ from configparser import ConfigParser
 from os import environ
 from pathlib import Path
 from threading import Lock
-from typing import Dict, Set
+from typing import Dict
 
 
 class StateManager:
     _instances: Dict[str, "StateManager"] = {}
-    _initialized: Set[str] = set()
 
     def __new__(cls, name: str):
         if name not in cls._instances:
             cls._instances[name] = super().__new__(cls)
+            cls._instances[name]._initialized = False
         return cls._instances[name]
 
     def __init__(self, name: str):
         # Skip initialization if already done for this package
-        if name in StateManager._initialized:
+        if self._initialized:
             return
 
         self.name = name
@@ -31,7 +31,7 @@ class StateManager:
         self.config_parser.read(self.path)
 
         self.lock = Lock()
-        StateManager._initialized.add(name)
+        self._initialized = True
 
     @staticmethod
     def exists(name: str) -> bool:
