@@ -88,16 +88,16 @@ class StateManager:
 
     def remove_section(self, section: str):
         if section not in self.config_parser.sections():
-            return
+            raise ValueError(f"Section '{section}' not found")
         with self.lock:
             self.config_parser.remove_section(section)
             self._save()
 
     def remove_key(self, section: str, key: str):
         if section not in self.config_parser.sections():
-            return
+            raise ValueError(f"Section '{section}' not found")
         if key not in self.config_parser[section]:
-            return
+            raise ValueError(f"Key '{key}' not found in section '{section}'")
         with self.lock:
             self.config_parser.remove_option(section, key)
             self._save()

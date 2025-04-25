@@ -93,8 +93,25 @@ def test_set_creates_section(state_manager):
     assert state_manager.get("new_section", "key") == "value"
 
 
-def test_set_raises_on_invalid_input(state_manager):
-    # Test that set() raises an exception with invalid input
+def test_set_raises_on_invalid_section_type(state_manager):
+    # Test that set() raises an exception when the section is not a string
+    for data in [
+        None,
+        1,
+        1.0,
+        True,
+        object(),
+        [1, 2],
+        {"hey": "ho"},
+        "",
+        b"somedata",
+    ]:
+        with pytest.raises(ValueError):
+            state_manager.set(data, "some_key", "value")
+
+
+def test_set_raises_on_invalid_key_type(state_manager):
+    # Test that set() raises an exception when the key is not a string
     for data in [
         None,
         1,
@@ -108,7 +125,6 @@ def test_set_raises_on_invalid_input(state_manager):
     ]:
         with pytest.raises(ValueError):
             state_manager.set("some_section", data, "value")
-            state_manager.set(data, "some_key", "value")
 
 
 def test_multiple_values_in_section(state_manager):
@@ -119,17 +135,26 @@ def test_multiple_values_in_section(state_manager):
     assert state_manager.get("test_section", "key2") == "value2"
 
 
-def test_remove_key_doesnt_raise_on_nonexistent_key(state_manager):
-    # Test that remove_key() doesnt raise an exception on nonexistent key
-    state_manager.remove_key("nonexistent_section", "nonexistent_key")
+def test_remove_key_raises_on_nonexistent_key(state_manager):
+    # Test that remove_key() raises an exception on nonexistent key
+    state_manager.set("section", "key", "value")
+    with pytest.raises(ValueError):
+        state_manager.remove_key("section", "nonexistent_key")
 
 
-def test_remove_section_doesnt_raise_on_nonexistent_section(state_manager):
-    # Test that remove_section() doesnt raise an exception on nonexistent section
-    state_manager.remove_section("nonexistent_section")
+def test_remove_key_raises_on_nonexistent_section(state_manager):
+    # Test that remove_key() raises an exception on nonexistent section
+    with pytest.raises(ValueError):
+        state_manager.remove_key("nonexistent_section", "nonexistent_key")
 
 
-def test_remove_section_remvoes_all_keys(state_manager):
+def test_remove_section_raises_on_nonexistent_section(state_manager):
+    # Test that remove_section() raises an exception on nonexistent section
+    with pytest.raises(ValueError):
+        state_manager.remove_section("nonexistent_section")
+
+
+def test_remove_section_removes_all_keys(state_manager):
     # Test that remove_section() removes all keys in the section
 
     # Create section with two keys
@@ -152,8 +177,21 @@ def test_remove_section_remvoes_all_keys(state_manager):
 
 def test_remove_key_removes_key_from_section(state_manager):
     # Test that remove_key() removes a key
+
+    # Create section with two keys
     state_manager.set("test_section", "key1", "value1")
+    state_manager.set("test_section", "key2", "value2")
+
+    # Check that both keys are set
     assert state_manager.get("test_section", "key1") == "value1"
+    assert state_manager.get("test_section", "key2") == "value2"
+
+    # Remove key1
     state_manager.remove_key("test_section", "key1")
+
+    # Check that key1 is removed
     with pytest.raises(Exception):
         state_manager.get("test_section", "key1")
+
+    # Check that key2 is still set
+    assert state_manager.get("test_section", "key2") == "value2"
