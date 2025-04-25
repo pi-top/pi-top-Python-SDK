@@ -270,7 +270,7 @@ def get_dnsmasq_leases(iface: str) -> []:
 
 
 def get_address_for_connected_device(
-    network: Union[None, IPv4Network, IPv6Network] = None
+    network: Union[None, IPv4Network, IPv6Network] = None,
 ) -> str:
 
     if (
