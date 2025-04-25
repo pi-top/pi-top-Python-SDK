@@ -30,6 +30,9 @@ for module in [
 # use gpiozero fake pins
 environ["GPIOZERO_PIN_FACTORY"] = "mock"
 
+# set testing environment variable
+environ["TESTING"] = "1"
+
 
 @pytest.fixture
 def oled_mocks():

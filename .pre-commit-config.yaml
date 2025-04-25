@@ -13,10 +13,10 @@ repos:
     - id: check-symlinks
     - id: check-added-large-files
 
--   repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
-    hooks:
-    - id: docformatter
+# -   repo: https://github.com/PyCQA/docformatter
+#     rev: v1.7.5
+#     hooks:
+#     - id: docformatter
 
 -   repo: https://github.com/rstcheck/rstcheck
     rev: 'v6.2.4'
