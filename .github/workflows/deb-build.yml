@@ -20,7 +20,7 @@ env:
 
 jobs:
   check-architecture:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       architecture: ${{ steps.set-arch.outputs.architecture }}
     steps:
@@ -43,7 +43,7 @@ jobs:
           echo "architecture=$architecture">>$GITHUB_OUTPUT
 
   check-distro:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       distros: ${{ steps.set-distros.outputs.distros }}
     steps:
@@ -73,7 +73,7 @@ jobs:
 
   set-build-matrix:
     needs: [check-distro, check-architecture]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -85,7 +85,7 @@ jobs:
           echo "matrix=$matrix">>$GITHUB_OUTPUT
 
   build-debian-package:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: set-build-matrix
     strategy:
       fail-fast: false
