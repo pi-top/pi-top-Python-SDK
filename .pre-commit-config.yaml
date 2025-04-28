@@ -1,54 +1,61 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-    - id: trailing-whitespace
-      # debian/patches needs whitespace at end of line
-      exclude: ^debian/patches/smbus2-to-smbus.patch
-    - id: end-of-file-fixer
-      exclude: ^tests/assets/
-    - id: check-yaml
-    - id: check-symlinks
-    - id: check-added-large-files
+      - id: trailing-whitespace
+        # debian/patches needs whitespace at end of line
+        exclude: ^debian/patches/smbus2-to-smbus.patch
+      - id: end-of-file-fixer
+        exclude: ^tests/assets/
+      - id: check-yaml
+      - id: check-symlinks
+      - id: check-added-large-files
 
--   repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5
+  # -   repo: https://github.com/PyCQA/docformatter
+  #     rev: v1.7.5
+  #     hooks:
+  #     - id: docformatter
+
+  - repo: https://github.com/rstcheck/rstcheck
+    rev: "v6.2.4"
     hooks:
-    - id: docformatter
+      - id: rstcheck
+        args:
+          [
+            "--report-level",
+            "warning",
+            "--ignore-roles",
+            "class,ref",
+            "--ignore-directives",
+            "autoclass,automodule,literalinclude,toctree",
+          ]
 
--   repo: https://github.com/rstcheck/rstcheck
-    rev: 'v6.2.4'
-    hooks:
-    - id: rstcheck
-      args: [
-        "--report-level", "warning",
-        "--ignore-roles", "class,ref",
-        "--ignore-directives", "autoclass,automodule,literalinclude,toctree",
-      ]
-
--   repo: https://github.com/pycqa/isort
+  - repo: https://github.com/pycqa/isort
     rev: 6.0.0
     hooks:
-    - id: isort
+      - id: isort
 
--   repo: https://github.com/psf/black
+  - repo: https://github.com/psf/black
     rev: 25.1.0
     hooks:
-    - id: black
+      - id: black
 
-# https://black.readthedocs.io/en/stable/faq.html#why-are-flake8-s-e203-and-w503-violated
--   repo: https://github.com/PyCQA/flake8
+  # https://black.readthedocs.io/en/stable/faq.html#why-are-flake8-s-e203-and-w503-violated
+  - repo: https://github.com/PyCQA/flake8
     rev: 7.1.1
     hooks:
-    - id: flake8
-      args: [
-        "--per-file-ignores", "__init__.py:F401 test_*:E402",
-        "--extend-ignore", "E203",
-        "--max-line-length", "150",
-      ]
-
+      - id: flake8
+        args:
+          [
+            "--per-file-ignores",
+            "__init__.py:F401 test_*:E402",
+            "--extend-ignore",
+            "E203",
+            "--max-line-length",
+            "150",
+          ]
 # -   repo: https://github.com/pre-commit/mirrors-mypy
 #     rev: v0.910
 #     hooks:

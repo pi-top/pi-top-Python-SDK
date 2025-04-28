@@ -15,13 +15,13 @@ https://unicode.org/emoji/charts/full-emoji-list.html
 """
 
 emoji_unicodes = {
-    "Happy": "\U0001F642",
-    "Anger": "\U0001F620",
-    "Surprise": "\U0001F62E",
-    "Neutral": "\U0001F610",
-    "Sad": "\U0001F641",
-    "Disgust": "\U0001F62C",
-    "Looking": "\U0001F440",
+    "Happy": "\U0001f642",
+    "Anger": "\U0001f620",
+    "Surprise": "\U0001f62e",
+    "Neutral": "\U0001f610",
+    "Sad": "\U0001f641",
+    "Disgust": "\U0001f62c",
+    "Looking": "\U0001f440",
 }
 
 
