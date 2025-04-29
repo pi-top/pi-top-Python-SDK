@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.35.0-1) bullseye; urgency=medium
+
+  * Add StateManager class to handle configuration files (#695)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 28 Apr 2025 14:32:08 +0000
+
 pi-top-python-sdk (0.34.3-1) bullseye; urgency=medium
 
   * Add post write sleep on DriveController write operations (#690)
