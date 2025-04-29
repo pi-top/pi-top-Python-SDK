@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.34.3-2) bullseye; urgency=medium
+pi-top-python-sdk (0.35.0-1) bullseye; urgency=medium
 
   * Add StateManager class to handle configuration files (#695)
 
