@@ -2,12 +2,16 @@ import math
 from collections import deque
 from enum import IntEnum
 
-import numpy as np
-
 from pitop.core.mixins import Stateful
 from pitop.robotics.navigation.core.utils import normalize_angle
 
 from ...filterpy.kalman import KalmanFilter
+
+
+def import_numpy():
+    import numpy
+
+    return numpy
 
 
 class State(IntEnum):
@@ -35,14 +39,15 @@ class StateFilter(Stateful):
     _sigma_default_dt = 0.1
 
     def __init__(self, measurement_frequency, wheel_separation):
+        self.np = import_numpy()
         self._kalman_filter = KalmanFilter(dim_x=len(State), dim_z=2, dim_u=2)
         self._velocities = deque(maxlen=2)
         self._velocities.append(
-            np.zeros((len(VelocityType), 1), dtype=float)
+            self.np.zeros((len(VelocityType), 1), dtype=float)
         )  # [v, w].
 
         # Starting covariance is small since we know with high confidence we are starting at [0, 0, 0] with 0 velocity
-        self._kalman_filter.P = np.eye(5) * 1e-6
+        self._kalman_filter.P = self.np.eye(5) * 1e-6
 
         # Motor encoder has 115 RPM resolution. This is 2.75 RPM after dividing by gear ratio.
         # Converting to m/s this is 0.01 m/s resolution (from wheel diameter of 0.0718)
@@ -55,7 +60,7 @@ class StateFilter(Stateful):
         Q_sigma = linear_velocity_sigma / (
             self._sigma_default_dt * measurement_frequency
         )
-        self._kalman_filter.Q = np.diag(
+        self._kalman_filter.Q = self.np.diag(
             [
                 Q_sigma**2,
                 Q_sigma**2,
@@ -66,7 +71,7 @@ class StateFilter(Stateful):
         )
 
         # State transition function for x1 = Fx0 + Bu0
-        self._kalman_filter.F = np.diag([1, 1, 1, 0, 0])
+        self._kalman_filter.F = self.np.diag([1, 1, 1, 0, 0])
 
         self._odom_linear_velocity_variance = linear_velocity_sigma**2
         # angular velocity is calculated from motor velocities, maximum error is 0.005 * 2 across both wheel speeds
@@ -79,7 +84,7 @@ class StateFilter(Stateful):
         # Measure variance from stationary IMU is sigma**2 = 0.0018 over approx 200 samples
         # IMU is likely to have a bias term associated and is less trustworthy than the odometry, use a larger value
         # for now.
-        self._imu_angular_velocity_variance = np.radians(0.5**2)
+        self._imu_angular_velocity_variance = self.np.radians(0.5**2)
 
         Stateful.__init__(self, children=[])
 
@@ -131,7 +136,7 @@ class StateFilter(Stateful):
         predictor than the actual control command sent to the Expansion Plate MCU (this is very commonly done).
         :param dt: time difference between measurements.
         """
-        B = np.array(
+        B = self.np.array(
             [
                 [dt * math.cos(self.angle_rad + 0.5 * dt * self.w), 0],
                 [dt * math.sin(self.angle_rad + 0.5 * dt * self.w), 0],
@@ -148,8 +153,8 @@ class StateFilter(Stateful):
             return
 
         self._kalman_filter.dim_z = 1
-        self._kalman_filter.H = np.array([[0, 0, 0, 0, 1]])
-        self._kalman_filter.R = np.diag([self._imu_angular_velocity_variance])
+        self._kalman_filter.H = self.np.array([[0, 0, 0, 0, 1]])
+        self._kalman_filter.R = self.np.diag([self._imu_angular_velocity_variance])
         self._kalman_filter.update(z=z_imu)
 
     @property
@@ -171,7 +176,7 @@ class StateFilter(Stateful):
         within two standard deviations of the mean.
         :return: 2-sigma value of the x position
         """
-        return 2 * np.sqrt(self._kalman_filter.P[State.x, State.x])
+        return 2 * self.np.sqrt(self._kalman_filter.P[State.x, State.x])
 
     @property
     def y(self):
@@ -192,7 +197,7 @@ class StateFilter(Stateful):
         within two standard deviations of the mean.
         :return: 2-sigma value of the y position
         """
-        return 2 * np.sqrt(self._kalman_filter.P[State.y, State.y])
+        return 2 * self.np.sqrt(self._kalman_filter.P[State.y, State.y])
 
     @property
     def angle(self):
@@ -231,7 +236,7 @@ class StateFilter(Stateful):
         lie within two standard deviations of the mean.
         :return: 2-sigma value of the angle position in radians
         """
-        return 2 * np.sqrt(self._kalman_filter.P[State.theta, State.theta])
+        return 2 * self.np.sqrt(self._kalman_filter.P[State.theta, State.theta])
 
     @property
     def v(self):
@@ -242,7 +247,7 @@ class StateFilter(Stateful):
 
     @property
     def v_tolerance(self):
-        return 2 * np.sqrt(self._kalman_filter.P[State.v, State.v])
+        return 2 * self.np.sqrt(self._kalman_filter.P[State.v, State.v])
 
     @property
     def w(self):
@@ -253,7 +258,7 @@ class StateFilter(Stateful):
 
     @property
     def w_tolerance(self):
-        return 2 * np.sqrt(self._kalman_filter.P[State.w, State.w])
+        return 2 * self.np.sqrt(self._kalman_filter.P[State.w, State.w])
 
     @property
     def position(self):

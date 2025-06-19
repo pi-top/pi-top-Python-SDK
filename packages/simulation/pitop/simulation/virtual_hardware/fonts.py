@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
-from pygame import font
-
 
 def mock_fonts():
+    from pygame import font
+
     fonts = font.get_fonts()
 
     have_roboto = any([1 for f in fonts if "roboto" in f])

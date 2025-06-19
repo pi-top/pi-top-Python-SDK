@@ -1,7 +1,5 @@
 from typing import Union
 
-from numpy import interp
-
 from pitop.common.bitwise_ops import split_into_bytes
 
 from .common import type_check
@@ -79,6 +77,8 @@ class ServoController:
         )
 
     def get_current_angle_and_speed(self):
+        from numpy import interp
+
         duty_cycle_and_speed = self._mcu_device.read_n_signed_bytes(
             self.registers[ServoRegisterTypes.ANGLE_AND_SPEED],
             number_of_bytes=4,
@@ -117,6 +117,8 @@ class ServoController:
     def set_target_angle(
         self, angle: Union[int, float], speed: Union[int, float] = 50.0
     ):
+        from numpy import interp
+
         mapped_duty_cycle = interp(
             angle,
             [-ServoHardwareSpecs.ANGLE_RANGE / 2, ServoHardwareSpecs.ANGLE_RANGE / 2],

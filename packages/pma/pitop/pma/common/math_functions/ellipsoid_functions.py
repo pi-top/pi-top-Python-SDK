@@ -1,7 +1,5 @@
 from os import environ
 
-import numpy as np
-
 from pitop.common.current_session_info import get_first_display
 
 if not environ.get("DISPLAY"):
@@ -12,6 +10,8 @@ def plot_ellipsoid(
     center, radii, rotation, ax=None, plotAxes=False, cageColor="b", cageAlpha=0.2
 ):
     """Plot an ellipsoid."""
+    import numpy as np
+
     u = np.linspace(0.0, 2.0 * np.pi, 100)
     v = np.linspace(0.0, np.pi, 100)
 
@@ -52,6 +52,7 @@ def plot_ellipsoid(
 def least_squares_ellipsoid_fit(magX, magY, magZ):
     # ax^2 + by^2 + cz^2 +2fyz + 2gxz + 2hxy + px + qy + rz + d = 0
     # x_T.M.x + x_T.n + d = 0
+    import numpy as np
 
     a1 = magX**2
     a2 = magY**2
@@ -108,6 +109,8 @@ def least_squares_ellipsoid_fit(magX, magY, magZ):
 
 
 def get_ellipsoid_geometric_params(M, n, d):
+    import numpy as np
+
     a = M[0, 0]
     b = M[1, 1]
     c = M[2, 2]

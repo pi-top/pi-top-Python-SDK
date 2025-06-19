@@ -1,5 +1,3 @@
-import numpy as np
-
 from pitop.core import ImageFunctions
 from pitop.processing.algorithms.faces.core.emotion import Emotion
 from pitop.processing.core.load_models import load_emotion_model
@@ -12,14 +10,19 @@ from pitop.processing.core.vision_functions import (
 
 cv2 = None
 face_utils = None
+np = None
 
 
 def import_libs():
-    global cv2, face_utils
+    global cv2, face_utils, np
     if cv2 is None:
         cv2 = import_opencv()
     if face_utils is None:
         face_utils = import_face_utils()
+    if np is None:
+        import numpy
+
+        np = numpy
 
 
 class EmotionClassifier:

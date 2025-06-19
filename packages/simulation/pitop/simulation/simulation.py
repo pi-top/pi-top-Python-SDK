@@ -4,7 +4,6 @@ from multiprocessing import Event, Process, Queue
 from threading import Thread
 from time import sleep
 
-import pygame
 from PIL import Image
 
 from pitop.core.mixins import Recreatable, Stateful
@@ -126,6 +125,8 @@ class Simulation:
 
 
 def to_bytes(surface):
+    import pygame
+
     image_string = pygame.image.tostring(surface, "RGB")
     image = Image.frombytes("RGB", surface.get_size(), bytes(image_string))
     img_byte_arr = BytesIO()
@@ -145,6 +146,8 @@ def _run(
     snapshot_ev,
     snapshot_q,
 ):
+    import pygame
+
     # the pygame application - this should be a separate python process
     pygame.init()
     pygame.display.init()

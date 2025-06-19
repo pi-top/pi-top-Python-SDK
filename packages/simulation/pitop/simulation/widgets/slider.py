@@ -1,14 +1,15 @@
 import math
 
-import pygame
-from pygame import gfxdraw
-
 from .widget import WidgetBase
 
 
 class Slider(WidgetBase):
     def __init__(self, x, y, width, height, **kwargs):
         super().__init__(x, y, width, height)
+
+        import pygame
+
+        self.pygame = pygame
 
         self.selected = False
 
@@ -48,7 +49,8 @@ class Slider(WidgetBase):
         return (self.x, self.y)
 
     def update(self):
-        x, y = pygame.mouse.get_pos()
+
+        x, y = self.pygame.mouse.get_pos()
         x = x - self.parent_x
         y = y - self.parent_y
 
@@ -64,28 +66,28 @@ class Slider(WidgetBase):
 
     def handle_event(self, event):
         if not self._hidden and not self._disabled:
-            if event.type == pygame.MOUSEBUTTONDOWN and self.contains(
-                *pygame.mouse.get_pos()
+            if event.type == self.pygame.MOUSEBUTTONDOWN and self.contains(
+                *self.pygame.mouse.get_pos()
             ):
                 self.selected = True
-            elif event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == self.pygame.MOUSEBUTTONUP:
                 self.selected = False
 
     def draw(self, surface):
         if not self._hidden:
-            pygame.draw.rect(
+            self.pygame.draw.rect(
                 surface, self.colour, (self.x, self.y, self.width, self.height)
             )
 
             if self.vertical:
                 if self.curved:
-                    pygame.draw.circle(
+                    self.pygame.draw.circle(
                         surface,
                         self.colour,
                         (self.x + self.width // 2, self.y),
                         self.radius,
                     )
-                    pygame.draw.circle(
+                    self.pygame.draw.circle(
                         surface,
                         self.colour,
                         (self.x + self.width // 2, self.y + self.height),
@@ -100,13 +102,13 @@ class Slider(WidgetBase):
                 )
             else:
                 if self.curved:
-                    pygame.draw.circle(
+                    self.pygame.draw.circle(
                         surface,
                         self.colour,
                         (self.x, self.y + self.height // 2),
                         self.radius,
                     )
-                    pygame.draw.circle(
+                    self.pygame.draw.circle(
                         surface,
                         self.colour,
                         (self.x + self.width, self.y + self.height // 2),
@@ -119,6 +121,8 @@ class Slider(WidgetBase):
                     ),
                     self.y + self.height // 2,
                 )
+
+            from pygame import gfxdraw
 
             gfxdraw.filled_circle(
                 surface, *circle, self.handleRadius, self.handleColour

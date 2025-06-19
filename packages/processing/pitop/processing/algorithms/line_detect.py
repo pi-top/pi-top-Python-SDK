@@ -1,7 +1,5 @@
 from typing import Optional
 
-from numpy import array
-
 from pitop.core import ImageFunctions
 from pitop.core.data_structures import DotDict
 from pitop.processing.algorithms.hsv_color_ranges import HSVColorRanges
@@ -18,6 +16,8 @@ from pitop.processing.core.vision_functions import (
 def calculate_blue_limits():
     # define range of blue color in HSV-> H: 0-179, S: 0-255, V: 0-255
     # broken out like this for easy conversion into CV units (will move somewhere more logical in future)
+    from numpy import array
+
     hue_lower = 160
     hue_upper = 280
     sat_lower = 0.3
@@ -44,6 +44,8 @@ def process_frame_for_line(
 ):
     if color and hsv_limits:
         raise ValueError("Cannot specify both color and hsv_limits")
+
+    from numpy import array
 
     if hsv_limits is None:
         hsv_limits = calculate_blue_limits()

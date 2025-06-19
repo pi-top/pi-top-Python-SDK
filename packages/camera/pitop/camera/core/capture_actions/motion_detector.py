@@ -1,8 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 from inspect import signature
 
-from numpy import asarray
-
 from pitop.processing.core.vision_functions import import_opencv
 
 from .capture_action_base import CaptureActionBase
@@ -34,6 +32,8 @@ class MotionDetector(CaptureActionBase):
         self.stop()
 
     def process(self, frame):
+        from numpy import asarray
+
         frame = asarray(frame)
         # Use greyscale and blurred for motion detection
         gray = self.cv2.cvtColor(frame, self.cv2.COLOR_BGR2GRAY)

@@ -1,5 +1,3 @@
-import pygame
-
 from .color import PitopColorScheme
 from .utils import multiply_scalar
 
@@ -13,6 +11,8 @@ class PortLabel:
     width = 30
 
     def __init__(self, port_name, Size, scale, pos=None) -> None:
+        import pygame
+
         self.port_name = port_name
         self.scale = scale
 

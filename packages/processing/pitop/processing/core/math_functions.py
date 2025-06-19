@@ -1,6 +1,3 @@
-from numpy import append, cumsum, delete, insert, shape
-
-
 def running_mean(old_array, new_value):
     """Calculates a running mean from either a 1d numpy array of single
     measurements or a 2d numpy array of 1d numpy array measurements.
@@ -14,6 +11,7 @@ def running_mean(old_array, new_value):
     :return: tuple where index 0 is the new array and index 1 is the new
         mean.
     """
+    from numpy import append, cumsum, delete, insert, shape
 
     def calculate_mean(x, N):
         cum_sum = cumsum(insert(x, 0, 0, axis=0), axis=0)

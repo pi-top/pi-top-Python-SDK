@@ -1,8 +1,6 @@
 import logging
 import math
 
-import numpy as np
-
 from .core.driving_manager import DrivingManager
 from .core.goal_criteria import GoalCriteria
 from .core.utils import normalize_angle
@@ -159,7 +157,9 @@ class Navigator:
         return x_diff, y_diff
 
     def __get_distance_error(self, x_diff, y_diff):
-        value = np.hypot(x_diff, y_diff)
+        from numpy import hypot
+
+        value = hypot(x_diff, y_diff)
         if not self.backwards:
             return -value
         return value

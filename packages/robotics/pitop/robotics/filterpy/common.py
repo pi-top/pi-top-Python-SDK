@@ -1,6 +1,3 @@
-import numpy as np
-
-
 def pretty_str(label, arr):
     """Generates a pretty printed NumPy array with an assignment. Optionally
     transposes column vectors so they are drawn on one line. Strictly speaking
@@ -46,8 +43,9 @@ def pretty_str(label, arr):
 
 def reshape_z(z, dim_z, ndim):
     """Ensure z is a (dim_z, 1) shaped vector."""
+    from numpy import atleast_2d
 
-    z = np.atleast_2d(z)
+    z = atleast_2d(z)
     if z.shape[1] == dim_z:
         z = z.T
 

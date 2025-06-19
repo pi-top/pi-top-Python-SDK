@@ -6,12 +6,6 @@ from threading import Event, Thread
 from time import sleep, strftime, time
 from warnings import catch_warnings, filterwarnings
 
-import numpy as np
-
-# Enables "add_subplot(projection='3d')"
-from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
-from scipy.linalg import sqrtm
-
 from pitop.pma.common.math_functions.ellipsoid_functions import (
     get_ellipsoid_geometric_params,
     least_squares_ellipsoid_fit,
@@ -22,6 +16,12 @@ from pitop.pma.imu_controller import ImuController
 logger = logging.getLogger(__name__)
 
 
+def import_numpy():
+    import numpy
+
+    return numpy
+
+
 class ImuCalibration:
     __MAG_POLL_FREQUENCY = 25.0  # Hz
     __GYRO_POLL_FREQUENCY = 5.0  # Hz
@@ -29,13 +29,16 @@ class ImuCalibration:
     __MAG_FILTER_SIZE = 5
 
     def __init__(self):
+        self.np = import_numpy()
         self.imu_controller = ImuController()
         self.imu_controller.acc_enable = True
         self.imu_controller.gyro_enable = True
         self.imu_controller.mag_enable = True
 
-        self.__mag_measurements = np.zeros((1, 3), dtype=float)
-        self.__mag_filter_array = np.zeros((self.__MAG_FILTER_SIZE, 3), dtype=float)
+        self.__mag_measurements = self.np.zeros((1, 3), dtype=float)
+        self.__mag_filter_array = self.np.zeros(
+            (self.__MAG_FILTER_SIZE, 3), dtype=float
+        )
         self.__hard_iron_offset = None
         self.__soft_iron_matrix = None
         self.__mag_measurements_calibrated = None
@@ -66,7 +69,7 @@ class ImuCalibration:
         if save_data_name and test_data is None:
             print("Saving test data...")
             with open(save_data_name, "wb") as f:
-                np.save(f, self.__mag_measurements[self.__MAG_FILTER_SIZE :])
+                self.np.save(f, self.__mag_measurements[self.__MAG_FILTER_SIZE :])
 
         print("Calculating calibration parameters...")
 
@@ -97,6 +100,9 @@ class ImuCalibration:
 
     def plot_graphs(self, path_to_save_figure="/tmp/"):
         import matplotlib.pyplot as plt
+
+        # enables "add_subplot(projection='3d')"
+        from mpl_toolkits import mplot3d  # noqa: F401, lgtm[py/unused-import]
 
         if path_to_save_figure and not path.isdir(path_to_save_figure):
             print(f"Provided path {path_to_save_figure} is not a valid directory")
@@ -136,11 +142,14 @@ class ImuCalibration:
         ax2.scatter(x_cal, y_cal, z_cal, color="r")
 
         # # plot unit sphere
-        u = np.linspace(0, 2 * np.pi, 100)
-        v = np.linspace(0, np.pi, 100)
-        x = np.outer(np.cos(u), np.sin(v)) * self.__field_strength
-        y = np.outer(np.sin(u), np.sin(v)) * self.__field_strength
-        z = np.outer(np.ones(np.size(u)), np.cos(v)) * self.__field_strength
+        u = self.np.linspace(0, 2 * self.np.pi, 100)
+        v = self.np.linspace(0, self.np.pi, 100)
+        x = self.np.outer(self.np.cos(u), self.np.sin(v)) * self.__field_strength
+        y = self.np.outer(self.np.sin(u), self.np.sin(v)) * self.__field_strength
+        z = (
+            self.np.outer(self.np.ones(self.np.size(u)), self.np.cos(v))
+            * self.__field_strength
+        )
         ax2.plot_wireframe(x, y, z, rstride=10, cstride=10, alpha=0.5)
         ax2.plot_surface(x, y, z, alpha=0.3, color="b")
 
@@ -292,7 +301,7 @@ class ImuCalibration:
                 self.__mag_filter_array, mag_median = self.__running_median(
                     self.__mag_filter_array, new_mag_data
                 )
-                self.__mag_measurements = np.append(
+                self.__mag_measurements = self.np.append(
                     self.__mag_measurements, [mag_median], axis=0
                 )
                 prev_time = current_time
@@ -301,30 +310,34 @@ class ImuCalibration:
 
     @staticmethod
     def __running_median(old_array, new_data):
+        import numpy as np
+
         new_array = np.append(np.delete(old_array, 0, 0), [new_data], axis=0)
         new_median = np.median(new_array, axis=0)
         return new_array, new_median
 
     def __get_field_strength(self):
         # from  https://www.nxp.com/docs/en/application-note/AN4246.pdf
-        squared_measurements = np.square(self.__mag_measurements)
+        squared_measurements = self.np.square(self.__mag_measurements)
 
-        matrix_y = np.sum(squared_measurements, axis=1)
+        matrix_y = self.np.sum(squared_measurements, axis=1)
 
         rows, columns = self.__mag_measurements.shape
-        ones = np.ones((rows, 1))
-        matrix_x = np.column_stack((self.__mag_measurements, ones))
+        ones = self.np.ones((rows, 1))
+        matrix_x = self.np.column_stack((self.__mag_measurements, ones))
 
-        matrix_x_transpose = np.transpose(matrix_x)
+        matrix_x_transpose = self.np.transpose(matrix_x)
 
-        x_t_x_inverse = np.linalg.inv(np.matmul(matrix_x_transpose, matrix_x))
-        x_t_y = np.matmul(matrix_x_transpose, matrix_y)
+        x_t_x_inverse = self.np.linalg.inv(self.np.matmul(matrix_x_transpose, matrix_x))
+        x_t_y = self.np.matmul(matrix_x_transpose, matrix_y)
 
-        beta_vector = np.matmul(x_t_x_inverse, x_t_y)
+        beta_vector = self.np.matmul(x_t_x_inverse, x_t_y)
 
         correction_vector = 0.5 * beta_vector[0:3]
 
-        field_strength = sqrt(beta_vector[3] + np.sum(np.square(correction_vector)))
+        field_strength = self.np.sqrt(
+            beta_vector[3] + self.np.sum(self.np.square(correction_vector))
+        )
 
         return field_strength
 
@@ -338,19 +351,21 @@ class ImuCalibration:
         return M, n, d
 
     def __get_calibration_matrices(self, M, n, d, field_strength):
+        from scipy.linalg import sqrtm
+
         hard_iron_offset = None
         soft_iron_matrix = None
 
         with catch_warnings():
             filterwarnings("error")
             try:
-                Minv = np.linalg.inv(M)
-                soft_iron_matrix = np.real(
+                Minv = self.np.linalg.inv(M)
+                soft_iron_matrix = self.np.real(
                     field_strength
-                    / np.sqrt(np.dot(n.T, np.dot(Minv, n)) - d)
+                    / self.np.sqrt(self.np.dot(n.T, self.np.dot(Minv, n)) - d)
                     * sqrtm(M)
                 )
-                hard_iron_offset = -np.dot(Minv, n)
+                hard_iron_offset = -self.np.dot(Minv, n)
             except Warning as e:
                 logger.error("Calibration error: {}".format(e))
                 if self.__test_data is None:
@@ -369,21 +384,21 @@ class ImuCalibration:
         x_uncal = self.mag_data[:, 0]
         y_uncal = self.mag_data[:, 1]
         z_uncal = self.mag_data[:, 2]
-        x_cal = np.zeros(x_uncal.shape)
-        y_cal = np.zeros(x_uncal.shape)
-        z_cal = np.zeros(x_uncal.shape)
+        x_cal = self.np.zeros(x_uncal.shape)
+        y_cal = self.np.zeros(x_uncal.shape)
+        z_cal = self.np.zeros(x_uncal.shape)
 
         error_sum = 0
         error_squared_sum = 0
         for i in range(len(x_uncal)):
-            h_actual = np.array([[x_uncal[i], y_uncal[i], z_uncal[i]]]).T
-            h_estimate = np.matmul(
+            h_actual = self.np.array([[x_uncal[i], y_uncal[i], z_uncal[i]]]).T
+            h_estimate = self.np.matmul(
                 self.__soft_iron_matrix, h_actual - self.__hard_iron_offset
             )
             x_cal[i] = h_estimate[0]
             y_cal[i] = h_estimate[1]
             z_cal[i] = h_estimate[2]
-            magnitude = np.sqrt(np.dot(h_estimate.T, h_estimate))
+            magnitude = self.np.sqrt(self.np.dot(h_estimate.T, h_estimate))
             error = magnitude[0][0] - self.__field_strength
             error_squared = error**2
             error_sum += error
@@ -391,8 +406,12 @@ class ImuCalibration:
         print("Average Error: {}".format(error_sum / x_uncal.shape))
         print("Error Variance: {}".format(error_squared_sum / x_uncal.shape))
 
-        mag_measurements_cal = np.hstack(
-            (np.array([x_cal]).T, np.array([y_cal]).T, np.array([z_cal]).T)
+        mag_measurements_cal = self.np.hstack(
+            (
+                self.np.array([x_cal]).T,
+                self.np.array([y_cal]).T,
+                self.np.array([z_cal]).T,
+            )
         )
 
         return mag_measurements_cal

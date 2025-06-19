@@ -1,5 +1,3 @@
-import numpy as np
-
 from pitop.common.firmware_device import FirmwareDevice, FirmwareDeviceID
 
 from .common.imu_registers import (
@@ -210,10 +208,10 @@ class ImuController:
 
     def read_mag_cal_params(self):
         x, y, z = self.__read_mag_cal_hard()
-        hard_iron_offset = np.array([[x, y, z]]).T / self.__HARD_IRON_SCALE_FACTOR
+        hard_iron_offset = self.np.array([[x, y, z]]).T / self.__HARD_IRON_SCALE_FACTOR
         xx, yy, zz, xy, xz, yz = self.__read_mag_cal_soft()
         soft_iron_matrix = (
-            np.array([[xx, xy, xz], [xy, yy, yz], [xz, yz, zz]])
+            self.np.array([[xx, xy, xz], [xy, yy, yz], [xz, yz, zz]])
             / self.__SOFT_IRON_SCALE_FACTOR
         )
         return hard_iron_offset, soft_iron_matrix
@@ -244,12 +242,12 @@ class ImuController:
 
         # check that the writes were successful
         hard_iron_offset_read, soft_iron_matrix_read = self.read_mag_cal_params()
-        equal_hard = np.allclose(
+        equal_hard = self.np.allclose(
             hard_iron_offset_read,
             hard_iron_offset,
             atol=1 / self.__HARD_IRON_SCALE_FACTOR,
         )
-        equal_soft = np.allclose(
+        equal_soft = self.np.allclose(
             soft_iron_matrix_read,
             soft_iron_matrix,
             atol=1 / self.__SOFT_IRON_SCALE_FACTOR,

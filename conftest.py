@@ -14,7 +14,6 @@ for dir in listdir(packages_dir):
 
 # mock modules that are not installed but need to be impored
 for module in [
-    "pitop.common.ptdm.zmq",
     "imageio",
     "zmq",
     "smbus2",
