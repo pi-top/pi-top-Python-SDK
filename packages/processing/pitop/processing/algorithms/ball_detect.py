@@ -3,7 +3,6 @@ from collections import deque
 from os import getenv
 from typing import Optional, Union
 
-import numpy as np
 from imutils.video import FPS
 
 from pitop.core import ImageFunctions
@@ -46,8 +45,10 @@ class BallLikeness:
         self.likelihood = self.area / (self.circular_likeness + 1e-5)
 
     def __circular_match_contour(self):
+        from numpy import zeros
+
         # Initialise empty mask
-        mask_to_compare = np.zeros(
+        mask_to_compare = zeros(
             (int(2 * self.radius), int(2 * self.radius)), dtype="uint8"
         )
 
@@ -125,11 +126,12 @@ class Ball:
         )
 
     def draw_contrail(self, frame):
+        from numpy import sqrt
+
         for i in range(1, len(self.center_points)):
             if self.center_points[i - 1] is None or self.center_points[i] is None:
                 continue
-            thickness = int(np.sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
-
+            thickness = int(sqrt(DETECTION_POINTS_BUFFER_LENGTH / float(i + 1)))
             cv2.line(
                 frame,
                 self.center_points[i - 1],
@@ -273,6 +275,8 @@ class BallDetector:
         if color and hsv_limits:
             raise ValueError("Cannot specify both color and hsv_limits")
 
+        from numpy import random
+
         if hsv_limits:
             assert len(hsv_limits) == 2, "hsv_limits must be a tuple of 2 elements"
             hsv_lower, hsv_upper = [list(value) for value in hsv_limits]
@@ -280,7 +284,7 @@ class BallDetector:
             color_name = HSVColorRanges.get_color_for_hsv_limits(hsv_lower, hsv_upper)
             if color_name is None:
                 # if not, add it with a random name
-                color_name = f"color_{np.random.randint(0, 1000)}"
+                color_name = f"color_{random.randint(0, 1000)}"
                 self.add_color(color_name, hsv={"lower": hsv_lower, "upper": hsv_upper})
             color = color_name
 

@@ -1,7 +1,5 @@
 from math import cos, radians, sin, sqrt
 
-import pygame
-
 from . import sprites as Sprites
 from .events import SimEvent
 from .images import PMA_CUBE_SIZE
@@ -19,6 +17,8 @@ class SimSprite:
 
     @classmethod
     def create_sprite_group(cls, sim_size, config, scale):
+        import pygame
+
         sprite_group = pygame.sprite.Group()
 
         # create the main sprite
@@ -39,7 +39,8 @@ class SimSprite:
     def handle_sim_event(e: SimEvent, component):
         pass
 
-    def handle_pygame_event(self, e: pygame.event.Event):
+    # def handle_pygame_event(self, e: pygame.event.Event):
+    def handle_pygame_event(self, e):
         pass
 
     def set_pos(self, x, y):
@@ -57,6 +58,8 @@ class SimSprite:
 
     @staticmethod
     def _load_image(path, scale):
+        import pygame
+
         image = pygame.image.load(path)
         size = multiply_scalar(scale, image.get_size())
         scaled = pygame.transform.scale(image, size)

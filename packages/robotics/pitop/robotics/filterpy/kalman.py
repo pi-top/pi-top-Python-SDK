@@ -4,11 +4,14 @@ import sys
 from copy import deepcopy
 from math import exp, log, sqrt
 
-import numpy as np
-from numpy import dot, eye, isscalar, shape, zeros
-
 from .common import pretty_str, reshape_z
 from .stats import logpdf
+
+
+def import_numpy():
+    import numpy
+
+    return numpy
 
 
 class KalmanFilter(object):
@@ -28,7 +31,7 @@ class KalmanFilter(object):
     things midstream just use the underscore version of the matrices to
     assign directly: your_filter._R = a_3x3_matrix.)
     After construction the filter will have default matrices created for you,
-    but you must specify the values for each. It’s usually easiest to just
+    but you must specify the values for each. It's usually easiest to just
     overwrite them rather than assign to each element yourself. This will be
     clearer in the example below. All are of type numpy.array.
     Examples
@@ -186,6 +189,8 @@ class KalmanFilter(object):
     """
 
     def __init__(self, dim_x, dim_z, dim_u=0):
+        self.np = import_numpy()
+
         if dim_x < 1:
             raise ValueError("dim_x must be 1 or greater")
         if dim_z < 1:
@@ -197,27 +202,27 @@ class KalmanFilter(object):
         self.dim_z = dim_z
         self.dim_u = dim_u
 
-        self.x = zeros((dim_x, 1))  # state
-        self.P = eye(dim_x)  # uncertainty covariance
-        self.Q = eye(dim_x)  # process uncertainty
+        self.x = self.np.zeros((dim_x, 1))  # state
+        self.P = self.np.eye(dim_x)  # uncertainty covariance
+        self.Q = self.np.eye(dim_x)  # process uncertainty
         self.B = None  # control transition matrix
-        self.F = eye(dim_x)  # state transition matrix
-        self.H = zeros((dim_z, dim_x))  # measurement function
-        self.R = eye(dim_z)  # measurement uncertainty
+        self.F = self.np.eye(dim_x)  # state transition matrix
+        self.H = self.np.zeros((dim_z, dim_x))  # measurement function
+        self.R = self.np.eye(dim_z)  # measurement uncertainty
         self._alpha_sq = 1.0  # fading memory control
-        self.M = np.zeros((dim_x, dim_z))  # process-measurement cross correlation
-        self.z = np.array([[None] * self.dim_z]).T
+        self.M = self.np.zeros((dim_x, dim_z))  # process-measurement cross correlation
+        self.z = self.np.array([[None] * self.dim_z]).T
 
         # gain and residual are computed during the innovation step. We
         # save them so that in case you want to inspect them for various
         # purposes
-        self.K = np.zeros((dim_x, dim_z))  # kalman gain
-        self.y = zeros((dim_z, 1))
-        self.S = np.zeros((dim_z, dim_z))  # system uncertainty
-        self.SI = np.zeros((dim_z, dim_z))  # inverse system uncertainty
+        self.K = self.np.zeros((dim_x, dim_z))  # kalman gain
+        self.y = self.np.zeros((dim_z, 1))
+        self.S = self.np.zeros((dim_z, dim_z))  # system uncertainty
+        self.SI = self.np.zeros((dim_z, dim_z))  # inverse system uncertainty
 
         # identity matrix. Do not alter this.
-        self._I = np.eye(dim_x)
+        self._I = self.np.eye(dim_x)
 
         # these will always be a copy of x,P after predict() is called
         self.x_prior = self.x.copy()
@@ -232,7 +237,7 @@ class KalmanFilter(object):
         self._likelihood = sys.float_info.min
         self._mahalanobis = None
 
-        self.inv = np.linalg.inv
+        self.inv = self.np.linalg.inv
 
     def predict(self, u=None, B=None, F=None, Q=None):
         """Predict next state (prior) using the Kalman filter state propagation
@@ -259,17 +264,17 @@ class KalmanFilter(object):
             F = self.F
         if Q is None:
             Q = self.Q
-        elif isscalar(Q):
-            Q = eye(self.dim_x) * Q
+        elif self.np.isscalar(Q):
+            Q = self.np.eye(self.dim_x) * Q
 
         # x = Fx + Bu
         if B is not None and u is not None:
-            self.x = dot(F, self.x) + dot(B, u)
+            self.x = self.np.dot(F, self.x) + self.np.dot(B, u)
         else:
-            self.x = dot(F, self.x)
+            self.x = self.np.dot(F, self.x)
 
         # P = FPF' + Q
-        self.P = self._alpha_sq * dot(dot(F, self.P), F.T) + Q
+        self.P = self._alpha_sq * self.np.dot(self.np.dot(F, self.P), F.T) + Q
 
         # save prior
         self.x_prior = self.x.copy()
@@ -301,16 +306,16 @@ class KalmanFilter(object):
         self._mahalanobis = None
 
         if z is None:
-            self.z = np.array([[None] * self.dim_z]).T
+            self.z = self.np.array([[None] * self.dim_z]).T
             self.x_post = self.x.copy()
             self.P_post = self.P.copy()
-            self.y = zeros((self.dim_z, 1))
+            self.y = self.np.zeros((self.dim_z, 1))
             return
 
         if R is None:
             R = self.R
-        elif isscalar(R):
-            R = eye(self.dim_z) * R
+        elif self.np.isscalar(R):
+            R = self.np.eye(self.dim_z) * R
 
         if H is None:
             z = reshape_z(z, self.dim_z, self.x.ndim)
@@ -318,30 +323,32 @@ class KalmanFilter(object):
 
         # y = z - Hx
         # error (residual) between measurement and prediction
-        self.y = z - dot(H, self.x)
+        self.y = z - self.np.dot(H, self.x)
 
         # common subexpression for speed
-        PHT = dot(self.P, H.T)
+        PHT = self.np.dot(self.P, H.T)
 
         # S = HPH' + R
         # project system uncertainty into measurement space
-        self.S = dot(H, PHT) + R
+        self.S = self.np.dot(H, PHT) + R
         self.SI = self.inv(self.S)
         # K = PH'inv(S)
         # map system uncertainty into kalman gain
-        self.K = dot(PHT, self.SI)
+        self.K = self.np.dot(PHT, self.SI)
 
         # x = x + Ky
         # predict new x with residual scaled by the kalman gain
-        self.x = self.x + dot(self.K, self.y)
+        self.x = self.x + self.np.dot(self.K, self.y)
 
         # P = (I-KH)P(I-KH)' + KRK'
         # This is more numerically stable
         # and works for non-optimal K vs the equation
         # P = (I-KH)P usually seen in the literature.
 
-        I_KH = self._I - dot(self.K, H)
-        self.P = dot(dot(I_KH, self.P), I_KH.T) + dot(dot(self.K, R), self.K.T)
+        I_KH = self._I - self.np.dot(self.K, H)
+        self.P = self.np.dot(self.np.dot(I_KH, self.P), I_KH.T) + self.np.dot(
+            self.np.dot(self.K, R), self.K.T
+        )
 
         # save measurement and posterior state
         self.z = deepcopy(z)
@@ -369,9 +376,9 @@ class KalmanFilter(object):
 
         # x = Fx + Bu
         if B is not None:
-            self.x = dot(self.F, self.x) + dot(B, u)
+            self.x = self.np.dot(self.F, self.x) + self.np.dot(B, u)
         else:
-            self.x = dot(self.F, self.x)
+            self.x = self.np.dot(self.F, self.x)
 
         # save prior
         self.x_prior = self.x.copy()
@@ -417,21 +424,21 @@ class KalmanFilter(object):
         self._mahalanobis = None
 
         if z is None:
-            self.z = np.array([[None] * self.dim_z]).T
+            self.z = self.np.array([[None] * self.dim_z]).T
             self.x_post = self.x.copy()
             self.P_post = self.P.copy()
-            self.y = zeros((self.dim_z, 1))
+            self.y = self.np.zeros((self.dim_z, 1))
             return
 
         z = reshape_z(z, self.dim_z, self.x.ndim)
 
         # y = z - Hx
         # error (residual) between measurement and prediction
-        self.y = z - dot(self.H, self.x)
+        self.y = z - self.np.dot(self.H, self.x)
 
         # x = x + Ky
         # predict new x with residual scaled by the kalman gain
-        self.x = self.x + dot(self.K, self.y)
+        self.x = self.x + self.np.dot(self.K, self.y)
 
         self.z = deepcopy(z)
         self.x_post = self.x.copy()
@@ -471,16 +478,16 @@ class KalmanFilter(object):
         self._mahalanobis = None
 
         if z is None:
-            self.z = np.array([[None] * self.dim_z]).T
+            self.z = self.np.array([[None] * self.dim_z]).T
             self.x_post = self.x.copy()
             self.P_post = self.P.copy()
-            self.y = zeros((self.dim_z, 1))
+            self.y = self.np.zeros((self.dim_z, 1))
             return
 
         if R is None:
             R = self.R
-        elif isscalar(R):
-            R = eye(self.dim_z) * R
+        elif self.np.isscalar(R):
+            R = self.np.eye(self.dim_z) * R
 
         # rename for readability and a tiny extra bit of speed
         if H is None:
@@ -489,31 +496,36 @@ class KalmanFilter(object):
 
         # handle special case: if z is in form [[z]] but x is not a column
         # vector dimensions will not match
-        if self.x.ndim == 1 and shape(z) == (1, 1):
+        if self.x.ndim == 1 and self.np.shape(z) == (1, 1):
             z = z[0]
 
-        if shape(z) == ():  # is it scalar, e.g. z=3 or z=np.array(3)
-            z = np.asarray([z])
+        if self.np.shape(z) == ():  # is it scalar, e.g. z=3 or z=np.array(3)
+            z = self.np.asarray([z])
 
         # y = z - Hx
         # error (residual) between measurement and prediction
-        self.y = z - dot(H, self.x)
+        self.y = z - self.np.dot(H, self.x)
 
         # common subexpression for speed
-        PHT = dot(self.P, H.T)
+        PHT = self.np.dot(self.P, H.T)
 
         # project system uncertainty into measurement space
-        self.S = dot(H, PHT) + dot(H, self.M) + dot(self.M.T, H.T) + R
+        self.S = (
+            self.np.dot(H, PHT)
+            + self.np.dot(H, self.M)
+            + self.np.dot(self.M.T, H.T)
+            + R
+        )
         self.SI = self.inv(self.S)
 
         # K = PH'inv(S)
         # map system uncertainty into kalman gain
-        self.K = dot(PHT + self.M, self.SI)
+        self.K = self.np.dot(PHT + self.M, self.SI)
 
         # x = x + Ky
         # predict new x with residual scaled by the kalman gain
-        self.x = self.x + dot(self.K, self.y)
-        self.P = self.P - dot(self.K, dot(H, self.P) + self.M.T)
+        self.x = self.x + self.np.dot(self.K, self.y)
+        self.P = self.P - self.np.dot(self.K, self.np.dot(H, self.P) + self.M.T)
 
         self.z = deepcopy(z)
         self.x_post = self.x.copy()
@@ -610,7 +622,7 @@ class KalmanFilter(object):
         """
 
         # pylint: disable=too-many-statements
-        n = np.size(zs, 0)
+        n = self.np.size(zs, 0)
         if Fs is None:
             Fs = [self.F] * n
         if Qs is None:
@@ -626,15 +638,15 @@ class KalmanFilter(object):
 
         # mean estimates from Kalman Filter
         if self.x.ndim == 1:
-            means = zeros((n, self.dim_x))
-            means_p = zeros((n, self.dim_x))
+            means = self.np.zeros((n, self.dim_x))
+            means_p = self.np.zeros((n, self.dim_x))
         else:
-            means = zeros((n, self.dim_x, 1))
-            means_p = zeros((n, self.dim_x, 1))
+            means = self.np.zeros((n, self.dim_x, 1))
+            means_p = self.np.zeros((n, self.dim_x, 1))
 
         # state covariances from Kalman Filter
-        covariances = zeros((n, self.dim_x, self.dim_x))
-        covariances_p = zeros((n, self.dim_x, self.dim_x))
+        covariances = self.np.zeros((n, self.dim_x, self.dim_x))
+        covariances_p = self.np.zeros((n, self.dim_x, self.dim_x))
 
         if update_first:
             for i, (z, F, Q, H, R, B, u) in enumerate(zip(zs, Fs, Qs, Hs, Rs, Bs, us)):
@@ -663,7 +675,7 @@ class KalmanFilter(object):
 
         return (means, covariances, means_p, covariances_p)
 
-    def rts_smoother(self, Xs, Ps, Fs=None, Qs=None, inv=np.linalg.inv):
+    def rts_smoother(self, Xs, Ps, Fs=None, Qs=None, inv=None):
         """Runs the Rauch-Tung-Striebel Kalman smoother on a set of means and
         covariances computed by a Kalman filter. The usual input would come
         from the output of `KalmanFilter.batch_filter()`.
@@ -702,6 +714,9 @@ class KalmanFilter(object):
             (x, P, K, Pp) = rts_smoother(mu, cov, kf.F, kf.Q)
         """
 
+        if inv is None:
+            inv = self.np.linalg.inv
+
         if len(Xs) != len(Ps):
             raise ValueError("length of Xs and Ps must be the same")
 
@@ -714,16 +729,16 @@ class KalmanFilter(object):
             Qs = [self.Q] * n
 
         # smoother gain
-        K = zeros((n, dim_x, dim_x))
+        K = self.np.zeros((n, dim_x, dim_x))
 
         x, P, Pp = Xs.copy(), Ps.copy(), Ps.copy()
         for k in range(n - 2, -1, -1):
-            Pp[k] = dot(dot(Fs[k + 1], P[k]), Fs[k + 1].T) + Qs[k + 1]
+            Pp[k] = self.np.dot(self.np.dot(Fs[k + 1], P[k]), Fs[k + 1].T) + Qs[k + 1]
 
             # pylint: disable=bad-whitespace
-            K[k] = dot(dot(P[k], Fs[k + 1].T), inv(Pp[k]))
-            x[k] += dot(K[k], x[k + 1] - dot(Fs[k + 1], x[k]))
-            P[k] += dot(dot(K[k], P[k + 1] - Pp[k]), K[k].T)
+            K[k] = self.np.dot(self.np.dot(P[k], Fs[k + 1].T), inv(Pp[k]))
+            x[k] += self.np.dot(K[k], x[k + 1] - self.np.dot(Fs[k + 1], x[k]))
+            P[k] += self.np.dot(self.np.dot(K[k], P[k + 1] - Pp[k]), K[k].T)
 
         return (x, P, K, Pp)
 
@@ -756,17 +771,17 @@ class KalmanFilter(object):
             F = self.F
         if Q is None:
             Q = self.Q
-        elif isscalar(Q):
-            Q = eye(self.dim_x) * Q
+        elif self.np.isscalar(Q):
+            Q = self.np.eye(self.dim_x) * Q
 
         # x = Fx + Bu
         if B is not None and u is not None:
-            x = dot(F, self.x) + dot(B, u)
+            x = self.np.dot(F, self.x) + self.np.dot(B, u)
         else:
-            x = dot(F, self.x)
+            x = self.np.dot(F, self.x)
 
         # P = FPF' + Q
-        P = self._alpha_sq * dot(dot(F, self.P), F.T) + Q
+        P = self._alpha_sq * self.np.dot(self.np.dot(F, self.P), F.T) + Q
 
         return x, P
 
@@ -795,23 +810,25 @@ class KalmanFilter(object):
         x = self.x
 
         # error (residual) between measurement and prediction
-        y = z - dot(H, x)
+        y = z - self.np.dot(H, x)
 
         # common subexpression for speed
-        PHT = dot(P, H.T)
+        PHT = self.np.dot(P, H.T)
 
         # project system uncertainty into measurement space
-        S = dot(H, PHT) + R
+        S = self.np.dot(H, PHT) + R
 
         # map system uncertainty into kalman gain
-        K = dot(PHT, self.inv(S))
+        K = self.np.dot(PHT, self.inv(S))
 
         # predict new x with residual scaled by the kalman gain
-        x = x + dot(K, y)
+        x = x + self.np.dot(K, y)
 
         # P = (I-KH)P(I-KH)' + KRK'
-        I_KH = self._I - dot(K, H)
-        P = dot(dot(I_KH, P), I_KH.T) + dot(dot(K, R), K.T)
+        I_KH = self._I - self.np.dot(K, H)
+        P = self.np.dot(self.np.dot(I_KH, P), I_KH.T) + self.np.dot(
+            self.np.dot(K, R), K.T
+        )
 
         return x, P
 
@@ -821,7 +838,7 @@ class KalmanFilter(object):
         Does not alter the state of the filter.
         """
         z = reshape_z(z, self.dim_z, self.x.ndim)
-        return z - dot(self.H, self.x_prior)
+        return z - self.np.dot(self.H, self.x_prior)
 
     def measurement_of_state(self, x):
         """Helper function that converts a state into a measurement.
@@ -837,7 +854,7 @@ class KalmanFilter(object):
             otherwise it must be convertible to a column vector.
         """
 
-        return dot(self.H, x)
+        return self.np.dot(self.H, x)
 
     @property
     def log_likelihood(self):
@@ -871,7 +888,9 @@ class KalmanFilter(object):
         mahalanobis : float
         """
         if self._mahalanobis is None:
-            self._mahalanobis = sqrt(float(dot(dot(self.y.T, self.SI), self.y)))
+            self._mahalanobis = sqrt(
+                float(self.np.dot(self.np.dot(self.y.T, self.SI), self.y))
+            )
         return self._mahalanobis
 
     @property
@@ -894,11 +913,11 @@ class KalmanFilter(object):
 
         if z is None:
             return log(sys.float_info.min)
-        return logpdf(z, dot(self.H, self.x), self.S)
+        return logpdf(z, self.np.dot(self.H, self.x), self.S)
 
     @alpha.setter
     def alpha(self, value):
-        if not np.isscalar(value) or value < 1:
+        if not self.np.isscalar(value) or value < 1:
             raise ValueError("alpha must be a float greater than 1")
 
         self._alpha_sq = value**2
@@ -997,8 +1016,8 @@ class KalmanFilter(object):
             self.dim_x, self.dim_x, F.shape
         )
 
-        assert np.ndim(H) == 2, "Shape of H must be (dim_z, {}), but is {}".format(
-            P.shape[0], shape(H)
+        assert self.np.ndim(H) == 2, "Shape of H must be (dim_z, {}), but is {}".format(
+            P.shape[0], self.np.shape(H)
         )
 
         assert (
@@ -1007,7 +1026,7 @@ class KalmanFilter(object):
 
         # shape of R must be the same as HPH'
         hph_shape = (H.shape[0], H.shape[0])
-        r_shape = shape(R)
+        r_shape = self.np.shape(R)
 
         if H.shape[0] == 1:
             # r can be scalar, 1D, or 2D in this case
@@ -1022,36 +1041,36 @@ class KalmanFilter(object):
             )
 
         if z is not None:
-            z_shape = shape(z)
+            z_shape = self.np.shape(z)
         else:
             z_shape = (self.dim_z, 1)
 
         # H@x must have shape of z
-        Hx = dot(H, x)
+        Hx = self.np.dot(H, x)
 
         if z_shape == ():  # scalar or np.array(scalar)
-            assert Hx.ndim == 1 or shape(Hx) == (
+            assert Hx.ndim == 1 or self.np.shape(Hx) == (
                 1,
                 1,
             ), "shape of z should be {}, not {} for the given H".format(
-                shape(Hx), z_shape
+                self.np.shape(Hx), z_shape
             )
 
-        elif shape(Hx) == (1,):
+        elif self.np.shape(Hx) == (1,):
             assert z_shape[0] == 1, "Shape of z must be {} for the given H".format(
-                shape(Hx)
+                self.np.shape(Hx)
             )
 
         else:
-            assert z_shape == shape(Hx) or (
-                len(z_shape) == 1 and shape(Hx) == (z_shape[0], 1)
+            assert z_shape == self.np.shape(Hx) or (
+                len(z_shape) == 1 and self.np.shape(Hx) == (z_shape[0], 1)
             ), "shape of z should be {}, not {} for the given H".format(
-                shape(Hx), z_shape
+                self.np.shape(Hx), z_shape
             )
 
-        if np.ndim(Hx) > 1 and shape(Hx) != (1, 1):
+        if self.np.ndim(Hx) > 1 and self.np.shape(Hx) != (1, 1):
             assert (
-                shape(Hx) == z_shape
+                self.np.shape(Hx) == z_shape
             ), "shape of z should be {} for the given H, but it is {}".format(
-                shape(Hx), z_shape
+                self.np.shape(Hx), z_shape
             )

@@ -6,7 +6,6 @@ from collections import deque
 from sched import scheduler
 from threading import Event, Lock, Thread
 
-import numpy as np
 from gpiozero import SmoothedInputDevice
 
 from pitop.common.common_ids import FirmwareDeviceID
@@ -208,8 +207,10 @@ class UltrasonicSensorMCU(UltrasonicSensorBase):
         s.run()
 
     def __read_loop(self, s):
+        from numpy import median
+
         self.__data_queue.append(self.__read_distance())
-        self._filtered_distance = np.median(self.__data_queue)
+        self._filtered_distance = median(self.__data_queue)
         self.__new_reading_event.set()
         self.__new_reading_event.clear()
         if self._continue_processing:

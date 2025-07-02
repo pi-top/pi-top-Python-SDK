@@ -1,6 +1,3 @@
-from urllib.request import urlopen
-
-from numpy import asarray, ndarray
 from PIL import Image
 
 from pitop.common.formatting import is_url
@@ -13,6 +10,8 @@ def image_format_check(format):
 
 
 def convert(image, format="PIL"):
+    from numpy import asarray, ndarray
+
     cv2 = import_opencv()
 
     image_format_check(format)
@@ -42,6 +41,8 @@ def convert(image, format="PIL"):
 
 def get_pil_image_from_path(file_path_or_url):
     if is_url(file_path_or_url):
+        from urllib.request import urlopen
+
         image_path = urlopen(file_path_or_url)
     else:
         image_path = file_path_or_url

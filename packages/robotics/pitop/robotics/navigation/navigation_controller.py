@@ -1,8 +1,6 @@
 from threading import Event, Thread
 from typing import Union
 
-import numpy as np
-
 from ..drive_controller import DriveController
 from .core.measurement_scheduler import MeasurementScheduler
 from .core.robot_state import StateFilter
@@ -160,6 +158,8 @@ class NavigationController(DriveController):
 
     @property
     def odometry(self):
+        from numpy import array
+
         left_wheel_speed = self.left_motor.current_speed
         right_wheel_speed = self.right_motor.current_speed
         linear_velocity = (right_wheel_speed + left_wheel_speed) / 2.0
@@ -167,7 +167,7 @@ class NavigationController(DriveController):
             right_wheel_speed - left_wheel_speed
         ) / self.wheel_separation
 
-        return np.array([[linear_velocity], [angular_velocity]])
+        return array([[linear_velocity], [angular_velocity]])
 
     @property
     def linear_speed_factor(self):

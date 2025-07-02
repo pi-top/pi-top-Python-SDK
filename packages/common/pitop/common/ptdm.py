@@ -5,12 +5,16 @@ from threading import Thread
 from time import sleep
 from traceback import format_exc
 
-import zmq
-
 from pitop.common.type_helper import TypeHelper
 
 logger = logging.getLogger(__name__)
 _TIMEOUT_MS = 1000
+
+
+def import_zmq():
+    import zmq
+
+    return zmq
 
 
 # Messages sent to/from pi-topd clients (formerly pt-device-manager (ptdm))
@@ -344,6 +348,8 @@ class PTDMRequestClient:
         self.__cleanup()
 
     def __connect_to_socket(self):
+        zmq = import_zmq()
+
         self._zmq_context = zmq.Context()
         self._zmq_socket = self._zmq_context.socket(zmq.REQ)
         self._zmq_socket.sndtimeo = _TIMEOUT_MS
@@ -433,6 +439,8 @@ class PTDMSubscribeClient:
             self.__thread.join()
 
     def __connect_to_socket(self):
+        zmq = import_zmq()
+
         self._zmq_context = zmq.Context()
         self._zmq_socket = self._zmq_context.socket(zmq.SUB)
         self._zmq_socket.setsockopt_string(zmq.SUBSCRIBE, "")
@@ -459,6 +467,8 @@ class PTDMSubscribeClient:
             self._zmq_context = None
 
     def __thread_method(self):
+        zmq = import_zmq()
+
         poller = zmq.Poller()
         poller.register(self._zmq_socket, zmq.POLLIN)
         while self.__continue:

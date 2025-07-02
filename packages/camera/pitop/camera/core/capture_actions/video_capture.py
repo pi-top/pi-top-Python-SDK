@@ -1,7 +1,5 @@
 import logging
 
-from numpy import asarray
-
 from .capture_action_base import CaptureActionBase
 
 logger = logging.getLogger(__name__)
@@ -46,6 +44,8 @@ class VideoCapture(CaptureActionBase):
         )
 
     def process(self, frame):
+        from numpy import asarray
+
         self.__video_output_writer.append_data(
             asarray(frame.resize(self.__video_resolution))
         )

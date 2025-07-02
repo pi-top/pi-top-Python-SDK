@@ -1,8 +1,6 @@
 import math
 from collections import OrderedDict
 
-import numpy as np
-
 FACIAL_LANDMARKS_68_IDXS = OrderedDict(
     [
         ("mouth", (48, 68)),
@@ -29,6 +27,8 @@ def get_face_angle(face_features):
         landmark version)
     :return: angle of face in degrees
     """
+    import numpy as np
+
     if len(face_features) == 68:
         # https://pyimagesearch.com/wp-content/uploads/2017/04/facial_landmarks_68markup.jpg
         # note: array is 0-indexed, image annotations are 1-indexed
@@ -83,6 +83,8 @@ def pupil_distance(face_features):
     :return: Scalar distance between left eye center and right eye center
     :rtype: float
     """
+    import numpy as np
+
     return round(
         np.linalg.norm(
             np.asarray(left_eye_center(face_features))
@@ -143,6 +145,8 @@ def right_eye_dimensions(face_features):
 
 
 def eye_dimensions(face_features, position: str):
+    import numpy as np
+
     landmarks = eye_landmarks(face_features, position)
     if len(face_features) == 68:
         width = round(np.linalg.norm(landmarks[0] - landmarks[3]), 1)
@@ -179,6 +183,8 @@ def mouth_landmarks(face_features):
 
 
 def mouth_dimensions(face_features):
+    import numpy as np
+
     landmarks = mouth_landmarks(face_features)
     width = round(np.linalg.norm(landmarks[0] - landmarks[6]), 1)
     height = round(np.linalg.norm(landmarks[3] - landmarks[9]), 1)
@@ -191,6 +197,8 @@ def nose_bottom(face_features):
     :return: (x, y) position of the bottom of the nose
     :rtype: tuple
     """
+    import numpy as np
+
     if len(face_features) == 68:
         return tuple(np.take(face_features, 33, axis=0).astype(int))
     elif len(face_features) == 5:
@@ -200,6 +208,8 @@ def nose_bottom(face_features):
 
 
 def feature_center(feature_landmarks):
+    import numpy as np
+
     return tuple(np.mean(feature_landmarks, axis=0).astype(int))
 
 

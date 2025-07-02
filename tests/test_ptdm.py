@@ -1,13 +1,13 @@
+import sys
 from unittest import TestCase, skip
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from tests.utils import wait_until
 
 
 class PTDMSubscribeClientTestCase(TestCase):
     def setUp(self):
-        self.zmq_patch = patch("pitop.common.ptdm.zmq")
-        self.zmq_mock = self.zmq_patch.start()
+        self.zmq_mock = sys.modules["zmq"]
         self.poller_mock = MagicMock()
         self.context_mock = MagicMock()
         self.socket_mock = MagicMock()
@@ -17,8 +17,6 @@ class PTDMSubscribeClientTestCase(TestCase):
         self.zmq_mock.Context.return_value = self.context_mock
         self.zmq_mock.Poller.return_value = self.poller_mock
         self.poller_mock.poll.return_value = []
-
-        self.addCleanup(self.zmq_patch.stop)
 
     @skip
     def test_callback_called_when_message_is_published(self):
@@ -93,8 +91,7 @@ class PTDMSubscribeClientTestCase(TestCase):
 
 class PTDMRequestClientTestCase(TestCase):
     def setUp(self):
-        self.zmq_patch = patch("pitop.common.ptdm.zmq")
-        self.zmq_mock = self.zmq_patch.start()
+        self.zmq_mock = sys.modules["zmq"]
         self.poller_mock = MagicMock()
         self.context_mock = MagicMock()
         self.socket_mock = MagicMock()
@@ -104,7 +101,6 @@ class PTDMRequestClientTestCase(TestCase):
         self.zmq_mock.Context.return_value = self.context_mock
         self.zmq_mock.Poller.return_value = self.poller_mock
         self.poller_mock.poll.return_value = []
-        self.addCleanup(self.zmq_patch.stop)
 
     def test_uri(self):
         from pitop.common.ptdm import PTDMRequestClient
