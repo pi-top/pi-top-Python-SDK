@@ -143,7 +143,7 @@ class EncoderMotorTestCase(TestCase):
                 )
 
     @patch("pitop.pma.encoder_motor.EncoderMotorController.odometer")
-    def test_rotation_counter_property(self, mock_odometer):
+    def test_reset_rotation_counter_method(self, mock_odometer):
         """Test that setting rotation_counter sets the offset correctly."""
         # Mock odometer call
         mock_odometer.return_value = 456
@@ -159,10 +159,10 @@ class EncoderMotorTestCase(TestCase):
         self.assertEqual(encoder_motor.rotation_counter, expected_rotations)
 
         # Set rotation_counter property to a few values; the property will now return the same value
-        encoder_motor.rotation_counter = 0
+        encoder_motor.reset_rotation_counter()
         self.assertEqual(encoder_motor.rotation_counter, 0)
 
-        encoder_motor.rotation_counter = 100
+        encoder_motor.reset_rotation_counter(100)
         self.assertEqual(encoder_motor.rotation_counter, 100)
 
         # When the EncoderMotor moves, the odometer returns a new value, which causes the rotation counter to be updated
@@ -183,11 +183,11 @@ class EncoderMotorTestCase(TestCase):
         self.assertEqual(encoder_motor.rotation_counter, expected_rotations)
 
         # Setter also handles negative values
-        encoder_motor.rotation_counter = -100
+        encoder_motor.reset_rotation_counter(-100)
         self.assertEqual(encoder_motor.rotation_counter, -100)
 
     @patch("pitop.pma.encoder_motor.EncoderMotorController.odometer")
-    def test_rotation_counter_setter_error_handling(self, mock_odometer):
+    def test_reset_rotation_counter_error_handling(self, mock_odometer):
         """Test that setting rotation_counter setter raises an error when given an invalid value."""
         # Mock odometer call
         mock_odometer.return_value = 0
@@ -200,4 +200,4 @@ class EncoderMotorTestCase(TestCase):
 
         for invalid_value in ("100", b"123"):
             with self.assertRaises(ValueError):
-                encoder_motor.rotation_counter = invalid_value
+                encoder_motor.reset_rotation_counter(invalid_value)
