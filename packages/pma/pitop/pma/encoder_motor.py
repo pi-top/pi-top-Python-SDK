@@ -307,7 +307,7 @@ class EncoderMotor(Stateful, Recreatable):
         :param rotations:
             New number of rotations to set the rotation counter to
         """
-        if not isinstance(rotations, (float, int)):
+        if isinstance(rotations, bool) or not isinstance(rotations, (float, int)):
             raise ValueError("Rotation counter must be a number")
 
         current_odometer = self.__motor_core.odometer()

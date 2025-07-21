@@ -198,6 +198,18 @@ class EncoderMotorTestCase(TestCase):
             braking_type=BrakingType.COAST,
         )
 
-        for invalid_value in ("100", b"123"):
+        for invalid_value in (
+            "100",
+            b"123",
+            True,
+            False,
+            [123, 456],
+            [],
+            (),
+            (1231, "asd"),
+            None,
+            lambda x: x,
+        ):
+            print(f"Testing with invalid_value: {invalid_value!r}")
             with self.assertRaises(ValueError):
                 encoder_motor.reset_rotation_counter(invalid_value)
