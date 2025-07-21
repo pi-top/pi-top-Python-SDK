@@ -295,19 +295,16 @@ class EncoderMotor(Stateful, Recreatable):
         return output_shaft_rotation_counter
 
     def reset_rotation_counter(self, rotations=0):
-        """Set the rotation counter to a specific rotations value.
+        """Begin counting rotations from this moment forward. If you supply rotations, the counter will start at that number instead of zero.
 
-        This method sets the rotation counter offset to the difference between the
-        current odometer value and the provided rotations value, setting the current
-        rotations counter but having it still change with the odometer.
+        Internally, we track how far the motor has turned (the “odometer”). This method
+        sets an offset so that the next time you ask for the rotation count, it will
+        report how many turns have happened since now, plus the rotations baseline
+        you chose.
 
-        We use an offset to track the difference between the current odometer value and
-        the user provided rotations value, so that we can report the current rotations
-        relative to this fixed value as they change.
-
-        :type rotations: int or float
-        :param rotations:
-            New number of rotations to set the rotation counter to
+                :type rotations: int or float
+                :param rotations:
+                    New number of rotations to set the rotation counter to
         """
         if not isinstance(rotations, (float, int)):
             raise ValueError("Rotation counter must be a number")
