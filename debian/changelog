@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.35.0-3) bullseye; urgency=medium
+
+  * Support rotation counter setting in EncoderMotor class (#708)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 21 Jul 2025 14:56:54 +0000
+
 pi-top-python-sdk (0.35.0-2) bullseye; urgency=medium
 
   * Lazy load dependencies (#702)
