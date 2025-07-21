@@ -141,3 +141,75 @@ class EncoderMotorTestCase(TestCase):
                 set_target_rpm_mock.assert_called_with(
                     target_speed_in_rpm, direction, target_motor_rotations
                 )
+
+    @patch("pitop.pma.encoder_motor.EncoderMotorController.odometer")
+    def test_reset_rotation_counter_method(self, mock_odometer):
+        """Test that setting rotation_counter sets the offset correctly."""
+        # Mock odometer call
+        mock_odometer.return_value = 456
+
+        encoder_motor = EncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST,
+        )
+
+        # Initial value is based on the odometer
+        expected_rotations = round((456 / encoder_motor.MMK_STANDARD_GEAR_RATIO), 1)
+        self.assertEqual(encoder_motor.rotation_counter, expected_rotations)
+
+        # Set rotation_counter property to a few values; the property will now return the same value
+        encoder_motor.reset_rotation_counter()
+        self.assertEqual(encoder_motor.rotation_counter, 0)
+
+        encoder_motor.reset_rotation_counter(100)
+        self.assertEqual(encoder_motor.rotation_counter, 100)
+
+        # When the EncoderMotor moves, the odometer returns a new value, which causes the rotation counter to be updated
+        mock_odometer.return_value = 1500.0
+        # Calculate expected_rotations based on the new offset, based on the current and previous odometer readings
+        expected_rotations = round(
+            100 + (1500.0 - 456) / encoder_motor.MMK_STANDARD_GEAR_RATIO, 1
+        )
+        self.assertEqual(encoder_motor.rotation_counter, expected_rotations)
+
+        # Make sure this still works when the odometer moves in the opposite direction and returns a negative value
+        mock_odometer.return_value = -1000.0
+        expected_rotations = round(
+            expected_rotations
+            + (-1000.0 - 1500) / encoder_motor.MMK_STANDARD_GEAR_RATIO,
+            1,
+        )
+        self.assertEqual(encoder_motor.rotation_counter, expected_rotations)
+
+        # Setter also handles negative values
+        encoder_motor.reset_rotation_counter(-100)
+        self.assertEqual(encoder_motor.rotation_counter, -100)
+
+    @patch("pitop.pma.encoder_motor.EncoderMotorController.odometer")
+    def test_reset_rotation_counter_error_handling(self, mock_odometer):
+        """Test that setting rotation_counter setter raises an error when given an invalid value."""
+        # Mock odometer call
+        mock_odometer.return_value = 0
+
+        encoder_motor = EncoderMotor(
+            port_name="M1",
+            forward_direction=ForwardDirection.CLOCKWISE,
+            braking_type=BrakingType.COAST,
+        )
+
+        for invalid_value in (
+            "100",
+            b"123",
+            True,
+            False,
+            [123, 456],
+            [],
+            (),
+            (1231, "asd"),
+            None,
+            lambda x: x,
+        ):
+            print(f"Testing with invalid_value: {invalid_value!r}")
+            with self.assertRaises(ValueError):
+                encoder_motor.reset_rotation_counter(invalid_value)

@@ -1,5 +1,4 @@
 import atexit
-import time
 from math import floor, pi
 
 from pitop.core.mixins import Recreatable, Stateful
@@ -69,8 +68,7 @@ class EncoderMotor(Stateful, Recreatable):
         self.__forward_direction = forward_direction
         self.__wheel_diameter = wheel_diameter
 
-        self.__prev_time_dist_cnt = time.time()
-        self.__previous_reading_odometer = 0
+        self.__rotation_counter_offset = 0  # Tracks rotation counter
 
         atexit.register(self.stop)
 
@@ -286,14 +284,37 @@ class EncoderMotor(Stateful, Recreatable):
         the output shaft.
         """
 
-        dc_motor_rotation_counter = (
-            self.__motor_core.odometer() * self.__forward_direction
+        dc_motor_rotation_counter = self.__motor_core.odometer()
+        adjusted_dc_motor_rotation_counter = dc_motor_rotation_counter - (
+            self.__rotation_counter_offset
         )
         output_shaft_rotation_counter = round(
-            dc_motor_rotation_counter / self.MMK_STANDARD_GEAR_RATIO, 1
+            adjusted_dc_motor_rotation_counter / self.MMK_STANDARD_GEAR_RATIO, 1
         )
 
         return output_shaft_rotation_counter
+
+    def reset_rotation_counter(self, rotations=0):
+        """Begin counting rotations from this moment forward.
+        If you supply rotations, the counter will start at that number instead of zero.
+
+        Internally, we track how far the motor has turned (the “odometer”). This method
+        sets an offset so that the next time you ask for the rotation count, it will
+        report how many turns have happened since now, plus the rotations baseline
+        you chose.
+
+        :type rotations: int or float
+        :param rotations:
+            New number of rotations to set the rotation counter to
+        """
+        if isinstance(rotations, bool) or not isinstance(rotations, (float, int)):
+            raise ValueError("Rotation counter must be a number")
+
+        current_odometer = self.__motor_core.odometer()
+        # The offset is now set so that rotation_counter returns the provided value for the current odometer reading
+        self.__rotation_counter_offset = (
+            current_odometer - rotations * self.MMK_STANDARD_GEAR_RATIO
+        )
 
     @property
     def torque_limited(self):
@@ -449,7 +470,9 @@ class EncoderMotor(Stateful, Recreatable):
         value being set.
         """
 
-        return self.wheel_circumference * self.rotation_counter
+        return (
+            self.wheel_circumference * self.rotation_counter * self.__forward_direction
+        )
 
     @property
     def max_speed(self):
