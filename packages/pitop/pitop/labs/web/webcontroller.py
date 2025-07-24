@@ -4,7 +4,12 @@ from .webserver import WebServer
 
 class WebController(WebServer):
     def __init__(
-        self, get_frame=None, message_handlers=None, blueprints=None, **kwargs
+        self,
+        get_frame=None,
+        message_handlers=None,
+        blueprints=None,
+        ssl_context=None,
+        **kwargs
     ):
         message_handlers = {} if message_handlers is None else message_handlers
         blueprints = [] if blueprints is None else blueprints
@@ -14,7 +19,10 @@ class WebController(WebServer):
         )
 
         WebServer.__init__(
-            self, blueprints=[self.controller_blueprint] + blueprints, **kwargs
+            self,
+            blueprints=[self.controller_blueprint] + blueprints,
+            ssl_context=ssl_context,
+            **kwargs,
         )
 
     def broadcast(self, message):
@@ -29,6 +37,8 @@ class RoverWebController(WebServer):
         pan_tilt=None,
         message_handlers=None,
         blueprints=None,
+        ssl_context=None,
+        port=None,
         **kwargs
     ):
         message_handlers = {} if message_handlers is None else message_handlers
@@ -42,7 +52,11 @@ class RoverWebController(WebServer):
         )
 
         WebServer.__init__(
-            self, blueprints=[self.rover_blueprint] + blueprints, **kwargs
+            self,
+            blueprints=[self.rover_blueprint] + blueprints,
+            port=port,
+            ssl_context=ssl_context,
+            **kwargs,
         )
 
     def broadcast(self, message):

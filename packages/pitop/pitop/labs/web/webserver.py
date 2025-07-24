@@ -48,32 +48,58 @@ def create_app(
 
 
 class WebServer(WSGIServer):
-    def __init__(self, port=8070, app=create_app(), blueprints=[BaseBlueprint()]):
+    def __init__(
+        self,
+        port=None,
+        app=None,
+        blueprints=[BaseBlueprint()],
+        ssl_context=None,
+    ):
+        if port is None:
+            port = 8070
+
+        if app is None:
+            app = create_app()
+
         self.port = port
         self.app = app
         self.sockets = Sockets(app)
+        self.ssl_context = ssl_context
 
         with self.app.app_context():
             for blueprint in blueprints:
                 self.app.register_blueprint(blueprint, sockets=self.sockets)
 
-        WSGIServer.__init__(
-            self, ("0.0.0.0", port), self.app, handler_class=WebSocketHandler
-        )
+        if ssl_context:
+            WSGIServer.__init__(
+                self,
+                ("0.0.0.0", port),
+                self.app,
+                handler_class=WebSocketHandler,
+                ssl_context=ssl_context,
+            )
+        else:
+            WSGIServer.__init__(
+                self,
+                ("0.0.0.0", port),
+                self.app,
+                handler_class=WebSocketHandler,
+            )
 
     def _log_address(self):
+        protocol = "https" if self.ssl_context else "http"
         ip_addresses = list()
-        for interface in ("wlan0", "ptusb0", "lo", "en0"):
+        for interface in ("wlan0", "ptusb0", "lo", "eth0"):
             ip_address = get_internal_ip(interface)
-            if is_url("http://" + ip_address):
+            if is_url(f"{protocol}://{ip_address}"):
                 ip_addresses.append(ip_address)
 
         print("WebServer is listening at:")
         if len(ip_addresses) > 0:
             for ip_address in ip_addresses:
-                print(f"\t- http://{ip_address}:{self.port}/")
+                print(f"\t- {protocol}://{ip_address}:{self.port}/")
         else:
-            print(f"\t- http://localhost:{self.port}/ (on same device)")
+            print(f"\t- {protocol}://localhost:{self.port}/ (on same device)")
 
     def start(self):
         self._log_address()
