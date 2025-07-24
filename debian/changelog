@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.35.0-4) bullseye; urgency=medium
+
+  * Weblabs server supports SSL (#707)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Thu, 24 Jul 2025 14:21:45 +0000
+
 pi-top-python-sdk (0.35.0-3) bullseye; urgency=medium
 
   * Support rotation counter setting in EncoderMotor class (#708)
