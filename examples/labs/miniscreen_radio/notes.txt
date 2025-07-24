@@ -1,0 +1,34 @@
+
+Full Installation Instructions:
+
+Run the following terminal commands
+sudo apt-get update
+sudo apt-get install mpd mpc
+pip3 install python-mpd2
+
+In this file
+	sudo nano /etc/mpd.conf
+Find the audio_output section, and change it to look like this:
+
+audio_output {
+        type            "alsa"
+        name            "My ALSA Device"
+        device          "hw:1"  # optional
+#       mixer_type      "hardware"      # optional
+#       mixer_device    "default"       # optional
+#       mixer_control   "PCM"           # optional
+#       mixer_index     "0"             # optional
+}
+
+
+Useful terminal commands:
+Check on the general status of the media player client with’ mpc status’
+And in the (currently very likely) event that you can’t stop the music after killing python script, use ‘mpc stop’
+If you fuck up the OLED in code, you can fix things by restarting first the device manager service, and then the OLED service:
+sudo systemctl restart pt-device-manager.service
+sudo systemctl restart pt-sys-oled.service
+
+Other notes:
+Find new m3u (or m3u8) feeds at http://www.radiofeeds.co.uk/default.asp
+Streams in AAC/AAC+ (HLS) format seem to work well
+Click on the station you want, then copy the link for e.g. the BBC asian network on the page (http://lsn.to/BAN), right click on quality you want e.g. ‘96K Stereo’ and paste link into radio_stations list in pi-topRadio.py
