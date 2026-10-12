@@ -23,10 +23,7 @@ from pitop.pma import (
 )
 from pitop.pma import ServoMotorSetting
 from pitop.pma import ServoMotorSetting as ServoMotorState
-from pitop.pma import (
-    SoundSensor,
-    UltrasonicSensor,
-)
+from pitop.pma import SoundSensor, UltrasonicSensor
 from pitop.pma.parameters import BrakingType, Direction, ForwardDirection
 
 # Robotics

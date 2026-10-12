@@ -172,7 +172,7 @@ class Listener(ListenerMixin, _base.Listener):
         initialisation.
         """
         try:
-            (px, py) = Quartz.CGEventGetLocation(event)
+            px, py = Quartz.CGEventGetLocation(event)
         except AttributeError:
             # This happens during teardown of the virtual machine
             return
