@@ -20,19 +20,16 @@ from pitop.pma import (
     LightSensor,
     Potentiometer,
     ServoMotor,
-)
-from pitop.pma import ServoMotorSetting
-from pitop.pma import ServoMotorSetting as ServoMotorState
-from pitop.pma import (
+    ServoMotorSetting,
     SoundSensor,
     UltrasonicSensor,
 )
+from pitop.pma import ServoMotorSetting as ServoMotorState
 from pitop.pma.parameters import BrakingType, Direction, ForwardDirection
 
 # Robotics
 from pitop.robotics.blockpi_rover import BlockPiRover
-from pitop.robotics.configurations import AlexRobot  # deprecated
-from pitop.robotics.configurations import alex_config
+from pitop.robotics.configurations import AlexRobot, alex_config  # deprecated
 from pitop.robotics.drive_controller import DriveController
 from pitop.robotics.navigation import NavigationController
 from pitop.robotics.pan_tilt_controller import PanTiltController
