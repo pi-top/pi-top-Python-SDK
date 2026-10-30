@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - master
-      - bullseye
   workflow_dispatch:
 
 env:
@@ -56,17 +55,7 @@ jobs:
       - name: Determine build distro
         id: set-distros
         run: |
-          distros="\"distro\":[\"bookworm\", \"bullseye\"]"
-
-          # if bullseye branch exists, build for bookworm only
-          if git branch -r | grep -Eq "origin/bullseye$"; then
-            distros="\"distro\":[\"bookworm\"]"
-          fi
-
-          # if pull request to bullseye branch or current branch is bullseye, build only for bullseye
-          if [ $(echo ${{ github.head_ref }} | grep -qE "bullseye$") ] || [ ${{ github.ref }} = 'refs/heads/bullseye' ]; then
-            distros="\"distro\":[\"bullseye\"]"
-          fi
+          distros="\"distro\":[\"bookworm\"]"
 
           echo "Building for $distros"
           echo "distros=$distros">>$GITHUB_OUTPUT
@@ -107,11 +96,6 @@ jobs:
           author_email: ${{ env.CHANGELOG_AUTHOR_EMAIL }}
           snapshot_number: ${{ steps.version.outputs.distance }}
           since: ${{ steps.version.outputs.tag_latest }}
-
-      - name: Patch lintian-overrides
-        if: matrix.distro  == 'bullseye'
-        run:
-          cp -r debian/bullseye-overrides/* debian/ || true
 
       - name: Build Debian package
         uses: pi-top/debian-package-build-action@master
@@ -160,10 +144,7 @@ jobs:
         # Only 1 .dsc is required for source so take armhf if there's multiple
         if: |
           (
-            (
-              github.ref == 'refs/heads/master' ||
-              github.ref == 'refs/heads/bullseye'
-            ) &&
+            github.ref == 'refs/heads/master' &&
             (
               matrix.architecture == 'amd64' ||
               matrix.architecture == 'armhf'
@@ -178,7 +159,7 @@ jobs:
 
       - name: Upload .deb to PackageCloud
         uses: pi-top/ghaction-packagecloud@main
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/bullseye'
+        if: github.ref == 'refs/heads/master'
         with:
           repository: ${{ env.PACKAGECLOUD_REPO }}/${{ env.OS }}/${{ matrix.distro }}
           files: |
