@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.35.0-5) bullseye; urgency=medium
+
+  * Regenerate Debian workflows: drop bullseye (#718)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 30 Oct 2026 16:23:36 +0000
+
 pi-top-python-sdk (0.35.0-4) bullseye; urgency=medium
 
   * Weblabs server supports SSL (#707)
