@@ -5,7 +5,6 @@ on:
   pull_request:
     branches:
       - master
-      - bullseye
     types: [closed]
 
 
@@ -55,17 +54,7 @@ jobs:
       - name: Determine build distro
         id: set-distros
         run: |
-          distros="\"distro\":[\"bookworm\", \"bullseye\"]"
-
-          # if bullseye branch exists, build for bookworm only
-          if git branch -r | grep -Eq "origin/bullseye$"; then
-            distros="\"distro\":[\"bookworm\"]"
-          fi
-
-          # if pull request to bullseye branch or current branch is bullseye, build only for bullseye
-          if [ $(echo ${{ github.head_ref }} | grep -qE "bullseye$") ] || [ ${{ github.ref }} = 'refs/heads/bullseye' ]; then
-            distros="\"distro\":[\"bullseye\"]"
-          fi
+          distros="\"distro\":[\"bookworm\"]"
 
           echo "Building for $distros"
           echo "distros=$distros">>$GITHUB_OUTPUT
@@ -131,11 +120,6 @@ jobs:
           submodules: true
           fetch-depth: 0
 
-      - name: Patch lintian-overrides
-        if: matrix.distro  == 'bullseye'
-        run:
-          cp -r debian/bullseye-overrides/* debian/ || true
-
       - name: Build Debian package
         uses: pi-top/debian-package-build-action@master
         with:
@@ -164,10 +148,7 @@ jobs:
         # Only 1 .dsc is required for source so take armhf if there's multiple
         if: |
           (
-            (
-              github.ref == 'refs/heads/master' ||
-              github.ref == 'refs/heads/bullseye'
-            ) &&
+            github.ref == 'refs/heads/master' &&
             (
               matrix.architecture == 'amd64' ||
               matrix.architecture == 'armhf'
@@ -201,11 +182,6 @@ jobs:
         run: |
           release_tag="v${{ needs.check-versions.outputs.CURRENT_VERSION }}"
           matrix="${{needs.set-build-matrix.outputs.matrix}}"
-
-          # if releasing ONLY for bullseye, prepend 'bullseye' to release tag
-          if [ ${{ matrix.distro }} = 'bullseye' ] && echo "${matrix}" | grep -qv 'bookworm'; then
-            release_tag="bullseye-$release_tag"
-          fi
 
           echo "RELEASE_TAG=${release_tag}" >> $GITHUB_ENV
 
