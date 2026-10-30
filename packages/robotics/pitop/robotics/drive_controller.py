@@ -129,11 +129,21 @@ class DriveController(Stateful, Recreatable):
         )
         self._set_motor_speeds(speed_left, speed_right, distance)
 
+    def _rotations_to_distance(self, wheel_rotations: Union[int, float]) -> float:
+        return wheel_rotations * self.left_motor.wheel_circumference
+
+    def _speed_meters_per_second_to_factor(
+        self, speed_meters_per_second: Union[int, float]
+    ) -> float:
+        return speed_meters_per_second / self.max_motor_speed
+
     def forward(
         self,
-        speed_factor: Union[int, float],
+        speed_factor: Optional[Union[int, float]] = None,
         hold: bool = False,
         distance: Optional[Union[int, float]] = None,
+        wheel_rotations: Optional[Union[int, float]] = None,
+        speed_meters_per_second: Optional[Union[int, float]] = None,
     ) -> None:
         """Move the robot forward.
 
@@ -145,19 +155,43 @@ class DriveController(Stateful, Recreatable):
             subsequent movements to use the speed set as the base speed.
         :param float distance: Distance to travel in meters. If not
             provided, the robot will move indefinitely
+        :param float wheel_rotations: Number of wheel rotations to travel. Can't be set at the same time as distance.
+        :param float speed_meters_per_second: Speed in meters per second. Can't be set at the same time as speed_factor.
         """
-        linear_speed_x = self.max_motor_speed * speed_factor
+
+        if (speed_factor is None and speed_meters_per_second is None) or (
+            speed_factor is not None and speed_meters_per_second is not None
+        ):
+            raise ValueError(
+                "Either speed_factor or speed_meters_per_second must be provided, but not both"
+            )
+
+        if distance is not None and wheel_rotations is not None:
+            raise ValueError(
+                "Either distance or wheel_rotations must be provided, but not both"
+            )
+
+        linear_speed_x = speed_meters_per_second
+        if speed_factor:
+            linear_speed_x = self.max_motor_speed * speed_factor
+
         if hold:
             self._linear_speed_x_hold = linear_speed_x
         else:
             self._linear_speed_x_hold = 0
+
+        if wheel_rotations:
+            distance = self._rotations_to_distance(wheel_rotations)
+
         self.robot_move(linear_speed=linear_speed_x, angular_speed=0, distance=distance)
 
     def backward(
         self,
-        speed_factor: Union[int, float],
+        speed_factor: Optional[Union[int, float]] = None,
         hold: bool = False,
         distance: Optional[Union[int, float]] = None,
+        wheel_rotations: Optional[Union[int, float]] = None,
+        speed_meters_per_second: Optional[Union[int, float]] = None,
     ) -> None:
         """Move the robot backward.
 
@@ -168,8 +202,16 @@ class DriveController(Stateful, Recreatable):
             subsequent movements to use the speed set as the base speed.
         :param float distance: Distance to travel in meters. If not
             provided, the robot will move indefinitely
+        :param float wheel_rotations: Number of wheel rotations to travel. If not
+            provided, the robot will move indefinitely
         """
-        self.forward(-speed_factor, hold, distance)
+        self.forward(
+            -speed_factor if speed_factor else None,
+            hold,
+            distance,
+            wheel_rotations,
+            -speed_meters_per_second if speed_meters_per_second else None,
+        )
 
     def left(
         self,
@@ -300,8 +342,8 @@ class DriveController(Stateful, Recreatable):
     ) -> None:
         """Set the speed of the left and right motors.
 
-        :param float left_speed: Speed for the left motor.
-        :param float right_speed: Speed for the right motor.
+        :param float left_speed: Speed for the left motor in meters per second.
+        :param float right_speed: Speed for the right motor in meters per second.
         :param float distance: Distance to travel in meters.
         """
         if distance is None:
