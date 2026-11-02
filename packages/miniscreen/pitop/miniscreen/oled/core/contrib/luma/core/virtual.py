@@ -73,7 +73,7 @@ class viewport(mixin.capabilities):
         The hotspot must fit inside the bounds of the virtual device. If
         it does not then an ``AssertError`` is raised.
         """
-        (x, y) = xy
+        x, y = xy
         assert 0 <= x <= self.width - hotspot.width
         assert 0 <= y <= self.height - hotspot.height
 
@@ -117,7 +117,7 @@ class viewport(mixin.capabilities):
         self._device.display(im)
 
     def _crop_box(self):
-        (left, top) = self._position
+        left, top = self._position
         right = left + self._device.width
         bottom = top + self._device.height
 
