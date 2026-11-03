@@ -3,8 +3,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from pitop.common.common_ids import FirmwareDeviceID  # noqa: E402
-from pitop.common.firmware_device import FirmwareDevice  # noqa: E402
-from pitop.common.firmware_device import PTInvalidFirmwareDeviceException  # noqa: E402
+from pitop.common.firmware_device import (  # noqa: E402
+    FirmwareDevice,
+    PTInvalidFirmwareDeviceException,
+)
 
 
 def get_mocked_firmware_device(part_name):

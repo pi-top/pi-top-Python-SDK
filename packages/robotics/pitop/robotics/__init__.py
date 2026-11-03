@@ -1,6 +1,5 @@
 from .blockpi_rover import BlockPiRover
-from .configurations import AlexRobot  # deprecated
-from .configurations import alex_config
+from .configurations import AlexRobot, alex_config  # deprecated
 from .drive_controller import DriveController
 from .navigation import NavigationController
 from .pan_tilt_controller import PanTiltController
