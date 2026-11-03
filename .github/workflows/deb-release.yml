@@ -109,6 +109,8 @@ jobs:
   release:
     needs: [set-build-matrix, check-versions]
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged && github.head_ref == 'bump-changelog')
     strategy:
       fail-fast: false
@@ -188,6 +190,6 @@ jobs:
       - name: Create release and upload package
         uses: svenstaro/upload-release-action@v2
         with:
-          repo_token: ${{ secrets.PAT_GITHUB }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./${{ matrix.distro}}-${{ matrix.architecture }}.deb.zip
           tag: ${{ env.RELEASE_TAG }}
