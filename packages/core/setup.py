@@ -42,7 +42,7 @@ __keywords__ = [
 
 __requires__ = [
     f"pitop.common=={__version__}",
-    "Pillow>=8.1.2,<9.0",
+    "Pillow>=8.1.2,<10.0",
     "numpy>1.19.5,<2.0.0",
     "opencv-python>=4.5.0,<5.0.0",
 ]

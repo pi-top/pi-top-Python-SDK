@@ -7,21 +7,22 @@ pytest-rerunfailures
 pytest-snapshot
 pytest-timeout
 pytest-xdist
-# Dependencies
-Pillow>=8.1.2,<9.0
+# Dependencies, pinned to the bookworm package versions devices run
+Pillow==9.4.0
 # Use pre-compiled wheel from packagecloud
 dlib==19.24.2.post1
-flask-cors>=3.0.9,<4.0.0
-flask>=1.1.2,<2.0.0
-gpiozero>=1.6.2,<2.0.0
+flask-cors==3.0.10
+flask==2.2.2
+gpiozero==1.6.2
 imutils>=0.5.4,<1.0.0
-isc_dhcp_leases>=0.9.1,<1.0.0
-matplotlib>=3.3.4,<4.0
-netifaces>=0.10.4,<1.0.0
-numpy>1.19.5,<2.0.0
+isc_dhcp_leases==0.9.1
+matplotlib==3.6.3
+netifaces==0.11.0
+numpy==1.24.2
 onnxruntime>=1.8.1,<2.0
-opencv-python>=4.5.1,<5.0.0
+opencv-python==4.6.0.66
 pygame>=2.1.2
-pyserial>=3.5,<4.0
-scipy>=1.6.0,<2.0
-wget>=3.2,<4.0
+pyserial==3.5
+scipy==1.10.1
+Werkzeug==2.2.2
+wget==3.2

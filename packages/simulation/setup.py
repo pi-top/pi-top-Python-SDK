@@ -43,7 +43,7 @@ __keywords__ = [
 __requires__ = [
     f"pitop.core=={__version__}",
     "pygame>=1.9.6,<3",
-    "Pillow>=8.1.2,<9.0",
+    "Pillow>=8.1.2,<10.0",
 ]
 
 
