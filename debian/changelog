@@ -1,3 +1,18 @@
+pi-top-python-sdk (0.35.0-5) bullseye; urgency=medium
+
+  * Regenerate Debian workflows: drop bullseye (#718)
+  * Remove debian/bullseye-overrides (#720)
+  * Stop tagging releases as 'stable' (#721)
+  * Publish to PyPI with Python 3.11 (#722)
+  * Create releases with the workflow's own token (#723)
+  * Replace the CodeQL workflow with a current one (#724)
+  * Remove the Dependabot config (#725)
+  * Test against the bookworm package versions devices run (#726)
+  * Remove bullseye from SDK tests (#729)
+  * Stop ball detector tests leaking colours into other tests (#730)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 06 Nov 2026 17:42:43 +0000
+
 pi-top-python-sdk (0.35.0-4) bullseye; urgency=medium
 
   * Weblabs server supports SSL (#707)
