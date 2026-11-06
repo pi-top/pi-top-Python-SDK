@@ -46,12 +46,12 @@ def test_debian_version_checks_if_version_file_exists(path_mock):
 
 
 @patch("pitop.common.sys_info.path")
-@patch("pitop.common.sys_info.open", new_callable=mock_open(), read_data="bullseye/sid")
+@patch("pitop.common.sys_info.open", new_callable=mock_open(), read_data="bookworm/sid")
 def test_debian_version_returns_file_content(open_mock, path_mock):
     path_mock.exists.return_value = True
     from pitop.common.sys_info import get_debian_version
 
-    get_debian_version() == "bullseye/sid"
+    get_debian_version() == "bookworm/sid"
 
 
 @patch("pitop.common.sys_info.path")
