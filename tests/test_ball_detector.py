@@ -1,9 +1,12 @@
+from copy import deepcopy
+
 import cv2
 import numpy as np
 import pytest
 
 from pitop.core.ImageFunctions import convert
 from pitop.processing.algorithms.ball_detect import BallDetector
+from pitop.processing.algorithms.hsv_color_ranges import HSVColorRanges
 from pitop.processing.core.vision_functions import (
     center_reposition,
     get_object_target_lock_control_angle,
@@ -16,6 +19,12 @@ _height = 480
 _width = 640
 _MAX_DIMENSION_DIFFERENCE = 3
 _blank_cv_frame = np.zeros((_height, _width, 3), np.uint8)
+
+
+@pytest.fixture(autouse=True)
+def restore_color_ranges(monkeypatch):
+    # added colors would otherwise leak into other tests
+    monkeypatch.setattr(HSVColorRanges, "ranges", deepcopy(HSVColorRanges.ranges))
 
 
 def test_detect_one_ball():
