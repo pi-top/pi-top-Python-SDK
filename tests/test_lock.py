@@ -1,8 +1,11 @@
+import mmap
+import os
+from fcntl import flock
 from pathlib import Path
 from threading import Thread
-from time import sleep
+from time import sleep, time
 from unittest import TestCase
-from unittest.mock import mock_open, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
@@ -84,3 +87,57 @@ class PTLockTestCase(TestCase):
         thread.join()
         self.assertFalse(thread.is_alive())
         self.assertTrue(lock2.is_locked())
+
+    def test_release_unlocks_file_before_thread_lock(self):
+        lock = PTLock(self._dummy_lock_id)
+        lock.acquire()
+
+        order = []
+        thread_lock = lock._thread_lock
+
+        def release_thread_lock():
+            order.append("thread")
+            thread_lock.release()
+
+        def record_flock(file, operation):
+            order.append("file")
+            flock(file, operation)
+
+        lock._thread_lock = MagicMock(
+            locked=thread_lock.locked, release=release_thread_lock
+        )
+        with patch("pitop.common.lock.flock", side_effect=record_flock):
+            lock.release()
+
+        self.assertEqual(order, ["file", "thread"])
+
+    def test_threads_sharing_a_lock_and_another_process_never_overlap(self):
+        # Like pi-topd: two threads share one lock while another process has its own
+        shared = mmap.mmap(-1, 2)
+        until = time() + 2
+
+        def hold_repeatedly(lock):
+            while time() < until:
+                with lock:
+                    if shared[0]:
+                        shared[1] = 1
+                    shared[0] = 1
+                    sleep(0.0002)
+                    shared[0] = 0
+
+        pid = os.fork()
+        if pid == 0:
+            try:
+                hold_repeatedly(PTLock(self._dummy_lock_id))
+            finally:
+                os._exit(0)
+
+        lock = PTLock(self._dummy_lock_id)
+        threads = [Thread(target=hold_repeatedly, args=[lock]) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        os.waitpid(pid, 0)
+
+        self.assertEqual(shared[1], 0)
