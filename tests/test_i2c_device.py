@@ -94,6 +94,21 @@ def test_connect_runs_read_test(setup_mocks):
     mock_read_device.read.assert_called_once_with(1)
 
 
+def test_connect_read_test_holds_the_lock(setup_mocks):
+    i2c_device = setup_mocks.get("i2c_device")
+    ptlock_mock = setup_mocks.get("ptlock_mock")
+    mock_read_device = setup_mocks.get("mock_read_device")
+
+    calls = MagicMock()
+    calls.attach_mock(ptlock_mock.__enter__, "enter")
+    calls.attach_mock(mock_read_device.read, "read")
+    calls.attach_mock(ptlock_mock.__exit__, "exit")
+
+    i2c_device.connect(read_test=True)
+
+    assert [name for name, _, _ in calls.mock_calls] == ["enter", "read", "exit"]
+
+
 def test_disconnect_closes_devices(setup_mocks):
     i2c_device = setup_mocks.get("i2c_device")
     mock_read_device = setup_mocks.get("mock_read_device")

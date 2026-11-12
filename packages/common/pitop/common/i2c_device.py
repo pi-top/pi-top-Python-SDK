@@ -44,7 +44,9 @@ class I2CDevice:
 
         if read_test is True:
             logger.debug("I2C: Test read 1 byte")
-            self._read_device.read(1)
+            # Unlocked, this read can take the reply to another process's request
+            with self._lock:
+                self._read_device.read(1)
             logger.debug("I2C: OK")
 
     def disconnect(self):

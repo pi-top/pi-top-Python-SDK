@@ -26,16 +26,6 @@ class PTLock(object):
 
     def acquire(self) -> bool:
         """Block until lock can be acquired."""
-        if self._thread_lock.locked():
-            logger.debug(
-                "Attempting to acquire thread lock, which is currently already acquired."
-            )
-
-        if self.is_locked():
-            logger.debug(
-                f"Attempting to acquire lock file ({self.path}), which is currently already globally acquired."
-            )
-
         logger.debug("Acquiring thread lock")
         self._thread_lock.acquire()
         logger.debug("Acquiring lock file at {}".format(self.path))
@@ -45,20 +35,16 @@ class PTLock(object):
     def release(self) -> bool:
         """Attempt to release lock."""
         if not self._thread_lock.locked():
-            logger.debug(
-                "Attempting to release thread lock, which is currently already acquired."
-            )
+            raise RuntimeError("release unlocked lock")
 
-        if not self.is_locked():
-            logger.debug(
-                f"Attempting to release lock file ({self.path}), which is currently already globally acquired."
-            )
-
+        # Unlock the file before the thread lock. The other way round, a thread
+        # waiting on this instance gets in while the file is still locked, and
+        # this unlock then leaves it running unprotected.
+        logger.debug("Releasing lock file at {}".format(self.path))
+        self.__locked_by_self = False
+        flock(self.__lock_file_handle, LOCK_UN)
         logger.debug("Releasing thread lock")
         self._thread_lock.release()
-        logger.debug("Releasing lock file at {}".format(self.path))
-        flock(self.__lock_file_handle, LOCK_UN)
-        self.__locked_by_self = False
 
     def is_locked(self):
         if self.__locked_by_self:
