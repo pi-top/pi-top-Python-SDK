@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.36.0-1) bookworm; urgency=medium
+
+  * Allow running the changelog bump by hand (#733)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Fri, 13 Nov 2026 14:13:43 +0000
+
 pi-top-python-sdk (0.35.0-5) bullseye; urgency=medium
 
   * Regenerate Debian workflows: drop bullseye (#718)
