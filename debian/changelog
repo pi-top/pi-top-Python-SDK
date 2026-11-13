@@ -1,4 +1,4 @@
-pi-top-python-sdk (0.35.1-1) bookworm; urgency=medium
+pi-top-python-sdk (0.36.0-1) bookworm; urgency=medium
 
   * Allow running the changelog bump by hand (#733)
 
