@@ -187,9 +187,19 @@ jobs:
 
           echo "RELEASE_TAG=${release_tag}" >> $GITHUB_ENV
 
+      - name: Set release notes from changelog
+        run: |
+          {
+            echo 'RELEASE_NOTES<<EOF_RELEASE_NOTES'
+            awk 'NR>1 && /^ -- /{exit} NR>1' debian/changelog | sed -e 's/^  //' -e '/^$/d'
+            echo 'EOF_RELEASE_NOTES'
+          } >> $GITHUB_ENV
+
       - name: Create release and upload package
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./${{ matrix.distro}}-${{ matrix.architecture }}.deb.zip
           tag: ${{ env.RELEASE_TAG }}
+          release_name: ${{ env.RELEASE_TAG }}
+          body: ${{ env.RELEASE_NOTES }}
