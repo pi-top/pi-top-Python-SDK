@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.36.1-1) bookworm; urgency=medium
+
+  * Fix pi-top devices without a terminal and the hub i2cping check (#735)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 16 Nov 2026 14:19:41 +0000
+
 pi-top-python-sdk (0.36.0-1) bookworm; urgency=medium
 
   * Allow running the changelog bump by hand (#733)
