@@ -1,3 +1,9 @@
+pi-top-python-sdk (0.36.2-1) bookworm; urgency=medium
+
+  * Name GitHub releases after their tag and add changelog notes (#737)
+
+ -- pi-top <deb-maintainers@pi-top.com>  Mon, 16 Nov 2026 17:45:41 +0000
+
 pi-top-python-sdk (0.36.1-1) bookworm; urgency=medium
 
   * Fix pi-top devices without a terminal and the hub i2cping check (#735)
