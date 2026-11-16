@@ -74,7 +74,7 @@ def test_backward_calls_forward_method():
 
     with patch.object(d, "forward") as forward_mock:
         d.backward(speed_factor, hold=hold)
-        forward_mock.assert_called_once_with(-speed_factor, hold, distance)
+        forward_mock.assert_called_once_with(-speed_factor, hold, distance, None, None)
 
 
 def test_stop_sets_angular_and_linear_speeds_to_zero():
@@ -177,3 +177,143 @@ def test_rotate_speeds():
         sleep_mock.assert_called_once_with(0.4)
         sleep_mock.reset_mock()
         set_motor_speeds_mock.reset_mock()
+
+
+def test_forward_raises_exception_on_invalid_speed_parameter_combinations():
+    """'forward' method raises ValueError when invalid speed parameter combinations are used."""
+    d = DriveController()
+
+    # Neither speed_factor nor speed_meters_per_second provided
+    with pytest.raises(
+        ValueError,
+        match="Either speed_factor or speed_meters_per_second must be provided, but not both",
+    ):
+        d.forward()
+
+    # Both speed_factor and speed_meters_per_second provided also raises exception
+    with pytest.raises(
+        ValueError,
+        match="Either speed_factor or speed_meters_per_second must be provided, but not both",
+    ):
+        d.forward(speed_factor=0.5, speed_meters_per_second=1.0)
+
+
+def test_forward_raises_exception_on_invalid_distance_parameter_combinations():
+    """'forward' method raises ValueError when invalid distance parameter combinations are used."""
+    d = DriveController()
+
+    # Providing both distance and wheel_rotations raises exception
+    with pytest.raises(
+        ValueError,
+        match="Either distance or wheel_rotations must be provided, but not both",
+    ):
+        d.forward(speed_factor=0.5, distance=1.0, wheel_rotations=2.0)
+
+
+def test_backward_raises_exception_on_invalid_speed_parameter_combinations():
+    """'backward' method raises ValueError when invalid speed parameter combinations are used."""
+    d = DriveController()
+
+    # Neither speed_factor nor speed_meters_per_second provided
+    with pytest.raises(
+        ValueError,
+        match="Either speed_factor or speed_meters_per_second must be provided, but not both",
+    ):
+        d.backward()
+
+    # Both speed_factor and speed_meters_per_second provided also raises exception
+    with pytest.raises(
+        ValueError,
+        match="Either speed_factor or speed_meters_per_second must be provided, but not both",
+    ):
+        d.backward(speed_factor=0.5, speed_meters_per_second=1.0)
+
+
+def test_backward_raises_exception_on_invalid_distance_parameter_combinations():
+    """'backward' method raises ValueError when invalid distance parameter combinations are used."""
+    d = DriveController()
+
+    # Providing both distance and wheel_rotations raises exception
+    with pytest.raises(
+        ValueError,
+        match="Either distance or wheel_rotations must be provided, but not both",
+    ):
+        d.backward(speed_factor=0.5, distance=1.0, wheel_rotations=2.0)
+
+
+@pytest.mark.parametrize(
+    "method_name, speed_factor, speed_meters_per_second, distance, wheel_rotations",
+    [
+        # Test forward with various invalid combinations
+        ("forward", None, None, None, None),  # No speed parameters
+        ("forward", 0.5, 1.0, None, None),  # Both speed parameters
+        ("forward", 0.5, None, 1.0, 2.0),  # Both distance parameters
+        ("forward", None, None, 1.0, 2.0),  # No speed + both distance parameters
+        ("forward", 0.5, 1.0, 1.0, 2.0),  # All invalid combinations
+        # Test backward with various invalid combinations
+        ("backward", None, None, None, None),  # No speed parameters
+        ("backward", 0.5, 1.0, None, None),  # Both speed parameters
+        ("backward", 0.5, None, 1.0, 2.0),  # Both distance parameters
+        ("backward", None, None, 1.0, 2.0),  # No speed + both distance parameters
+        ("backward", 0.5, 1.0, 1.0, 2.0),  # All invalid combinations
+    ],
+)
+def test_forward_backward_parameter_validation(
+    method_name, speed_factor, speed_meters_per_second, distance, wheel_rotations
+):
+    """Parametric test for forward/backward parameter validation."""
+    d = DriveController()
+    method = getattr(d, method_name)
+
+    with pytest.raises(ValueError):
+        method(
+            speed_factor=speed_factor,
+            speed_meters_per_second=speed_meters_per_second,
+            distance=distance,
+            wheel_rotations=wheel_rotations,
+        )
+
+
+def test_forward_backward_valid_parameter_combinations():
+    """Test that valid parameter combinations work correctly for forward/backward."""
+    d = DriveController()
+
+    # Valid combinations that should not raise exceptions
+    with patch.object(d, "robot_move") as robot_move_mock:
+        # Valid: speed_factor only
+        d.forward(speed_factor=0.5)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        # Valid: speed_meters_per_second only
+        d.forward(speed_meters_per_second=1.0)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        # Valid: speed_factor + distance
+        d.forward(speed_factor=0.5, distance=1.0)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        # Valid: speed_factor + wheel_rotations
+        d.forward(speed_factor=0.5, wheel_rotations=2.0)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        # Valid: speed_meters_per_second + distance
+        d.forward(speed_meters_per_second=1.0, distance=1.0)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        # Valid: speed_meters_per_second + wheel_rotations
+        d.forward(speed_meters_per_second=1.0, wheel_rotations=2.0)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        # Test same combinations for backward
+        d.backward(speed_factor=0.5)
+        robot_move_mock.assert_called()
+        robot_move_mock.reset_mock()
+
+        d.backward(speed_meters_per_second=1.0, distance=1.0)
+        robot_move_mock.assert_called()
